@@ -61,20 +61,27 @@ import Slider, { SliderThumb } from "@mui/material/Slider";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
 import { IoFilterOutline } from "react-icons/io5";
+import { TbFileImport } from "react-icons/tb";
+import { TbFileExport } from "react-icons/tb";
+import { TiUserAddOutline } from "react-icons/ti";
+import { MdAssignmentAdd } from "react-icons/md";
+import { MdOutlinePostAdd } from "react-icons/md";
+import { MdOutlineDeleteSweep } from "react-icons/md";
 import { Country, State, City } from 'country-state-city';
+import TodaysCollection from "./TodaysCollection.jsx";
+import { GoPlusCircle } from "react-icons/go";
 import { jwtDecode } from "jwt-decode";
 import { MdPayment } from "react-icons/md";
 // import DrawerComponent from "../components/Drawer.js";
 import CallHistory from "./CallHistory.jsx";
 import { LuHistory } from "react-icons/lu";
 import BdmMaturedCasesDialogBox from "./BdmMaturedCasesDialogBox.jsx";
+import { IoMdClose } from "react-icons/io";
 import ProjectionDialog from "./ExtraComponents/ProjectionDialog.jsx";
 import FeedbackDialog from "./ExtraComponents/FeedbackDialog.jsx";
 import CsvImportDialog from "./ExtraComponents/ImportCSVDialog.jsx";
-import EmployeeAddLeadDialog from "./ExtraComponents/EmployeeAddLeadDialog.jsx";
-import EmployeeRequestDataDialog from "./ExtraComponents/EmployeeRequestDataDialog.jsx";
-import RemarksDialog from "./ExtraComponents/RemarksDialog.jsx";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -93,6 +100,7 @@ function EmployeePanelCopy() {
     const [csvdata, setCsvData] = useState([]);
     const [dataStatus, setdataStatus] = useState("All");
     const [changeRemarks, setChangeRemarks] = useState("");
+    const [open, openchange] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [expandYear, setExpandYear] = useState(0);
     const [bookingIndex, setBookingIndex] = useState(0);
@@ -102,7 +110,7 @@ function EmployeePanelCopy() {
     const [openAnchor, setOpenAnchor] = useState(false);
     const [openProjection, setOpenProjection] = useState(false);
     const [data, setData] = useState([]);
-
+    const [isOpen, setIsOpen] = useState(false);
     const [emailData, setEmailData] = useState({ to: "", subject: "", body: "" });
     const [forwardEname, setForrwardEname] = useState("");
     const [forwardStatus, setForrwardStatus] = useState("");
@@ -118,16 +126,42 @@ function EmployeePanelCopy() {
     const [clientNumber, setClientNumber] = useState("");
     const [employeeData, setEmployeeData] = useState([]);
     const [redesignedData, setRedesignedData] = useState([])
+    const [searchText, setSearchText] = useState("");
+    const [citySearch, setcitySearch] = useState("");
+    const [visibility, setVisibility] = useState("none");
+    const [visibilityOther, setVisibilityOther] = useState("block");
+    const [visibilityOthernew, setVisibilityOthernew] = useState("none");
+    const [subFilterValue, setSubFilterValue] = useState("");
     const [openbdmRequest, setOpenbdmRequest] = useState(false);
+    const [selectedField, setSelectedField] = useState("Company Name");
+    const [cname, setCname] = useState("");
+    const [cemail, setCemail] = useState("");
+    const [companyAddress, setCompanyAddress] = useState("");
+    const [directorNameFirst, setDirectorNameFirst] = useState("");
+    const [directorNameSecond, setDirectorNameSecond] = useState("");
+    const [directorNameThird, setDirectorNameThird] = useState("");
+    const [directorNumberFirst, setDirectorNumberFirst] = useState(0);
+    const [directorNumberSecond, setDirectorNumberSecond] = useState(0);
+    const [directorNumberThird, setDirectorNumberThird] = useState(0);
+    const [directorEmailFirst, setDirectorEmailFirst] = useState("");
+    const [directorEmailSecond, setDirectorEmailSecond] = useState("");
+    const [directorEmailThird, setDirectorEmailThird] = useState("");
     const [selectAllChecked, setSelectAllChecked] = useState(true);
     const [selectedYears, setSelectedYears] = useState([]);
     const [selectedMonths, setSelectedMonths] = useState([]);
+    const [cnumber, setCnumber] = useState(0);
+    const [state, setState] = useState("");
+    const [city, setCity] = useState("");
+    const [cidate, setCidate] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [month, setMonth] = useState(0);
     const [updateData, setUpdateData] = useState({});
     const [nowToFetch, setNowToFetch] = useState(false);
     const [RequestApprovals, setRequestApprovals] = useState([]);
     const [mapArray, setMapArray] = useState([]);
+    const [companies, setCompanies] = useState([]);
+    const [selectedValues, setSelectedValues] = useState([]);
+    const [currentRemarks, setCurrentRemarks] = useState("");
     const [totalBookings, setTotalBookings] = useState([]);
     const itemsPerPage = 500;
     const [year, setYear] = useState(0);
@@ -169,7 +203,9 @@ function EmployeePanelCopy() {
         setShowCallHistory(false);
     };
 
-
+    const handleTogglePopup = () => {
+        setIsOpen(false);
+    };
 
     function navigate(url) {
         window.location.href = url;
@@ -185,6 +221,16 @@ function EmployeePanelCopy() {
         navigate(data.url);
     }
 
+    const handleChangeMail = (e) => {
+        const { name, value } = e.target;
+        setEmailData({ ...emailData, [name]: value });
+    };
+
+    const handleSubmitMail = (e) => {
+        e.preventDefault();
+        setIsOpen(false);
+    };
+    //console.log(userId);
 
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
@@ -246,6 +292,11 @@ function EmployeePanelCopy() {
         };
     }, []);
 
+
+    const functionopenpopup = () => {
+        openchange(true);
+    };
+
     const fetchEditRequests = async () => {
         try {
             const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
@@ -270,11 +321,135 @@ function EmployeePanelCopy() {
             console.error("Error fetching data:", error);
         }
     };
+
+    //console.log(totalBookings, "This is elon musk");
+
+
+
+
+
+
     const functionopenAnchor = () => {
         setTimeout(() => {
             setOpenAnchor(true);
         }, 1000);
     };
+
+    const [cid, setcid] = useState("");
+    const [cstat, setCstat] = useState("");
+    const [currentCompanyName, setCurrentCompanyName] = useState("");
+    const [bdeName, setBdeName] = useState("");
+
+    const functionopenpopupremarks = (companyID, companyStatus, companyName, ename) => {
+        openchangeRemarks(true);
+
+        setFilteredRemarks(
+            remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
+        );
+        // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+        setcid(companyID);
+        setCstat(companyStatus);
+        setCurrentCompanyName(companyName);
+        setBdeName(ename)
+    };
+
+    // console.log("currentcompanyname", currentCompanyName);
+
+    const [opeRemarksEdit, setOpenRemarksEdit] = useState(false);
+    const [openPopupByBdm, setOpenPopupByBdm] = useState(false)
+    const [filteredRemarksBdm, setFilteredRemarksBdm] = useState([])
+    const [filteredRemarksBde, setFilteredRemarksBde] = useState([])
+
+
+
+    const functionopenpopupremarksEdit = (
+        companyID,
+        companyStatus,
+        companyName,
+        ename
+    ) => {
+
+        setOpenRemarksEdit(true);
+        setFilteredRemarksBde(
+            remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
+        );
+        // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+        setcid(companyID);
+        setCstat(companyStatus);
+        setCurrentCompanyName(companyName);
+
+    };
+
+    const closePopUpRemarksEdit = () => {
+        setOpenRemarksEdit(false);
+        //setOpenPopupByBdm(false);
+    };
+
+
+    const [openRemarksBdm, setOpenRemarksBdm] = useState(false)
+
+    const functionopenpopupremarksBdm = (
+        companyID,
+        companyStatus,
+        companyName,
+        bdmName
+    ) => {
+        setOpenRemarksBdm(true);
+        setFilteredRemarksBdm(
+            remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
+        );
+        // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+        setcid(companyID);
+        setCstat(companyStatus);
+        setCurrentCompanyName(companyName);
+    };
+
+    const closePopUpRemarksBdm = () => {
+        setOpenRemarksBdm(false);
+        //setOpenPopupByBdm(false);
+    };
+
+
+    const debouncedSetChangeRemarks = useCallback(
+        debounce((value) => {
+            setChangeRemarks(value);
+        }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+        [] // Empty dependency array to ensure the function is memoized
+    );
+
+    const [openNew, openchangeNew] = useState(false);
+
+    const functionopenpopupNew = () => {
+        openchangeNew(true);
+    };
+    
+    const closepopup = () => {
+        openchange(false);
+    };
+    
+    const closepopupNew = () => {
+        openchangeNew(false);
+        setOpenFirstDirector(true);
+        setOpenSecondDirector(false);
+        setOpenThirdDirector(false);
+        setFirstPlus(true);
+        setSecondPlus(false);
+        setOpenThirdMinus(false)
+        fetchData();
+        setErrorDirectorNumberFirst("");
+        setErrorDirectorNumberSecond("");
+        setErrorDirectorNumberThird("");
+    };
+
+    const closepopupRemarks = () => {
+        openchangeRemarks(false);
+        setFilteredRemarks([]);
+    };
+
+
+
+    //console.log(userId)
+
     const fetchData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
@@ -293,6 +468,9 @@ function EmployeePanelCopy() {
         fetchBDMbookingRequests();
         fetchRedesignedFormDataAll()
     }, [data.ename]);
+
+    // console.log("This is elon musk" , BDMrequests);
+
     const fetchProjections = async () => {
         try {
             const response = await axios.get(
@@ -304,13 +482,32 @@ function EmployeePanelCopy() {
         }
     };
 
+
+    const fetchRemarksHistory = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
+            setRemarksHistory(response.data.reverse());
+            setFilteredRemarks(
+                response.data.filter((obj) => obj.companyID === cid).reverse()
+            );
+
+            //console.log(response.data);
+        } catch (error) {
+            console.error("Error fetching remarks history:", error);
+        }
+    };
+
+    //console.log(projectionData)
+
+    
+
     const fetchNewData = async (status) => {
         const cleanString = (str) => {
             return str.replace(/\u00A0/g, ' ').trim();
         };
 
         const cleanedEname = cleanString(data.ename);
-        console.log("fetchhuayahan")
+
         try {
             if (!status) {
                 setLoading(true);
@@ -775,56 +972,125 @@ function EmployeePanelCopy() {
         }
     };
 
-    // const handleUpdate = async () => {
-    //     // Now you have the updated Status and Remarks, perform the update logic
-    //     //console.log(cid, cstat, changeRemarks);
-    //     const Remarks = changeRemarks;
-    //     if (Remarks === "") {
-    //         Swal.fire({ title: "Empty Remarks!", icon: "warning" });
-    //         return true;
-    //     }
-    //     try {
-    //         // Make an API call to update the employee status in the database
-    //         const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
-    //             Remarks,
-    //         });
-    //         const response2 = await axios.post(
-    //             `${secretKey}/remarks/remarks-history/${cid}`,
-    //             {
-    //                 Remarks,
-    //                 bdeName,
-    //                 currentCompanyName
-    //             }
-    //         );
+    const handleSort = (sortType) => {
+        switch (sortType) {
+            case "oldest":
+                setIncoFilter("oldest");
+                setEmployeeData(
+                    employeeData.sort((a, b) =>
+                        a["Company Incorporation Date  "].localeCompare(
+                            b["Company Incorporation Date  "]
+                        )
+                    )
+                );
+                break;
+            case "newest":
+                setIncoFilter("newest");
+                setEmployeeData(
+                    employeeData.sort((a, b) =>
+                        b["Company Incorporation Date  "].localeCompare(
+                            a["Company Incorporation Date  "]
+                        )
+                    )
+                );
+                break;
+            case "none":
+                setIncoFilter("none");
+                setEmployeeData(
+                    employeeData.sort((a, b) =>
+                        b["AssignDate"].localeCompare(a["AssignDate"])
+                    )
+                );
+                break;
+            default:
+                break;
+        }
+    };
 
-    //         // Check if the API call was successful
-    //         if (response.status === 200) {
-    //             Swal.fire("Remarks updated!");
-    //             setChangeRemarks("");
-    //             // If successful, update the employeeData state or fetch data again to reflect changes
-    //             fetchNewData(cstat);
-    //             fetchRemarksHistory();
-    //             // setCstat("");
-    //             closepopupRemarks(); // Assuming fetchData is a function to fetch updated employee data
-    //         } else {
-    //             // Handle the case where the API call was not successful
-    //             console.error("Failed to update status:", response.data.message);
-    //         }
-    //     } catch (error) {
-    //         // Handle any errors that occur during the API call
-    //         console.error("Error updating status:", error.message);
-    //     }
+    const handlenewFieldChange = (companyId, value) => {
+        setUpdateData((prevData) => ({
+            ...prevData,
+            [companyId]: {
+                ...prevData[companyId],
+                Remarks: value,
+                isButtonEnabled: true, // Enable the button when any field changes
+            },
+        }));
+    };
 
-    //     setUpdateData((prevData) => ({
-    //         ...prevData,
-    //         [companyId]: {
-    //             ...prevData[companyId],
-    //             isButtonEnabled: false,
-    //         },
-    //     }));
+    const handleDeleteRemarks = async (remarks_id, remarks_value) => {
+        const mainRemarks = remarks_value === currentRemarks ? true : false;
+        //console.log(mainRemarks);
+        const companyId = cid;
+        //console.log("Deleting Remarks with", remarks_id);
+        try {
+            // Send a delete request to the backend to delete the item with the specified ID
+            await axios.delete(`${secretKey}/remarks/remarks-history/${remarks_id}`);
+            if (mainRemarks) {
+                await axios.delete(`${secretKey}/remarks/remarks-delete/${companyId}`);
+            }
+            // Set the deletedItemId state to trigger re-fetching of remarks history
+            Swal.fire("Remarks Deleted");
+            fetchRemarksHistory();
+            fetchNewData(cstat);
+        } catch (error) {
+            console.error("Error deleting remarks:", error);
+        }
+    };
+    const isUpdateButtonEnabled = (companyId) => {
+        return updateData[companyId]?.isButtonEnabled || false;
+    };
 
-    //     // After updating, you can disable the button
-    // };
+    const handleUpdate = async () => {
+        // Now you have the updated Status and Remarks, perform the update logic
+        //console.log(cid, cstat, changeRemarks);
+        const Remarks = changeRemarks;
+        if (Remarks === "") {
+            Swal.fire({ title: "Empty Remarks!", icon: "warning" });
+            return true;
+        }
+        try {
+            // Make an API call to update the employee status in the database
+            const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
+                Remarks,
+            });
+            const response2 = await axios.post(
+                `${secretKey}/remarks/remarks-history/${cid}`,
+                {
+                    Remarks,
+                    bdeName,
+                    currentCompanyName
+                }
+            );
+
+            // Check if the API call was successful
+            if (response.status === 200) {
+                Swal.fire("Remarks updated!");
+                setChangeRemarks("");
+                // If successful, update the employeeData state or fetch data again to reflect changes
+                fetchNewData(cstat);
+                fetchRemarksHistory();
+                // setCstat("");
+                closepopupRemarks(); // Assuming fetchData is a function to fetch updated employee data
+            } else {
+                // Handle the case where the API call was not successful
+                console.error("Failed to update status:", response.data.message);
+            }
+        } catch (error) {
+            // Handle any errors that occur during the API call
+            console.error("Error updating status:", error.message);
+        }
+
+        setUpdateData((prevData) => ({
+            ...prevData,
+            [companyId]: {
+                ...prevData[companyId],
+                isButtonEnabled: false,
+            },
+        }));
+
+        // After updating, you can disable the button
+    };
 
     const [freezeIndex, setFreezeIndex] = useState(null);
 
@@ -853,6 +1119,357 @@ function EmployeePanelCopy() {
         return `${year}-${month}-${day}`;
     }
 
+
+    // Request form for Employees
+
+    //const [selectedYear, setSelectedYear] = useState("");
+    const [companyType, setCompanyType] = useState("");
+    const [numberOfData, setNumberOfData] = useState("");
+
+    // const handleYearChange = (event) => {
+    //   setSelectedYear(event.target.value);
+    // };
+
+    const handleCompanyTypeChange = (event) => {
+        setCompanyType(event.target.value);
+    };
+
+    const handleNumberOfDataChange = (event) => {
+        setNumberOfData(event.target.value);
+    };
+    function formatDateproper(inputDate) {
+        const options = { month: "long", day: "numeric", year: "numeric" };
+        const formattedDate = new Date(inputDate).toLocaleDateString(
+            "en-US",
+            options
+        );
+        return formattedDate;
+    }
+    const handleSubmit = async (event) => {
+        const name = data.ename;
+        const dateObject = new Date();
+        const hours = dateObject.getHours().toString().padStart(2, "0");
+        const minutes = dateObject.getMinutes().toString().padStart(2, "0");
+        const cTime = `${hours}:${minutes}`;
+
+        const cDate = formatDateproper(dateObject);
+        event.preventDefault();
+        if (selectedOption === "notgeneral") {
+            try {
+                // Make API call using Axios
+                const response = await axios.post(
+                    `${secretKey}/requests/requestData`,
+
+                    {
+                        selectedYear,
+                        companyType,
+                        numberOfData,
+                        name,
+                        cTime,
+                        cDate,
+                    }
+                );
+
+                //console.log("Data sent successfully:", response.data);
+                Swal.fire("Success!", "Data Request Sent!", "success");
+                closepopup();
+            } catch (error) {
+                console.error("Error:", error.message);
+                Swal.fire("Error!", "Please try again later!", "error");
+            }
+        } else {
+            try {
+                // Make API call using Axios
+                const response = await axios.post(`${secretKey}/requests/requestgData`, {
+                    numberOfData,
+                    name,
+                    cTime,
+                    cDate,
+                });
+
+                //console.log("Data sent successfully:", response.data);
+                Swal.fire("Request sent!");
+                closepopup();
+            } catch (error) {
+                console.error("Error:", error.message);
+                Swal.fire("Please try again later!");
+            }
+        }
+    };
+
+    const [selectedOption, setSelectedOption] = useState("general");
+
+    const handleOptionChange = (event) => {
+        setSelectedOption(event.target.value);
+    };
+
+    const handleSubmitData = async (e) => {
+
+        e.preventDefault();
+        if (cname === "") {
+            Swal.fire("Please Enter Company Name");
+        }
+        else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
+            Swal.fire("Company Number is required");
+        } else if (cemail === "") {
+            Swal.fire("Company Email is required");
+        } else if (city === "") {
+            Swal.fire("City is required");
+        } else if (state === "") {
+            Swal.fire("State is required");
+        } else if (directorNumberFirst !== 0 && !/^\d{10}$/.test(directorNumberFirst)) {
+            Swal.fire("First Director Number should be 10 digits");
+        } else if (directorNumberSecond !== 0 && !/^\d{10}$/.test(directorNumberSecond)) {
+            Swal.fire("Second Director Number should be 10 digits");
+        } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
+            Swal.fire("Third Director Number should be 10 digits");
+        } else {
+            const dataToSend = {
+                "Company Name": cname.toUpperCase().trim(),
+                "Company Number": cnumber,
+                "Company Email": cemail,
+                "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+                City: city,
+                State: state,
+                ename: data.ename,
+                AssignDate: new Date(),
+                "Company Address": companyAddress,
+                "Director Name(First)": directorNameFirst,
+                "Director Number(First)": directorNumberFirst,
+                "Director Email(First)": directorEmailFirst,
+                "Director Name(Second)": directorNameSecond,
+                "Director Number(Second)": directorNumberSecond,
+                "Director Email(Second)": directorEmailSecond,
+                "Director Name(Third)": directorNameThird,
+                "Director Number(Third)": directorNumberThird,
+                "Director Email(Third)": directorEmailThird,
+                "UploadedBy": data.ename
+            }
+            await axios.post(`${secretKey}/requests/requestCompanyData`, dataToSend).then((response) => {
+                //console.log("response", response);
+
+                Swal.fire({
+                    title: "Lead Request Sent!",
+                    text: "Your Request has been sent to the Data Manager!",
+                    html: 'Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896',
+                    icon: "success",
+                });
+                fetchNewData();
+                closepopupNew();
+            })
+                .catch((error) => {
+                    console.error("Error sending data:", error);
+                    Swal.fire({
+                        title: "This lead already exists in the Start-Up Sahay's database.",
+                        text: "For further assistance, please contact the Data Analyst.",
+                        html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
+                    });
+                });
+            // axios
+            //   .post(`${secretKey}/manual`, {
+            //     "Company Name": cname.toUpperCase().trim(),
+            //     "Company Number": cnumber,
+            //     "Company Email": cemail,
+            //     "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+            //     City: city,
+            //     State: state,
+            //     ename: data.ename,
+            //     AssignDate: new Date(),
+            //     "Company Address": companyAddress,
+            //     "Director Name(First)": directorNameFirst,
+            //     "Director Number(First)": directorNumberFirst,
+            //     "Director Email(First)": directorEmailFirst,
+            //     "Director Name(Second)": directorNameSecond,
+            //     "Director Number(Second)": directorNumberSecond,
+            //     "Director Email(Second)": directorEmailSecond,
+            //     "Director Name(Third)": directorNameThird,
+            //     "Director Number(Third)": directorNumberThird,
+            //     "Director Email(Third)": directorEmailThird,
+            //     "UploadedBy": data.ename
+            //   })
+        }
+    };
+
+    const [openSecondDirector, setOpenSecondDirector] = useState(false);
+    const [openFirstDirector, setOpenFirstDirector] = useState(true);
+    const [openThirdDirector, setOpenThirdDirector] = useState(false);
+    const [firstPlus, setFirstPlus] = useState(true);
+    const [secondPlus, setSecondPlus] = useState(false);
+    const [openThirdMinus, setOpenThirdMinus] = useState(false);
+
+    const functionOpenSecondDirector = () => {
+        setOpenSecondDirector(true);
+        setFirstPlus(false);
+        setSecondPlus(true);
+    };
+    const functionOpenThirdDirector = () => {
+        setOpenSecondDirector(true);
+        setOpenThirdDirector(true);
+        setFirstPlus(false);
+        setSecondPlus(false);
+        setOpenThirdMinus(true);
+    };
+
+    const functionCloseSecondDirector = () => {
+        setOpenFirstDirector(false);
+        //setOpenThirdMinus(true);
+        setOpenThirdMinus(false);
+        setOpenSecondDirector(false);
+        setSecondPlus(false);
+        setFirstPlus(true);
+    };
+    const functionCloseThirdDirector = () => {
+        setOpenSecondDirector(true);
+        setOpenThirdDirector(false);
+        setFirstPlus(false);
+        setOpenThirdMinus(false);
+        setSecondPlus(true);
+    };
+
+    // Function for Parsing Excel File
+    const handleRequestDelete = async (companyId, companyName) => {
+        const confirmDelete = await Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to send a delete request. Are you sure you want to proceed?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, proceed!",
+            cancelButtonText: "No, cancel",
+        });
+
+        if (confirmDelete.isConfirmed) {
+            try {
+                const sendingData = {
+                    companyName,
+                    companyId,
+                    time: new Date().toLocaleTimeString(),
+                    date: new Date().toLocaleDateString(),
+                    ename: data.ename, // Replace 'Your Ename Value' with the actual value
+                };
+
+                const response = await fetch(`${secretKey}/requests/deleterequestbybde`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(sendingData),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                Swal.fire({ title: "Delete Request Sent", icon: "success" });
+                const responseData = await response.json();
+                //console.log(responseData.message); // Log the response message
+            } catch (error) {
+                Swal.fire({ title: "Failed to send Request", icon: "error" });
+                console.error("Error creating delete request:", error);
+                // Handle the error as per your application's requirements
+            }
+        } else {
+            console.log("No, cancel");
+        }
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+
+        if (
+            file &&
+            file.type ===
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: "array" });
+
+                // Assuming there's only one sheet in the XLSX file
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+
+                const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                const formattedJsonData = jsonData
+                    .slice(1) // Exclude the first row (header)
+                    .map((row) => ({
+                        "Sr. No": row[0],
+                        "Company Name": row[1],
+                        "Company Number": row[2],
+                        "Company Email": row[3],
+                        "Company Incorporation Date  ": formatDateFromExcel(row[4]), // Assuming the date is in column 'E' (0-based)
+                        City: row[5],
+                        State: row[6],
+                        Status: row[7],
+                        Remarks: row[8],
+                        "Company Address": row[9],
+                        "Director Name(First)": row[10],
+                        "Director Number(First)": row[11],
+                        "Director Email(First)": row[12],
+                        "Director Name(Second)": row[13],
+                        "Director Number(Second)": row[14],
+                        "Director Email(Second)": row[15],
+                        "Director Name(Third)": row[16],
+                        "Director Number(Third)": row[17],
+                        "Director Email(Third)": row[18],
+                    }));
+
+                setCsvData(formattedJsonData);
+            };
+
+            reader.readAsArrayBuffer(file);
+        } else if (file.type === "text/csv") {
+            // CSV file
+            const parsedCsvData = parseCsv(data);
+            setCsvData(parsedCsvData);
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong!",
+                footer: '<a href="#">Why do I have this issue?</a>',
+            });
+
+            console.error("Please upload a valid XLSX file.");
+        }
+    };
+
+    const parseCsv = (data) => {
+        // Use a CSV parsing library (e.g., Papaparse) to parse CSV data
+        // Example using Papaparse:
+        const parsedData = Papa.parse(data, { header: true });
+        return parsedData.data;
+    };
+    function formatDateFromExcel(serialNumber) {
+        // Excel uses a different date origin (January 1, 1900)
+        const excelDateOrigin = new Date(Date.UTC(1900, 0, 0));
+        const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+        // Adjust for Excel leap year bug (1900 is not a leap year)
+        const daysAdjustment = serialNumber > 59 ? 1 : 0;
+
+        // Calculate the date in milliseconds
+        const dateMilliseconds =
+            excelDateOrigin.getTime() +
+            (serialNumber - daysAdjustment) * millisecondsPerDay;
+
+        // Create a Date object using the calculated milliseconds
+        const formattedDate = new Date(dateMilliseconds);
+
+        // Format the date as needed (you can use a library like 'date-fns' or 'moment' for more options)
+        // const formattedDateString = formattedDate.toISOString().split('T')[0];
+
+        return formattedDate;
+    }
+    // csvdata.map((item)=>{
+    //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
+    // })
+
+
+    
     const fetchApproveRequests = async () => {
         try {
             const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
@@ -871,7 +1488,7 @@ function EmployeePanelCopy() {
             console.error("Error fetching data:", error.message);
         }
     };
-
+    
     const fetchRedesignedFormDataAll = async () => {
         try {
             //console.log(maturedID);
@@ -886,7 +1503,7 @@ function EmployeePanelCopy() {
             console.error("Error fetching data:", error.message);
         }
     };
-
+   
     const formatDateAndTime = (AssignDate) => {
         // Convert AssignDate to a Date object
         const date = new Date(AssignDate);
@@ -1057,12 +1674,30 @@ function EmployeePanelCopy() {
         }
     };
 
+
+
+
+    // -----------------------------------------------------delete-projection-data------------------------------
+
+
+    const formatDatePro = (dateString) => {
+        const [day, month, year] = dateString.split("/");
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    };
+
+    // ---------------------------------------------- For Editable Lead-form -----------------------------------------------------------
+
+    // const handleOpenEditForm = () => {
+    //     setOpenBooking(false);
+    //     setEditMoreOpen(true);
+    // };
+
     // --------------------------------------forward to bdm function---------------------------------------------\
 
     const [forwardedCompany, setForwardedCompany] = useState("");
     const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("");
     const [forwardCompanyId, setforwardCompanyId] = useState("");
-    const [cid, setcid] = useState("");
+
 
     function ValueLabelComponent(props) {
         const { children, value } = props;
@@ -1085,6 +1720,7 @@ function EmployeePanelCopy() {
 
     const [bdeOldStatus, setBdeOldStatus] = useState("");
     const [openBdmNamePopup, setOpenBdmNamePopoup] = useState(false);
+    const [selectedBDM, setSelectedBDM] = useState("");
 
     const handleConfirmAssign = (
         companyId,
@@ -1111,6 +1747,58 @@ function EmployeePanelCopy() {
         } else {
             Swal.fire("Your are not assigned to any bdm!");
         }
+    };
+
+    const handleForwardBdm = async () => {
+        // Check if selectedBDM is not empty
+        if (!selectedBDM) {
+            // If selectedBDM is empty, show an error message
+            Swal.fire("Error", "Please select at least one BDM", "error");
+            return; // Exit the function early
+        }
+
+        const selectedDataWithBdm = currentData.filter(
+            (company) => company["Company Name"] === forwardedCompany
+        );
+        //console.log("selecteddatawithbdm", selectedDataWithBdm);
+
+        try {
+            const response = await axios.post(`${secretKey}/bdm-data/forwardtobdmdata`, {
+                selectedData: selectedDataWithBdm,
+                bdmName: selectedBDM,
+                companyId: forwardCompanyId,
+                bdmAcceptStatus: bdmNewAcceptStatus,
+                bdeForwardDate: new Date(),
+                bdeOldStatus: bdeOldStatus,
+                companyName: forwardedCompany,
+                // Assuming bdmName is defined elsewhere in your component
+            });
+            const response2 = await axios.post(`${secretKey}/projection/post-followup-forwardeddata/${forwardedCompany}`, {
+                caseType: "Forwarded",
+                bdmName: selectedBDM
+            })
+            Swal.fire("Company Forwarded", "", "success");
+            //console.log("bdeoldstatus", bdeOldStatus);
+            fetchNewData(bdeOldStatus);
+            closeBdmNamePopup();
+        } catch (error) {
+            console.log(error);
+            Swal.fire("Error Assigning Data");
+        }
+    };
+
+
+
+
+    //.log("selectedbdm", selectedBDM)
+
+    // const handleConfirmAssign = ()=>{
+    //   setOpenBdmNamePopoup(true);
+    // }
+
+    const closeBdmNamePopup = () => {
+        setOpenBdmNamePopoup(false);
+        setSelectedBDM("");
     };
 
     const handleReverseAssign = async (
@@ -1145,6 +1833,109 @@ function EmployeePanelCopy() {
             Swal.fire("BDM already accepted this data!");
         }
     };
+
+    // -------------------------------------------------add leads form validation and debounce correction----------------------------------
+
+    const debouncedSetCname = debounce((value) => {
+        setCname(value);
+    }, 10);
+
+    const debouncedSetEmail = debounce((value) => {
+        setCemail(value);
+    }, 10);
+
+    const debouncedSetAddress = debounce((value) => {
+        setCompanyAddress(value);
+    }, 10);
+
+    const debouncedSetIncoDate = debounce((value) => {
+        setCidate(value);
+    }, 10);
+
+    const [errorCNumber, setErrorCNumber] = useState('');
+
+    const debouncedSetCompanyNumber = debounce((value) => {
+        if (/^\d{10}$/.test(value)) {
+            setCnumber(value);
+            setErrorCNumber('');
+        } else {
+            setErrorCNumber('Please enter a 10-digit number');
+            setCnumber()
+        }
+
+    }, 10);
+
+    const debouncedSetCity = debounce((value) => {
+        setCity(value);
+    }, 10);
+
+    const debouncedSetState = debounce((value) => {
+        setState(value);
+    }, 10);
+
+    const debounceSetFirstDirectorName = debounce((value) => {
+        setDirectorNameFirst(value);
+    }, 10);
+
+    const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
+    const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
+    const [errorDirectorNumberThird, setErrorDirectorNumberThird] = useState("")
+
+    const debounceSetFirstDirectorNumber = debounce((value) => {
+        if (/^\d{10}$/.test(value)) {
+            setDirectorNumberFirst(value)
+            setErrorDirectorNumberFirst("")
+        } else {
+            setErrorDirectorNumberFirst('Please Enter 10 digit Number')
+            setDirectorNumberFirst()
+        }
+    }, 10);
+
+    const debounceSetFirstDirectorEmail = debounce((value) => {
+        setDirectorEmailFirst(value);
+    }, 10);
+
+    const debounceSetSecondDirectorName = debounce((value) => {
+        setDirectorNameSecond(value);
+    }, 10);
+
+    const debounceSetSecondDirectorNumber = debounce((value) => {
+        if (/^\d{10}$/.test(value)) {
+            setDirectorNumberSecond(value)
+            setErrorDirectorNumberSecond("")
+        } else {
+            setErrorDirectorNumberSecond('Please Enter 10 digit Number')
+            setDirectorNumberSecond()
+        }
+    }, 10);
+
+    const debounceSetSecondDirectorEmail = debounce((value) => {
+        setDirectorEmailSecond(value);
+    }, 10);
+
+    const debounceSetThirdDirectorName = debounce((value) => {
+        setDirectorNameThird(value);
+    }, 10);
+
+    const debounceSetThirdDirectorNumber = debounce((value) => {
+        if (/^\d{10}$/.test(value)) {
+            setDirectorNumberThird(value)
+            setErrorDirectorNumberThird("")
+        } else {
+            setErrorDirectorNumberThird('Please Enter 10 digit Number')
+            setDirectorNumberThird()
+        }
+    }, 10);
+
+    const debounceSetThirdDirectorEmail = debounce((value) => {
+        setDirectorEmailThird(value);
+    }, 10);
+
+
+
+
+
+
     // ------------------------------------- Request BDM functions --------------------------------
     const handleAcceptRequest = async () => {
         try {
@@ -1168,6 +1959,7 @@ function EmployeePanelCopy() {
         }
     };
 
+
     const handleDoneInform = async () => {
         try {
             const id = BDMrequests._id;
@@ -1187,6 +1979,7 @@ function EmployeePanelCopy() {
             // Handle the error or display a message to the user
         }
     };
+
 
     // ------------------------------- Next Follow Up Date -------------------------------------------------------------------
 
@@ -1292,6 +2085,14 @@ function EmployeePanelCopy() {
     const [companyIncoDate, setCompanyIncoDate] = useState(null);
     const [monthIndex, setMonthIndex] = useState(0)
 
+    /*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Closes the filter drawer
+     * @function
+     * @returns {undefined}
+     */
+    /******  f4793f48-67cd-4453-ae84-2b11f4d49cb5  *******/
+
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
@@ -1385,6 +2186,12 @@ function EmployeePanelCopy() {
         fetchNewData()
         //fetchData(1, latestSortCount)
     }
+
+    // Shows today's projection pop-up :
+    const [shouldShowCollection, setShouldShowCollection] = useState(false);
+    const [currentDate, setCurrentDate] = useState(getCurrentDate());
+
+
     // Function to get current date in YYYY-MM-DD format
     function getCurrentDate() {
         const now = new Date();
@@ -1393,6 +2200,73 @@ function EmployeePanelCopy() {
         const day = now.getDate().toString().padStart(2, "0");
         return `${year}-${month}-${day}`;
     }
+
+    // Shows today's projection pop-up when button is clicked :
+    const [noOfCompany, setNoOfCompany] = useState("");
+    const [noOfServiceOffered, setNoOfServiceOffered] = useState("");
+    const [offeredPrice, setOffferedPrice] = useState("");
+    const [expectedCollection, setExpectedCollection] = useState("");
+    const [openTodaysColection, setOpenTodaysCollection] = useState(false);
+
+    const [errors, setErrors] = useState({
+        noOfCompany: "",
+        noOfServiceOffered: "",
+        offeredPrice: "",
+        expectedCollection: ""
+    });
+
+    const closePopup = () => {
+        setOpenTodaysCollection(false);
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'backdropClick') {
+            return;
+        }
+        closePopup();
+    };
+
+    const date = new Date();
+    const todayDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    const currentTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+
+    const handleSubmitTodaysCollection = async () => {
+        let formErrors = {
+            noOfCompany: noOfCompany === "" ? "No. of Company is required" : "",
+            noOfServiceOffered: noOfServiceOffered === "" ? "No. of Service Offered is required" : "",
+            offeredPrice: offeredPrice === "" ? "Total Offered Price is required" : "",
+            expectedCollection: expectedCollection === "" ? "Total Collection Expected is required" : ""
+        };
+        setErrors(formErrors);
+        if (Object.values(formErrors).some(error => error !== "")) {
+            return;
+        }
+
+        const payload = {
+            empId: userId,
+            noOfCompany: noOfCompany,
+            noOfServiceOffered: noOfServiceOffered,
+            totalOfferedPrice: offeredPrice,
+            totalCollectionExpected: expectedCollection,
+            date: todayDate,
+            time: currentTime
+        };
+
+
+        try {
+            const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
+
+            Swal.fire("Success!", "Data Successfully Added!", "success");
+            setNoOfCompany("");
+            setNoOfServiceOffered("");
+            setOffferedPrice("");
+            setExpectedCollection("");
+            closePopup();
+        } catch (error) {
+            console.log("Error to send today's collection", error);
+            Swal.fire("Error!", "Error to send today's collection!", "error");
+        }
+    };
 
     // Auto logout functionality :
     useEffect(() => {
@@ -1439,22 +2313,82 @@ function EmployeePanelCopy() {
         // localStorage.removeItem("loginDate");
         window.location.replace("/"); // Redirect to login page
     };
-    const fetchRemarksHistory = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
-            setRemarksHistory(response.data.reverse());
-            setFilteredRemarks(
-                response.data.filter((obj) => obj.companyID === cid).reverse()
-            );
 
-            //console.log(response.data);
-        } catch (error) {
-            console.error("Error fetching remarks history:", error);
+
+    // Payment Approval Request :
+    const [openPaymentApproval, setOpenPaymentApproval] = useState(false);
+    const [requestedCompanyName, setRequestedCompanyName] = useState("");
+    const [serviceType, setServiceType] = useState([]);
+    const [minimumPrice, setMinimumPrice] = useState(0);
+    const [requestedPrice, setRequestedPrice] = useState(0);
+    const [requesteType, setRequesteType] = useState("");
+    const [reason, setReason] = useState("");
+    const [remarks, setRemarks] = useState("");
+    const [file, setFile] = useState("");
+    const [paymentApprovalErrors, setPaymentApprovalErrors] = useState({});
+
+    const handleClosePaymentApproval = () => {
+        setOpenPaymentApproval(false);
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!requestedCompanyName) newErrors.requestedCompanyName = "Company Name is required.";
+        if (serviceType.length === 0) newErrors.serviceType = "At least one Service Type is required.";
+        if (!minimumPrice) newErrors.minimumPrice = "Minimum Price is required.";
+        if (!requestedPrice) newErrors.requestedPrice = "Requested Price is required.";
+        if (!requesteType) newErrors.requesteType = "Requested Type is required.";
+
+        setPaymentApprovalErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handlePaymentApprovalSubmit = async () => {
+        // console.log(data.ename, data.designation, data.branchOffice, requestedCompanyName, minimumPrice, requestedPrice, requesteType, reason, remarks);
+
+        if (validateForm()) {
+            try {
+                // Create FormData instance
+                const formData = new FormData();
+                formData.append('ename', data.ename);
+                formData.append('designation', data.designation);
+                formData.append('branchOffice', data.branchOffice);
+                formData.append('companyName', requestedCompanyName);
+                formData.append('serviceType', serviceType);
+                formData.append('minimumPrice', minimumPrice);
+                formData.append('clientRequestedPrice', requestedPrice);
+                formData.append('requestType', requesteType);
+                formData.append('reason', reason);
+                formData.append('remarks', remarks);
+                formData.append('requestDate', new Date());
+                formData.append('assigned', "Pending");
+                if (file) {
+                    formData.append('attachment', file);  // Append the file to FormData
+                }
+
+                const response = await axios.post(`${secretKey}/requests/paymentApprovalRequestByBde`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                Swal.fire("Request Sent");
+
+                handleClosePaymentApproval();
+                fetchNewData();
+            } catch (error) {
+                console.log("Error Posting Payment Approval Request", error);
+            }
         }
     };
 
     return (
         <div>
+            {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
+            {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+      <EmpNav userId={userId} bdmWork={data.bdmWork} /> */}
+            {/* Dialog box for Request Data */}
 
             {!formOpen && !addFormOpen && (
                 <>
@@ -1528,17 +2462,11 @@ function EmployeePanelCopy() {
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
                                         <div className="btn-group mr-2">
-                                            {/* <button type="button" className="btn mybtn"
+                                            <button type="button" className="btn mybtn"
                                                 onClick={functionopenpopupNew}
                                             >
                                                 <TiUserAddOutline className='mr-1' /> Add Leads
-                                            </button> */}
-                                            <EmployeeAddLeadDialog
-                                                secretKey={secretKey}
-                                                fetchData={fetchData}
-                                                ename={data.ename}
-                                                fetchNewData={fetchNewData}
-                                            />
+                                            </button>
                                         </div>
                                         <div className="btn-group" role="group" aria-label="Basic example">
                                             <button type="button"
@@ -1547,16 +2475,18 @@ function EmployeePanelCopy() {
                                             >
                                                 <IoFilterOutline className='mr-1' /> Filter
                                             </button>
+                                            {/* <CsvImportDialog secretKey={secretKey} data={data} /> */}
                                             {/* <button type="button" className="btn mybtn"
+                                                onClick={functionopenpopupCSV}
+
+                                            >
+                                                <TbFileImport className='mr-1' /> Import Leads
+                                            </button> */}
+                                            <button type="button" className="btn mybtn"
                                                 onClick={functionopenpopup}
                                             >
                                                 <MdOutlinePostAdd className='mr-1' /> Request Data
-                                            </button> */}
-                                            <EmployeeRequestDataDialog
-                                                secretKey={secretKey}
-                                                ename={data.ename}
-                                            />
-
+                                            </button>
                                         </div>
                                     </div>
                                     <div className="d-flex align-items-center">
@@ -1978,6 +2908,7 @@ function EmployeePanelCopy() {
                                                             >
                                                                 <td className="td-sticky">{startIndex + index + 1}</td>
                                                                 <td className="td-sticky1">{company["Company Name"]}</td>
+
                                                                 <td>
                                                                     <div className="d-flex align-items-center justify-content-between wApp">
                                                                         <div>{company["Company Number"]}</div>
@@ -1989,6 +2920,7 @@ function EmployeePanelCopy() {
                                                                         </a>
                                                                     </div>
                                                                 </td>
+
                                                                 <td>
                                                                     <LuHistory onClick={() => {
                                                                         setShowCallHistory(true);
@@ -2002,6 +2934,7 @@ function EmployeePanelCopy() {
                                                                         color="grey"
                                                                     />
                                                                 </td>
+
                                                                 <td>
                                                                     {company["Status"] === "Matured" ? (
                                                                         <span>{company["Status"]}</span>
@@ -2073,7 +3006,16 @@ function EmployeePanelCopy() {
                                                                                                 </option>
                                                                                             </>
                                                                                         )}
-
+                                                                                        {/* {dataStatus === "FollowUp" && (
+                                              <>
+                                                <option value="FollowUp">
+                                                  Follow Up
+                                                </option>
+                                                <option value="Matured">
+                                                  Matured
+                                                </option>
+                                              </>
+                                            )} */}
                                                                                     </select>
                                                                                 )}
                                                                             {(company.bdmAcceptStatus !==
@@ -2148,21 +3090,73 @@ function EmployeePanelCopy() {
                                                                                 ? "No Remarks"
                                                                                 : company.Remarks}
                                                                         </p>
-                                                                        <RemarksDialog
-                                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                            currentCompanyName={company["Company Name"]}
-                                                                            remarksHistory={remarksHistory} // pass your remarks history data
-                                                                            companyId={company._id}
-                                                                            remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                                            isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                                            bdmAcceptStatus={company.bdmAcceptStatus}
-                                                                            companyStatus={company.Status}
-                                                                            secretKey={secretKey}
-                                                                            fetchRemarksHistory={fetchRemarksHistory}
-                                                                            bdeName={company.ename}
-                                                                            fetchNewData={fetchNewData}
-                                                                            mainRemarks={company.Remarks}
-                                                                        />
+
+                                                                        {(company.bdmAcceptStatus !== "Accept" ||
+                                                                            (company.Status === "Matured" ||
+                                                                                company.Status === "Not Interested" ||
+                                                                                company.Status === "Busy" ||
+
+                                                                                company.Status === "Not Picked Up" ||
+                                                                                company.Status === "Junk")) && (
+                                                                                <button
+                                                                                    style={{ border: "transparent", background: "none" }}
+                                                                                    onClick={() => {
+                                                                                        functionopenpopupremarks(
+                                                                                            company._id,
+                                                                                            company.Status,
+                                                                                            company["Company Name"],
+                                                                                            company.ename
+                                                                                        );
+                                                                                        //setOpenPopupByBdm(false);
+                                                                                        setCurrentRemarks(company.Remarks);
+                                                                                        setCompanyId(company._id);
+                                                                                    }}
+                                                                                >
+                                                                                    <EditIcon
+                                                                                        onClick={() => {
+                                                                                            functionopenpopupremarks(
+                                                                                                company._id,
+                                                                                                company.Status,
+                                                                                                company["Company Name"]
+                                                                                            );
+                                                                                            //setOpenPopupByBdm(false);
+                                                                                            setCurrentRemarks(company.Remarks);
+                                                                                            setCompanyId(company._id);
+                                                                                        }}
+                                                                                        style={{
+                                                                                            width: "12px",
+                                                                                            height: "12px",
+                                                                                            color: "rgb(139, 139, 139)"
+                                                                                        }}
+
+                                                                                    />
+                                                                                </button>
+                                                                            )}
+                                                                        {company.bdmAcceptStatus === "Accept" && (company.Status !== "Matured" && company.Status !== "Not Interested" && company.Status !== "Busy" && company.Status !== "Busy" && company.Status !== "Not Picked Up" && company.Status !== "Junk") && (
+                                                                            <button
+                                                                                style={{ border: "transparent", background: "none" }}
+                                                                                onClick={() => {
+                                                                                    functionopenpopupremarksEdit(
+                                                                                        company._id,
+                                                                                        company.Status,
+                                                                                        company["Company Name"],
+                                                                                        company.ename
+                                                                                    );
+                                                                                    //setOpenPopupByBdm(false);
+                                                                                    //setCurrentRemarks(company.Remarks);
+                                                                                    setCompanyId(company._id);
+                                                                                }}
+                                                                            >
+                                                                                <IconEye
+                                                                                    style={{
+                                                                                        width: "14px",
+                                                                                        height: "14px",
+                                                                                        color: "#d6a10c",
+                                                                                        cursor: "pointer",
+                                                                                    }}
+                                                                                />
+                                                                            </button>
+                                                                        )}
                                                                     </div>
                                                                 </td>
                                                                 {dataStatus === "Forwarded" && (
@@ -2173,7 +3167,14 @@ function EmployeePanelCopy() {
                                                                         {company.Status === "FollowUp" && (
                                                                             <span>FollowUp</span>
                                                                         )}
-
+                                                                        {/* {company.Status === "Matured" && (
+                                      <span>Matured</span>
+                                    )}
+                                    {(company.Status === "Not Interested" ||
+                                      company.Status === "Junk" ||
+                                      company.Status === "Busy") && (
+                                      <span></span>
+                                    )} */}
                                                                     </td>
                                                                 )}
                                                                 {dataStatus === "FollowUp" && <td>
@@ -2189,42 +3190,48 @@ function EmployeePanelCopy() {
                                                                         }}
                                                                     //className="hide-placeholder"
                                                                     /></td>}
-                                                                {dataStatus === "Forwarded" &&
-                                                                    <td>
-                                                                        <div key={company._id}
-                                                                            style={{
-                                                                                display: "flex",
-                                                                                alignItems: "center",
-                                                                                justifyContent: "space-between",
-                                                                                width: "100px",
-                                                                            }}>
-                                                                            <p
-                                                                                className="rematkText text-wrap m-0"
-                                                                                title={company.remarks}
-                                                                            >
-                                                                                {!company.bdmRemarks
-                                                                                    ? "No Remarks"
-                                                                                    : company.bdmRemarks}
-                                                                            </p>
-                                                                            <RemarksDialog
-                                                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                                currentCompanyName={company["Company Name"]}
-                                                                                filteredRemarks={filteredRemarks}
-                                                                                companyId={company._id}
-                                                                                remarksKey="bdmRemarks" // For BDM remarks
-                                                                                isEditable={false} // Disable editing
-                                                                                secretKey={secretKey}
-                                                                                fetchRemarksHistory={fetchRemarksHistory}
-                                                                                bdeName={company.ename}
-                                                                                fetchNewData={fetchNewData}
-                                                                                bdmName={company.bdmName}
-                                                                                bdmAcceptStatus={company.bdmAcceptStatus}
-                                                                                companyStatus={company.Status}
-                                                                                remarksHistory={remarksHistory} // pass your remarks history data
+                                                                {dataStatus === "Forwarded" && <td>
+                                                                    <div key={company._id}
+                                                                        style={{
+                                                                            display: "flex",
+                                                                            alignItems: "center",
+                                                                            justifyContent: "space-between",
+                                                                            width: "100px",
+                                                                        }}>
+                                                                        <p
+                                                                            className="rematkText text-wrap m-0"
+                                                                            title={company.remarks}
+                                                                        >
+                                                                            {!company.bdmRemarks
+                                                                                ? "No Remarks"
+                                                                                : company.bdmRemarks}
+                                                                        </p>
+                                                                        <button
+                                                                            style={{ border: "transparent", background: "none" }}
+                                                                            onClick={() => {
+                                                                                functionopenpopupremarksBdm(
+                                                                                    company._id,
+                                                                                    company.Status,
+                                                                                    company["Company Name"],
+                                                                                    company.bdmName
+                                                                                );
+                                                                                //setOpenPopupByBdm(true);
+                                                                                //setCurrentRemarks(company.Remarks);
+                                                                                setCompanyId(company._id);
+                                                                            }}
+                                                                        >
+                                                                            <IconEye
+                                                                                style={{
+                                                                                    width: "14px",
+                                                                                    height: "14px",
+                                                                                    color: "#d6a10c",
+                                                                                    cursor: "pointer",
+                                                                                }}
                                                                             />
-                                                                        </div>
-                                                                    </td>
-                                                                }
+                                                                        </button>
+                                                                    </div>
+                                                                </td>}
+
                                                                 <td>
                                                                     {formatDateNew(
                                                                         company["Company Incorporation Date  "]
@@ -2474,7 +3481,7 @@ function EmployeePanelCopy() {
                     />
                 </>
             )}
-
+           
             {addFormOpen && (
                 <>
                     {" "}
@@ -2490,6 +3497,697 @@ function EmployeePanelCopy() {
                     />
                 </>
             )}
+
+            
+
+            {/* Request Data popup */}
+            <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
+                <DialogTitle>
+                    Request Data{" "}
+                    <button onClick={closepopup} style={{ float: "right" }}>
+                        <CloseIcon color="primary"></CloseIcon>
+                    </button>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div className="container">
+                        <div className="con2 row mb-3">
+                            <div
+                                style={
+                                    selectedOption === "general"
+                                        ? {
+                                            backgroundColor: "#ffb900",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                            color: "white",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                onClick={() => {
+                                    setSelectedOption("general");
+                                }}
+                                className="direct form-control col"
+                            >
+                                <input
+                                    type="radio"
+                                    id="general"
+                                    value="general"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "general"}
+                                    onChange={handleOptionChange}
+                                />
+                                <label htmlFor="general">General Data </label>
+                            </div>
+                        </div>
+                        {selectedOption === "notgeneral" ? (
+                            <>
+                                <div className="mb-3 row">
+                                    <label className="col-sm-3 form-label" htmlFor="selectYear">
+                                        Select Year :
+                                    </label>
+                                    <select
+                                        id="selectYear"
+                                        name="selectYear"
+                                        value={selectedYear}
+                                        //onChange={handleYearChange}
+                                        className="col form-select"
+                                    >
+                                        {[...Array(2025 - 1970).keys()].map((year) => (
+                                            <option key={year} value={1970 + year}>
+                                                {1970 + year}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="mb-3 row">
+                                    <label className="form-label col-sm-3">Company Type :</label>
+                                    <input
+                                        type="radio"
+                                        id="llp"
+                                        name="companyType"
+                                        value="LLP"
+                                        checked={companyType === "LLP"}
+                                        onChange={handleCompanyTypeChange}
+                                        className="form-check-input"
+                                    />
+                                    <label htmlFor="llp" className="col">
+                                        LLP
+                                    </label>
+                                    <input
+                                        type="radio"
+                                        id="pvtLtd"
+                                        name="companyType"
+                                        value="PVT LTD"
+                                        checked={companyType === "PVT LTD"}
+                                        onChange={handleCompanyTypeChange}
+                                        className="form-check-input"
+                                    />
+                                    <label className="col" htmlFor="pvtLtd">
+                                        PVT LTD
+                                    </label>
+                                </div>
+                            </>
+                        ) : (
+                            <div></div>
+                        )}
+
+                        <div className="mb-3 row">
+                            <label className="col-sm-3 form-label" htmlFor="numberOfData">
+                                Number of Data :
+                            </label>
+                            <input
+                                type="number"
+                                id="numberOfData"
+                                name="numberOfData"
+                                className="form-control col"
+                                value={numberOfData}
+                                onChange={handleNumberOfDataChange}
+                                min="1"
+                                required
+                            />
+                        </div>
+                    </div>
+                </DialogContent>
+                <div class="card-footer">
+                    <button
+                        style={{ width: "100%" }}
+                        onClick={handleSubmit}
+                        className="btn btn-primary bdr-radius-none"
+                    >
+                        Submit
+                    </button>
+                </div>
+            </Dialog>
+            {/* Remarks edit icon pop up*/}
+            <Dialog className='My_Mat_Dialog'
+                open={openRemarks}
+                onClose={closepopupRemarks}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    <span style={{ fontSize: "14px" }}>
+                        {currentCompanyName}'s Remarks
+                    </span>
+                    <button onClick={closepopupRemarks} style={{ float: "right" }}>
+                        <CloseIcon color="primary"></CloseIcon>
+                    </button>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div className="remarks-content">
+                        {filteredRemarks.length !== 0 ? (
+                            filteredRemarks.slice().map((historyItem) => (
+                                <div className="col-sm-12" key={historyItem._id}>
+                                    <div className="card RemarkCard position-relative">
+                                        <div className="d-flex justify-content-between">
+                                            <div className="reamrk-card-innerText">
+                                                <pre className="remark-text">{historyItem.remarks}</pre>
+                                                {historyItem.bdmName !== undefined && (
+                                                    <pre className="remark-text">By BDM</pre>
+                                                )}
+                                            </div>
+                                            <div className="dlticon">
+                                                <DeleteIcon
+                                                    style={{
+                                                        cursor: "pointer",
+                                                        color: "#f70000",
+                                                        width: "14px",
+                                                    }}
+                                                    onClick={() => {
+                                                        handleDeleteRemarks(
+                                                            historyItem._id,
+                                                            historyItem.remarks
+                                                        );
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex card-dateTime justify-content-between">
+                                            <div className="date">{historyItem.date}</div>
+                                            <div className="time">{historyItem.time}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center overflow-hidden">
+                                No Remarks History
+                            </div>
+                        )}
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="mb-3 remarks-input">
+                            <textarea
+                                placeholder="Add Remarks Here...  "
+                                className="form-control"
+                                id="remarks-input"
+                                rows="3"
+                                onChange={(e) => {
+                                    debouncedSetChangeRemarks(e.target.value);
+                                }}
+                            ></textarea>
+                        </div>
+
+                    </div>
+                </DialogContent>
+                <button
+                    onClick={handleUpdate}
+                    type="submit"
+                    className="btn btn-primary bdr-radius-none"
+                    style={{ width: "100%" }}
+                >
+                    Submit
+                </button>
+            </Dialog>
+
+            {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
+
+            <Dialog className='My_Mat_Dialog'
+                open={opeRemarksEdit}
+                onClose={closePopUpRemarksEdit}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    <span style={{ fontSize: "14px" }}>
+                        {currentCompanyName}'s Remarks
+                    </span>
+                    <button
+                        onClick={closePopUpRemarksEdit}
+                        style={{ float: "right" }}
+                    >
+                        <CloseIcon color="primary"></CloseIcon>
+                    </button>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div className="remarks-content">
+                        {filteredRemarksBde.length !== 0 ? (
+                            filteredRemarksBde.slice().map((historyItem) => (
+                                <div className="col-sm-12" key={historyItem._id}>
+                                    <div className="card RemarkCard position-relative">
+                                        <div className="d-flex justify-content-between">
+                                            <div className="reamrk-card-innerText">
+                                                <pre className="remark-text">{historyItem.remarks}</pre>
+                                                {/* {historyItem.bdmName !== undefined && (
+                          <pre className="remark-text">By BDM</pre>
+                        )} */}
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex card-dateTime justify-content-between">
+                                            <div className="date">{historyItem.date}</div>
+                                            <div className="time">{historyItem.time}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center overflow-hidden">
+                                No Remarks History
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* ----------------------------------------dialog to view bdm remarks--------------------------------------------- */}
+            <Dialog className='My_Mat_Dialog'
+                open={openRemarksBdm}
+                onClose={closePopUpRemarksBdm}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    <span style={{ fontSize: "14px" }}>
+                        {currentCompanyName}'s Remarks
+                    </span>
+                    <button
+                        onClick={closePopUpRemarksBdm}
+                        style={{ float: "right" }}
+                    >
+                        <CloseIcon color="primary"></CloseIcon>
+                    </button>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div className="remarks-content">
+
+                        {filteredRemarksBdm.length !== 0 ? (
+                            filteredRemarksBdm.slice().map((historyItem) => (
+                                <div className="col-sm-12" key={historyItem._id}>
+
+                                    <div className="card RemarkCard position-relative">
+                                        <div className="d-flex justify-content-between">
+                                            <div className="reamrk-card-innerText">
+                                                <pre className="remark-text">{historyItem.bdmRemarks}</pre>
+                                                {/* {historyItem.bdmName !== undefined && (
+                          <pre className="remark-text">By BDM</pre>
+                        )} */}
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex card-dateTime justify-content-between">
+                                            <div className="date">{historyItem.date}</div>
+                                            <div className="time">{historyItem.time}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center overflow-hidden">
+                                No Remarks History
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* --------------------------dialog to import leads-------------------------------------------- */}
+            <Dialog className='My_Mat_Dialog' open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
+                <DialogTitle>
+                    Company Info{" "}
+                    <button onClick={closepopupNew} style={{ float: "right" }}>
+                        <CloseIcon color="primary"></CloseIcon>
+                    </button>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <div className="row">
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Your Company Name"
+                                                onChange={(e) => {
+                                                    debouncedSetCname(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="number"
+                                                placeholder="Enter Company's Phone No."
+                                                onChange={(e) => {
+                                                    debouncedSetCompanyNumber(e.target.value);
+                                                }}
+                                                className="form-control"
+                                            />
+                                            {errorCNumber && <p style={{ color: 'red' }}>{errorCNumber}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="example@gmail.com"
+                                                onChange={(e) => {
+                                                    debouncedSetEmail(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">
+                                                Company Incorporation Date
+                                            </label>
+                                            <input
+                                                onChange={(e) => {
+                                                    debouncedSetIncoDate(e.target.value);
+                                                }}
+                                                type="date"
+                                                className="form-control"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                onChange={(e) => {
+                                                    debouncedSetCity(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Enter Your City"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                onChange={(e) => {
+                                                    debouncedSetState(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Enter Your State"
+                                            //disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-12">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Address</label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Enter Your Address"
+                                                onChange={(e) => {
+                                                    debouncedSetAddress(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">
+                                                Director's Name(First)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Your Company Name"
+                                                onChange={(e) => {
+                                                    debounceSetFirstDirectorName(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">
+                                                Director's Number(First)
+                                            </label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="example@gmail.com"
+                                                onChange={(e) => {
+                                                    debounceSetFirstDirectorNumber(e.target.value);
+                                                }}
+                                            />
+                                            {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">
+                                                Director's Email(First)
+                                            </label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="example@gmail.com"
+                                                onChange={(e) => {
+                                                    debounceSetFirstDirectorEmail(e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                {firstPlus && (
+                                    <div className="d-flex align-items-center justify-content-end gap-2">
+                                        <button
+                                            onClick={() => {
+                                                functionOpenSecondDirector();
+                                            }}
+                                            className="btn btn-primary d-none d-sm-inline-block"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="icon"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="2"
+                                                stroke="currentColor"
+                                                fill="none"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            >
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path d="M12 5l0 14" />
+                                                <path d="M5 12l14 0" />
+                                            </svg>
+                                        </button>
+
+                                    </div>
+                                )}
+
+                                {openSecondDirector && (
+                                    <div className="row">
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">
+                                                    Director's Name(Second)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="Your Company Name"
+                                                    onChange={(e) => {
+                                                        debounceSetSecondDirectorName(e.target.value);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">
+                                                    Director's Number(Second)
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="example@gmail.com"
+                                                    onChange={(e) => {
+                                                        debounceSetSecondDirectorNumber(e.target.value);
+                                                    }}
+                                                />
+                                                {errorDirectorNumberSecond && <p style={{ color: 'red' }}>{errorDirectorNumberSecond}</p>}
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">
+                                                    Director's Email(Second)
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="example@gmail.com"
+                                                    onChange={(e) => {
+                                                        debounceSetSecondDirectorEmail(e.target.value);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {secondPlus && (
+                                    <div className="d-flex align-items-center justify-content-end gap-2">
+                                        <button
+                                            onClick={() => {
+                                                functionOpenThirdDirector();
+                                            }}
+                                            className="btn btn-primary d-none d-sm-inline-block"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="icon"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="2"
+                                                stroke="currentColor"
+                                                fill="none"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            >
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path d="M12 5l0 14" />
+                                                <path d="M5 12l14 0" />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            className="btn btn-primary d-none d-sm-inline-block"
+                                            onClick={() => {
+                                                functionCloseSecondDirector();
+                                            }}
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="icon"
+                                                width="24"
+                                                height="24"
+                                                fill="white"
+                                                viewBox="0 0 448 512"
+                                            >
+                                                <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                )}
+
+                                {openThirdDirector && (
+                                    <div className="row">
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">
+                                                    Director's Name(Third)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="Your Company Name"
+                                                    onChange={(e) => {
+                                                        debounceSetThirdDirectorName(e.target.value);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">
+                                                    Director's Number(Third)
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="example@gmail.com"
+                                                    onChange={(e) => {
+                                                        debounceSetThirdDirectorNumber(e.target.value);
+                                                    }}
+                                                />
+                                                {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">
+                                                    Director's Email(Third)
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    className="form-control"
+                                                    name="example-text-input"
+                                                    placeholder="example@gmail.com"
+                                                    onChange={(e) => {
+                                                        debounceSetThirdDirectorEmail(e.target.value);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {openThirdMinus && (
+                                    <button
+                                        className="btn btn-primary d-none d-sm-inline-block"
+                                        style={{ float: "right" }}
+                                        onClick={() => {
+                                            functionCloseThirdDirector();
+                                        }}
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="icon"
+                                            width="24"
+                                            height="24"
+                                            fill="white"
+                                            viewBox="0 0 448 512"
+                                        >
+                                            <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+                <button className="btn btn-primary bdr-radius-none" onClick={handleSubmitData}>
+                    Submit
+                </button>
+            </Dialog>
+
+           
+            
+
             <div>
                 {/* //----------------leads filter drawer------------------------------- */}
                 <Drawer
@@ -2640,6 +4338,318 @@ function EmployeePanelCopy() {
                         </div>
                     </div>
                 </Drawer>
+
+                <div className="compose-email">
+                    {isOpen && (
+                        <div className="compose-popup">
+                            <div className="compose-header">
+                                <h2 className="compose-title">New Email</h2>
+                                <button className="close-btn" onClick={handleTogglePopup}>
+                                    &times;
+                                </button>
+                            </div>
+                            <form onSubmit={handleSubmitMail}>
+                                <input
+                                    type="email"
+                                    name="to"
+                                    className="compose-input"
+                                    placeholder="To"
+                                    value={emailData.to}
+                                    onChange={handleChangeMail}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    name="subject"
+                                    className="compose-input"
+                                    placeholder="Subject"
+                                    value={emailData.subject}
+                                    onChange={handleChangeMail}
+                                    required
+                                />
+                                <textarea
+                                    name="body"
+                                    className="compose-textarea"
+                                    placeholder="Write your message here"
+                                    value={emailData.body}
+                                    onChange={handleChangeMail}
+                                    required
+                                ></textarea>
+
+                                <div className="compose-more-options d-flex align-items-center ">
+                                    <button
+                                        //onClick={handleSendEmail}
+                                        type="submit"
+                                        className="send-btn"
+                                    >
+                                        Send
+                                    </button>
+                                    <div className="other-options d-flex">
+                                        <div className="compose-formatting m-1">
+                                            <FontDownloadIcon />
+                                        </div>
+                                        <div className="compose-attachments m-1">
+                                            <AttachmentIcon />
+                                        </div>
+                                        <div className="compose-insert-files m-1">
+                                            <ImageIcon />
+                                        </div>
+                                        <div className="compose-menuIcon m-1">
+                                            <MoreVertIcon />
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+                </div>
+
+                {/* --------------Dialog for todays general projetion----------------- */}
+                <Dialog
+                    className='My_Mat_Dialog'
+                    open={openTodaysColection}
+                    onClose={handleClose}
+                    fullWidth
+                    maxWidth="sm"
+                >
+                    <DialogTitle>
+                        Today's Project Collection{" "}
+                        <button onClick={closePopup} style={{ float: "right" }}>
+                            <CloseIcon color="primary" />
+                        </button>
+                    </DialogTitle>
+                    <DialogContent>
+                        <div className="modal-dialog modal-lg" role="document">
+                            <div className="modal-content">
+                                <div className="modal-body">
+                                    <div className='d-flex'>
+
+                                        <div className="mb-3 col-6">
+                                            <label className="form-label">No. Of Company</label>
+                                            <input
+                                                type="number"
+                                                value={noOfCompany}
+                                                className="form-control"
+                                                placeholder="No. Of Company"
+                                                required
+                                                onChange={(e) => {
+                                                    setNoOfCompany(e.target.value);
+                                                    setErrors({ ...errors, noOfCompany: "" });
+                                                }}
+                                            />
+                                            {errors.noOfCompany && <p className="text-danger">{errors.noOfCompany}</p>}
+                                        </div>
+                                        <div className="mb-3 col-6 mx-1">
+                                            <label className="form-label">No. Of Service Offered</label>
+                                            <input
+                                                type="number"
+                                                value={noOfServiceOffered}
+                                                className="form-control"
+                                                placeholder="No. Of Services"
+                                                required
+                                                onChange={(e) => {
+                                                    setNoOfServiceOffered(e.target.value);
+                                                    setErrors({ ...errors, noOfServiceOffered: "" });
+                                                }}
+                                            />
+                                            {errors.noOfServiceOffered && <p className="text-danger">{errors.noOfServiceOffered}</p>}
+                                        </div>
+                                    </div>
+                                    <div className='d-flex'>
+                                        <div className="mb-3 col-6">
+                                            <label className="form-label">Total Offered Price</label>
+                                            <input
+                                                type="number"
+                                                value={offeredPrice}
+                                                className="form-control"
+                                                placeholder="Offered Price"
+                                                required
+                                                onChange={(e) => {
+                                                    setOffferedPrice(e.target.value);
+                                                    setErrors({ ...errors, offeredPrice: "" });
+                                                }}
+                                            />
+                                            {errors.offeredPrice && <p className="text-danger">{errors.offeredPrice}</p>}
+                                        </div>
+                                        <div className="mb-3 col-6 mx-1">
+                                            <label className="form-label">Total Collection Expected</label>
+                                            <input
+                                                type="number"
+                                                value={expectedCollection}
+                                                className="form-control"
+                                                placeholder="Expected Collection"
+                                                required
+                                                onChange={(e) => {
+                                                    setExpectedCollection(e.target.value);
+                                                    setErrors({ ...errors, expectedCollection: "" });
+                                                }}
+                                            />
+                                            {errors.expectedCollection && <p className="text-danger">{errors.expectedCollection}</p>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </DialogContent>
+                    <Button
+                        className="btn btn-primary bdr-radius-none"
+                        onClick={handleSubmitTodaysCollection}
+                        variant="contained"
+                    >
+                        Submit
+                    </Button>
+                </Dialog>
+
+                {/* -------------------- Dialog for payment request approval -------------------- */}
+                <Dialog className='My_Mat_Dialog' open={openPaymentApproval} onClose={handleClosePaymentApproval} fullWidth maxWidth="md">
+                    <DialogTitle>
+                        Payment Approval{" "}
+                        <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={handleClosePaymentApproval} >
+                            <IoIosClose style={{
+                                height: "36px",
+                                width: "32px",
+                                color: "grey"
+                            }} />
+                        </button>
+                    </DialogTitle>
+
+                    <DialogContent>
+                        <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                                <div className="modal-body">
+
+                                    <form action="/paymentApprovalRequestByBde" method="post" enctype="multipart/form-data">
+                                        <div className="row">
+                                            <div className="col-6">
+                                                <div className="mb-3">
+                                                    <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        name="example-text-input"
+                                                        placeholder="Your Company Name"
+                                                        onChange={(e) => setRequestedCompanyName(e.target.value)}
+                                                    />
+                                                    {paymentApprovalErrors.requestedCompanyName && <div style={{ color: 'red' }}>{paymentApprovalErrors.requestedCompanyName}</div>}
+                                                </div>
+                                            </div>
+
+                                            <div className="col-6">
+                                                <div className="mb-3">
+                                                    <label className="form-label">Service Type <span style={{ color: "red" }}>*</span></label>
+                                                    <Select
+                                                        isMulti
+                                                        options={options}
+                                                        className="basic-multi-select"
+                                                        classNamePrefix="select"
+                                                        onChange={(selectedOptions) => setServiceType(selectedOptions.map(option => option.value))}
+                                                    />
+                                                    {paymentApprovalErrors.serviceType && <div style={{ color: 'red' }}>{paymentApprovalErrors.serviceType}</div>}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="mb-3">
+                                                    <label className="form-label">Minimum Price
+                                                        <span style={{ color: "red" }}>*</span></label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        name="example-text-input"
+                                                        placeholder="0"
+                                                        onChange={(e) => setMinimumPrice(e.target.value)}
+                                                    />
+                                                    {paymentApprovalErrors.minimumPrice && <div style={{ color: 'red' }}>{paymentApprovalErrors.minimumPrice}</div>}
+                                                </div>
+                                            </div>
+
+                                            <div className="col-4">
+                                                <div className="mb-3">
+                                                    <label className="form-label">Requested Price
+                                                        <span style={{ color: "red" }}>*</span></label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        name="example-text-input"
+                                                        placeholder="0"
+                                                        onChange={(e) => setRequestedPrice(e.target.value)}
+                                                    />
+                                                    {paymentApprovalErrors.requestedPrice && <div style={{ color: 'red' }}>{paymentApprovalErrors.requestedPrice}</div>}
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="mb-3 form-group">
+                                                    <label htmlFor="exampleFormControlSelect1" className="form-label">Requested Type
+                                                        <span style={{ color: "red" }}>*</span>
+                                                    </label>
+                                                    <select
+                                                        aria-label="Default select example"
+                                                        className="form-select"  // Use the correct class for a select element
+                                                        id="exampleFormControlSelect1"
+                                                        onChange={(e) => setRequesteType(e.target.value)}
+                                                    >
+                                                        <option value="" disabled selected>Select requested type</option>
+                                                        <option value="lesser price">Lesser Price</option>
+                                                        <option value="payment term change">Payment Term Change</option>
+                                                        <option value="gst/non-gst issue">GST/Non-GST Issue</option>
+                                                    </select>
+                                                    {paymentApprovalErrors.requesteType && (
+                                                        <div style={{ color: 'red' }}>{paymentApprovalErrors.requesteType}</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="row">
+                                            <div className="col-lg-6">
+                                                <div className="mb-3">
+                                                    <label className="form-label">Reason</label>
+                                                    <textarea class="form-control"
+                                                        id="exampleFormControlTextarea1"
+                                                        rows="3"
+                                                        onChange={(e) => setReason(e.target.value)}
+                                                        placeholder="Reason for the discount, modification in payment terms, or GST/NON-GST issue"
+                                                    ></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-6">
+                                                <div className="mb-3">
+                                                    <label className="form-label">Remarks</label>
+                                                    <textarea class="form-control"
+                                                        id="exampleFormControlTextarea1"
+                                                        rows="3"
+                                                        onChange={(e) => setRemarks(e.target.value)}
+                                                    ></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-4">
+                                                <div className="mb-3">
+                                                    <label className="form-label">Attachment</label>
+                                                    <input type="file"
+                                                        class="form-control-file"
+                                                        id="exampleFormControlFile1"
+                                                        name="attachment"
+                                                        onChange={(e) => setFile(e.target.files[0])}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </DialogContent>
+                    <button className="btn btn-primary bdr-radius-none"
+                        onClick={handlePaymentApprovalSubmit}
+                    >
+                        Submit
+                    </button>
+                </Dialog>
             </div>
         </div>
     );
