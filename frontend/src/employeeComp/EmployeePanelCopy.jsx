@@ -47,7 +47,8 @@ import RemarksDialog from "./ExtraComponents/RemarksDialog.jsx";
 import { MdOutlinePostAdd } from "react-icons/md";
 import EmployeeGeneralLeads from "./EmployeeTabPanels/EmployeeGeneralLeads.jsx";
 import { useQuery } from '@tanstack/react-query';
-import EmployeeInterestedleads from "./EmployeeTabPanels/EmployeeInterestedLeads.jsx";
+import EmployeeInterestedLeads from "./EmployeeTabPanels/EmployeeInterestedLeads.jsx";
+import EmployeeMaturedLeads from "./EmployeeTabPanels/EmployeeMaturedLeads.jsx";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -162,16 +163,7 @@ function EmployeePanelCopy() {
         window.location.href = url;
     }
 
-    async function handleGoogleLogin() {
-        const response = await fetch("http://localhost:6050/request", {
-            method: "post",
-        });
-
-        const data = await response.json();
-        //console.log(data);
-        navigate(data.url);
-    }
-
+    
 
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
@@ -192,11 +184,11 @@ function EmployeePanelCopy() {
 
         socket.on("request-seen", () => {
             // Call fetchRequestDetails function to update request details
-            fetchRequestDetails();
+            //fetchRequestDetails();
         });
 
         socket.on("data-sent", () => {
-            fetchRequestDetails();
+            //fetchRequestDetails();
         });
 
         // Clean up the socket connection when the component unmounts
@@ -205,30 +197,6 @@ function EmployeePanelCopy() {
         };
     }, []);
 
-    const fetchEditRequests = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/bookings/editable-LeadData`);
-            setTotalBookings(response.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
-
-    const fetchBDMbookingRequests = async () => {
-        const bdeName = data.ename;
-        try {
-            const response = await axios.get(
-                `${secretKey}/bdm-data/inform-bde-requests/${bdeName}`
-            );
-            setBDMrequests(response.data[0]);
-            if (response.data.length !== 0) {
-                setOpenbdmRequest(true);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
 
     const fetchData = async () => {
         try {
@@ -244,166 +212,14 @@ function EmployeePanelCopy() {
         }
     };
 
-    useEffect(() => {
-        fetchBDMbookingRequests();
-        fetchRedesignedFormDataAll()
-    }, [data.ename]);
-    const fetchProjections = async () => {
-        try {
-            const response = await axios.get(
-                `${secretKey}/projection/projection-data/${data.ename}`
-            );
-            setProjectionData(response.data);
-        } catch (error) {
-            console.error("Error fetching Projection Data:", error.message);
-        }
-    };
-
-    const fetchNewData = async (status) => {
-        const cleanString = (str) => {
-            return str.replace(/\u00A0/g, ' ').trim();
-        };
-
-        const cleanedEname = cleanString(data.ename);
-        try {
-            if (!status) {
-                setLoading(true);
-            }
-            const response = await axios.get(`${secretKey}/company-data/employees/${cleanedEname}`);
-            const tempData = response.data;
-            const revertedData = response.data.filter((item) => item.RevertBackAcceptedCompanyRequest === 'Reject')
-            setRevertedData(revertedData)
-            const sortedData = response.data.sort((a, b) => {
-                // Assuming AssignDate is a string representation of a date
-                return new Date(b.AssignDate) - new Date(a.AssignDate);
-            });
-            setExtraData(sortedData)
-            setmoreEmpData(sortedData);
-            setTempData(tempData);
-            setEmployeeData(
-                tempData.filter(
-                    (obj) =>
-                        (obj.Status === "Busy" ||
-                            obj.Status === "Not Picked Up" ||
-                            obj.Status === "Untouched") &&
-                        (obj.bdmAcceptStatus !== "Forwarded" &&
-                            obj.bdmAcceptStatus !== "Accept" &&
-                            obj.bdmAcceptStatus !== "Pending")));
-            setdataStatus("All");
-            if (sortStatus === "Untouched") {
-                setEmployeeData(
-                    sortedData
-                        .filter((data) =>
-                            ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
-                        )
-                        .sort((a, b) => {
-                            if (a.Status === "Untouched") return -1;
-                            if (b.Status === "Untouched") return 1;
-                            return 0;
-                        })
-                );
-            }
-            if (sortStatus === "Busy") {
-                setEmployeeData(
-                    sortedData
-                        .filter((data) =>
-                            ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
-
-                        )
-                        .sort((a, b) => {
-                            if (a.Status === "Busy") return -1;
-                            if (b.Status === "Busy") return 1;
-                            return 0;
-                        })
-                );
-            }
-            if (!status && sortStatus !== "") {
-            }
-            if (status === "Not Interested" || status === "Junk") {
-                setEmployeeData(
-                    tempData.filter(
-                        (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-                    )
-                );
-                setdataStatus("NotInterested");
-            }
-            if (status === "FollowUp") {
-                setEmployeeData(tempData.filter((obj) => obj.Status === "FollowUp" && obj.bdmAcceptStatus === "NotForwarded"));
-                setdataStatus("FollowUp");
-            }
-            if (status === "Interested") {
-                setEmployeeData(tempData.filter((obj) => (obj.Status === "Interested" || obj.Status === "FollowUp") && obj.bdmAcceptStatus === "NotForwarded"));
-                setdataStatus("Interested");
-            }
-            if (status === "Forwarded") {
-                //console.log("yahan chala")
-                setEmployeeData(
-                    moreEmpData
-                        .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp"))
-                );
-                setdataStatus("Forwarded");
-            }
-            // setEmployeeData(tempData.filter(obj => obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
-        } catch (error) {
-            console.error("Error fetching new data:", error);
-        } finally {
-            if (!status) {
-                setLoading(false);
-            }
-            // Set loading to false regardless of success or error
-        }
-    };
-
-    useEffect(() => {
-        if (data.ename) {
-            fetchNewData();
-            setdataStatus("Matured");
-            setEmployeeData(
-                moreEmpData
-                    .filter((obj) => obj.Status === "Matured")
-                    .sort((a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate))
-            );
-        }
-
-
-    }, [nowToFetch]);
-
-
-    useEffect(() => {
-
-        if (revertedData.length !== 0) {
-            setOpenRevertBackRequestDialog(true)
-        } else if (data.ename) {
-
-            fetchNewData()
-        }
-    }, [data.ename, revertedData.length]);
-
-    const fetchRequestDetails = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/requests/requestgData`);
-            const sortedData = response.data.sort((a, b) => {
-                // Assuming 'timestamp' is the field indicating the time of creation or update
-                return new Date(b.date) - new Date(a.date);
-            });
-
-            // Find the latest data object with Assignread property as false
-            const latestData = sortedData.find((data) => data.AssignRead === false);
-
-            // Set the latest data as an object
-            setRequestData(latestData);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
-    };
+    
+    
+    
     useEffect(() => {
         fetchData();
-        fetchProjections();
+       
     }, [userId]);
 
-    useEffect(() => {
-
-    }, [data]);
 
     const handleSearch = (searchQuery) => {
         const searchQueryLower = searchQuery.toLowerCase();
@@ -531,120 +347,7 @@ function EmployeePanelCopy() {
         }
 
     }, [filteredData])
-    const handleStatusChange = async (
-        company,
-        employeeId,
-        newStatus,
-        cname,
-        cemail,
-        cindate,
-        cnum,
-        oldStatus,
-        bdmAcceptStatus,
-        isDeletedEmployeeCompany,
-        ename
-    ) => {
-        if (newStatus === "Matured") {
-            // Assuming these are setter functions to update state or perform some action
-            setCompanyName(cname);
-            setCompanyEmail(cemail);
-            setCompanyInco(cindate);
-            setCompanyId(employeeId);
-            setCompanyNumber(cnum);
-            setDeletedEmployeeStatus(isDeletedEmployeeCompany)
-            setNewBdeName(ename)
-            console.log("is", isDeletedEmployeeCompany)
-            console.log("company", company)
-            // let isDeletedEmployeeCompany = true
-            if (!isDeletedEmployeeCompany) {
-                console.log("formchal")
-                setFormOpen(true);
-            } else {
-                console.log("addleadfromchal")
-                setAddFormOpen(true)
-            }
-            return true;
-        }
-
-        // Assuming `data` is defined somewhere in your code
-        const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
-        const DT = new Date();
-        const date = DT.toLocaleDateString();
-        const time = DT.toLocaleTimeString();
-
-        //console.log(bdmAcceptStatus, "bdmAcceptStatus");
-        try {
-            let response;
-            if (bdmAcceptStatus === "Accept") {
-                if (newStatus === "Interested" || newStatus === "FollowUp") {
-                    response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
-                    const response2 = await axios.post(
-                        `${secretKey}/company-data/update-status/${employeeId}`,
-                        {
-                            newStatus,
-                            title,
-                            date,
-                            time,
-
-                        })
-                    const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${employeeId}`, {
-                        bdmAcceptStatus: "NotForwarded"
-                    })
-
-                    const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${cname}`, {
-                        caseType: "NotForwarded"
-                    }
-                    )
-
-                } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
-                    response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${employeeId}`, {
-                        newStatus
-                    });
-
-                    //console.log(response.data)
-
-                    const response2 = await axios.post(
-                        `${secretKey}/company-data/update-status/${employeeId}`,
-                        {
-                            newStatus,
-                            title,
-                            date,
-                            time,
-                            oldStatus,
-                        }
-                    );
-
-                }
-            }
-
-            // If response is not already defined, make the default API call
-            if (!response) {
-                response = await axios.post(
-                    `${secretKey}/company-data/update-status/${employeeId}`,
-                    {
-                        newStatus,
-                        title,
-                        date,
-                        time,
-                        oldStatus,
-                    }
-                );
-            }
-
-            // Check if the API call was successful
-            if (response.status === 200) {
-                // Assuming `fetchNewData` is a function to fetch updated employee data
-                fetchNewData(oldStatus);
-            } else {
-                // Handle the case where the API call was not successful
-                console.error("Failed to update status:", response.data.message);
-            }
-        } catch (error) {
-            // Handle any errors that occur during the API call
-            console.error("Error updating status:", error.message);
-        }
-    };
-
+   
 
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
@@ -671,20 +374,7 @@ function EmployeePanelCopy() {
         return `${year}-${month}-${day}`;
     }
 
-    const fetchRedesignedFormDataAll = async () => {
-        try {
-            //console.log(maturedID);
-            const response = await axios.get(
-                `${secretKey}/bookings/redesigned-final-leadData`
-            );
-            //const data = response.data.find((obj) => obj.company === maturedID);
-            //console.log(data);
-            setCurrentForm(data);
-            setRedesignedData(response.data);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
-    };
+   
 
     // --------------------------------------forward to bdm function---------------------------------------------\
 
@@ -764,7 +454,7 @@ function EmployeePanelCopy() {
                 })
                 // console.log("response", response.data);
                 Swal.fire("Data Reversed");
-                fetchNewData(empStatus);
+                //fetchNewData(empStatus);
             } catch (error) {
                 console.log("error reversing bdm forwarded data", error.message);
             }
@@ -784,7 +474,7 @@ function EmployeePanelCopy() {
             );
 
             setOpenbdmRequest(false);
-            fetchBDMbookingRequests()
+            //fetchBDMbookingRequests()
             //console.log(response.data); // Log the response data if needed
             // Optionally, you can update the UI or perform any other actions after the request is successful
         } catch (error) {
@@ -794,25 +484,6 @@ function EmployeePanelCopy() {
             // Handle the error or display a message to the user
         }
     };
-
-    // ------------------------------- Next Follow Up Date -------------------------------------------------------------------
-
-    const functionSubmitNextFollowUpDate = async (nextFollowUpdate, companyId, companyStatus) => {
-
-        const data = {
-            bdeNextFollowUpDate: nextFollowUpdate
-        }
-        try {
-            const resposne = await axios.post(`${secretKey}/company-data/post-bdenextfollowupdate/${companyId}`, data)
-
-            //console.log(resposne.data)
-            fetchNewData(companyStatus)
-
-        } catch (error) {
-            console.log("Error submitting Date", error)
-        }
-
-    }
 
     //----------- function to revert back company accepted by bdm ----------------------------
     const handleRevertAcceptedCompany = async (companyId, companyName, bdeStatus) => {
@@ -842,7 +513,7 @@ function EmployeePanelCopy() {
                     'success'
                 );
 
-                fetchNewData(bdeStatus);
+                //fetchNewData(bdeStatus);
             } catch (error) {
                 console.log("Error reverting back company", error);
                 Swal.fire(
@@ -861,7 +532,7 @@ function EmployeePanelCopy() {
                     companyId
                 }
             })
-            fetchNewData(status)
+            //fetchNewData(status)
         } catch (error) {
             console.log("Error done ok", error)
         }
@@ -971,7 +642,7 @@ function EmployeePanelCopy() {
         setCompanyIncoDate(null)
         setSelectedCompanyIncoDate(null)
         setFilteredData([])
-        fetchNewData()
+        //fetchNewData()
         //fetchData(1, latestSortCount)
     }
     // Function to get current date in YYYY-MM-DD format
@@ -1028,19 +699,7 @@ function EmployeePanelCopy() {
         // localStorage.removeItem("loginDate");
         window.location.replace("/"); // Redirect to login page
     };
-    const fetchRemarksHistory = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
-            setRemarksHistory(response.data.reverse());
-            setFilteredRemarks(
-                response.data.filter((obj) => obj.companyID === cid).reverse()
-            );
-
-            //console.log(response.data);
-        } catch (error) {
-            console.error("Error fetching remarks history:", error);
-        }
-    };
+    
 
     // -------------------request dialog functions-------------------
     const [open, openchange] = useState(false);
@@ -1188,7 +847,7 @@ function EmployeePanelCopy() {
                                                     secretKey={secretKey}
                                                     fetchData={fetchData}
                                                     ename={data.ename}
-                                                    fetchNewData={fetchNewData}
+                                                    //fetchNewData={//fetchNewData}
                                                 />
                                             </div>
                                             <div className="btn-group" role="group" aria-label="Basic example">
@@ -1243,7 +902,7 @@ function EmployeePanelCopy() {
                             <div className="page-body  m-0">
                                 <div className="container-xl mt-2">
                                     <div className="my-tab card-header">
-                                        <ul className="nav nav-tabs hr_emply_list_navtabs nav-fill p-0">
+                                        <ul className="nav nav-tabs hr_emply_list_navtabs nav-fill p-0" data-bs-toggle="tabs">
                                             <li class="nav-item hr_emply_list_navitem">
                                                 <a class="nav-link active" data-bs-toggle="tab" href="#k"
                                                     onClick={() => {
@@ -1329,12 +988,17 @@ function EmployeePanelCopy() {
                                                 totalPages={totalPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setdataStatus={setdataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                secretKey={secretKey}
                                             />
                                         </div>
                                     </div>
                                     <div className="tab-content card-body">
                                         <div class="tab-pane active" id="Interested">
-                                            <EmployeeInterestedleads
+                                            <EmployeeInterestedLeads
                                                 interestedData={fetchedData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
@@ -1344,876 +1008,33 @@ function EmployeePanelCopy() {
                                                 totalPages={totalPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
                                             />
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            onCopy={(e) => {
-                                e.preventDefault();
-                            }}
-                            className="page-body d-none"
-                        >
-                            <div className="container-xl">
-                                <div class="card-header my-tab">
-                                    <ul
-                                        class="nav nav-tabs card-header-tabs nav-fill p-0"
-                                        data-bs-toggle="tabs"
-                                    >
-                                        <li class="nav-item data-heading">
-                                            <a
-                                                href="#tabs-home-5"
-                                                onClick={() => {
-                                                    setdataStatus("All");
-                                                    setCurrentPage(0);
-                                                    const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                                                    setEmployeeData(
-                                                        mappedData.filter(
-                                                            (obj) =>
-                                                                (obj.Status === "Busy" ||
-                                                                    obj.Status === "Not Picked Up" ||
-                                                                    obj.Status === "Untouched") &&
-                                                                (obj.bdmAcceptStatus !== "Forwarded" &&
-                                                                    obj.bdmAcceptStatus !== "Accept" &&
-                                                                    obj.bdmAcceptStatus !== "Pending")
-                                                        ).sort(
-                                                            (a, b) =>
-                                                                new Date(b.lastActionDate) -
-                                                                new Date(a.lastActionDate)
-                                                        )
-                                                    );
-                                                }}
-                                                className={
-                                                    dataStatus === "All"
-                                                        ? "nav-link active item-act"
-                                                        : "nav-link"
-                                                }
-                                                data-bs-toggle="tab"
-                                            >
-                                                General{" "}
-                                                <span className="no_badge">
-                                                    {
-                                                        ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                                                            (obj) =>
-                                                                (obj.Status === "Busy" ||
-                                                                    obj.Status === "Not Picked Up" ||
-                                                                    obj.Status === "Untouched") &&
-                                                                (obj.bdmAcceptStatus !== "Forwarded" &&
-                                                                    obj.bdmAcceptStatus !== "Accept" &&
-                                                                    obj.bdmAcceptStatus !== "Pending")
-                                                        ).length
-                                                    }
-                                                </span>
-                                                {/* <span className="no_badge">
-                                                  {totalCounts.untouched}
-                                                </span> */}
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a
-                                                href="#tabs-activity-5"
-                                                onClick={() => {
-                                                    setdataStatus("Interested");
-                                                    setCurrentPage(0);
-                                                    const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                                                    setEmployeeData(
-                                                        mappedData.filter(
-                                                            (obj) =>
-                                                                (obj.Status === "Interested" || obj.Status === "FollowUp") &&
-                                                                obj.bdmAcceptStatus === "NotForwarded"
-                                                        )
-                                                    );
-                                                }}
-                                                className={
-                                                    dataStatus === "Interested"
-                                                        ? "nav-link active item-act"
-                                                        : "nav-link"
-                                                }
-                                                data-bs-toggle="tab"
-                                            >
-                                                Interested
-                                                <span className="no_badge">
-                                                    {
-                                                        ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                                                            (obj) =>
-                                                                (obj.Status === "Interested" || obj.Status === "FollowUp") &&
-                                                                obj.bdmAcceptStatus === "NotForwarded"
-                                                        ).length
-                                                    }
-                                                </span>
-                                                {/* <span className="no_badge">
-                                                  {totalCounts.interested}
-                                                </span> */}
-                                            </a>
-                                        </li>
-                                        {/* <li class="nav-item">
-                      <a
-                        href="#tabs-activity-5"
-                        onClick={() => {
-                          setdataStatus("FollowUp");
-                          setCurrentPage(0);
-                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                          setEmployeeData(
-                            mappedData.filter(
-                              (obj) =>
-                                obj.Status === "FollowUp" &&
-                                obj.bdmAcceptStatus === "NotForwarded"
-                            )
-                          );
-                        }}
-                        className={
-                          dataStatus === "FollowUp"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        Follow Up{" "}
-                        <span className="no_badge">
-                          {
-                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                              (obj) =>
-                                obj.Status === "FollowUp" &&
-                                obj.bdmAcceptStatus === "NotForwarded"
-                            ).length
-                          }
-                        </span>
-                      </a>
-                    </li> */}
-
-                                        <li class="nav-item">
-                                            <a
-                                                href="#tabs-activity-5"
-                                                onClick={() => {
-                                                    setdataStatus("Matured");
-                                                    setCurrentPage(0);
-                                                    const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                                                    setEmployeeData(
-                                                        mappedData
-                                                            .filter(
-                                                                (obj) =>
-                                                                    obj.Status === "Matured" &&
-                                                                    (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                                                            )
-                                                            .sort(
-                                                                (a, b) =>
-                                                                    new Date(b.lastActionDate) -
-                                                                    new Date(a.lastActionDate)
-                                                            )
-                                                    );
-                                                }}
-                                                className={
-                                                    dataStatus === "Matured"
-                                                        ? "nav-link active item-act"
-                                                        : "nav-link"
-                                                }
-                                                data-bs-toggle="tab"
-                                            >
-                                                Matured{" "}
-                                                <span className="no_badge">
-                                                    {" "}
-                                                    {
-                                                        ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                                                            (obj) =>
-                                                                obj.Status === "Matured" &&
-                                                                (obj.bdmAcceptStatus === "NotForwarded" ||
-                                                                    obj.bdmAcceptStatus === "Pending" ||
-                                                                    obj.bdmAcceptStatus === "Accept")
-                                                        ).length
-                                                    }
-                                                </span>
-                                                {/* <span className="no_badge">
-                                                  {totalCounts.matured}
-                                                </span> */}
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a
-                                                href="#tabs-activity-5"
-                                                onClick={() => {
-                                                    setdataStatus("Forwarded");
-                                                    setCurrentPage(0);
-                                                    const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                                                    setEmployeeData(
-                                                        mappedData
-                                                            .filter(
-                                                                (obj) =>
-                                                                    obj.bdmAcceptStatus !== "NotForwarded" &&
-                                                                    obj.Status !== "Not Interested" &&
-                                                                    obj.Status !== "Busy" &&
-                                                                    obj.Status !== "Junk" &&
-                                                                    obj.Status !== "Not Picked Up" &&
-                                                                    obj.Status !== "Matured"
-                                                            )
-                                                            .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
-                                                    );
-                                                    //setdataStatus(obj.bdmAcceptStatus);
-                                                }}
-                                                className={
-                                                    dataStatus === "Forwarded"
-                                                        ? "nav-link active item-act"
-                                                        : "nav-link"
-                                                }
-                                                data-bs-toggle="tab"
-                                            >
-                                                Bdm Forwarded{" "}
-                                                <span className="no_badge">
-                                                    {" "}
-                                                    {
-                                                        ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                                                            (obj) =>
-                                                                obj.bdmAcceptStatus !== "NotForwarded" &&
-                                                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                                                obj.Status !== "Matured"
-                                                        ).length
-                                                    }
-                                                </span>
-                                                {/* <span className="no_badge">
-                                                  {totalCounts.forwarded}
-                                                </span> */}
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a
-                                                href="#tabs-activity-5"
-                                                onClick={() => {
-                                                    setdataStatus("NotInterested");
-                                                    setCurrentPage(0);
-                                                    const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                                                    setEmployeeData(
-                                                        mappedData.filter(
-                                                            (obj) =>
-                                                                (obj.Status === "Not Interested" ||
-                                                                    obj.Status === "Junk") &&
-                                                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                                                        )
-                                                    );
-                                                }}
-                                                className={
-                                                    dataStatus === "NotInterested"
-                                                        ? "nav-link active item-act"
-                                                        : "nav-link"
-                                                }
-                                                data-bs-toggle="tab"
-                                            >
-                                                Not-Interested{" "}
-                                                <span className="no_badge">
-                                                    {
-                                                        ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                                                            (obj) =>
-                                                                (obj.Status === "Not Interested" ||
-                                                                    obj.Status === "Junk") &&
-                                                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                                                        ).length
-                                                    }
-                                                </span>
-                                                {/* <span className="no_badge">
-                                                  {totalCounts.notInterested}
-                                                </span> */}
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div className="card">
-                                    <div className="card-body p-0">
-                                        <div
-                                            style={{
-                                                overflowX: "auto",
-                                                overflowY: "auto",
-                                                maxHeight: "66vh",
-                                            }}
-                                        >
-                                            <table
-                                                style={{
-                                                    width: "100%",
-                                                    borderCollapse: "collapse",
-                                                    border: "1px solid #ddd",
-                                                }}
-                                                className="table-vcenter table-nowrap"
-                                            >
-                                                <thead>
-                                                    <tr className="tr-sticky">
-                                                        <th className="th-sticky">Sr.No</th>
-                                                        <th className="th-sticky1">Company Name</th>
-                                                        <th>Company Number</th>
-                                                        <th>Call History</th>
-                                                        {dataStatus === "Forwarded" ? (<th>BDE Status</th>) : (<th>Status</th>)}
-                                                        {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
-                                                        {dataStatus === "Forwarded" && <th>BDM Status</th>}
-                                                        {dataStatus === "Forwarded" && <th>BDM Remarks</th>}
-                                                        {dataStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
-
-                                                        <th>
-                                                            Incorporation Date
-                                                        </th>
-
-                                                        <th>City</th>
-                                                        <th>State</th>
-                                                        <th>Company Email</th>
-
-                                                        <th>
-                                                            Assigned Date
-                                                            <SwapVertIcon
-                                                                style={{
-                                                                    height: "15px",
-                                                                    width: "15px",
-                                                                    cursor: "pointer",
-                                                                }}
-                                                                onClick={() => {
-                                                                    const sortedData = [...employeeData].sort(
-                                                                        (a, b) => {
-                                                                            if (sortOrder === "asc") {
-                                                                                return b.AssignDate.localeCompare(
-                                                                                    a.AssignDate
-                                                                                );
-                                                                            } else {
-                                                                                return a.AssignDate.localeCompare(
-                                                                                    b.AssignDate
-                                                                                );
-                                                                            }
-                                                                        }
-                                                                    );
-                                                                    setEmployeeData(sortedData);
-                                                                    setSortOrder(
-                                                                        sortOrder === "asc" ? "desc" : "asc"
-                                                                    );
-                                                                }}
-                                                            />
-                                                        </th>
-
-                                                        {dataStatus === "Matured" && <><th>
-                                                            Booking Date
-                                                        </th>
-                                                            <th>
-                                                                Publish Date
-                                                            </th></>}
-                                                        {(dataStatus === "FollowUp" && (
-                                                            <th>Add Projection</th>
-                                                        )) || (dataStatus === "Interested" && (
-                                                            <th>Add Projection</th>
-                                                        )) || (dataStatus === "Matured" && (
-                                                            <th>Add Projection</th>
-                                                        ))}
-
-                                                        {dataStatus === "Forwarded" && (<>
-                                                            <th>BDM Name</th>
-                                                            <th>Forwarded Date</th>
-                                                        </>)}
-
-                                                        {(dataStatus === "Forwarded" ||
-                                                            dataStatus === "Interested" ||
-                                                            dataStatus === "FollowUp") && (
-                                                                <th>Forward to BDM</th>
-                                                            )}
-                                                        {dataStatus === "Forwarded" &&
-                                                            (dataStatus !== "Interested" ||
-                                                                dataStatus !== "FollowUp" ||
-                                                                dataStatus !== "Untouched" ||
-                                                                dataStatus !== "Matured" ||
-                                                                dataStatus !== "Not Interested") && (
-                                                                <th>Feedback</th>
-                                                            )}
-                                                    </tr>
-                                                </thead>
-                                                {loading ? (
-                                                    <tbody>
-                                                        <tr>
-                                                            <td colSpan="11" >
-                                                                <div className="LoaderTDSatyle w-100" >
-                                                                    <ClipLoader
-                                                                        color="lightgrey"
-                                                                        loading
-                                                                        size={30}
-                                                                        aria-label="Loading Spinner"
-                                                                        data-testid="loader"
-                                                                    />
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                ) : (
-                                                    <tbody>
-                                                        {currentData.map((company, index) => (
-                                                            <tr
-                                                                key={index}
-                                                                style={{ border: "1px solid #ddd" }}
-                                                            >
-                                                                <td className="td-sticky">{startIndex + index + 1}</td>
-                                                                <td className="td-sticky1">{company["Company Name"]}</td>
-                                                                <td>
-                                                                    <div className="d-flex align-items-center justify-content-between wApp">
-                                                                        <div>{company["Company Number"]}</div>
-                                                                        <a
-                                                                            target="_blank"
-                                                                            href={`https://wa.me/91${company["Company Number"]}`}
-                                                                        >
-                                                                            <FaWhatsapp />
-                                                                        </a>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <LuHistory onClick={() => {
-                                                                        setShowCallHistory(true);
-                                                                        setClientNumber(company["Company Number"]);
-                                                                    }}
-                                                                        style={{
-                                                                            cursor: "pointer",
-                                                                            width: "15px",
-                                                                            height: "15px",
-                                                                        }}
-                                                                        color="grey"
-                                                                    />
-                                                                </td>
-                                                                <td>
-                                                                    {company["Status"] === "Matured" ? (
-                                                                        <span>{company["Status"]}</span>
-                                                                    ) : (
-                                                                        <>
-                                                                            {company.bdmAcceptStatus ===
-                                                                                "NotForwarded" && (
-                                                                                    <select
-                                                                                        style={{
-                                                                                            background: "none",
-                                                                                            padding: ".4375rem .75rem",
-                                                                                            border:
-                                                                                                "1px solid var(--tblr-border-color)",
-                                                                                            borderRadius:
-                                                                                                "var(--tblr-border-radius)",
-                                                                                        }}
-                                                                                        value={company["Status"]}
-                                                                                        onChange={(e) =>
-                                                                                            handleStatusChange(
-                                                                                                company,
-                                                                                                company._id,
-                                                                                                e.target.value,
-                                                                                                company["Company Name"],
-                                                                                                company["Company Email"],
-                                                                                                company[
-                                                                                                "Company Incorporation Date  "
-                                                                                                ],
-                                                                                                company["Company Number"],
-                                                                                                company["Status"],
-                                                                                                company.bdmAcceptStatus,
-                                                                                                company.isDeletedEmployeeCompany,
-                                                                                                company.ename
-                                                                                            )
-                                                                                        }
-                                                                                    >
-                                                                                        {(dataStatus !== "Interested" && dataStatus !== "FollowUp") &&
-                                                                                            (<>
-                                                                                                <option value="Not Picked Up">
-                                                                                                    Not Picked Up
-                                                                                                </option>
-                                                                                                <option value="Junk">Junk</option>
-                                                                                            </>
-                                                                                            )}
-                                                                                        <option value="Busy">Busy</option>
-
-                                                                                        <option value="Not Interested">
-                                                                                            Not Interested
-                                                                                        </option>
-                                                                                        {dataStatus === "All" && (
-                                                                                            <>
-                                                                                                <option value="Untouched">
-                                                                                                    Untouched
-                                                                                                </option>
-                                                                                                <option value="Interested">
-                                                                                                    Interested
-                                                                                                </option>
-                                                                                            </>
-                                                                                        )}
-                                                                                        {dataStatus === "Interested" && (
-                                                                                            <>
-                                                                                                <option value="Interested">
-                                                                                                    Interested
-                                                                                                </option>
-                                                                                                {/* <option value="FollowUp">
-                                                  Follow Up
-                                                </option> */}
-                                                                                                <option value="Matured">
-                                                                                                    Matured
-                                                                                                </option>
-                                                                                            </>
-                                                                                        )}
-
-                                                                                    </select>
-                                                                                )}
-                                                                            {(company.bdmAcceptStatus !==
-                                                                                "NotForwarded") &&
-                                                                                (company.Status === "Interested" ||
-                                                                                    company.Status === "FollowUp") && (
-                                                                                    <span>{company.bdeOldStatus}</span>
-                                                                                )}
-
-                                                                            {(company.bdmAcceptStatus !==
-                                                                                "NotForwarded") &&
-                                                                                (company.Status === "Not Interested" || company.Status === "Junk" || company.Status === "Not Picked Up" || company.Status === "Busy") && (
-                                                                                    <select
-                                                                                        style={{
-                                                                                            color: "rgb(139, 139, 139)",
-                                                                                            background: "none",
-                                                                                            padding: ".4375rem .75rem",
-                                                                                            border:
-                                                                                                "1px solid var(--tblr-border-color)",
-                                                                                            borderRadius:
-                                                                                                "var(--tblr-border-radius)",
-                                                                                        }}
-                                                                                        value={company["Status"]}
-                                                                                        onChange={(e) =>
-                                                                                            handleStatusChange(
-                                                                                                company,
-                                                                                                company._id,
-                                                                                                e.target.value,
-                                                                                                company["Company Name"],
-                                                                                                company["Company Email"],
-                                                                                                company[
-                                                                                                "Company Incorporation Date  "
-                                                                                                ],
-                                                                                                company["Company Number"],
-                                                                                                company["Status"],
-                                                                                                company.bdmAcceptStatus,
-                                                                                                company.isDeletedEmployeeCompany,
-                                                                                                company.ename
-                                                                                            )
-                                                                                        }
-                                                                                    >
-                                                                                        <option value="Not Picked Up">
-                                                                                            Not Picked Up
-                                                                                        </option>
-                                                                                        <option value="Busy">Busy</option>
-                                                                                        <option value="Junk">Junk</option>
-                                                                                        <option value="Not Interested">
-                                                                                            Not Interested
-                                                                                        </option>
-                                                                                        <option value="Interested">Interested</option>
-                                                                                        {/* <option value="FollowUp">Follow Up</option> */}
-                                                                                    </select>
-                                                                                )}
-                                                                        </>
-                                                                    )}
-                                                                </td>
-                                                                <td>
-                                                                    <div
-                                                                        key={company._id}
-                                                                        style={{
-                                                                            display: "flex",
-                                                                            alignItems: "center",
-                                                                            justifyContent: "space-between",
-                                                                            width: "100px",
-                                                                        }}
-                                                                    >
-                                                                        <p
-                                                                            className="rematkText text-wrap m-0"
-                                                                            title={company.Remarks}
-                                                                        >
-                                                                            {!company["Remarks"]
-                                                                                ? "No Remarks"
-                                                                                : company.Remarks}
-                                                                        </p>
-                                                                        <RemarksDialog
-                                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                            currentCompanyName={company["Company Name"]}
-                                                                            remarksHistory={remarksHistory} // pass your remarks history data
-                                                                            companyId={company._id}
-                                                                            remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                                            isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                                            bdmAcceptStatus={company.bdmAcceptStatus}
-                                                                            companyStatus={company.Status}
-                                                                            secretKey={secretKey}
-                                                                            fetchRemarksHistory={fetchRemarksHistory}
-                                                                            bdeName={company.ename}
-                                                                            fetchNewData={fetchNewData}
-                                                                            mainRemarks={company.Remarks}
-                                                                        />
-                                                                    </div>
-                                                                </td>
-                                                                {dataStatus === "Forwarded" && (
-                                                                    <td>
-                                                                        {company.Status === "Interested" && (
-                                                                            <span>Interested</span>
-                                                                        )}
-                                                                        {company.Status === "FollowUp" && (
-                                                                            <span>FollowUp</span>
-                                                                        )}
-
-                                                                    </td>
-                                                                )}
-                                                                {dataStatus === "FollowUp" && <td>
-                                                                    <input style={{ border: "none" }}
-                                                                        type="date"
-                                                                        value={formatDateNow(company.bdeNextFollowUpDate)}
-                                                                        onChange={(e) => {
-                                                                            //setNextFollowUpDate(e.target.value);
-                                                                            functionSubmitNextFollowUpDate(e.target.value,
-                                                                                company._id,
-                                                                                company["Status"]
-                                                                            );
-                                                                        }}
-                                                                    //className="hide-placeholder"
-                                                                    /></td>}
-                                                                {dataStatus === "Forwarded" &&
-                                                                    <td>
-                                                                        <div key={company._id}
-                                                                            style={{
-                                                                                display: "flex",
-                                                                                alignItems: "center",
-                                                                                justifyContent: "space-between",
-                                                                                width: "100px",
-                                                                            }}>
-                                                                            <p
-                                                                                className="rematkText text-wrap m-0"
-                                                                                title={company.remarks}
-                                                                            >
-                                                                                {!company.bdmRemarks
-                                                                                    ? "No Remarks"
-                                                                                    : company.bdmRemarks}
-                                                                            </p>
-                                                                            <RemarksDialog
-                                                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                                currentCompanyName={company["Company Name"]}
-                                                                                filteredRemarks={filteredRemarks}
-                                                                                companyId={company._id}
-                                                                                remarksKey="bdmRemarks" // For BDM remarks
-                                                                                isEditable={false} // Disable editing
-                                                                                secretKey={secretKey}
-                                                                                fetchRemarksHistory={fetchRemarksHistory}
-                                                                                bdeName={company.ename}
-                                                                                fetchNewData={fetchNewData}
-                                                                                bdmName={company.bdmName}
-                                                                                bdmAcceptStatus={company.bdmAcceptStatus}
-                                                                                companyStatus={company.Status}
-                                                                                remarksHistory={remarksHistory} // pass your remarks history data
-                                                                            />
-                                                                        </div>
-                                                                    </td>
-                                                                }
-                                                                <td>
-                                                                    {formatDateNew(
-                                                                        company["Company Incorporation Date  "]
-                                                                    )}
-                                                                </td>
-                                                                <td>{company["City"]}</td>
-                                                                <td>{company["State"]}</td>
-                                                                <td>{company["Company Email"]}</td>
-                                                                <td>{formatDateNew(company["AssignDate"])}</td>
-                                                                {dataStatus === "Matured" && <>
-                                                                    <td>{functionCalculateBookingDate(company._id)}</td>
-                                                                    <td>{functionCalculatePublishDate(company._id)}</td>
-                                                                    <td>
-                                                                        <ProjectionDialog
-                                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                            projectionCompanyName={company["Company Name"]}
-                                                                            projectionData={projectionData}
-                                                                            secretKey={secretKey}
-                                                                            fetchProjections={fetchProjections}
-                                                                            ename={data.ename}
-                                                                            bdmAcceptStatus={company.bdmAcceptStatus}
-                                                                            hasMaturedStatus={true}
-                                                                            hasExistingProjection={projectionData?.some(
-                                                                                (item) => item.companyName === company["Company Name"]
-                                                                            )}
-
-                                                                        />
-                                                                    </td>
-
-                                                                </>}
-                                                                {(dataStatus === "FollowUp" ||
-                                                                    dataStatus === "Interested") && (
-                                                                        <>
-                                                                            <td>
-                                                                                <ProjectionDialog
-                                                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                                    projectionCompanyName={company["Company Name"]}
-                                                                                    projectionData={projectionData}
-                                                                                    secretKey={secretKey}
-                                                                                    fetchProjections={fetchProjections}
-                                                                                    ename={data.ename}
-                                                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                                                    hasMaturedStatus={false}
-                                                                                    hasExistingProjection={projectionData?.some(
-                                                                                        (item) => item.companyName === company["Company Name"]
-                                                                                    )}
-                                                                                />
-                                                                            </td>
-                                                                            <td>
-                                                                                <BdmMaturedCasesDialogBox
-                                                                                    currentData={currentData}
-                                                                                    forwardedCompany={company["Company Name"]}
-                                                                                    forwardCompanyId={company._id}
-                                                                                    forwardedStatus={company.Status}
-                                                                                    forwardedEName={company.ename}
-                                                                                    bdeOldStatus={company.Status}
-                                                                                    bdmNewAcceptStatus={"Pending"}
-                                                                                    fetchNewData={fetchNewData}
-                                                                                />
-                                                                            </td>
-                                                                        </>
-                                                                    )}
-
-                                                                {dataStatus === "Forwarded" && (<>
-                                                                    {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
-                                                                    <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                                                </>)}
-
-                                                                {dataStatus === "Forwarded" && (
-                                                                    <td>
-                                                                        {company.bdmAcceptStatus === "NotForwarded" ? (<>
-
-                                                                            <TiArrowForward
-                                                                                onClick={() => {
-                                                                                    handleConfirmAssign(
-                                                                                        company._id,
-                                                                                        company["Company Name"],
-                                                                                        company.Status, // Corrected parameter name
-                                                                                        company.ename,
-                                                                                        company.bdmAcceptStatus
-                                                                                    );
-                                                                                }}
-                                                                                style={{
-                                                                                    cursor: "pointer",
-                                                                                    width: "17px",
-                                                                                    height: "17px",
-                                                                                }}
-                                                                                color="grey"
-                                                                            />
-                                                                        </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
-
-                                                                            <TiArrowBack
-                                                                                onClick={() => {
-                                                                                    handleReverseAssign(
-                                                                                        company._id,
-                                                                                        company["Company Name"],
-                                                                                        company.bdmAcceptStatus,
-                                                                                        company.Status,
-                                                                                        company.bdmName
-                                                                                    )
-                                                                                }}
-                                                                                style={{
-                                                                                    cursor: "pointer",
-                                                                                    width: "17px",
-                                                                                    height: "17px",
-                                                                                }}
-                                                                                color="#fbb900"
-                                                                            />
-                                                                        </>) :
-                                                                            (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
-                                                                                <>
-                                                                                    <TiArrowBack
-                                                                                        onClick={() => handleRevertAcceptedCompany(
-                                                                                            company._id,
-                                                                                            company["Company Name"],
-                                                                                            company.Status
-                                                                                        )}
-                                                                                        style={{
-                                                                                            cursor: "pointer",
-                                                                                            width: "17px",
-                                                                                            height: "17px",
-                                                                                        }}
-                                                                                        color="black" />
-                                                                                </>) :
-                                                                                (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
-                                                                                    <>
-                                                                                        <TiArrowBack
-                                                                                            style={{
-                                                                                                cursor: "pointer",
-                                                                                                width: "17px",
-                                                                                                height: "17px",
-                                                                                            }}
-                                                                                            color="lightgrey" />
-                                                                                    </>) : (<>
-                                                                                        <TiArrowForward
-                                                                                            onClick={() => {
-                                                                                                // handleConfirmAssign(
-                                                                                                //   company._id,
-                                                                                                //   company["Company Name"],
-                                                                                                //   company.Status, // Corrected parameter name
-                                                                                                //   company.ename,
-                                                                                                //   company.bdmAcceptStatus
-                                                                                                // );
-                                                                                            }}
-                                                                                            style={{
-                                                                                                cursor: "pointer",
-                                                                                                width: "17px",
-                                                                                                height: "17px",
-                                                                                            }}
-                                                                                            color="grey"
-                                                                                        />
-                                                                                    </>)}
-                                                                    </td>
-                                                                )}
-
-                                                                {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
-                                                                    <td>
-                                                                        <FeedbackDialog
-                                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                            companyId={company._id}
-                                                                            companyName={company["Company Name"]}
-                                                                            feedbackRemarks={company.feedbackRemarks}
-                                                                            feedbackPoints={company.feedbackPoints}
-                                                                        />
-                                                                    </td>
-                                                                ) : null}
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                )}
-                                                {currentData.length === 0 && !loading && (
-                                                    <tbody>
-                                                        <tr>
-                                                            <td colSpan="11" className="p-2 particular">
-                                                                <Nodata />
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                )}
-                                            </table>
+                                    <div className="tab-content card-body">
+                                        <div class="tab-pane active" id="Matured">
+                                            <EmployeeMaturedLeads
+                                                maturedLeads={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                            />
                                         </div>
-                                        {currentData.length !== 0 && (
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                    alignItems: "center",
-                                                }}
-                                                className="pagination"
-                                            >
-                                                <button
-                                                    onClick={() =>
-                                                        setCurrentPage((prevPage) =>
-                                                            Math.max(prevPage - 1, 0)
-                                                        )
-                                                    }
-                                                    disabled={currentPage === 0}
-                                                >
-                                                    <IconChevronLeft />
-                                                </button>
-                                                <span>
-                                                    Page {currentPage + 1} of{" "}
-                                                    {Math.ceil(employeeData.length / itemsPerPage)}
-                                                </span>
-
-                                                <button
-                                                    onClick={() =>
-                                                        setCurrentPage((prevPage) =>
-                                                            Math.min(
-                                                                prevPage + 1,
-                                                                Math.ceil(employeeData.length / itemsPerPage) -
-                                                                1
-                                                            )
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        currentPage ===
-                                                        Math.ceil(employeeData.length / itemsPerPage) - 1
-                                                    }
-                                                >
-                                                    <IconChevronRight />
-                                                </button>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             </div>
