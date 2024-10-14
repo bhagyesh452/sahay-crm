@@ -126,6 +126,7 @@ import "../src/assets/hover.css"
 import AdminLayout from "./admin/AdminLayout.jsx";
 import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
 import EmployeePanelCopy from "./employeeComp/EmployeePanelCopy.jsx";
+import FetchingEmployeeData from "./employeeComp/EmployeeDashboardComponents/FetchingEmployeeData.jsx";
 
 
 function App() {

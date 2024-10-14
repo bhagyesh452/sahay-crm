@@ -1895,151 +1895,159 @@ router.post(`/post-bdenextfollowupdate/:id`, async (req, res) => {
   }
 });
 
-router.get("/employees/:ename", async (req, res) => {
-  try {
-    const employeeName = req.params.ename;
-    console.log("Employee name:", employeeName);
-
-    // Fetch data from CompanyModel where ename matches employeeName
-    const data = await CompanyModel.find({
-      $or: [
-        { ename: employeeName },
-        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-      ]
-    });
-
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-
 // router.get("/employees/:ename", async (req, res) => {
 //   try {
 //     const employeeName = req.params.ename;
-//     const limit = parseInt(req.query.limit) || 500; // Default limit to 500
-//     const skip = parseInt(req.query.skip) || 0; // Default skip to 0
-//     const dataStatus = req.query.dataStatus; // Extract the dataStatus from query parameters
+//     console.log("Employee name:", employeeName);
 
-//     // Create a base query
-//     let query = {
+//     // Fetch data from CompanyModel where ename matches employeeName
+//     const data = await CompanyModel.find({
 //       $or: [
 //         { ename: employeeName },
 //         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
 //         { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
 //       ]
-//     };
-
-//     // Apply dataStatus filtering if provided
-//     if (dataStatus === "Not Interested") {
-//       query = { ...query, Status: { $in: ["Not Interested", "Junk"] } };
-//     } else if (dataStatus === "FollowUp") {
-//       query = { ...query, Status: "FollowUp", bdmAcceptStatus: "NotForwarded" };
-//     } else if (dataStatus === "Interested") {
-//       query = { ...query, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: "NotForwarded" };
-//     } else if (dataStatus === "Forwarded") {
-//       query = { ...query, bdmAcceptStatus: { $ne: "NotForwarded" }, Status: { $in: ["Interested", "FollowUp"] } };
-//     } else if (dataStatus === "All") {
-//       query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
-//     } else if (dataStatus === "Matured") {
-//       query = { ...query, bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Matured"] } };
-//     } else {
-//       query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
-//     }
-
-//     // Fetch paginated data
-//     const data = await CompanyModel.find(query)
-//       .sort({ AssignDate: -1 }) // Sort by AssignDate in descending order
-//       .limit(limit) // Implement pagination
-//       .skip(skip) // Implement pagination
-//       .lean();
-
-//     // Fetch redesigned data only for the relevant companies
-//     const companyIds = data.map(item => item.company);
-//     const redesignedData = await RedesignedLeadformModel.find({
-//       company: { $in: companyIds }
-//     }).select("company bookingDate bookingPublishDate").lean(); // Only select necessary fields
-
-//     // Create a map for quick access to redesigned data
-//     const redesignedMap = redesignedData.reduce((acc, item) => {
-//       acc[item.company] = {
-//         bookingDate: item.bookingDate,
-//         bookingPublishDate: item.bookingPublishDate
-//       };
-//       return acc;
-//     }, {});
-
-//     // Update data with booking information
-//     const updatedData = data.map(item => ({
-//       ...item,
-//       bookingDate: redesignedMap[item.company]?.bookingDate || null,
-//       bookingPublishDate: redesignedMap[item.company]?.bookingPublishDate || null
-//     }));
-
-//     // Filter reverted data
-//     const revertedData = updatedData.filter(item => item.RevertBackAcceptedCompanyRequest === 'Reject');
-
-//     // Fetch the total counts for each status
-//     const totalCounts = {
-//       notInterested: await CompanyModel.countDocuments({
-//         $or: [
-//           { ename: employeeName },
-//           { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-//           { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-//         ],
-//         Status: { $in: ["Not Interested", "Junk"] }
-//       }),
-//       interested: await CompanyModel.countDocuments({
-//         $or: [
-//           { ename: employeeName },
-//           { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-//           { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-//         ],
-//         Status: { $in: ["Interested", "FollowUp"] },
-//         bdmAcceptStatus: "NotForwarded"
-//       }),
-//       matured: await CompanyModel.countDocuments({
-//         $or: [
-//           { ename: employeeName },
-//           { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-//           { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-//         ],
-//         Status: { $in: ["Matured"] },
-//         bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] }
-//       }),
-//       forwarded: await CompanyModel.countDocuments({
-//         $or: [
-//           { ename: employeeName },
-//           { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-//           { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-//         ],
-//         Status: { $in: ["Interested", "FollowUp"] },
-//         bdmAcceptStatus: { $ne: "NotForwarded" }
-//       }),
-//       untouched: await CompanyModel.countDocuments({
-//         $or: [
-//           { ename: employeeName },
-//           { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-//           { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-//         ],
-//         Status: { $in: ["Untouched", "Busy", "Not Picked Up"] },
-//         bdmAcceptStatus: { $nin: ["Forwarded", "Accept", "Pending"] } // Use $nin to check for multiple values
-//       })
-//     };
-
-//     res.json({
-//       data: updatedData,
-//       revertedData,
-//       totalCounts: totalCounts // Ensure this is returned correctly
 //     });
+
+//     res.json(data);
 //   } catch (error) {
 //     console.error("Error fetching data:", error);
 //     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
+
+
+router.get("/employees/:ename", async (req, res) => {
+  try {
+    const employeeName = req.params.ename;
+    const limit = parseInt(req.query.limit) || 500; // Default limit to 500
+    const skip = parseInt(req.query.skip) || 0; // Default skip to 0
+    const dataStatus = req.query.dataStatus; // Extract the dataStatus from query parameters
+
+    // Create a base query
+    let query = {
+      $or: [
+        { ename: employeeName },
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+      ]
+    };
+
+    // Apply dataStatus filtering if provided
+    if (dataStatus === "Not Interested") {
+      query = { ...query, Status: { $in: ["Not Interested", "Junk"] } };
+    } else if (dataStatus === "FollowUp") {
+      query = { ...query, Status: "FollowUp", bdmAcceptStatus: "NotForwarded" };
+    } else if (dataStatus === "Interested") {
+      query = { ...query, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: "NotForwarded" };
+    } else if (dataStatus === "Forwarded") {
+      query = { ...query, bdmAcceptStatus: { $ne: "NotForwarded" }, Status: { $in: ["Interested", "FollowUp"] } };
+    } else if (dataStatus === "All") {
+      query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
+    } else if (dataStatus === "Matured") {
+      query = { ...query, bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Matured"] } };
+    } else {
+      query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
+    }
+
+    // Fetch paginated data
+    const data = await CompanyModel.find(query)
+      .sort({ AssignDate: -1 }) // Sort by AssignDate in descending order
+      .limit(limit) // Implement pagination
+      .skip(skip) // Implement pagination
+      .lean();
+
+    // Calculate the total number of documents matching the query
+    const totalDocument = await CompanyModel.countDocuments(query);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalDocument / limit);
+
+    // Fetch redesigned data only for the relevant companies
+    const companyIds = data.map(item => item._id);
+   
+    const redesignedData = await RedesignedLeadformModel.find({
+      company: { $in: companyIds }
+    }).select("company bookingDate bookingPublishDate").lean(); // Only select necessary fields
+
+    // Create a map for quick access to redesigned data
+    const redesignedMap = redesignedData.reduce((acc, item) => {
+      acc[item.company] = {
+        bookingDate: item.bookingDate,
+        bookingPublishDate: item.bookingPublishDate
+      };
+      return acc;
+    }, {});
+ 
+    // Update data with booking information
+    const updatedData = data.map(item => ({
+      ...item,
+      bookingDate: redesignedMap[item._id]?.bookingDate || null,
+      bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
+    }));
+
+    // Filter reverted data
+    const revertedData = updatedData.filter(item => item.RevertBackAcceptedCompanyRequest === 'Reject');
+
+    // Fetch the total counts for each status
+    const totalCounts = {
+      notInterested: await CompanyModel.countDocuments({
+        $or: [
+          { ename: employeeName },
+          { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+          { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+        ],
+        Status: { $in: ["Not Interested", "Junk"] }
+      }),
+      interested: await CompanyModel.countDocuments({
+        $or: [
+          { ename: employeeName },
+          { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+          { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+        ],
+        Status: { $in: ["Interested", "FollowUp"] },
+        bdmAcceptStatus: "NotForwarded"
+      }),
+      matured: await CompanyModel.countDocuments({
+        $or: [
+          { ename: employeeName },
+          { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+          { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+        ],
+        Status: { $in: ["Matured"] },
+        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] }
+      }),
+      forwarded: await CompanyModel.countDocuments({
+        $or: [
+          { ename: employeeName },
+          { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+          { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+        ],
+        Status: { $in: ["Interested", "FollowUp"] },
+        bdmAcceptStatus: { $ne: "NotForwarded" }
+      }),
+      untouched: await CompanyModel.countDocuments({
+        $or: [
+          { ename: employeeName },
+          { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+          { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+        ],
+        Status: { $in: ["Untouched", "Busy", "Not Picked Up"] },
+        bdmAcceptStatus: { $nin: ["Forwarded", "Accept", "Pending"] } // Use $nin to check for multiple values
+      })
+    };
+
+    res.json({
+      data: updatedData,
+      revertedData,
+      totalCounts: totalCounts,// Ensure this is returned correctly
+      totalPages: totalPages
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 router.post("/postData", async (req, res) => {
   const { selectedObjects, employeeSelection } = req.body
