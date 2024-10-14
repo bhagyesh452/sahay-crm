@@ -1256,7 +1256,7 @@ function EmployeePanelCopy() {
                             onCopy={(e) => {
                                 e.preventDefault();
                             }}
-                            className="page-body d-none"
+                            className="page-body"
                         >
                             <div className="container-xl">
                                 <div class="card-header my-tab">
