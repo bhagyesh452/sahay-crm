@@ -713,7 +713,7 @@ function EmployeePanelCopy() {
             queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage],
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
-                const response = await axios.get(`${secretKey}/company-data/employees/${cleanString(data.ename)}`, {
+                const response = await axios.get(`${secretKey}/company-data/employees-new/${cleanString(data.ename)}`, {
                     params: {
                         dataStatus: dataStatus,
                         limit: itemsPerPage,

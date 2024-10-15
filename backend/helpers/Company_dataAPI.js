@@ -1938,7 +1938,7 @@ router.get("/employees/:ename", async (req, res) => {
 });
 
 
-router.get("/employees/:ename", async (req, res) => {
+router.get("/employees-new/:ename", async (req, res) => {
   try {
     const employeeName = req.params.ename;
     const limit = parseInt(req.query.limit) || 500; // Default limit to 500
