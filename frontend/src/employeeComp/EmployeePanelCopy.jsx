@@ -1095,7 +1095,7 @@ function EmployeePanelCopy() {
                                     <IoIosClose style={{
                                         height: "36px",
                                         width: "32px",
-                                        color: "grey"
+                                        color: "grey" 
                                     }} />
                                 </button>
                             </div>
