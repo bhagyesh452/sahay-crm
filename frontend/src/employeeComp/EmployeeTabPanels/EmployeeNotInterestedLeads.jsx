@@ -10,11 +10,10 @@ import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import EmployeeNextFollowDate from '../ExtraComponents/EmployeeNextFollowUpDate';
-import CallHistory from '../CallHistory';
 
 
-function EmployeeInterestedLeads({
-    interestedData,
+function EmployeeNotInterestedLeads({
+    notInterestedLeads,
     isLoading,
     refetch,
     formatDateNew,
@@ -27,9 +26,7 @@ function EmployeeInterestedLeads({
     dataStatus,
     setdataStatus,
     ename,
-    email,
-    handleShowCallHistory,
-    handleCloseCallHistory
+    email
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -58,9 +55,6 @@ function EmployeeInterestedLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
-    // const hanleCloseCallHistory = () => {
-    //     setShowCallHistory(false);
-    // };
 
     return (
         <div className="RM-my-booking-lists">
@@ -74,10 +68,8 @@ function EmployeeInterestedLeads({
                                     <th>Compnay Name</th>
                                     <th>Compnay No</th>
                                     <th>Call History</th>
-                                    <th>Call History</th>
-                                    <th>Status</th>
-                                    <th>Remarks</th>
-                                    <th>Next FollowUp Date</th>
+                                    <th>BDE Status</th>
+                                    <th>BDE Remarks</th>
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
@@ -103,7 +95,7 @@ function EmployeeInterestedLeads({
                                 </tbody>
                             ) : (
                                 <tbody>
-                                    {interestedData.map((company, index) => (
+                                    {notInterestedLeads.map((company, index) => (
                                         <tr
                                             key={index}
                                             style={{ border: "1px solid #ddd" }}
@@ -122,9 +114,7 @@ function EmployeeInterestedLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                <LuHistory 
-                                                onClick={() => {
-                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                <LuHistory onClick={() => {
                                                     // setShowCallHistory(true);
                                                     // setClientNumber(company["Company Number"]);
                                                 }}
@@ -196,15 +186,7 @@ function EmployeeInterestedLeads({
                                                     />
                                                 </div>
                                             </td>
-                                            <td>
-                                                <EmployeeNextFollowDate
-                                                    key={`${company["Company Name"]}-${index}`}
-                                                    companyName={company["Company Name"]}
-                                                    id={company._id}
-                                                    nextFollowDate={company.bdeNextFollowUpDate}
-                                                    refetch={refetch}
-                                                />
-                                            </td>
+                                            
                                             <td>
                                                 {formatDateNew(
                                                     company["Company Incorporation Date  "]
@@ -218,7 +200,7 @@ function EmployeeInterestedLeads({
                                     ))}
                                 </tbody>
                             )}
-                            {interestedData && interestedData.length === 0 && !isLoading && (
+                            {notInterestedLeads && notInterestedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
                                         <td colSpan="11" className="p-2 particular">
@@ -229,7 +211,7 @@ function EmployeeInterestedLeads({
                             )}
                         </table>
                     </div>
-                    {interestedData && interestedData.length !== 0 && (
+                    {notInterestedLeads && notInterestedLeads.length !== 0 && (
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} className="pagination">
                             <button onClick={prevPage} disabled={currentPage === 0}>
                                 <IconChevronLeft />
@@ -280,4 +262,4 @@ function EmployeeInterestedLeads({
     );
 }
 
-export default EmployeeInterestedLeads;
+export default EmployeeNotInterestedLeads;

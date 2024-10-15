@@ -10,7 +10,7 @@ function EmployeeAddLeadDialog({
     secretKey,
     fetchData,
     ename,
-    fetchNewData
+    refetch
 }) {
     const [openNew, openchangeNew] = useState(false);
     const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
@@ -229,7 +229,7 @@ function EmployeeAddLeadDialog({
                     html: 'Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896',
                     icon: "success",
                 });
-                fetchNewData();
+                refetch();
                 closepopupNew();
             })
                 .catch((error) => {
