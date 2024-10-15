@@ -60,7 +60,7 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
-      console.error(`Error executing script: ${error.message}`);0
+      console.error(`Error executing script: ${error.message}`); 0
       socketIO.emit("test-script-output", {
         companyName: companyName,
         status: "error",
@@ -142,8 +142,8 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
 <p>Please find attached the certificate generated for your company.</p><p>Best regards,<br>Start-Up Sahay Private Limited</p>
                   `;
           // Emit socket message indicating the email is in the process of being sent
-        let updatedcompany;
-        updatedcompany =await RMCertificationModel.findOneAndUpdate(
+          let updatedcompany;
+          updatedcompany = await RMCertificationModel.findOneAndUpdate(
             { _id: company._id },
             {
               emailSent: "Email Sending"
@@ -188,7 +188,7 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
         } catch (error) {
           console.error(`Error sending email: ${error.message}`);
           // Emit error message if email sending fails
-         
+
           updatedcompany = await RMCertificationModel.findOneAndUpdate(
             { _id: company._id },
             {
@@ -247,6 +247,16 @@ router.get("/redesigned-final-leadData-rm", async (req, res) => {
     res.status(500).send("Error fetching data");
   }
 });
+
+router.get("/history-rm", async (req, res) => {
+  try {
+    const historyData = await RMCertificationHistoryModel.find()
+    res.status(200).json({message:"Data Fecthed" , data:historyData})
+  } catch (error) {
+    console.error("Error creating/updating data:", error);
+    res.status(500).send("Error creating/updating data");
+  }
+})
 
 router.post("/post-rmservicesdata", async (req, res) => {
   const { dataToSend } = req.body;
