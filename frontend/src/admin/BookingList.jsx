@@ -246,7 +246,7 @@ function BookingList() {
     const latestBooking = bookingsWithDates.find(
       (booking) => booking.bookingDate.getTime() === latestDate.getTime()
     );
-    console.log("latestBooking", latestBooking.totalAmount)
+    // console.log("latestBooking", latestBooking.totalAmount)
     // Return the total amount for the latest booking (parse it to ensure it is a number)
     return latestBooking
       ? parseInt(latestBooking.totalAmount)
@@ -805,7 +805,7 @@ function BookingList() {
           <div className="container-xl">
             <div className="booking_list_Dtl_box">
               <div className="row m-0">
-                {/* --------booking list left Part---------*/}
+                {/* --------booking list left-part---------*/}
                 <div className="col-4 p-0">
                   <div className="booking-list-card">
                     <div className="booking-list-heading">
@@ -825,16 +825,25 @@ function BookingList() {
                                 : "bookings_Company_Name"
                             }
                             onClick={() => {
-                              setCurrentLeadform(
-                                leadFormData.find(
-                                  (data) =>
-                                    data["Company Name"] === obj["Company Name"]
-                                )
-                              );
-                              setActiveIndexBooking(1);
+                              // Combine main booking and more bookings into one array
+                              const allBookings = [obj, ...obj.moreBookings];
+                          
+                              // Find the latest booking by comparing booking dates
+                              const latestBooking = allBookings.reduce((latest, current) => {
+                                  const latestDate = new Date(latest.bookingDate);
+                                  const currentDate = new Date(current.bookingDate);
+                                  return currentDate > latestDate ? current : latest;
+                              });
+                              console.log(latestBooking)
+                          
+                              // Set current lead form to the clicked object
+                              setCurrentLeadform(leadFormData.find((data) => data["Company Name"] === obj["Company Name"]));
+                          
+                              // Set active index to the index of the latest booking in the combined array
+                              setActiveIndexBooking(allBookings.indexOf(latestBooking) + 1); // This will now set the active index to the latest booking
                               setActiveIndex(0);
                               setActiveIndexMoreBookingServices(0);
-                            }}
+                          }}
                           >
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="b_cmpny_name cName-text-wrap">
@@ -854,46 +863,6 @@ function BookingList() {
                               </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                              {/* <div className="b_Services_name d-flex flex-wrap">
-                                {(obj.services.length !== 0 ||
-                                  (obj.moreBookings &&
-                                    obj.moreBookings.length !== 0)) &&
-                                  [
-                                    ...obj.services,
-                                    ...(obj.moreBookings || []).map(
-                                      (booking) => booking.services
-                                    ),
-                                  ]
-                                    .flat()
-                                    .slice(0, 3) // Limit to first 3 services
-                                    .map((service, index, array) => (
-                                      <>
-                                        <div
-                                          className="sname mb-1"
-                                          key={service.serviceId}
-                                        >
-                                          {service.serviceName}
-                                        </div>
-
-                                        {index === 2 &&
-                                          Math.max(
-                                            obj.services.length +
-                                            obj.moreBookings.length -
-                                            3,
-                                            0
-                                          ) !== 0 && (
-                                            <div className="sname mb-1">
-                                              {`+${Math.max(
-                                                obj.services.length +
-                                                obj.moreBookings.length -
-                                                3,
-                                                0
-                                              )}`}
-                                            </div>
-                                          )}
-                                      </>
-                                    ))}
-                              </div> */}
                               <div className="b_Services_name d-flex flex-wrap">
                                 {(obj.services.length !== 0 ||
                                   (obj.moreBookings &&
@@ -1297,7 +1266,12 @@ function BookingList() {
                               currentLeadform.bookingPublishDate ? (
                                 <li className="nav-item rm_bkng_item_no ms-auto">
                                   <div className="rm_bkng_item_no nav-link clr-ff8800">
-                                    {formatDatePro(
+                                  <span style={{
+                                    color: "#797373",
+                                    marginRight: "2px"
+                                  }}
+                                  >{"Publish On : "} </span>
+                                     {formatDatePro(
                                       currentLeadform.bookingPublishDate
                                     )}{" "}
                                     at{" "}
@@ -1317,7 +1291,12 @@ function BookingList() {
                                         className="nav-item rm_bkng_item_no ms-auto"
                                       >
                                         <div className="rm_bkng_item_no nav-link clr-ff8800">
-                                          {formatDatePro(
+                                        <span style={{
+                                    color: "#797373",
+                                    marginRight: "2px"
+                                  }}
+                                  >{"Publish On : "} </span>
+                                           {formatDatePro(
                                             obj.bookingPublishDate
                                           )}{" "}
                                           at{" "}
@@ -1349,7 +1328,12 @@ function BookingList() {
                               </li>
                               <li className="nav-item rm_bkng_item_no ms-auto">
                                 <div className="rm_bkng_item_no nav-link clr-ff8800">
-                                  {currentLeadform &&
+                                  <span style={{
+                                    color: "#797373",
+                                    marginRight: "2px"
+                                  }}
+                                  >{"Publish On : "} </span>
+                                   {currentLeadform &&
                                   currentLeadform.bookingPublishDate
                                     ? `${formatDatePro(
                                         currentLeadform.bookingPublishDate

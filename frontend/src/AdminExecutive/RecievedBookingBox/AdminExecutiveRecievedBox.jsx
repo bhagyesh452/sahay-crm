@@ -344,41 +344,41 @@ function AdminExecutiveRecievedBox() {
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data;
-    
+
             console.log("Raw Data from API:", data);
-    
+
             // Filter out documents where shouldDisableButton condition is true
             const validDocuments = data.filter(obj => {
                 const combinedServices = [
                     ...(obj.services || []),
                     ...(obj.moreBookings || []).flatMap(booking => booking.services || [])
                 ];
-                
+
                 // Log the services and the certification labels for comparison
                 console.log("Combined Services for filtering:", combinedServices);
                 console.log("Certification Labels:", certificationLabels);
-    
+
                 const shouldDisableButton = !combinedServices.some(service => certificationLabels.some(label => service.serviceName.includes(label)));
-    
+
                 return !shouldDisableButton; // Exclude documents where shouldDisableButton is true
             });
-    
+
             console.log("Valid Documents after filter:", validDocuments);
-    
+
             // Filter and sort valid documents based on lastActionDate
             const filteredAndSortedData = validDocuments
                 .filter(obj => {
                     const mainBookingDate = parseDate(obj.bookingDate);
                     mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-    
+
                     const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
                         const bookingDate = parseDate(booking.bookingDate);
                         bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
                         return bookingDate >= today;
                     });
-    
+
                     const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
-    
+
                     return isDateValid && (obj.isVisibleToAdminExecutive !== false && obj.permanentlDeleteFromAdminExecutive !== true);
                 })
                 .sort((a, b) => {
@@ -386,37 +386,37 @@ function AdminExecutiveRecievedBox() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-    
+
             console.log("Filtered and Sorted Data:", filteredAndSortedData);
-    
+
             const processedData = filteredAndSortedData.map(item => {
                 const combinedServices = [
                     ...(item.servicesTakenByAdminExecutive || []),
                     ...(item.moreBookings || []).flatMap(booking => booking.servicesTakenByAdminExecutive || [])
                 ];
-    
+
                 const uniqueServices = [...new Set(combinedServices)];
-    
+
                 console.log("Processed Services for Company:", uniqueServices);
                 return {
                     ...item,
                     combinedServices: uniqueServices
                 };
             });
-    
+
             console.log("Processed Data:", processedData);
-    
+
             const filteredServicesData = filteredAndSortedData.map(item => {
                 const primaryServices = item.services || [];
                 const moreBookingServices = item.moreBookings
                     ? item.moreBookings.flatMap((booking) => booking.services || [])
                     : [];
-    
+
                 const combinedServices = [
                     ...primaryServices,
                     ...moreBookingServices
                 ];
-    
+
                 // Filter services based on certificationLabels and bookingDate >= today
                 const filteredServices = combinedServices.filter((service) => {
                     const serviceBookingDate = item.moreBookings.some(booking =>
@@ -426,48 +426,48 @@ function AdminExecutiveRecievedBox() {
                             booking.services.includes(service)
                         ).bookingDate
                     ) : new Date(item.bookingDate);
-    
+
                     serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-    
+
                     return certificationLabels.includes(service.serviceName) && serviceBookingDate >= today && service.withDSC;
                 });
-    
+
                 // Log which services are being compared and filtered
                 console.log("Filtered Services for Company:", filteredServices.map((service) => service.serviceName));
-    
+
                 // Map through the filtered services to get service names
                 return filteredServices.map((service) => service.serviceName);
             });
-    
+
             console.log("Filtered Services Data (All Companies):", filteredServicesData);
-    
+
             const nonMatchingCompanies = processedData.filter((item, index) => {
                 const filteredServiceNames = filteredServicesData[index];
-    
+
                 const noCertificationServices = !(
                     item.servicesTakenByAdminExecutive && item.servicesTakenByAdminExecutive.length > 0 ||
                     (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByAdminExecutive && booking.servicesTakenByAdminExecutive.length > 0))
                 );
-    
+
                 console.log("Comparing Services for Company:", {
                     combinedServices: item.combinedServices,
                     filteredServiceNames,
                     noCertificationServices
                 });
-    
+
                 return !(item.combinedServices.length === filteredServiceNames.length &&
                     item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;
             });
-    
+
             console.log("Non-Matching Companies:", nonMatchingCompanies);
-    
+
             const completeData = response.data
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA;
                 });
-    
+
             setLeadFormData(nonMatchingCompanies);
             setRedesignedData(nonMatchingCompanies);
             setCompleteRedesignedData(completeData);
@@ -477,7 +477,7 @@ function AdminExecutiveRecievedBox() {
             setOpenBacdrop(false);
         }
     };
-    
+
 
     console.log("leadformdata", leadFormData)
 
@@ -1103,19 +1103,25 @@ function AdminExecutiveRecievedBox() {
                                                         : "rm_bking_list_box_item"
                                                 }
                                                     onClick={() => {
+                                                        // Combine main booking and more bookings into one array
+                                                        const allBookings = [obj, ...obj.moreBookings];
 
-                                                        setCurrentLeadform(
-                                                            leadFormData.find(
-                                                                (data) =>
-                                                                    data["Company Name"] === obj["Company Name"]
-                                                            )
-                                                        );
-                                                        setActiveIndexBooking(1);
+                                                        // Find the latest booking by comparing booking dates
+                                                        const latestBooking = allBookings.reduce((latest, current) => {
+                                                            const latestDate = new Date(latest.bookingDate);
+                                                            const currentDate = new Date(current.bookingDate);
+                                                            return currentDate > latestDate ? current : latest;
+                                                        });
+                                                        console.log(latestBooking)
+
+                                                        // Set current lead form to the clicked object
+                                                        setCurrentLeadform(leadFormData.find((data) => data["Company Name"] === obj["Company Name"]));
+
+                                                        // Set active index to the index of the latest booking in the combined array
+                                                        setActiveIndexBooking(allBookings.indexOf(latestBooking) + 1); // This will now set the active index to the latest booking
                                                         setActiveIndex(0);
-                                                        setActiveIndexMoreBookingServices(0)
-
-                                                    }
-                                                    }
+                                                        setActiveIndexMoreBookingServices(0);
+                                                    }}
                                                 >
                                                     <div className='d-flex justify-content-between align-items-center'>
                                                         <div className='rm_cmpny_name_services'>
@@ -1510,6 +1516,11 @@ function AdminExecutiveRecievedBox() {
                                                             {activeIndexBooking === 1 && currentLeadform.bookingPublishDate ? (
                                                                 <li className="nav-item rm_bkng_item_no ms-auto">
                                                                     <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                                                        <span style={{
+                                                                            color: "#797373",
+                                                                            marginRight: "2px"
+                                                                        }}
+                                                                        >{"Publish On : "} </span>
                                                                         {formatDatePro(currentLeadform.bookingPublishDate)} at {formatTime(currentLeadform.bookingPublishDate)}
                                                                     </div>
                                                                 </li>
@@ -1519,6 +1530,11 @@ function AdminExecutiveRecievedBox() {
                                                                     index + 2 === activeIndexBooking && obj.bookingPublishDate && (
                                                                         <li key={index} className="nav-item rm_bkng_item_no ms-auto">
                                                                             <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                                                                <span style={{
+                                                                                    color: "#797373",
+                                                                                    marginRight: "2px"
+                                                                                }}
+                                                                                >{"Publish On : "} </span>
                                                                                 {formatDatePro(obj.bookingPublishDate)} at {formatTime(obj.bookingPublishDate)}
                                                                             </div>
                                                                         </li>
@@ -1543,6 +1559,11 @@ function AdminExecutiveRecievedBox() {
                                                             </li>
                                                             <li className="nav-item rm_bkng_item_no ms-auto">
                                                                 <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                                                    <span style={{
+                                                                        color: "#797373",
+                                                                        marginRight: "2px"
+                                                                    }}
+                                                                    >{"Publish On : "} </span>
                                                                     {currentLeadform && currentLeadform.bookingPublishDate
                                                                         ? `${formatDatePro(currentLeadform.bookingPublishDate)} at ${formatTime(currentLeadform.bookingPublishDate)}`
                                                                         : 'No Date Available'}
@@ -2313,43 +2334,43 @@ function AdminExecutiveRecievedBox() {
                                                                                                                 alt="Default Image"
                                                                                                             />
                                                                                                         ))} */}
-                                                                                                        {currentLeadform &&
-                                          currentLeadform.paymentReceipt &&
-                                          currentLeadform.paymentReceipt[0] &&
-                                          currentLeadform.paymentReceipt[0]
-                                            .filename && // Ensure filename exists
-                                          (currentLeadform.paymentReceipt[0].filename
-                                            .toLowerCase()
-                                            .endsWith(".pdf") ? (
-                                            <PdfImageViewerAdmin
-                                              type="paymentrecieptpdf"
-                                              path={
-                                                currentLeadform
-                                                  .paymentReceipt[0].filename
-                                              }
-                                              companyName={
-                                                currentLeadform["Company Name"]
-                                              }
-                                            />
-                                          ) : currentLeadform.paymentReceipt[0].filename
-                                              .toLowerCase()
-                                              .endsWith(".png") ||
-                                            currentLeadform.paymentReceipt[0].filename
-                                              .toLowerCase()
-                                              .endsWith(".jpg") ||
-                                            currentLeadform.paymentReceipt[0].filename
-                                              .toLowerCase()
-                                              .endsWith(".jpeg") ? (
-                                            <img
-                                              src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
-                                              alt="Receipt Image"
-                                            />
-                                          ) : (
-                                            <img
-                                              src={wordimg}
-                                              alt="Default Image"
-                                            />
-                                          ))}
+                                                                                                    {currentLeadform &&
+                                                                                                        currentLeadform.paymentReceipt &&
+                                                                                                        currentLeadform.paymentReceipt[0] &&
+                                                                                                        currentLeadform.paymentReceipt[0]
+                                                                                                            .filename && // Ensure filename exists
+                                                                                                        (currentLeadform.paymentReceipt[0].filename
+                                                                                                            .toLowerCase()
+                                                                                                            .endsWith(".pdf") ? (
+                                                                                                            <PdfImageViewerAdmin
+                                                                                                                type="paymentrecieptpdf"
+                                                                                                                path={
+                                                                                                                    currentLeadform
+                                                                                                                        .paymentReceipt[0].filename
+                                                                                                                }
+                                                                                                                companyName={
+                                                                                                                    currentLeadform["Company Name"]
+                                                                                                                }
+                                                                                                            />
+                                                                                                        ) : currentLeadform.paymentReceipt[0].filename
+                                                                                                            .toLowerCase()
+                                                                                                            .endsWith(".png") ||
+                                                                                                            currentLeadform.paymentReceipt[0].filename
+                                                                                                                .toLowerCase()
+                                                                                                                .endsWith(".jpg") ||
+                                                                                                            currentLeadform.paymentReceipt[0].filename
+                                                                                                                .toLowerCase()
+                                                                                                                .endsWith(".jpeg") ? (
+                                                                                                            <img
+                                                                                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                                                                                alt="Receipt Image"
+                                                                                                            />
+                                                                                                        ) : (
+                                                                                                            <img
+                                                                                                                src={wordimg}
+                                                                                                                alt="Default Image"
+                                                                                                            />
+                                                                                                        ))}
                                                                                                 </div>
                                                                                                 <div className="booking-docs-preview-text">
                                                                                                     <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
@@ -2443,55 +2464,55 @@ function AdminExecutiveRecievedBox() {
                                                                                             </div>
                                                                                         </div>
                                                                                     ))} */}
-                                                                                     {currentLeadform &&
-                                  currentLeadform.otherDocs &&
-                                  currentLeadform.otherDocs.map((obj) => (
-                                    <div
-                                      className="col-sm-2 mb-1"
-                                      key={obj.filename}
-                                    >
-                                      <div className="booking-docs-preview">
-                                        <div
-                                          className="booking-docs-preview-img"
-                                          onClick={() =>
-                                            handleViewPdOtherDocs(
-                                              obj.filename,
-                                              currentLeadform["Company Name"]
-                                            )
-                                          }
-                                        >
-                                          {obj.filename && // Ensure filename exists
-                                          obj.filename
-                                            .toLowerCase()
-                                            .endsWith(".pdf") ? (
-                                            <PdfImageViewerAdmin
-                                              type="pdf"
-                                              path={obj.filename}
-                                              companyName={
-                                                currentLeadform["Company Name"]
-                                              }
-                                            />
-                                          ) : (
-                                            obj.filename && (
-                                              <img
-                                                src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
-                                                alt={pdfimg}
-                                              />
-                                            )
-                                          )}
-                                        </div>
-                                        <div className="booking-docs-preview-text">
-                                          <p
-                                            className="booking-img-name-txtwrap text-wrap m-auto m-0"
-                                            title={obj.originalname}
-                                          >
-                                            {obj.originalname}
-                                          </p>
-                                        </div>
-                                      </div>
-                                        
-                                    </div>
-                                  ))}
+                                                                                {currentLeadform &&
+                                                                                    currentLeadform.otherDocs &&
+                                                                                    currentLeadform.otherDocs.map((obj) => (
+                                                                                        <div
+                                                                                            className="col-sm-2 mb-1"
+                                                                                            key={obj.filename}
+                                                                                        >
+                                                                                            <div className="booking-docs-preview">
+                                                                                                <div
+                                                                                                    className="booking-docs-preview-img"
+                                                                                                    onClick={() =>
+                                                                                                        handleViewPdOtherDocs(
+                                                                                                            obj.filename,
+                                                                                                            currentLeadform["Company Name"]
+                                                                                                        )
+                                                                                                    }
+                                                                                                >
+                                                                                                    {obj.filename && // Ensure filename exists
+                                                                                                        obj.filename
+                                                                                                            .toLowerCase()
+                                                                                                            .endsWith(".pdf") ? (
+                                                                                                        <PdfImageViewerAdmin
+                                                                                                            type="pdf"
+                                                                                                            path={obj.filename}
+                                                                                                            companyName={
+                                                                                                                currentLeadform["Company Name"]
+                                                                                                            }
+                                                                                                        />
+                                                                                                    ) : (
+                                                                                                        obj.filename && (
+                                                                                                            <img
+                                                                                                                src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                                                                                                alt={pdfimg}
+                                                                                                            />
+                                                                                                        )
+                                                                                                    )}
+                                                                                                </div>
+                                                                                                <div className="booking-docs-preview-text">
+                                                                                                    <p
+                                                                                                        className="booking-img-name-txtwrap text-wrap m-auto m-0"
+                                                                                                        title={obj.originalname}
+                                                                                                    >
+                                                                                                        {obj.originalname}
+                                                                                                    </p>
+                                                                                                </div>
+                                                                                            </div>
+
+                                                                                        </div>
+                                                                                    ))}
                                                                                 {/* ---------- Upload Documents From Preview -----------*/}
                                                                                 <div className="col-sm-2 mb-1">
                                                                                     <div

@@ -339,7 +339,6 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
 
                 } else {
                     dataToSend.bdmWork = false;
-
                 }
                 // console.log(isUpdateMode, "updateMode")
                 console.log("Before creating employee data is :", dataToSend);
