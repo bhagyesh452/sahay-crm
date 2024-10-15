@@ -75,7 +75,7 @@ function EmployeeGeneralLeads({
                                     <th>Assign Date</th>
                                 </tr>
                             </thead>
-                            {isLoading ? (
+                            {isLoading && dataStatus !== "All"  ? (
                                 <tbody>
                                     <tr>
                                         <td colSpan="11" >

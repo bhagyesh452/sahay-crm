@@ -77,7 +77,7 @@ function EmployeeMaturedLeads({
                             <th>Booking Publish Date</th>
                         </tr>
                     </thead>
-                    {isLoading ? (
+                    {isLoading && dataStatus !== "Matured" ? (
                         <tbody>
                             <tr>
                                 <td colSpan="11" >
@@ -213,7 +213,7 @@ function EmployeeMaturedLeads({
                 </table>
                 
             </div>
-        {maturedLeads && maturedLeads.length !== 0 && (
+        {maturedLeads && maturedLeads.length !== 0 &&  (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} className="pagination">
                 <button onClick={prevPage} disabled={currentPage === 0}>
                     <IconChevronLeft />

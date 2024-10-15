@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useCallback } from "react";
 import EmpNav from "./EmpNav.js";
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
 import axios from "axios";
-import { IconChevronLeft, IconEye } from "@tabler/icons-react";
-import { IconChevronRight } from "@tabler/icons-react";
-import { Drawer } from "@mui/material";
-import { IoIosClose } from "react-icons/io";
-import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+// import { IconChevronLeft, IconEye } from "@tabler/icons-react";
+// import { IconChevronRight } from "@tabler/icons-react";
+// import { Drawer } from "@mui/material";
+// import { IoIosClose } from "react-icons/io";
+// import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import Swal from "sweetalert2";
 import "../assets/table.css";
 import "../assets/styles.css";
@@ -49,6 +49,7 @@ import EmployeeGeneralLeads from "./EmployeeTabPanels/EmployeeGeneralLeads.jsx";
 import { useQuery } from '@tanstack/react-query';
 import EmployeeInterestedLeads from "./EmployeeTabPanels/EmployeeInterestedLeads.jsx";
 import EmployeeMaturedLeads from "./EmployeeTabPanels/EmployeeMaturedLeads.jsx";
+import debounce from 'lodash/debounce';
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -163,39 +164,39 @@ function EmployeePanelCopy() {
         window.location.href = url;
     }
 
-    
+
 
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
     }, [data.ename]);
 
-    useEffect(() => {
-        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: '/socket.io',
-            reconnection: true,
-            transports: ['websocket'],
-        });
-        socket.on("connect", () => {
-            //console.log("Socket connected with ID:", socket.id);
-            console.log('Connection Successful to socket io')
-            setSocketID(socket.id);
-        });
+    // useEffect(() => {
+    //     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+    //         secure: true, // Use HTTPS
+    //         path: '/socket.io',
+    //         reconnection: true,
+    //         transports: ['websocket'],
+    //     });
+    //     socket.on("connect", () => {
+    //         //console.log("Socket connected with ID:", socket.id);
+    //         console.log('Connection Successful to socket io')
+    //         setSocketID(socket.id);
+    //     });
 
-        socket.on("request-seen", () => {
-            // Call fetchRequestDetails function to update request details
-            //fetchRequestDetails();
-        });
+    //     socket.on("request-seen", () => {
+    //         // Call fetchRequestDetails function to update request details
+    //         //fetchRequestDetails();
+    //     });
 
-        socket.on("data-sent", () => {
-            //fetchRequestDetails();
-        });
+    //     socket.on("data-sent", () => {
+    //         //fetchRequestDetails();
+    //     });
 
-        // Clean up the socket connection when the component unmounts
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
+    //     // Clean up the socket connection when the component unmounts
+    //     return () => {
+    //         socket.disconnect();
+    //     };
+    // }, []);
 
 
     const fetchData = async () => {
@@ -212,12 +213,9 @@ function EmployeePanelCopy() {
         }
     };
 
-    
-    
-    
     useEffect(() => {
         fetchData();
-       
+
     }, [userId]);
 
 
@@ -262,92 +260,92 @@ function EmployeePanelCopy() {
         setFilteredData(filtered);
     };
 
-    useEffect(() => {
-        if (filteredData.length !== 0) {
-            //setEmployeeData(filteredData)
-            if (dataStatus === 'All') {
-                setEmployeeData(
-                    filteredData.filter(
-                        (obj) =>
-                            obj.Status === "Busy" ||
-                            obj.Status === "Not Picked Up" ||
-                            obj.Status === "Untouched"
-                    )
-                );
-            } else if (dataStatus === 'Interested') {
-                setEmployeeData(
-                    filteredData.filter(
-                        (obj) =>
-                            (obj.Status === "Interested" || obj.Status === "FollowUp") &&
-                            obj.bdmAcceptStatus === "NotForwarded" &&
-                            obj.bdmAcceptStatus !== "Pending" &&
-                            obj.bdmAcceptStatus !== "Accept"
-                    )
-                );
-            } else if (dataStatus === 'Matured') {
-                setEmployeeData(
-                    filteredData
-                        .filter(
-                            (obj) =>
-                                obj.Status === "Matured" &&
-                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                        )
-                );
-            } else if (dataStatus === 'Forwarded') {
-                setEmployeeData(
-                    filteredData
-                        .filter(
-                            (obj) =>
-                                (obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept') &&
-                                obj.bdmAcceptStatus !== "NotForwarded" &&
-                                obj.Status !== "Not Interested" &&
-                                obj.Status !== "Busy" &&
-                                obj.Status !== "Junk" &&
-                                obj.Status !== "Not Picked Up" &&
-                                obj.Status !== "Matured"
-                        )
-                        .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
-                );
-            } else if (dataStatus === 'NotInterested') {
-                setEmployeeData(
-                    filteredData.filter(
-                        (obj) =>
-                            (obj.Status === "Not Interested" ||
-                                obj.Status === "Junk") &&
-                            (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                    )
-                );
-            }
-            if (filteredData.length === 1) {
-                const currentStatus = filteredData[0].Status; // Access Status directly
-                if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-                    (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
-                    setdataStatus('All')
-                } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-                    currentStatus === 'Interested') {
-                    setdataStatus('Interested')
-                } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
-                    currentStatus === 'FollowUp') {
-                    setdataStatus('Interested')
-                } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
-                    setdataStatus('Matured')
-                } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
-                    currentStatus !== "Not Interested" &&
-                    currentStatus !== "Busy" &&
-                    currentStatus !== 'Junk' &&
-                    currentStatus !== 'Not Picked Up' &&
-                    currentStatus !== 'Matured') {
-                    setdataStatus('Forwarded')
-                } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
-                    setdataStatus('NotInterested')
-                }
-            }
-        } else {
-            setEmployeeData(filteredData)
-        }
+    // useEffect(() => {
+    //     if (filteredData.length !== 0) {
+    //         //setEmployeeData(filteredData)
+    //         if (dataStatus === 'All') {
+    //             setEmployeeData(
+    //                 filteredData.filter(
+    //                     (obj) =>
+    //                         obj.Status === "Busy" ||
+    //                         obj.Status === "Not Picked Up" ||
+    //                         obj.Status === "Untouched"
+    //                 )
+    //             );
+    //         } else if (dataStatus === 'Interested') {
+    //             setEmployeeData(
+    //                 filteredData.filter(
+    //                     (obj) =>
+    //                         (obj.Status === "Interested" || obj.Status === "FollowUp") &&
+    //                         obj.bdmAcceptStatus === "NotForwarded" &&
+    //                         obj.bdmAcceptStatus !== "Pending" &&
+    //                         obj.bdmAcceptStatus !== "Accept"
+    //                 )
+    //             );
+    //         } else if (dataStatus === 'Matured') {
+    //             setEmployeeData(
+    //                 filteredData
+    //                     .filter(
+    //                         (obj) =>
+    //                             obj.Status === "Matured" &&
+    //                             (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+    //                     )
+    //             );
+    //         } else if (dataStatus === 'Forwarded') {
+    //             setEmployeeData(
+    //                 filteredData
+    //                     .filter(
+    //                         (obj) =>
+    //                             (obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept') &&
+    //                             obj.bdmAcceptStatus !== "NotForwarded" &&
+    //                             obj.Status !== "Not Interested" &&
+    //                             obj.Status !== "Busy" &&
+    //                             obj.Status !== "Junk" &&
+    //                             obj.Status !== "Not Picked Up" &&
+    //                             obj.Status !== "Matured"
+    //                     )
+    //                     .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+    //             );
+    //         } else if (dataStatus === 'NotInterested') {
+    //             setEmployeeData(
+    //                 filteredData.filter(
+    //                     (obj) =>
+    //                         (obj.Status === "Not Interested" ||
+    //                             obj.Status === "Junk") &&
+    //                         (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+    //                 )
+    //             );
+    //         }
+    //         if (filteredData.length === 1) {
+    //             const currentStatus = filteredData[0].Status; // Access Status directly
+    //             if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+    //                 (currentStatus === 'Busy' || currentStatus === 'Not Picked Up' || currentStatus === 'Untouched')) {
+    //                 setdataStatus('All')
+    //             } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+    //                 currentStatus === 'Interested') {
+    //                 setdataStatus('Interested')
+    //             } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
+    //                 currentStatus === 'FollowUp') {
+    //                 setdataStatus('Interested')
+    //             } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
+    //                 setdataStatus('Matured')
+    //             } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
+    //                 currentStatus !== "Not Interested" &&
+    //                 currentStatus !== "Busy" &&
+    //                 currentStatus !== 'Junk' &&
+    //                 currentStatus !== 'Not Picked Up' &&
+    //                 currentStatus !== 'Matured') {
+    //                 setdataStatus('Forwarded')
+    //             } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Not Interested') {
+    //                 setdataStatus('NotInterested')
+    //             }
+    //         }
+    //     } else {
+    //         setEmployeeData(filteredData)
+    //     }
 
-    }, [filteredData])
-   
+    // }, [filteredData])
+
 
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
@@ -374,7 +372,7 @@ function EmployeePanelCopy() {
         return `${year}-${month}-${day}`;
     }
 
-   
+
 
     // --------------------------------------forward to bdm function---------------------------------------------\
 
@@ -539,167 +537,156 @@ function EmployeePanelCopy() {
 
     }
 
-
-    //console.log(feedbackRemarks, feedbakPo
-    const functionCalculateBookingDate = (id) => {
-        const bookingObj = redesignedData.find(company => company.company === id);
-        return bookingObj ? formatDate(bookingObj.bookingDate) : "N/A"
-    }
-    const functionCalculatePublishDate = (id) => {
-        const bookingObj = redesignedData.find(company => company.company === id);
-        return bookingObj ? formatDate(bookingObj.bookingPublishDate) : "N/A"
-    }
-
     //----------------filter for employee section-----------------------------
 
-    const functionCloseFilterDrawer = () => {
-        setOpenFilterDrawer(false)
-    }
+    // const functionCloseFilterDrawer = () => {
+    //     setOpenFilterDrawer(false)
+    // }
 
-    const currentYear = new Date().getFullYear();
-    const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-    //Create an array of years from 2018 to the current year
-    const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+    // const currentYear = new Date().getFullYear();
+    // const months = [
+    //     "January", "February", "March", "April", "May", "June",
+    //     "July", "August", "September", "October", "November", "December"
+    // ];
+    // //Create an array of years from 2018 to the current year
+    // const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
 
-    useEffect(() => {
-        let monthIndex;
-        if (selectedYear && selectedMonth) {
-            monthIndex = months.indexOf(selectedMonth);
-            setMonthIndex(monthIndex + 1)
-            const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
-            setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
-        } else {
-            setDaysInMonth([]);
-        }
-    }, [selectedYear, selectedMonth]);
+    // useEffect(() => {
+    //     let monthIndex;
+    //     if (selectedYear && selectedMonth) {
+    //         monthIndex = months.indexOf(selectedMonth);
+    //         setMonthIndex(monthIndex + 1)
+    //         const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
+    //         setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
+    //     } else {
+    //         setDaysInMonth([]);
+    //     }
+    // }, [selectedYear, selectedMonth]);
 
-    useEffect(() => {
-        if (selectedYear && selectedMonth && selectedDate) {
-            const monthIndex = months.indexOf(selectedMonth) + 1;
-            const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
-            const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-            const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
-            setSelectedCompanyIncoDate(companyIncoDate);
-        }
-    }, [selectedYear, selectedMonth, selectedDate]);
+    // useEffect(() => {
+    //     if (selectedYear && selectedMonth && selectedDate) {
+    //         const monthIndex = months.indexOf(selectedMonth) + 1;
+    //         const formattedMonth = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
+    //         const formattedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+    //         const companyIncoDate = `${selectedYear}-${formattedMonth}-${formattedDate}`;
+    //         setSelectedCompanyIncoDate(companyIncoDate);
+    //     }
+    // }, [selectedYear, selectedMonth, selectedDate]);
 
-    const handleFilterData = async (page = 1, limit = itemsPerPage) => {
-        try {
-            setIsFilter(true);
-            setOpenBacdrop(true);
+    // const handleFilterData = async (page = 1, limit = itemsPerPage) => {
+    //     try {
+    //         setIsFilter(true);
+    //         setOpenBacdrop(true);
 
-            const response = await axios.get(`${secretKey}/company-data/filter-employee-leads`, {
-                params: {
-                    employeeName,
-                    selectedStatus,
-                    selectedState,
-                    selectedNewCity,
-                    selectedYear,
-                    monthIndex,
-                    selectedAssignDate,
-                    selectedCompanyIncoDate,
-                    page,
-                    limit
-                }
-            });
+    //         const response = await axios.get(`${secretKey}/company-data/filter-employee-leads`, {
+    //             params: {
+    //                 employeeName,
+    //                 selectedStatus,
+    //                 selectedState,
+    //                 selectedNewCity,
+    //                 selectedYear,
+    //                 monthIndex,
+    //                 selectedAssignDate,
+    //                 selectedCompanyIncoDate,
+    //                 page,
+    //                 limit
+    //             }
+    //         });
 
-            if (
-                !selectedStatus &&
-                !selectedState &&
-                !selectedNewCity &&
-                !selectedYear &&
-                !selectedCompanyIncoDate &&
-                !selectedAssignDate
-            ) {
-                // If no filters are applied, reset the filter state and stop the backdrop
-                setIsFilter(false);
-            } else {
-                // Update the employee data with the filtered results
-                // console.log("response.data", response.data)
-                setFilteredData(response.data)
-            }
-        } catch (error) {
-            console.log('Error applying filter', error.message);
-        } finally {
-            setOpenBacdrop(false);
-            setOpenFilterDrawer(false);
-        }
-    };
-    // console.log("filteredData", filteredData)
+    //         if (
+    //             !selectedStatus &&
+    //             !selectedState &&
+    //             !selectedNewCity &&
+    //             !selectedYear &&
+    //             !selectedCompanyIncoDate &&
+    //             !selectedAssignDate
+    //         ) {
+    //             // If no filters are applied, reset the filter state and stop the backdrop
+    //             setIsFilter(false);
+    //         } else {
+    //             // Update the employee data with the filtered results
+    //             // console.log("response.data", response.data)
+    //             setFilteredData(response.data)
+    //         }
+    //     } catch (error) {
+    //         console.log('Error applying filter', error.message);
+    //     } finally {
+    //         setOpenBacdrop(false);
+    //         setOpenFilterDrawer(false);
+    //     }
+    // };
+    // // console.log("filteredData", filteredData)
 
-    const handleClearFilter = () => {
-        setIsFilter(false)
-        setSelectedStatus('')
-        setSelectedState('')
-        setSelectedNewCity('')
-        setSelectedYear('')
-        setSelectedMonth('')
-        setSelectedDate(0)
-        setSelectedAssignDate(null)
-        setCompanyIncoDate(null)
-        setSelectedCompanyIncoDate(null)
-        setFilteredData([])
-        //fetchNewData()
-        //fetchData(1, latestSortCount)
-    }
-    // Function to get current date in YYYY-MM-DD format
-    function getCurrentDate() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = (now.getMonth() + 1).toString().padStart(2, "0");
-        const day = now.getDate().toString().padStart(2, "0");
-        return `${year}-${month}-${day}`;
-    }
+    // const handleClearFilter = () => {
+    //     setIsFilter(false)
+    //     setSelectedStatus('')
+    //     setSelectedState('')
+    //     setSelectedNewCity('')
+    //     setSelectedYear('')
+    //     setSelectedMonth('')
+    //     setSelectedDate(0)
+    //     setSelectedAssignDate(null)
+    //     setCompanyIncoDate(null)
+    //     setSelectedCompanyIncoDate(null)
+    //     setFilteredData([])
+    //     //fetchNewData()
+    //     //fetchData(1, latestSortCount)
+    // }
+    // // Function to get current date in YYYY-MM-DD format
+    // function getCurrentDate() {
+    //     const now = new Date();
+    //     const year = now.getFullYear();
+    //     const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    //     const day = now.getDate().toString().padStart(2, "0");
+    //     return `${year}-${month}-${day}`;
+    // }
 
-    // Auto logout functionality :
-    useEffect(() => {
-        // Function to check token expiry and initiate logout if expired
-        const checkTokenExpiry = () => {
-            const token = localStorage.getItem("newtoken");
-            if (token) {
-                try {
-                    const decoded = jwtDecode(token);
-                    const currentTime = Date.now() / 1000; // Get current time in seconds
-                    if (decoded.exp < currentTime) {
-                        // console.log("Decode Expirary :", decoded.exp);
-                        // Token expired, perform logout actions
-                        // console.log("Logout called");
-                        handleLogout();
-                    } else {
-                        // Token not expired, continue session
-                        const timeToExpire = decoded.exp - currentTime;
+    // // Auto logout functionality :
+    // useEffect(() => {
+    //     // Function to check token expiry and initiate logout if expired
+    //     const checkTokenExpiry = () => {
+    //         const token = localStorage.getItem("newtoken");
+    //         if (token) {
+    //             try {
+    //                 const decoded = jwtDecode(token);
+    //                 const currentTime = Date.now() / 1000; // Get current time in seconds
+    //                 if (decoded.exp < currentTime) {
+    //                     // console.log("Decode Expirary :", decoded.exp);
+    //                     // Token expired, perform logout actions
+    //                     // console.log("Logout called");
+    //                     handleLogout();
+    //                 } else {
+    //                     // Token not expired, continue session
+    //                     const timeToExpire = decoded.exp - currentTime;
 
-                    }
-                } catch (error) {
-                    console.error("Error decoding token:", error);
-                    // console.log("Logout called");
-                    handleLogout(); // Handle invalid token or decoding errors
-                }
-            }
-        };
+    //                 }
+    //             } catch (error) {
+    //                 console.error("Error decoding token:", error);
+    //                 // console.log("Logout called");
+    //                 handleLogout(); // Handle invalid token or decoding errors
+    //             }
+    //         }
+    //     };
 
-        // Initial check on component mount
-        checkTokenExpiry();
+    //     // Initial check on component mount
+    //     checkTokenExpiry();
 
-        // Periodically check token expiry (e.g., every minute)
-        const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
+    //     // Periodically check token expiry (e.g., every minute)
+    //     const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
 
-        return () => clearInterval(interval); // Cleanup interval on unmount
-    }, []);
+    //     return () => clearInterval(interval); // Cleanup interval on unmount
+    // }, []);
 
-    const handleLogout = () => {
-        // Clear local storage and redirect to login page
-        localStorage.removeItem("newtoken");
-        localStorage.removeItem("userId");
-        // localStorage.removeItem("designation");
-        // localStorage.removeItem("loginTime");
-        // localStorage.removeItem("loginDate");
-        window.location.replace("/"); // Redirect to login page
-    };
-    
+    // const handleLogout = () => {
+    //     // Clear local storage and redirect to login page
+    //     localStorage.removeItem("newtoken");
+    //     localStorage.removeItem("userId");
+    //     // localStorage.removeItem("designation");
+    //     // localStorage.removeItem("loginTime");
+    //     // localStorage.removeItem("loginDate");
+    //     window.location.replace("/"); // Redirect to login page
+    // };
+
 
     // -------------------request dialog functions-------------------
     const [open, openchange] = useState(false);
@@ -736,8 +723,8 @@ function EmployeePanelCopy() {
                 return response.data; // Directly return the data
             },
             enabled: !!data.ename, // Only fetch if data.ename is available
-            staleTime: 300000, // Cache for 5 minutes
-            cacheTime: 300000, // Cache for 5 minutes
+            staleTime: 60000, // Cache for 5 minutes
+            cacheTime: 60000, // Cache for 5 minutes
         }
     );
 
@@ -753,27 +740,27 @@ function EmployeePanelCopy() {
         }
     }, [queryData, dataStatus, currentPage]);
 
-    const nextPage = () => {
-        if (currentPage < totalPages - 1) {
-            setCurrentPage((prevPage) => prevPage + 1);
-            refetch(); // Trigger a refetch when the page changes
-        }
-    };
+    // Create a debounced version of refetch
+    const debouncedRefetch = useCallback(debounce(() => {
+        refetch();
+    }, 300), [refetch]);
 
-    const prevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage((prevPage) => prevPage - 1);
-            refetch(); // Trigger a refetch when the page changes
-        }
-    };
+    const handleDataStatusChange = useCallback((status) => {
+        setdataStatus(status);
+        setCurrentPage(0); // Reset to the first page
+        debouncedRefetch(); // Call the debounced refetch function
+    }, [debouncedRefetch]);
+
+    console.log("fetcgeheddata", fetchedData)
+    console.log("dataStatus", dataStatus)
 
     return (
         <div>
 
-            {!formOpen && !addFormOpen && (
-                <>
-                    {!showCallHistory ? <div className="page-wrapper">
-                        {BDMrequests && (
+
+
+            {!showCallHistory ? <div className="page-wrapper">
+                {/* {BDMrequests && (
                             <Dialog open={openbdmRequest}>
                                 <DialogContent>
                                     <div className="request-bdm-card">
@@ -835,12 +822,12 @@ function EmployeePanelCopy() {
                                     </div>
                                 </DialogContent>
                             </Dialog>
-                        ))}
+                        ))} */}
 
-                        <div className="page-wrapper">
-                            <div className="page-header rm_Filter m-0">
-                                <div className="container-xl">
-                                    <div className="d-flex align-items-center justify-content-between">
+                <div className="page-wrapper">
+                    <div className="page-header rm_Filter m-0">
+                        <div className="container-xl">
+                            {/* <div className="d-flex align-items-center justify-content-between">
                                         <div className="d-flex align-items-center">
                                             <div className="btn-group mr-2">
                                                 <EmployeeAddLeadDialog
@@ -896,190 +883,144 @@ function EmployeePanelCopy() {
                                                     id="bdeName-search" />
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    </div> */}
+                        </div>
+                    </div>
+                    <div className="page-body  m-0">
+                        <div className="container-xl mt-2">
+                            <div className="my-tab card-header">
+                                <ul className="nav nav-tabs hr_emply_list_navtabs nav-fill p-0" data-bs-toggle="tabs">
+                                    <li class="nav-item hr_emply_list_navitem">
+                                        <a class="nav-link active" data-bs-toggle="tab" href="#k"
+                                            onClick={() => handleDataStatusChange("All")}
+                                        >
+                                            <div className="d-flex align-items-center justify-content-between w-100">
+                                                <div className="rm_txt_tsn">
+                                                    General
+                                                </div>
+                                                <div className="rm_tsn_bdge">
+                                                    {totalCounts.untouched}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item hr_emply_list_navitem">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#Interested"
+                                            onClick={() => handleDataStatusChange("Interested")}
+                                        >
+                                            <div className="d-flex align-items-center justify-content-between w-100">
+                                                <div className="rm_txt_tsn">
+                                                    Interested
+                                                </div>
+                                                <div className="rm_tsn_bdge">
+                                                    {totalCounts.interested}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item hr_emply_list_navitem">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#Matured"
+                                            onClick={() => handleDataStatusChange("Matured")}>
+                                            <div className="d-flex align-items-center justify-content-between w-100">
+                                                <div className="rm_txt_tsn">
+                                                    Matured
+                                                </div>
+                                                <div className="rm_tsn_bdge">
+                                                    {totalCounts.matured}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item hr_emply_list_navitem">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#BDM_Forwarded">
+                                            <div className="d-flex align-items-center justify-content-between w-100">
+                                                <div className="rm_txt_tsn">
+                                                    BDM Forwarded
+                                                </div>
+                                                <div className="rm_tsn_bdge">
+                                                    {totalCounts.forwarded}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item hr_emply_list_navitem">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#Not_Interested">
+                                            <div className="d-flex align-items-center justify-content-between w-100">
+                                                <div className="rm_txt_tsn">
+                                                    Not Interested
+                                                </div>
+                                                <div className="rm_tsn_bdge">
+                                                    {totalCounts.notInterested}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
-                            <div className="page-body  m-0">
-                                <div className="container-xl mt-2">
-                                    <div className="my-tab card-header">
-                                        <ul className="nav nav-tabs hr_emply_list_navtabs nav-fill p-0" data-bs-toggle="tabs">
-                                            <li class="nav-item hr_emply_list_navitem">
-                                                <a class="nav-link active" data-bs-toggle="tab" href="#k"
-                                                    onClick={() => {
-                                                        setdataStatus("All");
-                                                        setCurrentPage(0);
-                                                        refetch();
-                                                    }}
-                                                >
-                                                    <div className="d-flex align-items-center justify-content-between w-100">
-                                                        <div className="rm_txt_tsn">
-                                                            General
-                                                        </div>
-                                                        <div className="rm_tsn_bdge">
-                                                            {totalCounts.untouched}
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item hr_emply_list_navitem">
-                                                <a class="nav-link" data-bs-toggle="tab" href="#Interested"
-                                                    onClick={() => {
-                                                        setdataStatus("Interested");
-                                                        setCurrentPage(0);
-                                                        refetch();
-                                                    }}>
-                                                    <div className="d-flex align-items-center justify-content-between w-100">
-                                                        <div className="rm_txt_tsn">
-                                                            Interested
-                                                        </div>
-                                                        <div className="rm_tsn_bdge">
-                                                            {totalCounts.interested}
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item hr_emply_list_navitem">
-                                                <a class="nav-link" data-bs-toggle="tab" href="#Matured">
-                                                    <div className="d-flex align-items-center justify-content-between w-100">
-                                                        <div className="rm_txt_tsn">
-                                                            Matured
-                                                        </div>
-                                                        <div className="rm_tsn_bdge">
-                                                            {totalCounts.matured}
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item hr_emply_list_navitem">
-                                                <a class="nav-link" data-bs-toggle="tab" href="#BDM_Forwarded">
-                                                    <div className="d-flex align-items-center justify-content-between w-100">
-                                                        <div className="rm_txt_tsn">
-                                                            BDM Forwarded
-                                                        </div>
-                                                        <div className="rm_tsn_bdge">
-                                                            {totalCounts.forwarded}
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item hr_emply_list_navitem">
-                                                <a class="nav-link" data-bs-toggle="tab" href="#Not_Interested">
-                                                    <div className="d-flex align-items-center justify-content-between w-100">
-                                                        <div className="rm_txt_tsn">
-                                                            Not Interested
-                                                        </div>
-                                                        <div className="rm_tsn_bdge">
-                                                            {totalCounts.notInterested}
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div className="tab-content card-body">
-                                        <div class="tab-pane active" id="k">
-                                            <EmployeeGeneralLeads
-                                                generalData={fetchedData}
-                                                isLoading={isLoading}
-                                                refetch={refetch}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={totalPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                dataStatus={dataStatus}
-                                                setdataStatus={setdataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                secretKey={secretKey}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="tab-content card-body">
-                                        <div class="tab-pane active" id="Interested">
-                                            <EmployeeInterestedLeads
-                                                interestedData={fetchedData}
-                                                isLoading={isLoading}
-                                                refetch={refetch}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={totalPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                secretKey={secretKey}
-                                                dataStatus={dataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                setdataStatus={setdataStatus}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="tab-content card-body">
-                                        <div class="tab-pane active" id="Matured">
-                                            <EmployeeMaturedLeads
-                                                maturedLeads={fetchedData}
-                                                isLoading={isLoading}
-                                                refetch={refetch}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={totalPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                secretKey={secretKey}
-                                                dataStatus={dataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                setdataStatus={setdataStatus}
-                                            />
-                                        </div>
-                                    </div>
+                            <div className="tab-content card-body">
+                                <div class="tab-pane active" id="k">
+                                    <EmployeeGeneralLeads
+                                        generalData={fetchedData}
+                                        isLoading={isLoading}
+                                        refetch={refetch}
+                                        formatDateNew={formatDateNew}
+                                        startIndex={startIndex}
+                                        endIndex={endIndex}
+                                        totalPages={totalPages}
+                                        setCurrentPage={setCurrentPage}
+                                        currentPage={currentPage}
+                                        dataStatus={dataStatus}
+                                        setdataStatus={setdataStatus}
+                                        ename={data.ename}
+                                        email={data.email}
+                                        secretKey={secretKey}
+                                    />
+                                </div>
+                                <div class="tab-pane" id="Interested">
+                                    <EmployeeInterestedLeads
+                                        interestedData={fetchedData}
+                                        isLoading={isLoading}
+                                        refetch={refetch}
+                                        formatDateNew={formatDateNew}
+                                        startIndex={startIndex}
+                                        endIndex={endIndex}
+                                        totalPages={totalPages}
+                                        setCurrentPage={setCurrentPage}
+                                        currentPage={currentPage}
+                                        secretKey={secretKey}
+                                        dataStatus={dataStatus}
+                                        ename={data.ename}
+                                        email={data.email}
+                                        setdataStatus={setdataStatus}
+                                    />
+                                </div>
+                                <div class="tab-pane" id="Matured">
+                                    <EmployeeMaturedLeads
+                                        maturedLeads={fetchedData}
+                                        isLoading={isLoading}
+                                        refetch={refetch}
+                                        formatDateNew={formatDateNew}
+                                        startIndex={startIndex}
+                                        endIndex={endIndex}
+                                        totalPages={totalPages}
+                                        setCurrentPage={setCurrentPage}
+                                        currentPage={currentPage}
+                                        secretKey={secretKey}
+                                        dataStatus={dataStatus}
+                                        ename={data.ename}
+                                        email={data.email}
+                                        setdataStatus={setdataStatus}
+                                    />
                                 </div>
                             </div>
                         </div>
-                    </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />
+                    </div>
+                </div>
+            </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />
 
-                    }
-                </>
-            )}
-
-            {formOpen && (
-                <>
-                    <RedesignedForm
-                        // matured={true}
-                        // companysId={companyId}
-                        setDataStatus={setdataStatus}
-                        setFormOpen={setFormOpen}
-                        companysName={companyName}
-                        companysEmail={companyEmail}
-                        companyNumber={companyNumber}
-                        setNowToFetch={setNowToFetch}
-                        companysInco={companyInco}
-                        employeeName={data.ename}
-                        employeeEmail={data.email}
-                    />
-                </>
-            )}
-
-            {addFormOpen && (
-                <>
-                    {" "}
-                    <AddLeadForm
-                        employeeEmail={data.email}
-                        newBdeName={newBdeName}
-                        isDeletedEmployeeCompany={deletedEmployeeStatus}
-                        setFormOpen={setAddFormOpen}
-                        companysName={companyName}
-                        setNowToFetch={setNowToFetch}
-                        setDataStatus={setdataStatus}
-                        employeeName={data.ename}
-                    />
-                </>
-            )}
+            }
             <div>
-                {/* //----------------leads filter drawer------------------------------- */}
+                {/* //----------------leads filter drawer-------------------------------
                 <Drawer
                     style={{ top: "50px" }}
                     anchor="left"
@@ -1227,7 +1168,7 @@ function EmployeePanelCopy() {
                             >Apply Filter</button>
                         </div>
                     </div>
-                </Drawer>
+                </Drawer> */}
             </div>
         </div>
     );

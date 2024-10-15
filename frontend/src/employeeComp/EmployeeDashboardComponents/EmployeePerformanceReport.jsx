@@ -233,7 +233,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
         const totalAchievedAmount = achievedAmount - expanse;
 
         const achievement = achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision - 1;
-        //console.log("totalAchievedRevenue is :", achievement);
+        //zconsole.log("totalAchievedRevenue is :", achievement);
         setAchievedAmount(achievement);
         return achievement;
     };
