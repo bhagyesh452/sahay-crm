@@ -26,6 +26,11 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import FloorManagerReceivedCaseReport from './FloorManagerReceivedCaseReport.jsx';
+import FloorManagerThisMonthBookings from './FloorManagerThisMonthBookings.jsx';
+import FloorManagerForwardedData from './FloorManagerForwardedData.jsx';
+import FloorManagerProjectionSummary from './FloorManagerProjectionSummary.jsx';
+import FloorManagerLeadsReport from './FloorManagerLeadsReport.jsx';
 import BDMInterestedLeadsReport from './BdmTeamLeads/BDMInterestedLeadsReport.jsx';
 
 function BdmDashboard() {
@@ -83,7 +88,7 @@ function BdmDashboard() {
       console.error("Error fetching data:", error.message);
     }
   };
-  console.log("forwarde" , forwardEmployeeData)
+  // console.log("forwarde" , forwardEmployeeData);
 
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
@@ -1857,6 +1862,7 @@ function BdmDashboard() {
     const filterFollowDataRecieved = FollowData.filter((company) => company.bdmName === data.ename && company.caseType === "Recieved")
     const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
     const finalPayment = totalPaymentRecieved
+    console.log("Projected revenue", filterFollowDataRecieved);
     //console.log(finalPayment)
     //console.log( filterFollowDataRecieved)
 
@@ -2424,7 +2430,6 @@ function BdmDashboard() {
                     <div className="dashboard-headings">
                       <h3 className="m-0">Today's Report</h3>
                     </div>
-                    {/* recieved bdm report today */}
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">
                         <div className="d-flex justify-content-between align-items-center">
@@ -2503,9 +2508,6 @@ function BdmDashboard() {
                           <div className="dash-card-2-head">PROJECTED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {/* ₹{(followDataToday
-                                .filter(obj => obj.ename === data.ename)
-                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
                               ₹{handleFilterFollowDataTodayRecievedCase()}
                             </div>
                           </div>
@@ -2550,16 +2552,9 @@ function BdmDashboard() {
                             </option>
                           ))}
                         </select>
-                        {/* <Select
-                            options={monthOptions}
-                            placeholder="Select..."
-                            onChange={handleChangeForBdm}
-                            value={monthOptions.find(option => option.value === selectedMonthOptionForBdm)}
-                          /> */}
                       </div>
                     </div>
 
-                    {/* recieved bdm report total */}
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">
                         <div className="d-flex justify-content-between align-items-center">
@@ -2638,9 +2633,6 @@ function BdmDashboard() {
                           <div className="dash-card-2-head">PROJECTED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {/* ₹{(FollowData
-                                .filter(obj => (obj.ename === data.ename) && obj.bdeName)
-                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
                               ₹{handleFilterFollowDataRecievedCase()}
                             </div>
                           </div>
@@ -2666,6 +2658,7 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+      {/* <FloorManagerReceivedCaseReport /> */}
 
 
       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
@@ -3062,6 +3055,7 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+      {/* <FloorManagerThisMonthBookings /> */}
 
 
       {/* ------------------------------------------------employess forwarded data report------------------------------------------------ */}
@@ -3480,6 +3474,7 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+      {/* <FloorManagerForwardedData /> */}
 
 
       {/* -------------------------------------------------projection summary------------------------------------------------------------ */}
@@ -3674,7 +3669,6 @@ function BdmDashboard() {
                           }}
                         />
                       </th>
-                      {/* <th>Est. Payment Date</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -3690,16 +3684,6 @@ function BdmDashboard() {
                                   (partObj) => partObj.ename === obj
                                 ).length
                               }
-                              {/* <FcDatabase
-                              onClick={() => {
-                                functionOpenProjectionTable(obj);
-                              }}
-                              style={{
-                                cursor: "pointer",
-                                marginRight: "-71px",
-                                marginLeft: "58px",
-                              }}
-                            /> */}
                             </td>
                             <td>
                               {completeProjectionDataToday.reduce(
@@ -3734,25 +3718,13 @@ function BdmDashboard() {
                             </td>
                           </tr>
                         ))}
-                        {/* Map employeeData with default fields */}
                         {employeeData
                           .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
                           .map((employee, index) => (
                             <tr key={`employee-row-${index}`}>
                               <td>{sortedData.length + index + 1}</td>
                               <td>{employee.ename}</td>
-                              <td>0
-                                {/* <FcDatabase
-                              onClick={() => {
-                                functionOpenProjectionTable(employee.ename);
-                              }}
-                              style={{
-                                cursor: "pointer",
-                                marginRight: "-71px",
-                                marginLeft: "58px",
-                              }}
-                            /> */}
-                              </td>
+                              <td>0</td>
                               <td>0</td>
                               <td>0</td>
                               <td>0</td>
@@ -3767,46 +3739,18 @@ function BdmDashboard() {
                           <tr key={`employee-row-${index}`}>
                             <td>{index + 1}</td>
                             <td>{employee.ename}</td>
-                            <td>0
-                              {/* <FcDatabase
-                            onClick={() => {
-                              functionOpenProjectionTable(employee.ename);
-                            }}
-                            style={{
-                              cursor: "pointer",
-                              marginRight: "-71px",
-                              marginLeft: "58px",
-                            }}
-                          /> */}
-                            </td>
+                            <td>0</td>
                             <td>0</td>
                             <td>0</td>
                             <td>0</td>
                           </tr>
-
                         ))
                     )}
                   </tbody>
                   <tfoot className="admin-dash-tbl-tfoot"    >
                     <tr style={{ fontWeight: 500 }}>
-                      <td colSpan="2">
-                        Total
-                      </td>
-                      <td>
-                        {
-                          completeProjectionDataToday.filter((partObj) => partObj.ename)
-                            .length
-                        }
-                        {/* <FcDatabase
-                          onClick={() => {
-                            functionCompleteProjectionTable();
-                          }}
-                          style={{
-                            cursor: "pointer",
-                            marginRight: "-71px",
-                            marginLeft: "55px",
-                          }}
-                        /> */}
+                      <td colSpan="2">Total</td>
+                      <td>{completeProjectionDataToday.filter((partObj) => partObj.ename).length}
                       </td>
                       <td>
                         {completeProjectionDataToday.reduce(
@@ -3850,10 +3794,12 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+      {/* <FloorManagerProjectionSummary /> */}
 
 
       {/* -----------------employess interested leads---------------------- */}
       <BDMInterestedLeadsReport />
+      {/* <FloorManagerLeadsReport /> */}
     </div>
   );
 }
