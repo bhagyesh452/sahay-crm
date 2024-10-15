@@ -1945,7 +1945,7 @@ router.get("/employees/:ename", async (req, res) => {
     } else if (dataStatus === "All") {
       query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
     } else if (dataStatus === "Matured") {
-      query = { ...query, bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Matured"] } };
+      query = { ...query, bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept" , "NotForwarded"] }, Status: { $in: ["Matured"] } };
     } else {
       query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
     }

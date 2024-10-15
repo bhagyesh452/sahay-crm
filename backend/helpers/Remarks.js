@@ -249,6 +249,17 @@ router.post("/update-remarks/:id", async (req, res) => {
       res.status(500).json({ success: false, message: "Internal Server Error" });
     }
   });
+
+  router.get("/remarks-history/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+      const remarksHistory = await RemarksHistory.find( { companyID: id } );
+      res.json(remarksHistory);
+    } catch (error) {
+      console.error("Error fetching remarks history:", error);
+      res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+  });
   router.delete("/remarks-history/:id", async (req, res) => {
     const { id } = req.params;
     try {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useCallback} from "react";
 import EmpNav from "../EmpNav.js";
 import Header from "../../components/Header";
 import { useParams } from "react-router-dom";
@@ -39,6 +39,10 @@ import RemarksDialog from "../ExtraComponents/RemarksDialog.jsx";
 import ProjectionDialog from "../ExtraComponents/ProjectionDialog.jsx";
 import BdmMaturedCasesDialogBox from "../BdmMaturedCasesDialogBox.jsx";
 import FeedbackDialog from "../ExtraComponents/FeedbackDialog.jsx";
+import EmployeeGeneralLeads from "../EmployeeTabPanels/EmployeeGeneralLeads.jsx";
+import EmployeeInterestedLeads from "../EmployeeTabPanels/EmployeeInterestedLeads.jsx";
+import EmployeeMaturedLeads from "../EmployeeTabPanels/EmployeeMaturedLeads.jsx";
+import debounce from 'lodash/debounce';
 
 function FetchingEmployeeData({ status = "All" }) {
 
@@ -118,15 +122,15 @@ function FetchingEmployeeData({ status = "All" }) {
     // Fetch employee data using React Query
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
-            queryKey: ['newData', cleanString(data.ename), dataStatus , currentPage],
+            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage],
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees/${cleanString(data.ename)}`, {
-                    params: { 
+                    params: {
                         dataStatus: dataStatus,
-                        limit : itemsPerPage,
-                        skip:skip
-                     } // Send dataStatus as a query parameter
+                        limit: itemsPerPage,
+                        skip: skip
+                    } // Send dataStatus as a query parameter
                 });
                 return response.data; // Directly return the data
             },
@@ -148,20 +152,17 @@ function FetchingEmployeeData({ status = "All" }) {
         }
     }, [queryData, dataStatus, currentPage]);
 
-    const nextPage = () => {
-        if (currentPage < totalPages - 1) {
-            setCurrentPage((prevPage) => prevPage + 1);
-            refetch(); // Trigger a refetch when the page changes
-        }
-    };
 
-    const prevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage((prevPage) => prevPage - 1);
-            refetch(); // Trigger a refetch when the page changes
-        }
-    };
+    // Create a debounced version of refetch
+    const debouncedRefetch = useCallback(debounce(() => {
+        refetch();
+    }, 300), [refetch]);
 
+    const handleDataStatusChange = useCallback((status) => {
+        setdataStatus(status);
+        setCurrentPage(0); // Reset to the first page
+        debouncedRefetch(); // Call the debounced refetch function
+    }, [debouncedRefetch]);
     console.log("fetchedData", fetchedData);
     console.log("revertedData", revertedData); // Log the reverted data for verification
 
@@ -178,12 +179,8 @@ function FetchingEmployeeData({ status = "All" }) {
                             data-bs-toggle="tabs">
                             <li class="nav-item data-heading">
                                 <a
-                                    href="#tabs-home-5"
-                                    onClick={() => {
-                                        setdataStatus("All");
-                                        setCurrentPage(0);
-                                        refetch();
-                                    }}
+                                    href="#k"
+                                    onClick={() => handleDataStatusChange("All")}
                                     className={
                                         dataStatus === "All"
                                             ? "nav-link active item-act"
@@ -199,12 +196,8 @@ function FetchingEmployeeData({ status = "All" }) {
                             </li>
                             <li class="nav-item data-heading">
                                 <a
-                                    href="#tabs-home-5"
-                                    onClick={() => {
-                                        setdataStatus("Interested");
-                                        setCurrentPage(0);
-                                        refetch();
-                                    }}
+                                    href="#Interested"
+                                    onClick={() => handleDataStatusChange("Interested")}
                                     className={
                                         dataStatus === "Interested"
                                             ? "nav-link active item-act"
@@ -220,12 +213,8 @@ function FetchingEmployeeData({ status = "All" }) {
                             </li>
                             <li class="nav-item data-heading">
                                 <a
-                                    href="#tabs-home-5"
-                                    onClick={() => {
-                                        setdataStatus("Matured");
-                                        setCurrentPage(0);
-                                        refetch();
-                                    }}
+                                    href="#Matured"
+                                    onClick={() => handleDataStatusChange("Matured")}
                                     className={
                                         dataStatus === "Matured"
                                             ? "nav-link active item-act"
@@ -283,577 +272,63 @@ function FetchingEmployeeData({ status = "All" }) {
                             </li>
                         </ul>
                     </div>
-                    <div className="card">
-                        <div className="card-body p-0">
-                            <div
-                                style={{
-                                    overflowX: "auto",
-                                    overflowY: "auto",
-                                    maxHeight: "66vh",
-                                }}>
-                                <table
-                                    style={{
-                                        width: "100%",
-                                        borderCollapse: "collapse",
-                                        border: "1px solid #ddd",
-                                    }}
-                                    className="table-vcenter table-nowrap">
-                                    <thead>
-                                        <tr className="tr-sticky">
-                                            <th className="th-sticky">Sr.No</th>
-                                            <th className="th-sticky1">Company Name</th>
-                                            <th>Company Number</th>
-                                            <th>Call History</th>
-                                            {dataStatus === "Forwarded" ? (<th>BDE Status</th>) : (<th>Status</th>)}
-                                            {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
-                                            {dataStatus === "Forwarded" && <th>BDM Status</th>}
-                                            {dataStatus === "Forwarded" && <th>BDM Remarks</th>}
-                                            {dataStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
-
-                                            <th>
-                                                Incorporation Date
-                                            </th>
-
-                                            <th>City</th>
-                                            <th>State</th>
-                                            <th>Company Email</th>
-
-                                            <th>
-                                                Assigned Date
-                                                {/* <SwapVertIcon
-                                                    style={{
-                                                        height: "15px",
-                                                        width: "15px",
-                                                        cursor: "pointer",
-                                                    }}
-                                                    onClick={() => {
-                                                        const sortedData = [...employeeData].sort(
-                                                            (a, b) => {
-                                                                if (sortOrder === "asc") {
-                                                                    return b.AssignDate.localeCompare(
-                                                                        a.AssignDate
-                                                                    );
-                                                                } else {
-                                                                    return a.AssignDate.localeCompare(
-                                                                        b.AssignDate
-                                                                    );
-                                                                }
-                                                            }
-                                                        );
-                                                        setEmployeeData(sortedData);
-                                                        setSortOrder(
-                                                            sortOrder === "asc" ? "desc" : "asc"
-                                                        );
-                                                    }}
-                                                /> */}
-                                            </th>
-
-                                            {dataStatus === "Matured" && <><th>
-                                                Booking Date
-                                            </th>
-                                                <th>
-                                                    Publish Date
-                                                </th></>}
-                                            {(dataStatus === "FollowUp" && (
-                                                <th>Add Projection</th>
-                                            )) || (dataStatus === "Interested" && (
-                                                <th>Add Projection</th>
-                                            )) || (dataStatus === "Matured" && (
-                                                <th>Add Projection</th>
-                                            ))}
-
-                                            {dataStatus === "Forwarded" && (<>
-                                                <th>BDM Name</th>
-                                                <th>Forwarded Date</th>
-                                            </>)}
-
-                                            {(dataStatus === "Forwarded" ||
-                                                dataStatus === "Interested" ||
-                                                dataStatus === "FollowUp") && (
-                                                    <th>Forward to BDM</th>
-                                                )}
-                                            {dataStatus === "Forwarded" &&
-                                                (dataStatus !== "Interested" ||
-                                                    dataStatus !== "FollowUp" ||
-                                                    dataStatus !== "Untouched" ||
-                                                    dataStatus !== "Matured" ||
-                                                    dataStatus !== "Not Interested") && (
-                                                    <th>Feedback</th>
-                                                )}
-                                        </tr>
-                                    </thead>
-                                    {isLoading ? (
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="11" >
-                                                    <div className="LoaderTDSatyle w-100" >
-                                                        <ClipLoader
-                                                            color="lightgrey"
-                                                            loading
-                                                            size={30}
-                                                            aria-label="Loading Spinner"
-                                                            data-testid="loader"
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    ) : (
-                                        <tbody>
-                                            {fetchedData.map((company, index) => (
-                                                <tr
-                                                    key={index}
-                                                    style={{ border: "1px solid #ddd" }}
-                                                >
-                                                    <td className="td-sticky">{startIndex + index + 1}</td>
-                                                    <td className="td-sticky1">{company["Company Name"]}</td>
-                                                    <td>
-                                                        <div className="d-flex align-items-center justify-content-between wApp">
-                                                            <div>{company["Company Number"]}</div>
-                                                            <a
-                                                                target="_blank"
-                                                                href={`https://wa.me/91${company["Company Number"]}`}
-                                                            >
-                                                                <FaWhatsapp />
-                                                            </a>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <LuHistory onClick={() => {
-                                                            // setShowCallHistory(true);
-                                                            // setClientNumber(company["Company Number"]);
-                                                        }}
-                                                            style={{
-                                                                cursor: "pointer",
-                                                                width: "15px",
-                                                                height: "15px",
-                                                            }}
-                                                            color="grey"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        {company["Status"] === "Matured" ? (
-                                                            <span>{company["Status"]}</span>
-                                                        ) : (
-                                                            <>
-                                                                {company.bdmAcceptStatus ===
-                                                                    "NotForwarded" && (
-                                                                        <select
-                                                                            style={{
-                                                                                background: "none",
-                                                                                padding: ".4375rem .75rem",
-                                                                                border:
-                                                                                    "1px solid var(--tblr-border-color)",
-                                                                                borderRadius:
-                                                                                    "var(--tblr-border-radius)",
-                                                                            }}
-                                                                        // value={company["Status"]}
-                                                                        // onChange={(e) =>
-                                                                        //     handleStatusChange(
-                                                                        //         company,
-                                                                        //         company._id,
-                                                                        //         e.target.value,
-                                                                        //         company["Company Name"],
-                                                                        //         company["Company Email"],
-                                                                        //         company[
-                                                                        //         "Company Incorporation Date  "
-                                                                        //         ],
-                                                                        //         company["Company Number"],
-                                                                        //         company["Status"],
-                                                                        //         company.bdmAcceptStatus,
-                                                                        //         company.isDeletedEmployeeCompany,
-                                                                        //         company.ename
-                                                                        //     )
-                                                                        // }
-                                                                        >
-                                                                            {(dataStatus !== "Interested" && dataStatus !== "FollowUp") &&
-                                                                                (<>
-                                                                                    <option value="Not Picked Up">
-                                                                                        Not Picked Up
-                                                                                    </option>
-                                                                                    <option value="Junk">Junk</option>
-                                                                                </>
-                                                                                )}
-                                                                            <option value="Busy">Busy</option>
-
-                                                                            <option value="Not Interested">
-                                                                                Not Interested
-                                                                            </option>
-                                                                            {dataStatus === "All" && (
-                                                                                <>
-                                                                                    <option value="Untouched">
-                                                                                        Untouched
-                                                                                    </option>
-                                                                                    <option value="Interested">
-                                                                                        Interested
-                                                                                    </option>
-                                                                                </>
-                                                                            )}
-                                                                            {dataStatus === "Interested" && (
-                                                                                <>
-                                                                                    <option value="Interested">
-                                                                                        Interested
-                                                                                    </option>
-                                                                                    {/* <option value="FollowUp">
-                                                  Follow Up
-                                                </option> */}
-                                                                                    <option value="Matured">
-                                                                                        Matured
-                                                                                    </option>
-                                                                                </>
-                                                                            )}
-
-                                                                        </select>
-                                                                    )}
-                                                                {(company.bdmAcceptStatus !==
-                                                                    "NotForwarded") &&
-                                                                    (company.Status === "Interested" ||
-                                                                        company.Status === "FollowUp") && (
-                                                                        <span>{company.bdeOldStatus}</span>
-                                                                    )}
-
-                                                                {(company.bdmAcceptStatus !==
-                                                                    "NotForwarded") &&
-                                                                    (company.Status === "Not Interested" || company.Status === "Junk" || company.Status === "Not Picked Up" || company.Status === "Busy") && (
-                                                                        <select
-                                                                            style={{
-                                                                                color: "rgb(139, 139, 139)",
-                                                                                background: "none",
-                                                                                padding: ".4375rem .75rem",
-                                                                                border:
-                                                                                    "1px solid var(--tblr-border-color)",
-                                                                                borderRadius:
-                                                                                    "var(--tblr-border-radius)",
-                                                                            }}
-                                                                        // value={company["Status"]}
-                                                                        // onChange={(e) =>
-                                                                        //     handleStatusChange(
-                                                                        //         company,
-                                                                        //         company._id,
-                                                                        //         e.target.value,
-                                                                        //         company["Company Name"],
-                                                                        //         company["Company Email"],
-                                                                        //         company[
-                                                                        //         "Company Incorporation Date  "
-                                                                        //         ],
-                                                                        //         company["Company Number"],
-                                                                        //         company["Status"],
-                                                                        //         company.bdmAcceptStatus,
-                                                                        //         company.isDeletedEmployeeCompany,
-                                                                        //         company.ename
-                                                                        //     )
-                                                                        // }
-                                                                        >
-                                                                            <option value="Not Picked Up">
-                                                                                Not Picked Up
-                                                                            </option>
-                                                                            <option value="Busy">Busy</option>
-                                                                            <option value="Junk">Junk</option>
-                                                                            <option value="Not Interested">
-                                                                                Not Interested
-                                                                            </option>
-                                                                            <option value="Interested">Interested</option>
-                                                                            {/* <option value="FollowUp">Follow Up</option> */}
-                                                                        </select>
-                                                                    )}
-                                                            </>
-                                                        )}
-                                                    </td>
-                                                    <td>
-                                                        <div
-                                                            key={company._id}
-                                                            style={{
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                justifyContent: "space-between",
-                                                                width: "100px",
-                                                            }}
-                                                        >
-                                                            <p
-                                                                className="rematkText text-wrap m-0"
-                                                                title={company.Remarks}
-                                                            >
-                                                                {!company["Remarks"]
-                                                                    ? "No Remarks"
-                                                                    : company.Remarks}
-                                                            </p>
-                                                            {/* <RemarksDialog
-                                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                            // currentCompanyName={company["Company Name"]}
-                                                            // remarksHistory={remarksHistory} // pass your remarks history data
-                                                            // companyId={company._id}
-                                                            // remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                            // isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                            // bdmAcceptStatus={company.bdmAcceptStatus}
-                                                            // companyStatus={company.Status}
-                                                            // secretKey={secretKey}
-                                                            // fetchRemarksHistory={fetchRemarksHistory}
-                                                            // bdeName={company.ename}
-                                                            // fetchNewData={fetchNewData}
-                                                            // mainRemarks={company.Remarks}
-                                                            /> */}
-                                                        </div>
-                                                    </td>
-                                                    {dataStatus === "Forwarded" && (
-                                                        <td>
-                                                            {company.Status === "Interested" && (
-                                                                <span>Interested</span>
-                                                            )}
-                                                            {company.Status === "FollowUp" && (
-                                                                <span>FollowUp</span>
-                                                            )}
-
-                                                        </td>
-                                                    )}
-                                                    {dataStatus === "FollowUp" && <td>
-                                                        <input style={{ border: "none" }}
-                                                            type="date"
-                                                        // value={formatDateNow(company.bdeNextFollowUpDate)}
-                                                        // onChange={(e) => {
-                                                        //     //setNextFollowUpDate(e.target.value);
-                                                        //     functionSubmitNextFollowUpDate(e.target.value,
-                                                        //         company._id,
-                                                        //         company["Status"]
-                                                        //     );
-                                                        // }}
-                                                        //className="hide-placeholder"
-                                                        /></td>}
-                                                    {dataStatus === "Forwarded" &&
-                                                        <td>
-                                                            <div key={company._id}
-                                                                style={{
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    justifyContent: "space-between",
-                                                                    width: "100px",
-                                                                }}>
-                                                                <p
-                                                                    className="rematkText text-wrap m-0"
-                                                                    title={company.remarks}
-                                                                >
-                                                                    {!company.bdmRemarks
-                                                                        ? "No Remarks"
-                                                                        : company.bdmRemarks}
-                                                                </p>
-                                                                {/* <RemarksDialog
-                                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                // currentCompanyName={company["Company Name"]}
-                                                                // filteredRemarks={filteredRemarks}
-                                                                // companyId={company._id}
-                                                                // remarksKey="bdmRemarks" // For BDM remarks
-                                                                // isEditable={false} // Disable editing
-                                                                // secretKey={secretKey}
-                                                                // fetchRemarksHistory={fetchRemarksHistory}
-                                                                // bdeName={company.ename}
-                                                                // fetchNewData={fetchNewData}
-                                                                // bdmName={company.bdmName}
-                                                                // bdmAcceptStatus={company.bdmAcceptStatus}
-                                                                // companyStatus={company.Status}
-                                                                // remarksHistory={remarksHistory} // pass your remarks history data
-                                                                /> */}
-                                                            </div>
-                                                        </td>
-                                                    }
-                                                    <td>
-                                                        {formatDateNew(
-                                                            company["Company Incorporation Date  "]
-                                                        )}
-                                                    </td>
-                                                    <td>{company["City"]}</td>
-                                                    <td>{company["State"]}</td>
-                                                    <td>{company["Company Email"]}</td>
-                                                    <td>{formatDateNew(company["AssignDate"])}</td>
-                                                    {dataStatus === "Matured" && <>
-                                                        <td>{formatDate(company.bookingDate)}</td>
-                                                        <td>{formatDate(company.bookingPublishDate)}</td>
-                                                        {/* <td>
-                                                            <ProjectionDialog
-                                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                            // projectionCompanyName={company["Company Name"]}
-                                                            // projectionData={projectionData}
-                                                            // secretKey={secretKey}
-                                                            // fetchProjections={fetchProjections}
-                                                            // ename={data.ename}
-                                                            // bdmAcceptStatus={company.bdmAcceptStatus}
-                                                            // hasMaturedStatus={true}
-                                                            // hasExistingProjection={projectionData?.some(
-                                                            //     (item) => item.companyName === company["Company Name"]
-                                                            // )}
-                                                            />
-                                                        </td> */}
-
-                                                    </>}
-                                                    {(dataStatus === "FollowUp" ||
-                                                        dataStatus === "Interested") && (
-                                                            <>
-                                                                {/* <td>
-                                                                    <ProjectionDialog
-                                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                                    // projectionCompanyName={company["Company Name"]}
-                                                                    // projectionData={projectionData}
-                                                                    // secretKey={secretKey}
-                                                                    // fetchProjections={fetchProjections}
-                                                                    // ename={data.ename}
-                                                                    // bdmAcceptStatus={company.bdmAcceptStatus}
-                                                                    // hasMaturedStatus={false}
-                                                                    // hasExistingProjection={projectionData?.some(
-                                                                    //     (item) => item.companyName === company["Company Name"]
-                                                                    // )}
-                                                                    />
-                                                                </td> */}
-                                                                {/* <td>
-                                                                    <BdmMaturedCasesDialogBox
-                                                                    // currentData={currentData}
-                                                                    // forwardedCompany={company["Company Name"]}
-                                                                    // forwardCompanyId={company._id}
-                                                                    // forwardedStatus={company.Status}
-                                                                    // forwardedEName={company.ename}
-                                                                    // bdeOldStatus={company.Status}
-                                                                    // bdmNewAcceptStatus={"Pending"}
-                                                                    // fetchNewData={fetchNewData}
-                                                                    />
-                                                                </td> */}
-                                                            </>
-                                                        )}
-
-                                                    {dataStatus === "Forwarded" && (<>
-                                                        {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
-                                                        <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                                    </>)}
-
-                                                    {dataStatus === "Forwarded" && (
-                                                        <td>
-                                                            {company.bdmAcceptStatus === "NotForwarded" ? (<>
-
-                                                                <TiArrowForward
-                                                                    // onClick={() => {
-                                                                    //     handleConfirmAssign(
-                                                                    //         company._id,
-                                                                    //         company["Company Name"],
-                                                                    //         company.Status, // Corrected parameter name
-                                                                    //         company.ename,
-                                                                    //         company.bdmAcceptStatus
-                                                                    //     );
-                                                                    // }}
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        width: "17px",
-                                                                        height: "17px",
-                                                                    }}
-                                                                    color="grey"
-                                                                />
-                                                            </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
-
-                                                                <TiArrowBack
-                                                                    // onClick={() => {
-                                                                    //     handleReverseAssign(
-                                                                    //         company._id,
-                                                                    //         company["Company Name"],
-                                                                    //         company.bdmAcceptStatus,
-                                                                    //         company.Status,
-                                                                    //         company.bdmName
-                                                                    //     )
-                                                                    // }}
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        width: "17px",
-                                                                        height: "17px",
-                                                                    }}
-                                                                    color="#fbb900"
-                                                                />
-                                                            </>) :
-                                                                (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
-                                                                    <>
-                                                                        <TiArrowBack
-                                                                            // onClick={() => handleRevertAcceptedCompany(
-                                                                            //     company._id,
-                                                                            //     company["Company Name"],
-                                                                            //     company.Status
-                                                                            // )}
-                                                                            style={{
-                                                                                cursor: "pointer",
-                                                                                width: "17px",
-                                                                                height: "17px",
-                                                                            }}
-                                                                            color="black" />
-                                                                    </>) :
-                                                                    (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
-                                                                        <>
-                                                                            <TiArrowBack
-                                                                                style={{
-                                                                                    cursor: "pointer",
-                                                                                    width: "17px",
-                                                                                    height: "17px",
-                                                                                }}
-                                                                                color="lightgrey" />
-                                                                        </>) : (<>
-                                                                            <TiArrowForward
-                                                                                onClick={() => {
-                                                                                    // handleConfirmAssign(
-                                                                                    //   company._id,
-                                                                                    //   company["Company Name"],
-                                                                                    //   company.Status, // Corrected parameter name
-                                                                                    //   company.ename,
-                                                                                    //   company.bdmAcceptStatus
-                                                                                    // );
-                                                                                }}
-                                                                                style={{
-                                                                                    cursor: "pointer",
-                                                                                    width: "17px",
-                                                                                    height: "17px",
-                                                                                }}
-                                                                                color="grey"
-                                                                            />
-                                                                        </>)}
-                                                        </td>
-                                                    )}
-
-                                                    {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
-                                                        <td></td>
-                                                        // <td>
-                                                        //     <FeedbackDialog
-                                                        //         key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                        //     // companyId={company._id}
-                                                        //     // companyName={company["Company Name"]}
-                                                        //     // feedbackRemarks={company.feedbackRemarks}
-                                                        //     // feedbackPoints={company.feedbackPoints}
-                                                        //     />
-                                                        // </td>
-                                                    ) : null}
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    )}
-                                    {fetchedData && fetchedData.length === 0 && !isLoading && (
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="11" className="p-2 particular">
-                                                    <Nodata />
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    )}
-                                </table>
-                            </div>
-                            { fetchedData &&fetchedData.length !== 0 && (
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} className="pagination">
-                                    <button onClick={prevPage} disabled={currentPage === 0}>
-                                        <IconChevronLeft />
-                                    </button>
-                                    <span>
-                                        Page {currentPage + 1} of {totalPages}
-                                    </span>
-                                    <button onClick={nextPage} disabled={currentPage >= totalPages - 1}>
-                                        <IconChevronRight />
-                                    </button>
-                                </div>
-                            )}
+                    <div className="tab-content card-body">
+                        <div class="tab-pane active" id="k">
+                            <EmployeeGeneralLeads
+                                generalData={fetchedData}
+                                isLoading={isLoading}
+                                refetch={refetch}
+                                formatDateNew={formatDateNew}
+                                startIndex={startIndex}
+                                endIndex={endIndex}
+                                totalPages={totalPages}
+                                setCurrentPage={setCurrentPage}
+                                currentPage={currentPage}
+                                dataStatus={dataStatus}
+                                setdataStatus={setdataStatus}
+                                ename={data.ename}
+                                email={data.email}
+                                secretKey={secretKey}
+                            />
                         </div>
-
+                        <div class="tab-pane" id="Interested">
+                            <EmployeeInterestedLeads
+                                interestedData={fetchedData}
+                                isLoading={isLoading}
+                                refetch={refetch}
+                                formatDateNew={formatDateNew}
+                                startIndex={startIndex}
+                                endIndex={endIndex}
+                                totalPages={totalPages}
+                                setCurrentPage={setCurrentPage}
+                                currentPage={currentPage}
+                                secretKey={secretKey}
+                                dataStatus={dataStatus}
+                                ename={data.ename}
+                                email={data.email}
+                                setdataStatus={setdataStatus}
+                            />
+                        </div>
+                        <div class="tab-pane" id="Matured">
+                            <EmployeeMaturedLeads
+                                maturedLeads={fetchedData}
+                                isLoading={isLoading}
+                                refetch={refetch}
+                                formatDateNew={formatDateNew}
+                                startIndex={startIndex}
+                                endIndex={endIndex}
+                                totalPages={totalPages}
+                                setCurrentPage={setCurrentPage}
+                                currentPage={currentPage}
+                                secretKey={secretKey}
+                                dataStatus={dataStatus}
+                                ename={data.ename}
+                                email={data.email}
+                                setdataStatus={setdataStatus}
+                            />
+                        </div>
                     </div>
                 </div>
-
-
             </div>
 
         </div>

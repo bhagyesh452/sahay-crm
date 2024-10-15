@@ -10,19 +10,19 @@ import axios from "axios";
 
 const RemarksDialog = ({
   currentCompanyName,
-  remarksHistory, // Remarks history data
+  //remarksHistory, // Remarks history data
   companyId, // Pass the companyID
   remarksKey, // Key to determine the type of remarks ("remarks" or "bdmRemarks")
   isEditable, // Flag to enable or disable editing for remarks
-  handleUpdateRemarksHistory, // Function to refresh remarks history after updates
   bdmAcceptStatus,
   companyStatus,
   secretKey,
-  fetchRemarksHistory,
+  //fetchRemarksHistory,
   bdeName,
   fetchNewData,
   bdmName,
-  mainRemarks
+  mainRemarks,
+  refetch
 
 }) => {
   const [open, setOpen] = useState(false);
@@ -43,21 +43,37 @@ const RemarksDialog = ({
 };
 
   // Function to open the dialog and filter remarks
-  const handleOpenDialog = () => {
-    let filtered;
-    if(remarksKey === "bdmRemarks"){
-    filtered = remarksHistory.filter(
-      (obj) => obj.companyID === companyId && obj.bdmName === bdmName
-    );
-}else{
-    filtered = remarksHistory.filter(
-        (obj) => obj.companyID === companyId && obj.bdeName === bdeName
-      );
-}
-    // console.log("filteredfiltered", filtered , companyId);
-    setFilteredRemarks(filtered);
-    setOpen(true);
-  };
+//   const handleOpenDialog = () => {
+//     let filtered;
+//     if(remarksKey === "bdmRemarks"){
+//     filtered = remarksHistory.filter(
+//       (obj) => obj.companyID === companyId && obj.bdmName === bdmName
+//     );
+// }else{
+//     filtered = remarksHistory.filter(
+//         (obj) => obj.companyID === companyId && obj.bdeName === bdeName
+//       );
+// }
+//     // console.log("filteredfiltered", filtered , companyId);
+//     setFilteredRemarks(filtered);
+//     setOpen(true);
+//   };
+
+// Fetch remarks history for the specific company
+const fetchRemarksHistory = async () => {
+  try {
+      const response = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
+      setFilteredRemarks(response.data.reverse());
+  } catch (error) {
+      console.error("Error fetching remarks history:", error);
+  }
+};
+
+// Function to open the dialog and fetch remarks
+const handleOpenDialog = async () => {
+  await fetchRemarksHistory(); // Fetch remarks for the specific company
+  setOpen(true);
+};
 
   const handleCloseDialog = () => {
     setOpen(false);
@@ -89,7 +105,8 @@ const RemarksDialog = ({
         if (response.status === 200) {
             Swal.fire("Remarks updated!");
             // setChangeRemarks("");
-            fetchNewData(companyStatus);
+            // fetchNewData(companyStatus);
+            refetch();
             fetchRemarksHistory();
             handleCloseDialog();
             closepopupRemarks(); // Assuming fetchData is a function to fetch updated employee data
@@ -123,7 +140,7 @@ const handleDeleteRemarks = async (remarksId, remarksValue) => {
       }
       Swal.fire("Remarks Deleted");
       fetchRemarksHistory();
-      fetchNewData(companyStatus);
+      refetch();
       handleCloseDialog();
     } catch (error) {
       console.error("Error deleting remarks:", error);
