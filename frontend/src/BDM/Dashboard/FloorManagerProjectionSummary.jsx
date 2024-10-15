@@ -419,16 +419,18 @@ function FloorManagerProjectionSummary() {
                                         ) : (
                                             <>
                                                 {getFilteredEmployees().length > 0 ? (
-                                                    getFilteredEmployees().map((emp, index) => (
-                                                        <tr key={index}>
-                                                            <td>{index + 1}</td>
-                                                            <td>{emp.employeeName}</td>
-                                                            <td>{emp.totalCompanies}</td>
-                                                            <td>{emp.totalOfferedServices}</td>
-                                                            <td>{formatSalary(emp.totalOfferedPrice)}</td>
-                                                            <td>{formatSalary(emp.totalPayment)}</td>
-                                                        </tr>
-                                                    ))
+                                                    getFilteredEmployees()
+                                                        .filter((item) => item.employeeName !== "Vishnu Suthar" && item.employeeName !== "Vandit Shah" && item.employeeName !== "Khushi Gandhi" && item.employeeName !== "Yashesh Gajjar" && item.employeeName !== "Ravi Prajapati" && item.employeeName !== "Yash Goswami")
+                                                        .map((emp, index) => (
+                                                            <tr key={index}>
+                                                                <td>{index + 1}</td>
+                                                                <td>{emp.employeeName}</td>
+                                                                <td>{emp.totalCompanies}</td>
+                                                                <td>{emp.totalOfferedServices}</td>
+                                                                <td>{formatSalary(emp.totalOfferedPrice)}</td>
+                                                                <td>{formatSalary(emp.totalPayment)}</td>
+                                                            </tr>
+                                                        ))
                                                 ) : (
                                                     <tr>
                                                         <td colSpan="6">
@@ -443,10 +445,26 @@ function FloorManagerProjectionSummary() {
                                     {getFilteredEmployees().length > 0 && <tfoot className="admin-dash-tbl-tfoot">
                                         <tr>
                                             <td colSpan={2}>Total</td>
-                                            <td>{getFilteredEmployees().reduce((sum, emp) => sum + (emp.totalCompanies || 0), 0)}</td>
-                                            <td>{getFilteredEmployees().reduce((sum, emp) => sum + (emp.totalOfferedServices || 0), 0)}</td>
-                                            <td>₹ {formatSalary(getFilteredEmployees().reduce((sum, emp) => sum + (emp.totalOfferedPrice || 0), 0))}</td>
-                                            <td>₹ {formatSalary(getFilteredEmployees().reduce((sum, emp) => sum + (emp.totalPayment || 0), 0))}</td>
+                                            <td>
+                                                {getFilteredEmployees()
+                                                    .filter((item) => item.employeeName !== "Vishnu Suthar" && item.employeeName !== "Vandit Shah" && item.employeeName !== "Khushi Gandhi" && item.employeeName !== "Yashesh Gajjar" && item.employeeName !== "Ravi Prajapati" && item.employeeName !== "Yash Goswami")
+                                                    .reduce((sum, emp) => sum + (emp.totalCompanies || 0), 0)}
+                                            </td>
+                                            <td>
+                                                {getFilteredEmployees()
+                                                    .filter((item) => item.employeeName !== "Vishnu Suthar" && item.employeeName !== "Vandit Shah" && item.employeeName !== "Khushi Gandhi" && item.employeeName !== "Yashesh Gajjar" && item.employeeName !== "Ravi Prajapati" && item.employeeName !== "Yash Goswami")
+                                                    .reduce((sum, emp) => sum + (emp.totalOfferedServices || 0), 0)}
+                                            </td>
+                                            <td>
+                                                ₹ {formatSalary(getFilteredEmployees()
+                                                    .filter((item) => item.employeeName !== "Vishnu Suthar" && item.employeeName !== "Vandit Shah" && item.employeeName !== "Khushi Gandhi" && item.employeeName !== "Yashesh Gajjar" && item.employeeName !== "Ravi Prajapati" && item.employeeName !== "Yash Goswami")
+                                                    .reduce((sum, emp) => sum + (emp.totalOfferedPrice || 0), 0))}
+                                            </td>
+                                            <td>
+                                                ₹ {formatSalary(getFilteredEmployees()
+                                                    .filter((item) => item.employeeName !== "Vishnu Suthar" && item.employeeName !== "Vandit Shah" && item.employeeName !== "Khushi Gandhi" && item.employeeName !== "Yashesh Gajjar" && item.employeeName !== "Ravi Prajapati" && item.employeeName !== "Yash Goswami")
+                                                    .reduce((sum, emp) => sum + (emp.totalPayment || 0), 0))}
+                                            </td>
                                         </tr>
                                     </tfoot>}
                                 </table>
