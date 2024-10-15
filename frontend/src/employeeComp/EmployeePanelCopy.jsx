@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import EmpNav from "./EmpNav.js";
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
@@ -50,7 +50,8 @@ import { useQuery } from '@tanstack/react-query';
 import EmployeeInterestedLeads from "./EmployeeTabPanels/EmployeeInterestedLeads.jsx";
 import EmployeeMaturedLeads from "./EmployeeTabPanels/EmployeeMaturedLeads.jsx";
 import debounce from 'lodash/debounce';
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
     const [isEditProjection, setIsEditProjection] = useState(false);
@@ -729,6 +730,12 @@ function EmployeePanelCopy() {
     );
 
     useEffect(() => {
+        if (isLoading) {
+            setOpenBacdrop(true); // Set openBackDrop to true when loading
+        } else {
+            setOpenBacdrop(false); // Set openBackDrop to false when not loading
+        }
+    
         if (queryData) {
             // Assuming queryData now contains both data and revertedData
             setFetchedData(queryData.data); // Update the fetched data
@@ -738,7 +745,7 @@ function EmployeePanelCopy() {
             setTotalCounts(queryData.totalCounts);
             setTotalPages(Math.ceil(queryData.totalPages)); // Calculate total pages
         }
-    }, [queryData, dataStatus, currentPage]);
+    }, [isLoading, queryData, dataStatus, currentPage]);
 
     // Create a debounced version of refetch
     const debouncedRefetch = useCallback(debounce(() => {
@@ -750,6 +757,10 @@ function EmployeePanelCopy() {
         setCurrentPage(0); // Reset to the first page
         debouncedRefetch(); // Call the debounced refetch function
     }, [debouncedRefetch]);
+
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
 
     console.log("fetcgeheddata", fetchedData)
     console.log("dataStatus", dataStatus)
@@ -827,132 +838,164 @@ function EmployeePanelCopy() {
                 <div className="page-wrapper">
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
-                            {/* <div className="d-flex align-items-center justify-content-between">
-                                        <div className="d-flex align-items-center">
-                                            <div className="btn-group mr-2">
-                                                <EmployeeAddLeadDialog
-                                                    secretKey={secretKey}
-                                                    fetchData={fetchData}
-                                                    ename={data.ename}
-                                                    //fetchNewData={//fetchNewData}
-                                                />
-                                            </div>
-                                            <div className="btn-group" role="group" aria-label="Basic example">
-                                                <button type="button"
-                                                    className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                                    onClick={() => setOpenFilterDrawer(true)}
-                                                >
-                                                    <IoFilterOutline className='mr-1' /> Filter
-                                                </button>
-                                                <button type="button" className="btn mybtn"
-                                                    onClick={functionopenpopup}
-                                                >
-                                                    <MdOutlinePostAdd className='mr-1' /> Request Data
-                                                </button>
-                                                {open &&
-                                                    <EmployeeRequestDataDialog
-                                                        secretKey={secretKey}
-                                                        ename={data.ename}
-                                                        setOpenChange={openchange}
-                                                        open={open}
-                                                    />}
+                            <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center">
+                                    <div className="btn-group mr-2">
+                                        <EmployeeAddLeadDialog
+                                            secretKey={secretKey}
+                                            fetchData={fetchData}
+                                            ename={data.ename}
+                                        //fetchNewData={//fetchNewData}
+                                        />
+                                    </div>
+                                    <div className="btn-group" role="group" aria-label="Basic example">
+                                        <button type="button"
+                                            className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                                            onClick={() => setOpenFilterDrawer(true)}
+                                        >
+                                            <IoFilterOutline className='mr-1' /> Filter
+                                        </button>
+                                        <button type="button" className="btn mybtn"
+                                            onClick={functionopenpopup}
+                                        >
+                                            <MdOutlinePostAdd className='mr-1' /> Request Data
+                                        </button>
+                                        {open &&
+                                            <EmployeeRequestDataDialog
+                                                secretKey={secretKey}
+                                                ename={data.ename}
+                                                setOpenChange={openchange}
+                                                open={open}
+                                            />}
 
-                                            </div>
-                                        </div>
-                                        <div className="d-flex align-items-center">
-                                            <div class="input-icon ml-1">
-                                                <span class="input-icon-addon">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                                        <path d="M21 21l-6 -6"></path>
-                                                    </svg>
-                                                </span>
-                                                <input
-                                                    value={searchQuery}
-                                                    onChange={(e) => {
-                                                        setSearchQuery(e.target.value);
-                                                        handleSearch(e.target.value)
-                                                        //handleFilterSearch(e.target.value)
-                                                        //setCurrentPage(0);
-                                                    }}
-                                                    className="form-control search-cantrol mybtn"
-                                                    placeholder="Search…"
-                                                    type="text"
-                                                    name="bdeName-search"
-                                                    id="bdeName-search" />
-                                            </div>
-                                        </div>
-                                    </div> */}
+                                    </div>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                    <div class="input-icon ml-1">
+                                        <span class="input-icon-addon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                <path d="M21 21l-6 -6"></path>
+                                            </svg>
+                                        </span>
+                                        <input
+                                            value={searchQuery}
+                                            onChange={(e) => {
+                                                setSearchQuery(e.target.value);
+                                                handleSearch(e.target.value)
+                                                //handleFilterSearch(e.target.value)
+                                                //setCurrentPage(0);
+                                            }}
+                                            className="form-control search-cantrol mybtn"
+                                            placeholder="Search…"
+                                            type="text"
+                                            name="bdeName-search"
+                                            id="bdeName-search" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className="page-body  m-0">
-                        <div className="container-xl mt-2">
-                            <div className="my-tab card-header">
-                                <ul className="nav nav-tabs hr_emply_list_navtabs nav-fill p-0" data-bs-toggle="tabs">
-                                    <li class="nav-item hr_emply_list_navitem">
-                                        <a class="nav-link active" data-bs-toggle="tab" href="#k"
+                    <div onCopy={(e) => {
+                        e.preventDefault();
+                    }}
+                        className="page-body">
+                        <div className="container-xl">
+                            <div class="card-header my-tab">
+                                <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
+                                    data-bs-toggle="tabs">
+                                    <li class="nav-item data-heading">
+                                        <a
+                                            href="#k"
                                             onClick={() => handleDataStatusChange("All")}
+                                            className={
+                                                dataStatus === "All"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
                                         >
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    General
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                    {totalCounts.untouched}
-                                                </div>
-                                            </div>
+                                            General{" "}
+                                            <span className="no_badge">
+                                                {totalCounts.untouched}
+                                            </span>
                                         </a>
                                     </li>
-                                    <li class="nav-item hr_emply_list_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#Interested"
+                                    <li class="nav-item data-heading">
+                                        <a
+                                            href="#Interested"
                                             onClick={() => handleDataStatusChange("Interested")}
+                                            className={
+                                                dataStatus === "Interested"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
                                         >
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    Interested
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                    {totalCounts.interested}
-                                                </div>
-                                            </div>
+                                            Interested{" "}
+                                            <span className="no_badge">
+                                                {totalCounts.interested}
+                                            </span>
                                         </a>
                                     </li>
-                                    <li class="nav-item hr_emply_list_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#Matured"
-                                            onClick={() => handleDataStatusChange("Matured")}>
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    Matured
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                    {totalCounts.matured}
-                                                </div>
-                                            </div>
+                                    <li class="nav-item data-heading">
+                                        <a
+                                            href="#Matured"
+                                            onClick={() => handleDataStatusChange("Matured")}
+                                            className={
+                                                dataStatus === "Matured"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
+                                        >
+                                            Matured{" "}
+                                            <span className="no_badge">
+                                                {totalCounts.matured}
+                                            </span>
                                         </a>
                                     </li>
-                                    <li class="nav-item hr_emply_list_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#BDM_Forwarded">
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    BDM Forwarded
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                    {totalCounts.forwarded}
-                                                </div>
-                                            </div>
+                                    <li class="nav-item data-heading">
+                                        <a
+                                            href="#tabs-home-5"
+                                            onClick={() => {
+                                                setdataStatus("Forwarded");
+                                                setCurrentPage(0);
+                                                refetch();
+                                            }}
+                                            className={
+                                                dataStatus === "Forwarded"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
+                                        >
+                                            Forwarded{" "}
+                                            <span className="no_badge">
+                                                {totalCounts.forwarded}
+                                            </span>
                                         </a>
                                     </li>
-                                    <li class="nav-item hr_emply_list_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#Not_Interested">
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    Not Interested
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                    {totalCounts.notInterested}
-                                                </div>
-                                            </div>
+                                    <li class="nav-item data-heading">
+                                        <a
+                                            href="#tabs-home-5"
+                                            onClick={() => {
+                                                setdataStatus("Not Interested");
+                                                setCurrentPage(0);
+                                                refetch();
+                                            }}
+                                            className={
+                                                dataStatus === "Not Interested"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
+                                        >
+                                            Not Interested{" "}
+                                            <span className="no_badge">
+                                                {totalCounts.notInterested}
+                                            </span>
                                         </a>
                                     </li>
                                 </ul>
@@ -1019,6 +1062,14 @@ function EmployeePanelCopy() {
             </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />
 
             }
+
+            {/* --------------------------------backedrop------------------------- */}
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
             <div>
                 {/* //----------------leads filter drawer-------------------------------
                 <Drawer
