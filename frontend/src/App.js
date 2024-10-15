@@ -162,7 +162,7 @@ function App() {
           <Route element={newtoken ? <EmployeeLayout /> : <Navigate to="/" />}>
             <Route path="/employee-dashboard/:userId" element={<EmployeeDashboard />} />
             {/* <Route path="/employee-data/:userId" element={<EmployeePanel />} /> */}
-            <Route path="/employee-data/:userId" element={<FetchingEmployeeData />} />
+            <Route path="/employee-data/:userId" element={<EmployeePanelCopy />} />
             <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} />
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />

@@ -124,11 +124,11 @@ function ManagerBookings() {
       secretKey === "http://localhost:3001/api"
         ? io("http://localhost:3001")
         : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: "/socket.io",
-            reconnection: true,
-            transports: ["websocket"],
-          });
+          secure: true, // Use HTTPS
+          path: "/socket.io",
+          reconnection: true,
+          transports: ["websocket"],
+        });
 
     socket.on("Remaining_Payment_Added", (res) => {
       fetchRedesignedFormData();
@@ -201,7 +201,7 @@ function ManagerBookings() {
       );
       const servicedata = servicesResponse.data;
       const newservicesdata = ExecutiveDataResponse.data;
-    //  console.log ("rmdata", newservicesdata);
+      //  console.log ("rmdata", newservicesdata);
       setRmServicesData(servicedata);
       setAdminExecutiveData(newservicesdata);
     } catch (error) {
@@ -946,19 +946,28 @@ function ManagerBookings() {
                           <div
                             className={
                               currentLeadform &&
-                              currentLeadform["Company Name"] ===
+                                currentLeadform["Company Name"] ===
                                 obj["Company Name"]
                                 ? "bookings_Company_Name activeBox"
                                 : "bookings_Company_Name"
                             }
-                            onClick={() =>
-                              {setCurrentLeadform(
-                                leadFormData.find(
-                                  (data) =>
-                                    data["Company Name"] === obj["Company Name"]
-                                )
-                              );
-                              setActiveIndexBooking(1);
+                            onClick={() => {
+                              // Combine main booking and more bookings into one array
+                              const allBookings = [obj, ...obj.moreBookings];
+
+                              // Find the latest booking by comparing booking dates
+                              const latestBooking = allBookings.reduce((latest, current) => {
+                                const latestDate = new Date(latest.bookingDate);
+                                const currentDate = new Date(current.bookingDate);
+                                return currentDate > latestDate ? current : latest;
+                              });
+                              console.log(latestBooking)
+
+                              // Set current lead form to the clicked object
+                              setCurrentLeadform(leadFormData.find((data) => data["Company Name"] === obj["Company Name"]));
+
+                              // Set active index to the index of the latest booking in the combined array
+                              setActiveIndexBooking(allBookings.indexOf(latestBooking) + 1); // This will now set the active index to the latest booking
                               setActiveIndex(0);
                               setActiveIndexMoreBookingServices(0);
                             }}
@@ -973,54 +982,14 @@ function ManagerBookings() {
                                     obj.moreBookings &&
                                       obj.moreBookings.length !== 0
                                       ? obj.moreBookings[
-                                          obj.moreBookings.length - 1
-                                        ].bookingDate // Get the latest bookingDate from moreBookings
+                                        obj.moreBookings.length - 1
+                                      ].bookingDate // Get the latest bookingDate from moreBookings
                                       : obj.bookingDate
                                   ) // Use obj.bookingDate if moreBookings is empty or not present
                                 }
                               </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                              {/* <div className="b_Services_name d-flex flex-wrap">
-                                {(obj.services.length !== 0 ||
-                                  (obj.moreBookings &&
-                                    obj.moreBookings.length !== 0)) &&
-                                  [
-                                    ...obj.services,
-                                    ...(obj.moreBookings || []).map(
-                                      (booking) => booking.services
-                                    ),
-                                  ]
-                                    .flat()
-                                    .slice(0, 3) // Limit to first 3 services
-                                    .map((service, index, array) => (
-                                      <>
-                                        <div
-                                          className="sname mb-1"
-                                          key={service.serviceId}
-                                        >
-                                          {service.serviceName}
-                                        </div>
-
-                                        {index === 2 &&
-                                          Math.max(
-                                            obj.services.length +
-                                            obj.moreBookings.length -
-                                            3,
-                                            0
-                                          ) !== 0 && (
-                                            <div className="sname mb-1">
-                                              {`+${Math.max(
-                                                obj.services.length +
-                                                obj.moreBookings.length -
-                                                3,
-                                                0
-                                              )}`}
-                                            </div>
-                                          )}
-                                      </>
-                                    ))}
-                              </div> */}
                               <div className="b_Services_name d-flex flex-wrap">
                                 {(obj.services.length !== 0 ||
                                   (obj.moreBookings &&
@@ -1103,13 +1072,13 @@ function ManagerBookings() {
                                     (moreObj) =>
                                       moreObj.remainingPayments.length !== 0
                                   )) && (
-                                  <div
-                                    className="b_Service_remaining_receive"
-                                    title="remaining Payment Received"
-                                  >
-                                    <img src={RemainingAmnt}></img>
-                                  </div>
-                                )}
+                                    <div
+                                      className="b_Service_remaining_receive"
+                                      title="remaining Payment Received"
+                                    >
+                                      <img src={RemainingAmnt}></img>
+                                    </div>
+                                  )}
                                 {obj.moreBookings.length !== 0 && (
                                   <div
                                     className="b_Services_multipal_services"
@@ -1163,11 +1132,11 @@ function ManagerBookings() {
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="b_dtl_C_name">
                           {currentLeadform &&
-                          Object.keys(currentLeadform).length !== 0
+                            Object.keys(currentLeadform).length !== 0
                             ? currentLeadform["Company Name"]
                             : leadFormData && leadFormData.length !== 0
-                            ? leadFormData[0]["Company Name"]
-                            : "-"}
+                              ? leadFormData[0]["Company Name"]
+                              : "-"}
                         </div>
                         <div
                           className="bookings_add_more"
@@ -1187,17 +1156,17 @@ function ManagerBookings() {
                             <div>
                               Total Services:{" "}
                               {currentLeadform &&
-                                  (currentLeadform.services.length !== 0 ||
-                                    currentLeadform.moreBookings.length !== 0)
-                                    ? [
-                                        ...currentLeadform.services,
-                                        ...(
-                                          currentLeadform.moreBookings || []
-                                        ).flatMap(
-                                          (booking) => booking.services
-                                        ),
-                                      ].length
-                                    : null}
+                                (currentLeadform.services.length !== 0 ||
+                                  currentLeadform.moreBookings.length !== 0)
+                                ? [
+                                  ...currentLeadform.services,
+                                  ...(
+                                    currentLeadform.moreBookings || []
+                                  ).flatMap(
+                                    (booking) => booking.services
+                                  ),
+                                ].length
+                                : null}
                             </div>
                           </div>
                         </div>
@@ -1213,12 +1182,12 @@ function ManagerBookings() {
                                 <div class="col-sm-8 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Name"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Name"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Name"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1233,12 +1202,12 @@ function ManagerBookings() {
                                 <div class="col-sm-6 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Email"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Email"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Email"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1255,12 +1224,12 @@ function ManagerBookings() {
                                 <div class="col-sm-6 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Number"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Number"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Number"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1281,8 +1250,8 @@ function ManagerBookings() {
                                           ? currentLeadform.incoDate
                                           : leadFormData &&
                                             leadFormData.length !== 0
-                                          ? leadFormData[0].incoDate
-                                          : "-"
+                                            ? leadFormData[0].incoDate
+                                            : "-"
                                       )}
                                   </div>
                                 </div>
@@ -1298,12 +1267,12 @@ function ManagerBookings() {
                                 <div class="col-sm-7 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform.panNumber
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0].panNumber
-                                      : "-"}
+                                        ? leadFormData[0].panNumber
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1388,8 +1357,8 @@ function ManagerBookings() {
                       <div className="rm_all_bkng_right mt-3">
                         <ul className="nav nav-tabs rm_bkng_items align-items-center">
                           {currentLeadform &&
-                          currentLeadform.moreBookings &&
-                          currentLeadform.moreBookings.length !== 0 ? (
+                            currentLeadform.moreBookings &&
+                            currentLeadform.moreBookings.length !== 0 ? (
                             <>
                               <li className="nav-item rm_bkng_item_no">
                                 <a
@@ -1434,9 +1403,14 @@ function ManagerBookings() {
                                 )
                               )}
                               {activeIndexBooking === 1 &&
-                              currentLeadform.bookingPublishDate ? (
+                                currentLeadform.bookingPublishDate ? (
                                 <li className="nav-item rm_bkng_item_no ms-auto">
                                   <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                    <span style={{
+                                      color: "#797373",
+                                      marginRight: "2px"
+                                    }}
+                                    >{"Publish On : "} </span>
                                     {formatDatePro(
                                       currentLeadform.bookingPublishDate
                                     )}{" "}
@@ -1457,6 +1431,11 @@ function ManagerBookings() {
                                         className="nav-item rm_bkng_item_no ms-auto"
                                       >
                                         <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                          <span style={{
+                                            color: "#797373",
+                                            marginRight: "2px"
+                                          }}
+                                          >{"Publish On : "} </span>
                                           {formatDatePro(
                                             obj.bookingPublishDate
                                           )}{" "}
@@ -1489,13 +1468,18 @@ function ManagerBookings() {
                               </li>
                               <li className="nav-item rm_bkng_item_no ms-auto">
                                 <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                <span style={{
+                                    color: "#797373",
+                                    marginRight: "2px"
+                                  }}
+                                  >{"Publish On : "} </span>
                                   {currentLeadform &&
-                                  currentLeadform.bookingPublishDate
+                                    currentLeadform.bookingPublishDate
                                     ? `${formatDatePro(
-                                        currentLeadform.bookingPublishDate
-                                      )} at ${formatTime(
-                                        currentLeadform.bookingPublishDate
-                                      )}`
+                                      currentLeadform.bookingPublishDate
+                                    )} at ${formatTime(
+                                      currentLeadform.bookingPublishDate
+                                    )}`
                                     : "No Date Available"}
                                 </div>
                               </li>
@@ -1506,14 +1490,13 @@ function ManagerBookings() {
                         <div className="tab-content rm_bkng_item_details">
                           {currentLeadform && (
                             <div
-                              className={`tab-pane fade rm_bkng_item_detail_inner ${
-                                activeIndexBooking === 1 ? "show active" : ""
-                              }`}
+                              className={`tab-pane fade rm_bkng_item_detail_inner ${activeIndexBooking === 1 ? "show active" : ""
+                                }`}
                               id="Booking_1"
                             >
                               {/* -------- Booking Details ---------*/}
                               <div className="mul-booking-card mt-2">
-                               
+
                                 <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                                   <b>Booking Details:</b>
                                   <div className="Services_Preview_action d-flex">
@@ -1635,7 +1618,7 @@ function ManagerBookings() {
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                               {currentLeadform &&
                                                 (currentLeadform.bookingSource ===
-                                                "Other"
+                                                  "Other"
                                                   ? currentLeadform.otherBookingSource
                                                   : currentLeadform.bookingSource)}
                                             </div>
@@ -1688,7 +1671,7 @@ function ManagerBookings() {
                                                   {obj.serviceName}{" "}
                                                   {obj.withDSC &&
                                                     obj.serviceName ===
-                                                      "Start-Up India Certificate" &&
+                                                    "Start-Up India Certificate" &&
                                                     "With DSC"}
                                                 </div>
                                               </div>
@@ -1711,7 +1694,7 @@ function ManagerBookings() {
                                                       ).toLocaleString()}{" "}
                                                       {"("}
                                                       {obj.totalPaymentWGST !==
-                                                      obj.totalPaymentWOGST
+                                                        obj.totalPaymentWOGST
                                                         ? "With GST"
                                                         : "Without GST"}
                                                       {")"}
@@ -1870,7 +1853,7 @@ function ManagerBookings() {
                                               <div class="col-sm-8 align-self-stretch p-0">
                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                   {obj.paymentTerms ===
-                                                  "two-part"
+                                                    "two-part"
                                                     ? "Part-Payment"
                                                     : "Full Advanced"}
                                                 </div>
@@ -1934,7 +1917,7 @@ function ManagerBookings() {
                                                         obj.expanseDate
                                                           ? obj.expanseDate
                                                           : currentLeadform.bookingDate;
-                                                     
+
                                                       return formatDatePro(
                                                         dateToFormat
                                                       );
@@ -1989,8 +1972,8 @@ function ManagerBookings() {
                                                         )
                                                           ? obj.secondPaymentRemarks
                                                           : "On " +
-                                                            obj.secondPaymentRemarks +
-                                                            ")"}
+                                                          obj.secondPaymentRemarks +
+                                                          ")"}
                                                         {")"}
                                                       </div>
                                                       <div className="d-flex align-items-center justify-content-end">
@@ -2002,11 +1985,11 @@ function ManagerBookings() {
                                                               currentLeadform
                                                                 .remainingPayments
                                                                 .length !== 0 &&
-                                                              currentLeadform.remainingPayments.filter(
-                                                                (item) =>
-                                                                  item.serviceName ===
-                                                                  obj.serviceName
-                                                              ).length > 0
+                                                                currentLeadform.remainingPayments.filter(
+                                                                  (item) =>
+                                                                    item.serviceName ===
+                                                                    obj.serviceName
+                                                                ).length > 0
                                                                 ? "none"
                                                                 : "block",
                                                           }}
@@ -2016,7 +1999,7 @@ function ManagerBookings() {
                                                               obj,
                                                               "secondPayment",
                                                               currentLeadform[
-                                                                "Company Name"
+                                                              "Company Name"
                                                               ],
                                                               0
                                                             )
@@ -2060,7 +2043,7 @@ function ManagerBookings() {
                                                                     obj,
                                                                     "secondPayment",
                                                                     currentLeadform[
-                                                                      "Company Name"
+                                                                    "Company Name"
                                                                     ],
                                                                     0,
                                                                     currentLeadform.remainingPayments.filter(
@@ -2115,8 +2098,8 @@ function ManagerBookings() {
                                                         )
                                                           ? obj.thirdPaymentRemarks
                                                           : "On " +
-                                                            obj.thirdPaymentRemarks +
-                                                            ")"}
+                                                          obj.thirdPaymentRemarks +
+                                                          ")"}
                                                       </div>
                                                       <div>
                                                         <div
@@ -2126,11 +2109,11 @@ function ManagerBookings() {
                                                               currentLeadform
                                                                 .remainingPayments
                                                                 .length !== 0 &&
-                                                              currentLeadform.remainingPayments.filter(
-                                                                (item) =>
-                                                                  item.serviceName ===
-                                                                  obj.serviceName
-                                                              ).length > 1
+                                                                currentLeadform.remainingPayments.filter(
+                                                                  (item) =>
+                                                                    item.serviceName ===
+                                                                    obj.serviceName
+                                                                ).length > 1
                                                                 ? "none"
                                                                 : "block",
                                                           }}
@@ -2140,7 +2123,7 @@ function ManagerBookings() {
                                                               obj,
                                                               "thirdPayment",
                                                               currentLeadform[
-                                                                "Company Name"
+                                                              "Company Name"
                                                               ],
                                                               0
                                                             )
@@ -2170,7 +2153,7 @@ function ManagerBookings() {
                                                                   obj,
                                                                   "thirdPayment",
                                                                   currentLeadform[
-                                                                    "Company Name"
+                                                                  "Company Name"
                                                                   ],
                                                                   0,
                                                                   currentLeadform.remainingPayments.filter(
@@ -2221,8 +2204,8 @@ function ManagerBookings() {
                                                         )
                                                           ? obj.fourthPaymentRemarks
                                                           : "On " +
-                                                            obj.fourthPaymentRemarks +
-                                                            ")"}
+                                                          obj.fourthPaymentRemarks +
+                                                          ")"}
                                                       </div>
                                                       <div>
                                                         <div
@@ -2233,11 +2216,11 @@ function ManagerBookings() {
                                                               currentLeadform
                                                                 .remainingPayments
                                                                 .length !== 0 &&
-                                                              currentLeadform.remainingPayments.filter(
-                                                                (item) =>
-                                                                  item.serviceName ===
-                                                                  obj.serviceName
-                                                              ).length === 3
+                                                                currentLeadform.remainingPayments.filter(
+                                                                  (item) =>
+                                                                    item.serviceName ===
+                                                                    obj.serviceName
+                                                                ).length === 3
                                                                 ? "none"
                                                                 : "block",
                                                           }}
@@ -2246,7 +2229,7 @@ function ManagerBookings() {
                                                               obj,
                                                               "fourthPayment",
                                                               currentLeadform[
-                                                                "Company Name"
+                                                              "Company Name"
                                                               ],
                                                               0
                                                             )
@@ -2276,7 +2259,7 @@ function ManagerBookings() {
                                                                   obj,
                                                                   "fourthPayment",
                                                                   currentLeadform[
-                                                                    "Company Name"
+                                                                  "Company Name"
                                                                   ],
                                                                   0,
                                                                   currentLeadform.remainingPayments.filter(
@@ -2342,7 +2325,7 @@ function ManagerBookings() {
                                                 class="accordion-collapse collapse show"
                                                 aria-labelledby={`headingOne${index}`}
                                                 data-bs-parent="#accordionExample"
-                                                // Add a unique key prop for each rendered element
+                                              // Add a unique key prop for each rendered element
                                               >
                                                 {currentLeadform
                                                   .remainingPayments.length !==
@@ -2356,7 +2339,7 @@ function ManagerBookings() {
                                                     .map(
                                                       (paymentObj, index) =>
                                                         paymentObj.serviceName ===
-                                                        obj.serviceName ? (
+                                                          obj.serviceName ? (
                                                           <div class="accordion-body bdr-none p-0">
                                                             <div>
                                                               <div className="row m-0 bdr-btm-eee bdr-top-eee">
@@ -2408,22 +2391,22 @@ function ManagerBookings() {
                                                                         currentLeadform.pendingAmount
                                                                       ) !==
                                                                         0 && (
-                                                                        <div
-                                                                          className="Services_Preview_action_edit mr-2"
-                                                                          onClick={() =>
-                                                                            functionOpenRemainingPayment(
-                                                                              obj,
-                                                                              "otherPayment",
-                                                                              currentLeadform[
+                                                                          <div
+                                                                            className="Services_Preview_action_edit mr-2"
+                                                                            onClick={() =>
+                                                                              functionOpenRemainingPayment(
+                                                                                obj,
+                                                                                "otherPayment",
+                                                                                currentLeadform[
                                                                                 "Company Name"
-                                                                              ],
-                                                                              0
-                                                                            )
-                                                                          }
-                                                                        >
-                                                                          <AddCircle />
-                                                                        </div>
-                                                                      )}
+                                                                                ],
+                                                                                0
+                                                                              )
+                                                                            }
+                                                                          >
+                                                                            <AddCircle />
+                                                                          </div>
+                                                                        )}
 
                                                                       <IconButton
                                                                         onClick={() =>
@@ -2866,14 +2849,14 @@ function ManagerBookings() {
                                               class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"
                                               title={
                                                 currentLeadform &&
-                                                currentLeadform.extraNotes !==
+                                                  currentLeadform.extraNotes !==
                                                   "undefined"
                                                   ? currentLeadform.extraNotes
                                                   : "N/A"
                                               }
                                             >
                                               {currentLeadform &&
-                                              currentLeadform.extraNotes !==
+                                                currentLeadform.extraNotes !==
                                                 "undefined"
                                                 ? currentLeadform.extraNotes
                                                 : "N/A"}
@@ -2898,22 +2881,22 @@ function ManagerBookings() {
                                       <div className="row">
                                         {currentLeadform.paymentReceipt
                                           .length !== 0 && (
-                                          <div className="col-sm-2 mb-1">
-                                            <div className="booking-docs-preview">
-                                              <div
-                                                className="booking-docs-preview-img"
-                                                onClick={() =>
-                                                  handleViewPdfReciepts(
-                                                    currentLeadform
-                                                      .paymentReceipt[0]
-                                                      .filename,
-                                                    currentLeadform[
+                                            <div className="col-sm-2 mb-1">
+                                              <div className="booking-docs-preview">
+                                                <div
+                                                  className="booking-docs-preview-img"
+                                                  onClick={() =>
+                                                    handleViewPdfReciepts(
+                                                      currentLeadform
+                                                        .paymentReceipt[0]
+                                                        .filename,
+                                                      currentLeadform[
                                                       "Company Name"
-                                                    ]
-                                                  )
-                                                }
-                                              >
-                                                {/* {currentLeadform &&
+                                                      ]
+                                                    )
+                                                  }
+                                                >
+                                                  {/* {currentLeadform &&
                                                     currentLeadform.paymentReceipt[0] &&
                                                     (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                                       ".pdf"
@@ -2947,57 +2930,57 @@ function ManagerBookings() {
                                                         alt="Default Image"
                                                       />
                                                     ))} */}
-                                                {currentLeadform &&
-                                                  currentLeadform.paymentReceipt &&
-                                                  currentLeadform
-                                                    .paymentReceipt[0] &&
-                                                  currentLeadform
-                                                    .paymentReceipt[0]
-                                                    .filename && // Ensure filename exists
-                                                  (currentLeadform.paymentReceipt[0].filename
-                                                    .toLowerCase()
-                                                    .endsWith(".pdf") ? (
-                                                    <PdfImageViewerAdmin
-                                                      type="paymentrecieptpdf"
-                                                      path={
-                                                        currentLeadform
-                                                          .paymentReceipt[0]
-                                                          .filename
-                                                      }
-                                                      companyName={
-                                                        currentLeadform[
+                                                  {currentLeadform &&
+                                                    currentLeadform.paymentReceipt &&
+                                                    currentLeadform
+                                                      .paymentReceipt[0] &&
+                                                    currentLeadform
+                                                      .paymentReceipt[0]
+                                                      .filename && // Ensure filename exists
+                                                    (currentLeadform.paymentReceipt[0].filename
+                                                      .toLowerCase()
+                                                      .endsWith(".pdf") ? (
+                                                      <PdfImageViewerAdmin
+                                                        type="paymentrecieptpdf"
+                                                        path={
+                                                          currentLeadform
+                                                            .paymentReceipt[0]
+                                                            .filename
+                                                        }
+                                                        companyName={
+                                                          currentLeadform[
                                                           "Company Name"
-                                                        ]
-                                                      }
-                                                    />
-                                                  ) : currentLeadform.paymentReceipt[0].filename
+                                                          ]
+                                                        }
+                                                      />
+                                                    ) : currentLeadform.paymentReceipt[0].filename
                                                       .toLowerCase()
                                                       .endsWith(".png") ||
-                                                    currentLeadform.paymentReceipt[0].filename
-                                                      .toLowerCase()
-                                                      .endsWith(".jpg") ||
-                                                    currentLeadform.paymentReceipt[0].filename
-                                                      .toLowerCase()
-                                                      .endsWith(".jpeg") ? (
-                                                    <img
-                                                      src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
-                                                      alt="Receipt Image"
-                                                    />
-                                                  ) : (
-                                                    <img
-                                                      src={wordimg}
-                                                      alt="Default Image"
-                                                    />
-                                                  ))}
-                                              </div>
-                                              <div className="booking-docs-preview-text">
-                                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                                  Receipt
-                                                </p>
+                                                      currentLeadform.paymentReceipt[0].filename
+                                                        .toLowerCase()
+                                                        .endsWith(".jpg") ||
+                                                      currentLeadform.paymentReceipt[0].filename
+                                                        .toLowerCase()
+                                                        .endsWith(".jpeg") ? (
+                                                      <img
+                                                        src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                        alt="Receipt Image"
+                                                      />
+                                                    ) : (
+                                                      <img
+                                                        src={wordimg}
+                                                        alt="Default Image"
+                                                      />
+                                                    ))}
+                                                </div>
+                                                <div className="booking-docs-preview-text">
+                                                  <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                    Receipt
+                                                  </p>
+                                                </div>
                                               </div>
                                             </div>
-                                          </div>
-                                        )}
+                                          )}
                                         {currentLeadform.remainingPayments
                                           .length !== 0 &&
                                           currentLeadform.remainingPayments.some(
@@ -3021,7 +3004,7 @@ function ManagerBookings() {
                                                             .paymentReceipt[0]
                                                             .filename,
                                                           currentLeadform[
-                                                            "Company Name"
+                                                          "Company Name"
                                                           ]
                                                         )
                                                       }
@@ -3038,13 +3021,13 @@ function ManagerBookings() {
                                                           }
                                                           companyName={
                                                             currentLeadform[
-                                                              "Company Name"
+                                                            "Company Name"
                                                             ]
                                                           }
                                                         />
                                                       ) : remainingObject.paymentReceipt[0].filename.endsWith(
-                                                          ".png"
-                                                        ) ||
+                                                        ".png"
+                                                      ) ||
                                                         remainingObject.paymentReceipt[0].filename.endsWith(
                                                           ".jpg"
                                                         ) ||
@@ -3126,21 +3109,21 @@ function ManagerBookings() {
                                                       handleViewPdOtherDocs(
                                                         obj.filename,
                                                         currentLeadform[
-                                                          "Company Name"
+                                                        "Company Name"
                                                         ]
                                                       )
                                                     }
                                                   >
                                                     {obj.filename && // Ensure filename exists
-                                                    obj.filename
-                                                      .toLowerCase()
-                                                      .endsWith(".pdf") ? (
+                                                      obj.filename
+                                                        .toLowerCase()
+                                                        .endsWith(".pdf") ? (
                                                       <PdfImageViewerAdmin
                                                         type="pdf"
                                                         path={obj.filename}
                                                         companyName={
                                                           currentLeadform[
-                                                            "Company Name"
+                                                          "Company Name"
                                                           ]
                                                         }
                                                       />
@@ -3241,7 +3224,7 @@ function ManagerBookings() {
                                                 />
                                                 {selectedDocuments &&
                                                   selectedDocuments.length >
-                                                    0 && (
+                                                  0 && (
                                                     <div className="uploaded-filename-main d-flex flex-wrap">
                                                       {selectedDocuments.map(
                                                         (file, index) => (
@@ -3291,11 +3274,10 @@ function ManagerBookings() {
                               (objMain, BookingIndex) => (
                                 <div
                                   key={BookingIndex + 2}
-                                  className={`tab-pane fade rm_bkng_item_detail_inner ${
-                                    activeIndexBooking === BookingIndex + 2
+                                  className={`tab-pane fade rm_bkng_item_detail_inner ${activeIndexBooking === BookingIndex + 2
                                       ? "show active"
                                       : ""
-                                  }`}
+                                    }`}
                                   id={`Booking_${BookingIndex + 2}`}
                                 >
                                   <div className="mul-booking-card mt-2">
@@ -3368,7 +3350,7 @@ function ManagerBookings() {
                                                   <span>
                                                     <i>
                                                       {objMain.bdmType ===
-                                                      "Close-by"
+                                                        "Close-by"
                                                         ? "Closed-by"
                                                         : "Supported-by"}
                                                     </i>
@@ -3418,7 +3400,7 @@ function ManagerBookings() {
                                               <div class="col-sm-8 align-self-stretch p-0">
                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                   {objMain.bookingSource ===
-                                                  "Other"
+                                                    "Other"
                                                     ? objMain.otherBookingSource
                                                     : objMain.bookingSource}
                                                 </div>
@@ -3469,7 +3451,7 @@ function ManagerBookings() {
                                                     {obj.serviceName}{" "}
                                                     {obj.withDSC &&
                                                       obj.serviceName ===
-                                                        "Start-Up India Certificate" &&
+                                                      "Start-Up India Certificate" &&
                                                       "With DSC"}
                                                   </div>
                                                 </div>
@@ -3492,7 +3474,7 @@ function ManagerBookings() {
                                                         ).toLocaleString()}
                                                         {"("}
                                                         {obj.totalPaymentWGST !==
-                                                        obj.totalPaymentWOGST
+                                                          obj.totalPaymentWOGST
                                                           ? "With GST"
                                                           : "Without GST"}
                                                         {")"}
@@ -3592,7 +3574,7 @@ function ManagerBookings() {
                                                           obj.expanseDate
                                                             ? obj.expanseDate
                                                             : currentLeadform.bookingDate;
-                                                       
+
                                                         return formatDatePro(
                                                           dateToFormat
                                                         );
@@ -3606,25 +3588,25 @@ function ManagerBookings() {
                                           <div className="row m-0 bdr-btm-eee">
                                             {obj.paymentTerms ===
                                               "two-part" && (
-                                              <div className="col-lg-6 col-sm-6 p-0">
-                                                <div class="row m-0">
-                                                  <div class="col-sm-4 align-self-stretch p-0">
-                                                    <div class="booking_inner_dtl_h h-100">
-                                                      First payment
+                                                <div className="col-lg-6 col-sm-6 p-0">
+                                                  <div class="row m-0">
+                                                    <div class="col-sm-4 align-self-stretch p-0">
+                                                      <div class="booking_inner_dtl_h h-100">
+                                                        First payment
+                                                      </div>
                                                     </div>
-                                                  </div>
-                                                  <div class="col-sm-8 align-self-stretch p-0">
-                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                      ₹{" "}
-                                                      {Math.round(
-                                                        obj.firstPayment
-                                                      ).toLocaleString()}
-                                                      /-
+                                                    <div class="col-sm-8 align-self-stretch p-0">
+                                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                        ₹{" "}
+                                                        {Math.round(
+                                                          obj.firstPayment
+                                                        ).toLocaleString()}
+                                                        /-
+                                                      </div>
                                                     </div>
                                                   </div>
                                                 </div>
-                                              </div>
-                                            )}
+                                              )}
                                             {obj.secondPayment !== 0 && (
                                               <div className="col-lg-6 col-sm-6 p-0">
                                                 <div class="row m-0">
@@ -3649,8 +3631,8 @@ function ManagerBookings() {
                                                           )
                                                             ? obj.secondPaymentRemarks
                                                             : "On " +
-                                                              obj.secondPaymentRemarks +
-                                                              ")"}
+                                                            obj.secondPaymentRemarks +
+                                                            ")"}
                                                         </div>
                                                         <div>
                                                           <div
@@ -3662,11 +3644,11 @@ function ManagerBookings() {
                                                                   .remainingPayments
                                                                   .length !==
                                                                   0 &&
-                                                                objMain.remainingPayments.filter(
-                                                                  (item) =>
-                                                                    item.serviceName ===
-                                                                    obj.serviceName
-                                                                ).length > 0
+                                                                  objMain.remainingPayments.filter(
+                                                                    (item) =>
+                                                                      item.serviceName ===
+                                                                      obj.serviceName
+                                                                  ).length > 0
                                                                   ? "none"
                                                                   : "block",
                                                             }}
@@ -3675,7 +3657,7 @@ function ManagerBookings() {
                                                                 obj,
                                                                 "secondPayment",
                                                                 currentLeadform[
-                                                                  "Company Name"
+                                                                "Company Name"
                                                                 ],
                                                                 BookingIndex + 1
                                                               )
@@ -3705,10 +3687,10 @@ function ManagerBookings() {
                                                                     obj,
                                                                     "secondPayment",
                                                                     currentLeadform[
-                                                                      "Company Name"
+                                                                    "Company Name"
                                                                     ],
                                                                     BookingIndex +
-                                                                      1,
+                                                                    1,
                                                                     objMain.remainingPayments.filter(
                                                                       (boom) =>
                                                                         boom.serviceName ===
@@ -3760,8 +3742,8 @@ function ManagerBookings() {
                                                           )
                                                             ? obj.thirdPaymentRemarks
                                                             : "On " +
-                                                              obj.thirdPaymentRemarks +
-                                                              ")"}
+                                                            obj.thirdPaymentRemarks +
+                                                            ")"}
                                                         </div>
                                                         <div>
                                                           <div
@@ -3773,11 +3755,11 @@ function ManagerBookings() {
                                                                   .remainingPayments
                                                                   .length !==
                                                                   0 &&
-                                                                objMain.remainingPayments.filter(
-                                                                  (item) =>
-                                                                    item.serviceName ===
-                                                                    obj.serviceName
-                                                                ).length > 1
+                                                                  objMain.remainingPayments.filter(
+                                                                    (item) =>
+                                                                      item.serviceName ===
+                                                                      obj.serviceName
+                                                                  ).length > 1
                                                                   ? "none"
                                                                   : "block",
                                                             }}
@@ -3786,7 +3768,7 @@ function ManagerBookings() {
                                                                 obj,
                                                                 "thirdPayment",
                                                                 currentLeadform[
-                                                                  "Company Name"
+                                                                "Company Name"
                                                                 ],
                                                                 BookingIndex + 1
                                                               )
@@ -3816,10 +3798,10 @@ function ManagerBookings() {
                                                                     obj,
                                                                     "thirdPayment",
                                                                     currentLeadform[
-                                                                      "Company Name"
+                                                                    "Company Name"
                                                                     ],
                                                                     BookingIndex +
-                                                                      1,
+                                                                    1,
                                                                     objMain.remainingPayments.filter(
                                                                       (boom) =>
                                                                         boom.serviceName ===
@@ -3869,8 +3851,8 @@ function ManagerBookings() {
                                                           )
                                                             ? obj.fourthPaymentRemarks
                                                             : "On " +
-                                                              obj.fourthPaymentRemarks +
-                                                              ")"}
+                                                            obj.fourthPaymentRemarks +
+                                                            ")"}
                                                         </div>
                                                         <div>
                                                           <div
@@ -3882,11 +3864,11 @@ function ManagerBookings() {
                                                                   .remainingPayments
                                                                   .length !==
                                                                   0 &&
-                                                                currentLeadform.remainingPayments.filter(
-                                                                  (item) =>
-                                                                    item.serviceName ===
-                                                                    obj.serviceName
-                                                                ).length === 3
+                                                                  currentLeadform.remainingPayments.filter(
+                                                                    (item) =>
+                                                                      item.serviceName ===
+                                                                      obj.serviceName
+                                                                  ).length === 3
                                                                   ? "none"
                                                                   : "block",
                                                             }}
@@ -3895,7 +3877,7 @@ function ManagerBookings() {
                                                                 obj,
                                                                 "fourthPayment",
                                                                 currentLeadform[
-                                                                  "Company Name"
+                                                                "Company Name"
                                                                 ],
                                                                 BookingIndex + 1
                                                               )
@@ -3925,10 +3907,10 @@ function ManagerBookings() {
                                                                     obj,
                                                                     "fourthPayment",
                                                                     currentLeadform[
-                                                                      "Company Name"
+                                                                    "Company Name"
                                                                     ],
                                                                     BookingIndex +
-                                                                      1,
+                                                                    1,
                                                                     objMain.remainingPayments.filter(
                                                                       (boom) =>
                                                                         boom.serviceName ===
@@ -3987,23 +3969,23 @@ function ManagerBookings() {
                                                         {parseInt(
                                                           objMain.pendingAmount
                                                         ) !== 0 && (
-                                                          <div
-                                                            className="add-remaining-amnt ml-1"
-                                                            title="Add Remaining Payment"
-                                                            onClick={() =>
-                                                              functionOpenRemainingPayment(
-                                                                obj,
-                                                                "otherPayment",
-                                                                currentLeadform[
+                                                            <div
+                                                              className="add-remaining-amnt ml-1"
+                                                              title="Add Remaining Payment"
+                                                              onClick={() =>
+                                                                functionOpenRemainingPayment(
+                                                                  obj,
+                                                                  "otherPayment",
+                                                                  currentLeadform[
                                                                   "Company Name"
-                                                                ],
-                                                                BookingIndex + 1
-                                                              )
-                                                            }
-                                                          >
-                                                            +
-                                                          </div>
-                                                        )}
+                                                                  ],
+                                                                  BookingIndex + 1
+                                                                )
+                                                              }
+                                                            >
+                                                              +
+                                                            </div>
+                                                          )}
                                                       </div>
                                                     </div>
                                                   </div>
@@ -4013,7 +3995,7 @@ function ManagerBookings() {
                                                   class="accordion-collapse collapse show"
                                                   aria-labelledby={`headingOne${index}`}
                                                   data-bs-parent="#accordionExample"
-                                                  // Add a unique key prop for each rendered element
+                                                // Add a unique key prop for each rendered element
                                                 >
                                                   {objMain.remainingPayments
                                                     .length !== 0 &&
@@ -4026,7 +4008,7 @@ function ManagerBookings() {
                                                       .map(
                                                         (paymentObj, index) =>
                                                           paymentObj.serviceName ===
-                                                          obj.serviceName ? (
+                                                            obj.serviceName ? (
                                                             <div class="accordion-body bdr-none p-0">
                                                               <div>
                                                                 <div className="row m-0 bdr-btm-eee bdr-top-eee">
@@ -4080,7 +4062,7 @@ function ManagerBookings() {
                                                                             onClick={() =>
                                                                               functionDeleteRemainingPayment(
                                                                                 BookingIndex +
-                                                                                  1,
+                                                                                1,
                                                                                 obj.serviceName
                                                                               )
                                                                             }
@@ -4456,7 +4438,7 @@ function ManagerBookings() {
                                                     objMain.paymentReceipt[0]
                                                       .filename,
                                                     currentLeadform[
-                                                      "Company Name"
+                                                    "Company Name"
                                                     ]
                                                   )
                                                 }
@@ -4472,7 +4454,7 @@ function ManagerBookings() {
                                                     }
                                                     companyName={
                                                       currentLeadform[
-                                                        "Company Name"
+                                                      "Company Name"
                                                       ]
                                                     }
                                                   />
@@ -4500,7 +4482,7 @@ function ManagerBookings() {
                                                 handleViewPdOtherDocs(
                                                   obj.filename,
                                                   currentLeadform[
-                                                    "Company Name"
+                                                  "Company Name"
                                                   ]
                                                 )
                                               }
@@ -4513,7 +4495,7 @@ function ManagerBookings() {
                                                   path={obj.filename}
                                                   companyName={
                                                     currentLeadform[
-                                                      "Company Name"
+                                                    "Company Name"
                                                     ]
                                                   }
                                                 />
@@ -4610,7 +4592,7 @@ function ManagerBookings() {
                                               />
                                               {selectedDocuments &&
                                                 selectedDocuments.length >
-                                                  0 && (
+                                                0 && (
                                                   <div className="uploaded-filename-main d-flex flex-wrap">
                                                     {selectedDocuments.map(
                                                       (file, index) => (

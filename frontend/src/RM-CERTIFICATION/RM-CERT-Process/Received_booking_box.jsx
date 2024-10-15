@@ -160,11 +160,11 @@ function Received_booking_box() {
       secretKey === "http://localhost:3001/api"
         ? io("http://localhost:3001")
         : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: "/socket.io",
-            reconnection: true,
-            transports: ["websocket"],
-          });
+          secure: true, // Use HTTPS
+          path: "/socket.io",
+          reconnection: true,
+          transports: ["websocket"],
+        });
 
     socket.on("booking-updated", (res) => {
       fetchRedesignedFormData();
@@ -324,10 +324,10 @@ function Received_booking_box() {
             booking.services.includes(service)
           )
             ? new Date(
-                item.moreBookings.find((booking) =>
-                  booking.services.includes(service)
-                ).bookingDate
-              )
+              item.moreBookings.find((booking) =>
+                booking.services.includes(service)
+              ).bookingDate
+            )
             : new Date(item.bookingDate);
 
           serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
@@ -1121,7 +1121,7 @@ function Received_booking_box() {
     <div>
       {/* <RmofCertificationHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename } gender={employeeData.gender} designation={employeeData.newDesignation} />
       <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} /> */}
-      
+
       {!openAllBooking && !openTrashBoxPanel && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
@@ -1205,19 +1205,28 @@ function Received_booking_box() {
                           <div
                             className={
                               currentLeadform &&
-                              currentLeadform["Company Name"] ===
+                                currentLeadform["Company Name"] ===
                                 obj["Company Name"]
                                 ? "rm_bking_list_box_item activeBox"
                                 : "rm_bking_list_box_item"
                             }
                             onClick={() => {
-                              setCurrentLeadform(
-                                leadFormData.find(
-                                  (data) =>
-                                    data["Company Name"] === obj["Company Name"]
-                                )
-                              );
-                              setActiveIndexBooking(1);
+                              // Combine main booking and more bookings into one array
+                              const allBookings = [obj, ...obj.moreBookings];
+
+                              // Find the latest booking by comparing booking dates
+                              const latestBooking = allBookings.reduce((latest, current) => {
+                                const latestDate = new Date(latest.bookingDate);
+                                const currentDate = new Date(current.bookingDate);
+                                return currentDate > latestDate ? current : latest;
+                              });
+                              console.log(latestBooking)
+
+                              // Set current lead form to the clicked object
+                              setCurrentLeadform(leadFormData.find((data) => data["Company Name"] === obj["Company Name"]));
+
+                              // Set active index to the index of the latest booking in the combined array
+                              setActiveIndexBooking(allBookings.indexOf(latestBooking) + 1); // This will now set the active index to the latest booking
                               setActiveIndex(0);
                               setActiveIndexMoreBookingServices(0);
                             }}
@@ -1241,10 +1250,10 @@ function Received_booking_box() {
                                         booking.services.includes(service)
                                       )
                                         ? new Date(
-                                            obj.moreBookings.find((booking) =>
-                                              booking.services.includes(service)
-                                            ).bookingDate
-                                          )
+                                          obj.moreBookings.find((booking) =>
+                                            booking.services.includes(service)
+                                          ).bookingDate
+                                        )
                                         : new Date(obj.bookingDate);
 
                                     serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
@@ -1310,64 +1319,64 @@ function Received_booking_box() {
                             </div>
                             <div className="d-flex justify-content-start align-items-center flex-wrap mt-1">
                               {obj.services.length !== 0 ||
-                              obj.moreBookings.length !== 0
+                                obj.moreBookings.length !== 0
                                 ? [
-                                    ...obj.services,
-                                    ...(obj.moreBookings || []).flatMap(
-                                      (booking) => booking.services
-                                    ),
-                                  ].map((service, index) => {
-                                    // Determine the booking date for the current service
-                                    const bookingDate = obj.moreBookings.some(
-                                      (booking) =>
+                                  ...obj.services,
+                                  ...(obj.moreBookings || []).flatMap(
+                                    (booking) => booking.services
+                                  ),
+                                ].map((service, index) => {
+                                  // Determine the booking date for the current service
+                                  const bookingDate = obj.moreBookings.some(
+                                    (booking) =>
+                                      booking.services.includes(service)
+                                  )
+                                    ? new Date(
+                                      obj.moreBookings.find((booking) =>
                                         booking.services.includes(service)
+                                      ).bookingDate
                                     )
-                                      ? new Date(
-                                          obj.moreBookings.find((booking) =>
-                                            booking.services.includes(service)
-                                          ).bookingDate
+                                    : new Date(obj.bookingDate);
+
+                                  bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                                  // Check if the service is in servicesTakenByRmOfCertification
+                                  const isInMainServices =
+                                    obj.servicesTakenByRmOfCertification &&
+                                    obj.servicesTakenByRmOfCertification.includes(
+                                      service.serviceName
+                                    );
+
+                                  // Check if the service is in any moreBookings' servicesTakenIn
+                                  const isInMoreBookingServices =
+                                    obj.moreBookings.some(
+                                      (booking) =>
+                                        booking.servicesTakenByRmOfCertification &&
+                                        booking.servicesTakenByRmOfCertification.includes(
+                                          service.serviceName
                                         )
-                                      : new Date(obj.bookingDate);
+                                    );
 
-                                    bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-
-                                    // Check if the service is in servicesTakenByRmOfCertification
-                                    const isInMainServices =
-                                      obj.servicesTakenByRmOfCertification &&
-                                      obj.servicesTakenByRmOfCertification.includes(
-                                        service.serviceName
-                                      );
-
-                                    // Check if the service is in any moreBookings' servicesTakenIn
-                                    const isInMoreBookingServices =
-                                      obj.moreBookings.some(
-                                        (booking) =>
-                                          booking.servicesTakenByRmOfCertification &&
-                                          booking.servicesTakenByRmOfCertification.includes(
-                                            service.serviceName
-                                          )
-                                      );
-
-                                    // Determine the className based on conditions
-                                    const className =
-                                      isInMainServices ||
+                                  // Determine the className based on conditions
+                                  const className =
+                                    isInMainServices ||
                                       isInMoreBookingServices
-                                        ? "clr-bg-light-f3f3dd bdr-l-clr-c5c51f clr-f3f3dd"
-                                        : certificationLabels.some((label) =>
-                                            service.serviceName.includes(label)
-                                          ) && bookingDate >= today
+                                      ? "clr-bg-light-f3f3dd bdr-l-clr-c5c51f clr-f3f3dd"
+                                      : certificationLabels.some((label) =>
+                                        service.serviceName.includes(label)
+                                      ) && bookingDate >= today
                                         ? "clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1"
                                         : "clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad";
 
-                                    return (
-                                      <div
-                                        key={index}
-                                        className={`rm_bking_item_serices ${className} My_Text_Wrap mb-1`}
-                                      >
-                                        {service.serviceName}
-                                      </div>
-                                    );
-                                  })
+                                  return (
+                                    <div
+                                      key={index}
+                                      className={`rm_bking_item_serices ${className} My_Text_Wrap mb-1`}
+                                    >
+                                      {service.serviceName}
+                                    </div>
+                                  );
+                                })
                                 : null}
                             </div>
 
@@ -1377,8 +1386,8 @@ function Received_booking_box() {
                                   obj.moreBookings &&
                                     obj.moreBookings.length !== 0
                                     ? obj.moreBookings[
-                                        obj.moreBookings.length - 1
-                                      ].bookingPublishDate
+                                      obj.moreBookings.length - 1
+                                    ].bookingPublishDate
                                     : obj.bookingPublishDate
                                 )}{" "}
                                 |{" "}
@@ -1387,8 +1396,8 @@ function Received_booking_box() {
                                     obj.moreBookings &&
                                       obj.moreBookings.length !== 0
                                       ? obj.moreBookings[
-                                          obj.moreBookings.length - 1
-                                        ].bookingPublishDate // Get the latest bookingDate from moreBookings
+                                        obj.moreBookings.length - 1
+                                      ].bookingPublishDate // Get the latest bookingDate from moreBookings
                                       : obj.bookingPublishDate
                                   ) // Use obj.bookingDate if moreBookings is empty or not present
                                 }
@@ -1420,11 +1429,11 @@ function Received_booking_box() {
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="b_dtl_C_name">
                           {currentLeadform &&
-                          Object.keys(currentLeadform).length !== 0
+                            Object.keys(currentLeadform).length !== 0
                             ? currentLeadform["Company Name"]
                             : leadFormData && leadFormData.length !== 0
-                            ? leadFormData[0]["Company Name"]
-                            : "-"}
+                              ? leadFormData[0]["Company Name"]
+                              : "-"}
                         </div>
                       </div>
                     </div>
@@ -1448,16 +1457,16 @@ function Received_booking_box() {
                                 Total Services :
                                 <b>
                                   {currentLeadform &&
-                                  (currentLeadform.services.length !== 0 ||
-                                    currentLeadform.moreBookings.length !== 0)
+                                    (currentLeadform.services.length !== 0 ||
+                                      currentLeadform.moreBookings.length !== 0)
                                     ? [
-                                        ...currentLeadform.services,
-                                        ...(
-                                          currentLeadform.moreBookings || []
-                                        ).flatMap(
-                                          (booking) => booking.services
-                                        ),
-                                      ].length
+                                      ...currentLeadform.services,
+                                      ...(
+                                        currentLeadform.moreBookings || []
+                                      ).flatMap(
+                                        (booking) => booking.services
+                                      ),
+                                    ].length
                                     : null}
                                 </b>
                               </div>
@@ -1476,12 +1485,12 @@ function Received_booking_box() {
                                 <div class="col-lg-9 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Name"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Name"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Name"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1496,12 +1505,12 @@ function Received_booking_box() {
                                 <div class="col-lg-9 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Email"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Email"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Email"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1518,12 +1527,12 @@ function Received_booking_box() {
                                 <div class="col-lg-8 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Number"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Number"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Number"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1544,8 +1553,8 @@ function Received_booking_box() {
                                           ? currentLeadform.incoDate
                                           : leadFormData &&
                                             leadFormData.length !== 0
-                                          ? leadFormData[0].incoDate
-                                          : "-"
+                                            ? leadFormData[0].incoDate
+                                            : "-"
                                       )}
                                   </div>
                                 </div>
@@ -1561,12 +1570,12 @@ function Received_booking_box() {
                                 <div class="col-lg-7 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform.panNumber
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0].panNumber
-                                      : "-"}
+                                        ? leadFormData[0].panNumber
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -1633,12 +1642,12 @@ function Received_booking_box() {
                           </div>
                         </div>
                       </div>
-                       {/* --------If Multiple Booking (Bookign heading) ---------*/}
+                      {/* --------If Multiple Booking (Bookign heading) ---------*/}
                       <div className="rm_all_bkng_right mt-3">
                         <ul className="nav nav-tabs rm_bkng_items align-items-center">
                           {currentLeadform &&
-                          currentLeadform.moreBookings &&
-                          currentLeadform.moreBookings.length !== 0 ? (
+                            currentLeadform.moreBookings &&
+                            currentLeadform.moreBookings.length !== 0 ? (
                             <>
                               <li className="nav-item rm_bkng_item_no">
                                 <a
@@ -1683,9 +1692,14 @@ function Received_booking_box() {
                                 )
                               )}
                               {activeIndexBooking === 1 &&
-                              currentLeadform.bookingPublishDate ? (
+                                currentLeadform.bookingPublishDate ? (
                                 <li className="nav-item rm_bkng_item_no ms-auto">
                                   <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                  <span style={{
+                                    color: "#797373",
+                                    marginRight: "2px"
+                                  }}
+                                  >{"Publish On : "} </span>
                                     {formatDatePro(
                                       currentLeadform.bookingPublishDate
                                     )}{" "}
@@ -1706,6 +1720,11 @@ function Received_booking_box() {
                                         className="nav-item rm_bkng_item_no ms-auto"
                                       >
                                         <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                        <span style={{
+                                    color: "#797373",
+                                    marginRight: "2px"
+                                  }}
+                                  >{"Publish On : "} </span>
                                           {formatDatePro(
                                             obj.bookingPublishDate
                                           )}{" "}
@@ -1738,13 +1757,18 @@ function Received_booking_box() {
                               </li>
                               <li className="nav-item rm_bkng_item_no ms-auto">
                                 <div className="rm_bkng_item_no nav-link clr-ff8800">
+                                <span style={{
+                                    color: "#797373",
+                                    marginRight: "2px"
+                                  }}
+                                  >{"Publish On : "} </span>
                                   {currentLeadform &&
-                                  currentLeadform.bookingPublishDate
+                                    currentLeadform.bookingPublishDate
                                     ? `${formatDatePro(
-                                        currentLeadform.bookingPublishDate
-                                      )} at ${formatTime(
-                                        currentLeadform.bookingPublishDate
-                                      )}`
+                                      currentLeadform.bookingPublishDate
+                                    )} at ${formatTime(
+                                      currentLeadform.bookingPublishDate
+                                    )}`
                                     : "No Date Available"}
                                 </div>
                               </li>
@@ -1755,12 +1779,11 @@ function Received_booking_box() {
                         <div class="tab-content rm_bkng_item_details">
                           {currentLeadform && (
                             <div
-                              className={`tab-pane fade rm_bkng_item_detail_inner ${
-                                activeIndexBooking === 1 ? "show active" : ""
-                              }`}
+                              className={`tab-pane fade rm_bkng_item_detail_inner ${activeIndexBooking === 1 ? "show active" : ""
+                                }`}
                               id="Booking_1"
                             >
-                                {/* -------- Booking Details ---------*/}
+                              {/* -------- Booking Details ---------*/}
                               <div className="mul-booking-card mt-2">
                                 <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                                   <b>Booking Details:</b>
@@ -1862,7 +1885,7 @@ function Received_booking_box() {
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                               {currentLeadform &&
                                                 (currentLeadform.bookingSource ===
-                                                "Other"
+                                                  "Other"
                                                   ? currentLeadform.otherBookingSource
                                                   : currentLeadform.bookingSource)}
                                             </div>
@@ -1914,7 +1937,7 @@ function Received_booking_box() {
                                                   {obj.serviceName}{" "}
                                                   {obj.withDSC &&
                                                     obj.serviceName ===
-                                                      "Start-Up India Certificate" &&
+                                                    "Start-Up India Certificate" &&
                                                     "With DSC"}
                                                 </div>
                                               </div>
@@ -1937,7 +1960,7 @@ function Received_booking_box() {
                                                       ).toLocaleString()}{" "}
                                                       {"("}
                                                       {obj.totalPaymentWGST !==
-                                                      obj.totalPaymentWOGST
+                                                        obj.totalPaymentWOGST
                                                         ? "With GST"
                                                         : "Without GST"}
                                                       {")"}
@@ -1959,7 +1982,7 @@ function Received_booking_box() {
                                               <div class="col-sm-8 align-self-stretch p-0">
                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                   {obj.paymentTerms ===
-                                                  "two-part"
+                                                    "two-part"
                                                     ? "Part-Payment"
                                                     : "Full Advanced"}
                                                 </div>
@@ -2074,8 +2097,8 @@ function Received_booking_box() {
                                                         )
                                                           ? obj.secondPaymentRemarks
                                                           : "On " +
-                                                            obj.secondPaymentRemarks +
-                                                            ")"}
+                                                          obj.secondPaymentRemarks +
+                                                          ")"}
                                                         {")"}
                                                       </div>
                                                     </div>
@@ -2110,8 +2133,8 @@ function Received_booking_box() {
                                                         )
                                                           ? obj.thirdPaymentRemarks
                                                           : "On " +
-                                                            obj.thirdPaymentRemarks +
-                                                            ")"}
+                                                          obj.thirdPaymentRemarks +
+                                                          ")"}
                                                       </div>
                                                     </div>
                                                   </div>
@@ -2143,8 +2166,8 @@ function Received_booking_box() {
                                                         )
                                                           ? obj.fourthPaymentRemarks
                                                           : "On " +
-                                                            obj.fourthPaymentRemarks +
-                                                            ")"}
+                                                          obj.fourthPaymentRemarks +
+                                                          ")"}
                                                       </div>
                                                     </div>
                                                   </div>
@@ -2204,7 +2227,7 @@ function Received_booking_box() {
                                                     .map(
                                                       (paymentObj, index) =>
                                                         paymentObj.serviceName ===
-                                                        obj.serviceName ? (
+                                                          obj.serviceName ? (
                                                           <div class="accordion-body bdr-none p-0">
                                                             <div>
                                                               <div className="row m-0 bdr-btm-eee bdr-top-eee">
@@ -2613,72 +2636,72 @@ function Received_booking_box() {
                                       <div className="row">
                                         {currentLeadform.paymentReceipt
                                           .length !== 0 && (
-                                          <div className="col-sm-2 mb-1">
-                                            <div className="booking-docs-preview">
-                                              <div
-                                                className="booking-docs-preview-img"
-                                                onClick={() =>
-                                                  handleViewPdfReciepts(
+                                            <div className="col-sm-2 mb-1">
+                                              <div className="booking-docs-preview">
+                                                <div
+                                                  className="booking-docs-preview-img"
+                                                  onClick={() =>
+                                                    handleViewPdfReciepts(
+                                                      currentLeadform
+                                                        .paymentReceipt[0]
+                                                        .filename,
+                                                      currentLeadform[
+                                                      "Company Name"
+                                                      ]
+                                                    )
+                                                  }
+                                                >
+                                                  {currentLeadform &&
+                                                    currentLeadform.paymentReceipt &&
+                                                    currentLeadform
+                                                      .paymentReceipt[0] &&
                                                     currentLeadform
                                                       .paymentReceipt[0]
-                                                      .filename,
-                                                    currentLeadform[
-                                                      "Company Name"
-                                                    ]
-                                                  )
-                                                }
-                                              >
-                                                {currentLeadform &&
-                                                  currentLeadform.paymentReceipt &&
-                                                  currentLeadform
-                                                    .paymentReceipt[0] &&
-                                                  currentLeadform
-                                                    .paymentReceipt[0]
-                                                    .filename && // Ensure filename exists
-                                                  (currentLeadform.paymentReceipt[0].filename
-                                                    .toLowerCase()
-                                                    .endsWith(".pdf") ? (
-                                                    <PdfImageViewerAdmin
-                                                      type="paymentrecieptpdf"
-                                                      path={
-                                                        currentLeadform
-                                                          .paymentReceipt[0]
-                                                          .filename
-                                                      }
-                                                      companyName={
-                                                        currentLeadform[
+                                                      .filename && // Ensure filename exists
+                                                    (currentLeadform.paymentReceipt[0].filename
+                                                      .toLowerCase()
+                                                      .endsWith(".pdf") ? (
+                                                      <PdfImageViewerAdmin
+                                                        type="paymentrecieptpdf"
+                                                        path={
+                                                          currentLeadform
+                                                            .paymentReceipt[0]
+                                                            .filename
+                                                        }
+                                                        companyName={
+                                                          currentLeadform[
                                                           "Company Name"
-                                                        ]
-                                                      }
-                                                    />
-                                                  ) : currentLeadform.paymentReceipt[0].filename
+                                                          ]
+                                                        }
+                                                      />
+                                                    ) : currentLeadform.paymentReceipt[0].filename
                                                       .toLowerCase()
                                                       .endsWith(".png") ||
-                                                    currentLeadform.paymentReceipt[0].filename
-                                                      .toLowerCase()
-                                                      .endsWith(".jpg") ||
-                                                    currentLeadform.paymentReceipt[0].filename
-                                                      .toLowerCase()
-                                                      .endsWith(".jpeg") ? (
-                                                    <img
-                                                      src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
-                                                      alt="Receipt Image"
-                                                    />
-                                                  ) : (
-                                                    <img
-                                                      src={wordimg}
-                                                      alt="Default Image"
-                                                    />
-                                                  ))}
-                                              </div>
-                                              <div className="booking-docs-preview-text">
-                                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                                  Receipt
-                                                </p>
+                                                      currentLeadform.paymentReceipt[0].filename
+                                                        .toLowerCase()
+                                                        .endsWith(".jpg") ||
+                                                      currentLeadform.paymentReceipt[0].filename
+                                                        .toLowerCase()
+                                                        .endsWith(".jpeg") ? (
+                                                      <img
+                                                        src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                        alt="Receipt Image"
+                                                      />
+                                                    ) : (
+                                                      <img
+                                                        src={wordimg}
+                                                        alt="Default Image"
+                                                      />
+                                                    ))}
+                                                </div>
+                                                <div className="booking-docs-preview-text">
+                                                  <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                    Receipt
+                                                  </p>
+                                                </div>
                                               </div>
                                             </div>
-                                          </div>
-                                        )}
+                                          )}
                                         {currentLeadform.remainingPayments
                                           .length !== 0 &&
                                           currentLeadform.remainingPayments.some(
@@ -2702,7 +2725,7 @@ function Received_booking_box() {
                                                             .paymentReceipt[0]
                                                             .filename,
                                                           currentLeadform[
-                                                            "Company Name"
+                                                          "Company Name"
                                                           ]
                                                         )
                                                       }
@@ -2719,13 +2742,13 @@ function Received_booking_box() {
                                                           }
                                                           companyName={
                                                             currentLeadform[
-                                                              "Company Name"
+                                                            "Company Name"
                                                             ]
                                                           }
                                                         />
                                                       ) : remainingObject.paymentReceipt[0].filename.endsWith(
-                                                          ".png"
-                                                        ) ||
+                                                        ".png"
+                                                      ) ||
                                                         remainingObject.paymentReceipt[0].filename.endsWith(
                                                           ".jpg"
                                                         ) ||
@@ -2807,21 +2830,21 @@ function Received_booking_box() {
                                                       handleViewPdOtherDocs(
                                                         obj.filename,
                                                         currentLeadform[
-                                                          "Company Name"
+                                                        "Company Name"
                                                         ]
                                                       )
                                                     }
                                                   >
                                                     {obj.filename && // Ensure filename exists
-                                                    obj.filename
-                                                      .toLowerCase()
-                                                      .endsWith(".pdf") ? (
+                                                      obj.filename
+                                                        .toLowerCase()
+                                                        .endsWith(".pdf") ? (
                                                       <PdfImageViewerAdmin
                                                         type="pdf"
                                                         path={obj.filename}
                                                         companyName={
                                                           currentLeadform[
-                                                            "Company Name"
+                                                          "Company Name"
                                                           ]
                                                         }
                                                       />
@@ -2843,7 +2866,7 @@ function Received_booking_box() {
                                                     </p>
                                                   </div>
                                                 </div>
-                                                
+
                                               </div>
                                             )
                                           )}
@@ -2923,7 +2946,7 @@ function Received_booking_box() {
                                                 />
                                                 {selectedDocuments &&
                                                   selectedDocuments.length >
-                                                    0 && (
+                                                  0 && (
                                                     <div className="uploaded-filename-main d-flex flex-wrap">
                                                       {selectedDocuments.map(
                                                         (file, index) => (
@@ -2972,11 +2995,10 @@ function Received_booking_box() {
                             currentLeadform.moreBookings.map((obj, index) => (
                               <div
                                 key={index + 2}
-                                className={`tab-pane fade rm_bkng_item_detail_inner ${
-                                  activeIndexBooking === index + 2
+                                className={`tab-pane fade rm_bkng_item_detail_inner ${activeIndexBooking === index + 2
                                     ? "show active"
                                     : ""
-                                }`}
+                                  }`}
                                 id={`Booking_${index + 2}`}
                               >
                                 <div className="mul-booking-card mt-2">
@@ -3131,7 +3153,7 @@ function Received_booking_box() {
                                                   {obj.serviceName}{" "}
                                                   {obj.withDSC &&
                                                     obj.serviceName ===
-                                                      "Start-Up India Certificate" &&
+                                                    "Start-Up India Certificate" &&
                                                     "With DSC"}
                                                 </div>
                                               </div>
@@ -3154,7 +3176,7 @@ function Received_booking_box() {
                                                       ).toLocaleString()}
                                                       {"("}
                                                       {obj.totalPaymentWGST !==
-                                                      obj.totalPaymentWOGST
+                                                        obj.totalPaymentWOGST
                                                         ? "With GST"
                                                         : "Without GST"}
                                                       {")"}
@@ -3288,8 +3310,8 @@ function Received_booking_box() {
                                                         )
                                                           ? obj.secondPaymentRemarks
                                                           : "On " +
-                                                            obj.secondPaymentRemarks +
-                                                            ")"}
+                                                          obj.secondPaymentRemarks +
+                                                          ")"}
                                                       </div>
                                                     </div>
                                                   </div>
@@ -3323,8 +3345,8 @@ function Received_booking_box() {
                                                         )
                                                           ? obj.thirdPaymentRemarks
                                                           : "On " +
-                                                            obj.thirdPaymentRemarks +
-                                                            ")"}
+                                                          obj.thirdPaymentRemarks +
+                                                          ")"}
                                                       </div>
                                                     </div>
                                                   </div>
@@ -3356,8 +3378,8 @@ function Received_booking_box() {
                                                         )
                                                           ? obj.fourthPaymentRemarks
                                                           : "On " +
-                                                            obj.fourthPaymentRemarks +
-                                                            ")"}
+                                                          obj.fourthPaymentRemarks +
+                                                          ")"}
                                                       </div>
                                                     </div>
                                                   </div>
@@ -3403,7 +3425,7 @@ function Received_booking_box() {
                                                 class="accordion-collapse collapse show"
                                                 aria-labelledby={`headingOne${index}`}
                                                 data-bs-parent="#accordionExample"
-                                                // Add a unique key prop for each rendered element
+                                              // Add a unique key prop for each rendered element
                                               >
                                                 {obj.remainingPayments
                                                   .length !== 0 &&
@@ -3416,7 +3438,7 @@ function Received_booking_box() {
                                                     .map(
                                                       (paymentObj, index) =>
                                                         paymentObj.serviceName ===
-                                                        obj.serviceName ? (
+                                                          obj.serviceName ? (
                                                           <div class="accordion-body bdr-none p-0">
                                                             <div>
                                                               <div className="row m-0 bdr-btm-eee bdr-top-eee">
@@ -3828,7 +3850,7 @@ function Received_booking_box() {
                                                   obj.paymentReceipt[0]
                                                     .filename,
                                                   currentLeadform[
-                                                    "Company Name"
+                                                  "Company Name"
                                                   ]
                                                 )
                                               }
@@ -3844,7 +3866,7 @@ function Received_booking_box() {
                                                   }
                                                   companyName={
                                                     currentLeadform[
-                                                      "Company Name"
+                                                    "Company Name"
                                                     ]
                                                   }
                                                 />
@@ -3883,7 +3905,7 @@ function Received_booking_box() {
                                                 path={obj.filename}
                                                 companyName={
                                                   currentLeadform[
-                                                    "Company Name"
+                                                  "Company Name"
                                                   ]
                                                 }
                                               />

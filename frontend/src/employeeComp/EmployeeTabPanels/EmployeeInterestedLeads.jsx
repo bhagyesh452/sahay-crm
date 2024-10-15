@@ -78,7 +78,7 @@ function EmployeeInterestedLeads({
                                     <th>Assign Date</th>
                                 </tr>
                             </thead>
-                            {isLoading ? (
+                            {isLoading && dataStatus !== "Interested" ? (
                                 <tbody>
                                     <tr>
                                         <td colSpan="11" >

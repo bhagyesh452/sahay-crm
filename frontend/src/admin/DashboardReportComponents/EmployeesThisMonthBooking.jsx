@@ -1065,22 +1065,25 @@ function EmployeesThisMonthBooking() {
                         //achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount);
                         mainBooking.services.map(serv => {
                             if (serv.paymentTerms === "Full Advanced") {
-                                //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
                                 achievedAmount = achievedAmount + serv.totalPaymentWOGST;
+                                console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST, achievedAmount)
 
                             } else {
-                                //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
                                 if (serv.withGST) {
                                     achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
+                                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment), achievedAmount)
+
                                 } else {
                                     achievedAmount = achievedAmount + Math.round(serv.firstPayment);
+                                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment), achievedAmount)
+
                                 }
                             }
 
                             // console.log(serv.expanse , bdeName ,"this is services");
                             let expanseDate = null
                             if (serv.expanse) {
-                                // console.log("Ye add hone ja raha expanse :", mainBooking['Company Name'], bdeName, serv.expanse)
+                                //console.log("Ye add hone ja raha expanse :", mainBooking['Company Name'], bdeName, serv.expanse)
                                 expanseDate = serv.expanseDate ? new Date(serv.expanseDate) : new Date(mainBooking.bookingDate);
 
                                 expanseDate.setHours(0, 0, 0, 0);
@@ -1089,8 +1092,7 @@ function EmployeesThisMonthBooking() {
                             }
                         });
                         if (mainBooking.caCase === "Yes") {
-                            //console.log("Ye add hone ja raha commision :", mainBooking['Company Name'], bdeName, mainBooking.caCommission)
-
+                            console.log("Ye add hone ja raha commision :", mainBooking['Company Name'], bdeName, mainBooking.caCommission)
                             add_caCommision += parseInt(mainBooking.caCommission);
                         }
 
@@ -1100,15 +1102,19 @@ function EmployeesThisMonthBooking() {
                         //achievedAmount = achievedAmount + Math.floor(mainBooking.generatedReceivedAmount) / 2;
                         mainBooking.services.map(serv => {
                             if (serv.paymentTerms === "Full Advanced") {
-                                //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
                                 achievedAmount = achievedAmount + serv.totalPaymentWOGST / 2;
+                                console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST , achievedAmount)
+
                             } else {
                                 if (serv.withGST) {
-                                    //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
 
                                     achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18) / 2;
+                                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                 } else {
                                     achievedAmount = achievedAmount + Math.round(serv.firstPayment) / 2;
+                                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment),achievedAmount)
+
                                 }
                             }
                             // console.log(serv.expanse , bdeName ,"this is services");
@@ -1135,19 +1141,21 @@ function EmployeesThisMonthBooking() {
                             //achievedAmount += Math.floor(mainBooking.generatedReceivedAmount);
                             mainBooking.services.map(serv => {
                                 if (serv.paymentTerms === "Full Advanced") {
-                                    //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
-
                                     achievedAmount = achievedAmount + serv.totalPaymentWOGST;
+                                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST , achievedAmount)
+
                                 } else {
-                                    //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
                                     if (serv.withGST === undefined || serv.withGST === true) {
-                                        //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
                                         achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
+                                        console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                     } else {
                                         achievedAmount = achievedAmount + Math.round(serv.firstPayment);
+                                        console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                     }
                                 }
-                                // console.log(serv.expanse , bdeName ,"this is services");
+                                //console.log(serv.expanse , bdeName ,"this is services");
                                 let expanseDate;
                                 if (serv.expanse) {
                                     //console.log("Ye add hone ja raha expanse :", mainBooking['Company Name'], bdeName, serv.expanse)
@@ -1189,11 +1197,8 @@ function EmployeesThisMonthBooking() {
                     moreBookingDate.setHours(0, 0, 0, 0);
                     if (((moreBookingDate >= startDate && moreBookingDate <= endDate) || (isSameDayMonthYear(moreBookingDate, startDate) && isSameDayMonthYear(moreBookingDate, endDate))) && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
                         const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName);
-                        mainBooking.services.forEach(service => {
-                            //console.log(`Service name: ${service.serviceName}`);
-                        });
                         if (findService) { // Check if findService is defined
-                            // console.log("findService1", findService, mainBooking["Company Name"])
+                            console.log("findService1", findService, mainBooking["Company Name"])
                             const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
                             //console.log("yahan add ho rha remianing amount", mainBooking["Company Name"], tempAmount)
                             if (mainBooking.bdeName === mainBooking.bdmName) {
@@ -1220,17 +1225,23 @@ function EmployeesThisMonthBooking() {
                             //console.log("Ye add hone ja raha more booking:",mainBooking["Company Name"], bdeName , Math.floor(moreObject.generatedReceivedAmount) )
                             //achievedAmount = achievedAmount + Math.floor(moreObject.generatedReceivedAmount);
                             moreObject.services.map(serv => {
-                                // console.log(serv.expanse , bdeName ,"this is services");
+                                //console.log(serv.expanse , bdeName ,"this is services",mainBooking["Company Name"]);
                                 if (serv.paymentTerms === "Full Advanced") {
-                                    //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
                                     achievedAmount = achievedAmount + serv.totalPaymentWOGST;
+                                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST , achievedAmount)
+
                                 } else {
+
                                     if (serv.withGST) {
-                                        //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
+                                        // console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
 
                                         achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
+                                      console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                     } else {
                                         achievedAmount = achievedAmount + Math.round(serv.firstPayment);
+                                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                     }
                                 }
                                 let expanseDate = null
@@ -1252,19 +1263,23 @@ function EmployeesThisMonthBooking() {
                             //achievedAmount = achievedAmount + Math.floor(moreObject.generatedReceivedAmount) / 2;
                             moreObject.services.map(serv => {
                                 if (serv.paymentTerms === "Full Advanced") {
-                                    //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
 
                                     achievedAmount = achievedAmount + serv.totalPaymentWOGST / 2;
+                                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST , achievedAmount)
+
                                 } else {
                                     if (serv.withGST) {
-                                        //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
 
                                         achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18) / 2;
+                                        console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                     } else {
                                         achievedAmount = achievedAmount + Math.round(serv.firstPayment) / 2;
+                                        console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                     }
                                 }
-                                // console.log(serv.expanse , bdeName ,"this is services");
+                                console.log(serv.expanse, bdeName, "this is services");
                                 let expanseDate = null
                                 if (serv.expanse) {
                                     //console.log("Ye add hone ja raha expanse :", mainBooking['Company Name'], bdeName, serv.expanse)
@@ -1283,23 +1298,26 @@ function EmployeesThisMonthBooking() {
                             }
                         } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
                             if (cleanString(moreObject.bdeName) === cleanString(bdeName)) {
-                                //console.log("Ye add hone ja raha :", bdeName, Math.floor(moreObject.generatedReceivedAmount))
+                                // console.log("Ye add hone ja raha :", bdeName, Math.floor(moreObject.generatedReceivedAmount))
                                 //achievedAmount += Math.floor(moreObject.generatedReceivedAmount);
                                 moreObject.services.map(serv => {
                                     if (serv.paymentTerms === "Full Advanced") {
-                                        //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST)
-
                                         achievedAmount = achievedAmount + serv.totalPaymentWOGST;
+                                        console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, serv.totalPaymentWOGST , achievedAmount)
+
                                     } else {
                                         if (serv.withGST) {
-                                            //console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment))
 
                                             achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
+                                            console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                         } else {
                                             achievedAmount = achievedAmount + Math.round(serv.firstPayment);
+                                            console.log("Ye add hone ja raha :", mainBooking['Company Name'], bdeName, Math.round(serv.firstPayment) , achievedAmount)
+
                                         }
                                     }
-                                    // console.log(serv.expanse , bdeName ,"this is services");
+                                    //console.log(serv.expanse , bdeName ,"this is services");
                                     let expanseDate = null
                                     if (serv.expanse) {
                                         //console.log("Ye add hone ja raha expanse :", mainBooking['Company Name'], bdeName, serv.expanse)
@@ -1341,15 +1359,17 @@ function EmployeesThisMonthBooking() {
                         moreRemainingDate.setHours(0, 0, 0, 0);
                         if (((moreRemainingDate >= startDate && moreRemainingDate <= endDate) || (isSameDayMonthYear(moreRemainingDate, startDate) && isSameDayMonthYear(moreRemainingDate, endDate))) && (moreObject.bdeName === bdeName || moreObject.bdmName === bdeName)) {
                             const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName)
-                            //console.log("findService2", findService, mainBooking["Company Name"])
+                            console.log("findService2", findService, mainBooking["Company Name"])
                             if (findService) {
                                 const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
-                                //console.log("yahan add ho rha remianing amount more booking", mainBooking["Company Name"], tempAmount)
+                                // console.log("yahan add ho rha remianing amount more booking", mainBooking["Company Name"], tempAmount)
                                 if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                                     remainingAmount += Math.floor(tempAmount);
+                                    //console.log("yahan add ho rha remianing amount more booking", mainBooking["Company Name"], remainingAmount)
 
                                 } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
                                     remainingAmount += Math.floor(tempAmount) / 2;
+                                   // console.log("yahan add ho rha remianing amount more booking", mainBooking["Company Name"], remainingAmount)
 
                                 } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
                                     if (cleanString(moreObject.bdeName) === cleanString(bdeName)) {
@@ -1369,9 +1389,8 @@ function EmployeesThisMonthBooking() {
 
         const finalexpanse = expanse + remainingExpense + remainingMoreExpense + add_caCommision;
         totalAchievedAmount = totalAchievedAmount + achievedAmount + Math.floor(remainingAmount) - finalexpanse;
-        //console.log("totalAchievedAmount", totalAchievedAmount, bdeName)
         const consoleAchievedAmount = achievedAmount + Math.floor(remainingAmount) - finalexpanse
-        //console.log("BDE :" , bdeName,  achievedAmount , remainingAmount , expanse , remainingExpense , remainingMoreExpense, add_caCommision)
+        console.log("BDE :", bdeName, achievedAmount, remainingAmount, expanse, remainingExpense, remainingMoreExpense, add_caCommision)
         //console.log("check krna", bdeName, achievedAmount, Math.floor(remainingAmount), finalexpanse , totalAchievedAmount)
         return consoleAchievedAmount;
     };

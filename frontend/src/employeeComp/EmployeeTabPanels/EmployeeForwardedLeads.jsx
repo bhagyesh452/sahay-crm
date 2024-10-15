@@ -5,14 +5,15 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import Nodata from '../../components/Nodata';
+import RemarksDialog from '../ExtraComponents/RemarksDialog';
 import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
-import RemarksDialog from '../ExtraComponents/RemarksDialog';
+import EmployeeNextFollowDate from '../ExtraComponents/EmployeeNextFollowUpDate';
 
 
-function EmployeeGeneralLeads({
-    generalData,
+function EmployeeForwardedLeads({
+    forwardedLeads,
     isLoading,
     refetch,
     formatDateNew,
@@ -21,11 +22,11 @@ function EmployeeGeneralLeads({
     totalPages,
     setCurrentPage,
     currentPage,
+    secretKey,
     dataStatus,
     setdataStatus,
     ename,
-    email,
-    secretKey
+    email
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -40,6 +41,7 @@ function EmployeeGeneralLeads({
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
     const [nowToFetch, setNowToFetch] = useState(false);
+
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
             setCurrentPage((prevPage) => prevPage + 1);
@@ -68,6 +70,7 @@ function EmployeeGeneralLeads({
                                     <th>Call History</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
+                                    
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
@@ -75,7 +78,7 @@ function EmployeeGeneralLeads({
                                     <th>Assign Date</th>
                                 </tr>
                             </thead>
-                            {isLoading && dataStatus !== "All"  ? (
+                            {isLoading && dataStatus !== "Interested" ? (
                                 <tbody>
                                     <tr>
                                         <td colSpan="11" >
@@ -93,7 +96,7 @@ function EmployeeGeneralLeads({
                                 </tbody>
                             ) : (
                                 <tbody>
-                                    {generalData.map((company, index) => (
+                                    {forwardedLeads.map((company, index) => (
                                         <tr
                                             key={index}
                                             style={{ border: "1px solid #ddd" }}
@@ -184,6 +187,7 @@ function EmployeeGeneralLeads({
                                                     />
                                                 </div>
                                             </td>
+                                            
                                             <td>
                                                 {formatDateNew(
                                                     company["Company Incorporation Date  "]
@@ -197,7 +201,7 @@ function EmployeeGeneralLeads({
                                     ))}
                                 </tbody>
                             )}
-                            {generalData && generalData.length === 0 && !isLoading && (
+                            {forwardedLeads && forwardedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
                                         <td colSpan="11" className="p-2 particular">
@@ -207,9 +211,8 @@ function EmployeeGeneralLeads({
                                 </tbody>
                             )}
                         </table>
-
                     </div>
-                    {generalData && generalData.length !== 0 && (
+                    {forwardedLeads && forwardedLeads.length !== 0 && (
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} className="pagination">
                             <button onClick={prevPage} disabled={currentPage === 0}>
                                 <IconChevronLeft />
@@ -222,7 +225,8 @@ function EmployeeGeneralLeads({
                             </button>
                         </div>
                     )}
-                </>)}
+                </>
+            )}
             {formOpen && (
                 <>
                     <RedesignedForm
@@ -259,4 +263,4 @@ function EmployeeGeneralLeads({
     );
 }
 
-export default EmployeeGeneralLeads;
+export default EmployeeForwardedLeads;

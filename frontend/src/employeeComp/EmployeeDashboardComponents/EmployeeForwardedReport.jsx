@@ -57,7 +57,7 @@ function EmployeeForwardedReport() {
   const [forwardedData, setForwardedData] = useState([]);
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`)
+      const response = await axios.get(`${secretKey}/company-data/employees-data/${data.ename}`)
       setForwardedData(response.data.filter(obj=>obj.ename === data.ename));
       setTempData(response.data)
       setmoreEmpData(response.data)
