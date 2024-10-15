@@ -615,18 +615,18 @@ const EmployeeStatusChange = ({
           default:
             return "";
         }
-      case "Ready To Submit":
+      case "Forwarded":
         switch (subStatus) {
-          case "Ready To Submit":
-            return "ready_to_submit";
-          case "Submitted":
-            return "submited-status";
-          case "Defaulter":
-            return "dfaulter-status";
-          case "Hold":
-            return "created-status";
-          case "Approved":
-            return "approved-status";
+          case "FollowUp":
+            return "clnt_no_repond_status";
+          case "Interested":
+            return "need_to_call";
+          // case "Defaulter":
+          //   return "dfaulter-status";
+          // case "Hold":
+          //   return "created-status";
+          // case "Approved":
+          //   return "approved-status";
           default:
             return "";
         }
@@ -795,51 +795,24 @@ const EmployeeStatusChange = ({
               </a>
             </li>
           </ul>
-        ) : mainStatus === "Ready To Submit" ? (
+        ) : mainStatus === "Forwarded" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-            <li>
+             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Ready To Submit", "ready_to_submit")}
+                // onClick={() => handleStatusChange("FollowUp", "clnt_no_repond_status")}
                 href="#"
               >
-                Ready To Submit
+                Follow Up
               </a>
             </li>
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Submitted", "submited-status")}
+                // onClick={() => handleStatusChange("Interested", "need_to_call")}
                 href="#"
               >
-                Submitted
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
-                href="#"
-              >
-                Defaulter
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Hold", "created-status")}
-                href="#"
-              >
-                Hold
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Undo", "e_task_assign")}
-                href="#"
-              >
-                Undo
+                Interested
               </a>
             </li>
           </ul>

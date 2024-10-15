@@ -52,6 +52,7 @@ import EmployeeMaturedLeads from "./EmployeeTabPanels/EmployeeMaturedLeads.jsx";
 import debounce from 'lodash/debounce';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import EmployeeForwardedLeads from "./EmployeeTabPanels/EmployeeForwardedLeads.jsx";
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
     const [isEditProjection, setIsEditProjection] = useState(false);
@@ -958,12 +959,8 @@ function EmployeePanelCopy() {
                                     </li>
                                     <li class="nav-item data-heading">
                                         <a
-                                            href="#tabs-home-5"
-                                            onClick={() => {
-                                                setdataStatus("Forwarded");
-                                                setCurrentPage(0);
-                                                refetch();
-                                            }}
+                                            href="#Forwarded"
+                                            onClick={() => handleDataStatusChange("Forwarded")}
                                             className={
                                                 dataStatus === "Forwarded"
                                                     ? "nav-link active item-act"
@@ -1040,6 +1037,24 @@ function EmployeePanelCopy() {
                                 <div class="tab-pane" id="Matured">
                                     <EmployeeMaturedLeads
                                         maturedLeads={fetchedData}
+                                        isLoading={isLoading}
+                                        refetch={refetch}
+                                        formatDateNew={formatDateNew}
+                                        startIndex={startIndex}
+                                        endIndex={endIndex}
+                                        totalPages={totalPages}
+                                        setCurrentPage={setCurrentPage}
+                                        currentPage={currentPage}
+                                        secretKey={secretKey}
+                                        dataStatus={dataStatus}
+                                        ename={data.ename}
+                                        email={data.email}
+                                        setdataStatus={setdataStatus}
+                                    />
+                                </div>
+                                <div class="tab-pane" id="Forwarded">
+                                    <EmployeeForwardedLeads
+                                        forwardedLeads={fetchedData}
                                         isLoading={isLoading}
                                         refetch={refetch}
                                         formatDateNew={formatDateNew}
