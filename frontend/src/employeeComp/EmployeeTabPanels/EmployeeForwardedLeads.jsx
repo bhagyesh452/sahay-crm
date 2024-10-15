@@ -68,9 +68,8 @@ function EmployeeForwardedLeads({
                                     <th>Compnay Name</th>
                                     <th>Compnay No</th>
                                     <th>Call History</th>
-                                    <th>Status</th>
-                                    <th>Remarks</th>
-                                    
+                                    <th>BDE Status</th>
+                                    <th>BDE Remarks</th>
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>

@@ -1962,7 +1962,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     } else if (dataStatus === "Interested") {
       query = { ...query, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: "NotForwarded" };
     } else if (dataStatus === "Forwarded") {
-      query = { ...query, bdmAcceptStatus: { $ne: "NotForwarded" }, Status: { $in: ["Interested", "FollowUp"] } };
+      query = { ...query, bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Interested", "FollowUp"] } };
     } else if (dataStatus === "All") {
       query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
     } else if (dataStatus === "Matured") {
@@ -2045,7 +2045,7 @@ router.get("/employees-new/:ename", async (req, res) => {
           { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
         ],
         Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: { $ne: "NotForwarded" }
+        bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
       }),
       untouched: await CompanyModel.countDocuments({
         $or: [
