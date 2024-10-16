@@ -70,6 +70,7 @@ const DepartmentAPI = require("./helpers/DepartmentApi.js");
 const ServicesDraftAPI = require("./helpers/ServicesDraftApi.js");
 const ServicesAPI = require("./helpers/ServicesApi.js");
 const ExpenseReportAPI = require("./helpers/ExpenseReportApi.js");
+const RalationshipManagerAPI = require("./helpers/RelationshipManagerApi.js");
 const TeamsAPI = require("./helpers/TeamsAPI.js");
 const userModel = require("./models/CompanyBusinessInput.js");
 const processAttachments = require("./helpers/sendMail3.js");
@@ -133,6 +134,7 @@ app.use('/api/department', DepartmentAPI);
 app.use('/api/serviceDraft', ServicesDraftAPI);
 app.use('/api/services', ServicesAPI);
 app.use('/api/expense', ExpenseReportAPI);
+app.use('/api/relationshipManager', RalationshipManagerAPI);
 app.use('/api/recruiter',(req,res,next)=>{
   req.io = socketIO;
   next();

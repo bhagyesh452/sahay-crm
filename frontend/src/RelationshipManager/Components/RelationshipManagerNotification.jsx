@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -11,15 +11,15 @@ import Tooltip from '@mui/material/Tooltip';
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
-//import Bell from './Bell';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
+function RelationshipManagerNotification() {
 
-export default function HrNotification() {
+    const { userId } = useParams();
+    const navigate = useNavigate();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const navigate = useNavigate();
     const open = Boolean(anchorEl);
 
     const handleClick = (event) => {
@@ -31,14 +31,12 @@ export default function HrNotification() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("hrToken");
-        localStorage.removeItem("hrName");
-        localStorage.removeItem("hrUserId");
-        navigate("/hr/login");
+        localStorage.removeItem("relationshipManagerToken");
+        navigate('/relationship-manager/login');
     };
 
     return (
-        <React.Fragment>
+        <>
             <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
 
                 <Tooltip title="Account settings">
@@ -91,21 +89,19 @@ export default function HrNotification() {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
                 <MenuItem onClick={() => {
-                    navigate(`/hr-profile-details`);
+                    navigate(`/relationship-manager-profile-details/${userId}`);
                     handleClose();
                 }}>
                     <Avatar /> Profile
                 </MenuItem>
-               
-                {/* <Divider /> */}
-                
+
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                         <Settings fontSize="small" />
                     </ListItemIcon>
                     Settings
                 </MenuItem>
-                
+
                 <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <Logout fontSize="small" />
@@ -114,6 +110,8 @@ export default function HrNotification() {
                 </MenuItem>
 
             </Menu>
-        </React.Fragment>
+        </>
     );
 }
+
+export default RelationshipManagerNotification;

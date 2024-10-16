@@ -96,18 +96,11 @@ export default function Notification() {
           <Avatar /> Profile
         </MenuItem>
 
-        <MenuItem onClick={handleClose}>
+        {/* <MenuItem onClick={handleClose}>
           <Avatar /> My account
-        </MenuItem>
+        </MenuItem> */}
 
-        <Divider />
-
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem>
+        {/* <Divider /> */}
 
         <MenuItem onClick={handleClose}>
           <ListItemIcon>

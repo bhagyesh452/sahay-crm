@@ -125,14 +125,7 @@ export default function Notification({ name, designation }) {
           <Avatar /> My account
         </MenuItem> */}
 
-        <Divider />
-
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem>
+        {/* <Divider /> */}
 
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
