@@ -25,7 +25,8 @@ function EmployeeGeneralLeads({
     setdataStatus,
     ename,
     email,
-    secretKey
+    secretKey,
+    handleShowCallHistory
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -53,6 +54,7 @@ function EmployeeGeneralLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
+    console.log("general hua")
 
     return (
         <div className="RM-my-booking-lists">
@@ -112,7 +114,9 @@ function EmployeeGeneralLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                <LuHistory onClick={() => {
+                                                <LuHistory 
+                                                onClick={() => {
+                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
                                                     // setShowCallHistory(true);
                                                     // setClientNumber(company["Company Number"]);
                                                 }}

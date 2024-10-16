@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
@@ -11,6 +12,8 @@ import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import EmployeeNextFollowDate from '../ExtraComponents/EmployeeNextFollowUpDate';
 import CallHistory from '../CallHistory';
+import ProjectionDialog from '../ExtraComponents/ProjectionDialog';
+import BdmMaturedCasesDialogBox from '../BdmMaturedCasesDialogBox';
 
 
 function EmployeeInterestedLeads({
@@ -29,7 +32,8 @@ function EmployeeInterestedLeads({
     ename,
     email,
     handleShowCallHistory,
-    handleCloseCallHistory
+    fetchProjections,
+    projectionData
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -58,9 +62,8 @@ function EmployeeInterestedLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
-    // const hanleCloseCallHistory = () => {
-    //     setShowCallHistory(false);
-    // };
+
+
 
     return (
         <div className="RM-my-booking-lists">
@@ -71,9 +74,8 @@ function EmployeeInterestedLeads({
                             <thead>
                                 <tr className="tr-sticky">
                                     <th>Sr. No</th>
-                                    <th>Compnay Name</th>
-                                    <th>Compnay No</th>
-                                    <th>Call History</th>
+                                    <th>Company Name</th>
+                                    <th>Company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
@@ -81,8 +83,10 @@ function EmployeeInterestedLeads({
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
-                                    <th>Compnay Email</th>
+                                    <th>Company Email</th>
                                     <th>Assign Date</th>
+                                    <th>Add Projection</th>
+                                    <th>Forward To Bdm</th>
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Interested" ? (
@@ -122,12 +126,12 @@ function EmployeeInterestedLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                <LuHistory 
-                                                onClick={() => {
-                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
-                                                    // setShowCallHistory(true);
-                                                    // setClientNumber(company["Company Number"]);
-                                                }}
+                                                <LuHistory
+                                                    onClick={() => {
+                                                        handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                        // setShowCallHistory(true);
+                                                        // setClientNumber(company["Company Number"]);
+                                                    }}
                                                     style={{
                                                         cursor: "pointer",
                                                         width: "15px",
@@ -214,6 +218,33 @@ function EmployeeInterestedLeads({
                                             <td>{company["State"]}</td>
                                             <td>{company["Company Email"]}</td>
                                             <td>{formatDateNew(company["AssignDate"])}</td>
+                                            <td>
+                                                <ProjectionDialog
+                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                    projectionCompanyName={company["Company Name"]}
+                                                    projectionData={projectionData}
+                                                    secretKey={secretKey}
+                                                    fetchProjections={fetchProjections}
+                                                    ename={company.ename}
+                                                    bdmAcceptStatus={company.bdmAcceptStatus}
+                                                    hasMaturedStatus={false}
+                                                    hasExistingProjection={projectionData?.some(
+                                                        (item) => item.companyName === company["Company Name"]
+                                                    )}
+                                                />
+                                            </td>
+                                            <td>
+                                                <BdmMaturedCasesDialogBox
+                                                    currentData={interestedData}
+                                                    forwardedCompany={company["Company Name"]}
+                                                    forwardCompanyId={company._id}
+                                                    forwardedStatus={company.Status}
+                                                    forwardedEName={company.ename}
+                                                    bdeOldStatus={company.Status}
+                                                    bdmNewAcceptStatus={"Pending"}
+                                                    fetchNewData={refetch}
+                                                />
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
