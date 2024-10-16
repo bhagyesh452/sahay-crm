@@ -19,6 +19,10 @@ body {
 {
   --tblr-backdrop-opacity: 0.50 !important;
 }
+.modal-content
+{
+    border-radius: 20px !important;
+}
 .pl-1 {
   padding-left: 10px;
 }
@@ -4252,4 +4256,54 @@ div#table-default td {
   background: #fe7369;
   z-index: 1;
   border: 1px solid #fff;
+}
+.int-que
+{
+  font-weight: 500;
+}
+.yes-no input[type=radio]
+{
+  display: none;
+}
+.custom-Yes-No .yes-no-alias
+{
+  padding: 4px 10px;
+  border: 1px solid #eee;
+  margin: 5px 0;
+  font-size: 14px;
+  width: 70px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: grayscale(100%);
+  line-height: 10px;
+  border-radius: 3px;
+  font-weight: 400;
+  background: #fff;
+  cursor: pointer;
+}
+.yes-alias-i
+{
+  color: #009402;
+  line-height: 10px;
+}
+.no-alias-i
+{
+  color: #be1e1e;
+  line-height: 10px;
+}
+
+.custom-Yes-No .yes-no input[type=radio]:checked + .yes-no-alias{
+  filter: grayscale(0%);
+  background: #eaeaea;
+  border: 1px solid #ccc;
+  color: #000;
+  font-weight: 600;
+}
+.int-sub-que
+{
+  background: #eee;
+  font-size: 12px;
+  padding: 2px 8px;
 }
