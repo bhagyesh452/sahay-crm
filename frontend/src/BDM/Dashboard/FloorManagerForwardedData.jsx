@@ -199,7 +199,7 @@ function FloorManagerForwardedData() {
     // Filter employees based on floor manager branch
     useEffect(() => {
         if (floorManagerBranch && allEmployees.length > 0) {
-            const filtered = allEmployees.filter(([name, stats]) => stats.branchOffice === floorManagerBranch);
+            const filtered = allEmployees.filter(([name, stats]) => stats.branchOffice === floorManagerBranch && name !== "Vishnu Suthar" && name !== "Vandit Shah" && name !== "Khushi Gandhi" && name !== "Yashesh Gajjar" && name !== "Ravi Prajapati" && name !== "Yash Goswami");
             setFilteredEmployees(filtered.map(([name]) => name)); // Extract employee names
         }
     }, [floorManagerBranch, allEmployees]);

@@ -267,7 +267,9 @@ function FloorManagerProjectionSummary() {
                                             input={<OutlinedInput label="Name" />}
                                             MenuProps={MenuProps}
                                         >
-                                            {projectionSummary.map((name) => (
+                                            {projectionSummary
+                                            .filter(item => item.employeeName !== "Vishnu Suthar" && item.employeeName !== "Vandit Shah" && item.employeeName !== "Khushi Gandhi" && item.employeeName !== "Yashesh Gajjar" && item.employeeName !== "Ravi Prajapati" && item.employeeName !== "Yash Goswami")
+                                            .map((name) => (
                                                 <MenuItem key={name.employeeName} value={name.employeeName}>
                                                     {name.employeeName}
                                                 </MenuItem>
