@@ -65,6 +65,8 @@ export default function AddLeadForm({
   bdmName,
   bdmEmail,
   isBDM,
+  handleCloseFormOpen,
+  isEmployee
 }) {
   const [totalServices, setTotalServices] = useState(1);
   const [fetchedService, setfetchedService] = useState(false);
@@ -527,7 +529,11 @@ export default function AddLeadForm({
     if (activeStep !== 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
-      setFormOpen(false);
+      if(isEmployee){
+        handleCloseFormOpen()
+      }else{
+        setFormOpen(false);
+      }
     }
   };
 
@@ -954,7 +960,11 @@ export default function AddLeadForm({
           handleClick()
           const newaudio = new Audio(Dhanyavad);
           newaudio.play()
-          setFormOpen(false);
+          if(isEmployee){
+            handleCloseFormOpen()
+          }else{
+            setFormOpen(false);
+          }
           // Handle response data as needed
         } catch (error) {
           console.error("Error uploading data:", error);
