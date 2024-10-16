@@ -6,8 +6,10 @@ import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 import io from 'socket.io-client';
 import Swal from "sweetalert2";
-
-
+import { CgClose } from "react-icons/cg";
+import { FaCheck } from "react-icons/fa6";
+import { options } from "../../components/Options.js";
+import Select from "react-select";
 
 const EmployeeStatusChange = ({
   companyName,
@@ -15,16 +17,7 @@ const EmployeeStatusChange = ({
   refetch,
   companyStatus,
   mainStatus,
-  setCompanyName,
-  setCompanyEmail,
-  setCompanyInco,
-  setCompanyId,
-  setCompanyNumber,
-  setDeletedEmployeeStatus,
-  setNewBdeName,
   isDeletedEmployeeCompany,
-  setFormOpen,
-  setAddFormOpen,
   cemail,
   cindate,
   cnum, ename,
@@ -34,448 +27,23 @@ const EmployeeStatusChange = ({
   const [status, setStatus] = useState(companyStatus);
   const [statusClass, setStatusClass] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const [showDialog, setShowDialog] = useState(false); // State to control popup visibility
+  const [selectedStatus, setSelectedStatus] = useState(""); // Store the selected status for the popup confirmation
+
 
 
   // const handleStatusChange = async (newStatus, statusClass) => {
-  //   setStatus(newStatus);
-  //   setStatusClass(statusClass);
-  //   setNewSubStatus(newStatus);
-  //   console.log("newStatus", newStatus)
-
-  //   try {
-  //     let response;
-  //     let movedFromMainCategoryStatus;
-  //     let movedToMainCategoryStatus;
-  //     if (mainStatus === "General") {
-  //       movedFromMainCategoryStatus = "General";
-  //       movedToMainCategoryStatus = "Process";
-  //       if (newStatus !== "Untouched") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification-changegeneral`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Process",
-  //           previousMainCategoryStatus: "General",
-  //           previousSubCategoryStatus: newStatus,
-  //           dateOfChangingMainStatus: new Date(),
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus
-  //         });
-  //       }
-  //       //console.log("movedfromstatus" , movedFromMainCategoryStatus , movedToMainCategoryStatus)
-  //     }
-  //     else if (mainStatus === "Process") {
-  //       if (newStatus === "Submitted") {
-  //         if (serviceName === "Start-Up India Certificate" && !industry && !sector) {
-  //           Swal.fire({
-  //             title: "Error",
-  //             text: "Please select industry and sector first",
-  //             icon: "warning",
-  //             button: "OK",
-  //           });
-  //           setStatus("Process");
-  //           setStatusClass(statusClass);
-  //           setNewSubStatus("Process");
-  //           return;
-  //         } else if (writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved")) {
-  //           Swal.fire({
-  //             title: "Error",
-  //             text: "Content status must be Completed or Approved",
-  //             icon: "warning",
-  //             button: "OK",
-  //           });
-  //           setStatus("Process");
-  //           setStatusClass(statusClass);
-  //           setNewSubStatus("Process");
-  //           return;
-  //         } else if (designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved")) {
-  //           Swal.fire({
-  //             title: "Error",
-  //             text: "Brochure status must be Completed or Approved",
-  //             icon: "warning",
-  //             button: "OK",
-  //           });
-  //           setStatus("Process");
-  //           setStatusClass(statusClass);
-  //           setNewSubStatus("Process");
-  //           return;
-  //         } else {
-  //           movedFromMainCategoryStatus = "Process";
-  //           movedToMainCategoryStatus = "Submitted";
-  //           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //             companyName,
-  //             serviceName,
-  //             subCategoryStatus: newStatus,
-  //             mainCategoryStatus: "Submitted",
-  //             previousMainCategoryStatus: "Process",
-  //             previousSubCategoryStatus: newStatus,
-  //             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //             movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //           });
-  //         }
-  //       } else if (newStatus === "Defaulter") {
-  //         movedFromMainCategoryStatus = "Process";
-  //         movedToMainCategoryStatus = "Defaulter";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Defaulter",
-  //           previousMainCategoryStatus: "Process",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-
-  //       } else if (newStatus === "Hold") {
-  //         movedFromMainCategoryStatus = "Process";
-  //         movedToMainCategoryStatus = "Hold";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Hold",
-  //           previousMainCategoryStatus: "Process",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-  //       } else if (newStatus === "Undo") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-
-  //           //mainCategoryStatus: "Defaulter",
-  //         });
-  //       } else if (newStatus === "Ready To Submit") {
-  //         const conditions = {
-  //           industryAndSector: serviceName === "Start-Up India Certificate" && !industry && !sector,
-  //           contentStatus: writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved"),
-  //           brochureStatus: designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved"),
-  //           letterStatus: dscApplicable && letterStatus && (serviceName === "Start-Up India Certificate" || serviceName === "Organization DSC" || serviceName === "Director DSC") && letterStatus !== "Letter Received",
-  //           dscStatus: dscApplicable && dscStatus && (serviceName === "Start-Up India Certificate" || serviceName === "Organization DSC" || serviceName === "Director DSC") && dscStatus !== "Approved",
-  //           otpStatus:otpStatus !== "Both Done",
-  //         };
-  //         const messages = [];
-
-  //         // Check each condition and add appropriate messages
-  //         if (conditions.industryAndSector) {
-  //           messages.push("Please select industry and sector!");
-  //         }
-
-  //         if (conditions.contentStatus) {
-  //           messages.push("Content status must be Completed or Approved");
-  //         }
-
-  //         if (conditions.brochureStatus) {
-  //           messages.push("Brochure status must be Completed or Approved");
-  //         }
-  //         if (conditions.letterStatus) {
-  //           messages.push("DSC Letter Status must be received !")
-  //         }
-  //         if (conditions.dscStatus) {
-  //           messages.push("DSC Status must be approved!")
-  //         }
-  //         if (conditions.otpStatus) {
-  //           messages.push("Otp Status must be Both Done!")
-  //         }
-  //         if (messages.length > 0) {
-  //           const title = "Error";
-  //           const text = messages.join(" <br> ");
-  //           Swal.fire({
-  //             title: title,
-  //             html: text,
-  //             icon: "warning",
-  //             button: "OK",
-  //           }).then(() => {
-  //             // Reset status and class only if conditions are met
-  //             setStatus(subStatus);
-  //             setStatusClass(getStatusClass(mainStatus, subStatus));
-  //             setNewSubStatus(subStatus);
-  //           });
-  //         } else {
-  //           movedFromMainCategoryStatus = "Process";
-  //           movedToMainCategoryStatus = "Ready To Submit";
-  //           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //             companyName,
-  //             serviceName,
-  //             subCategoryStatus: newStatus,
-  //             mainCategoryStatus: "Ready To Submit",
-  //             previousMainCategoryStatus: "Process",
-  //             previousSubCategoryStatus: newStatus,
-  //             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //             movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //           });
-  //         }
-  //       } else {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Process"
-  //         });
-  //       }
-  //     }
-  //     else if (mainStatus === "Ready To Submit") {
-  //       if (newStatus === "Submitted") {
-  //         movedFromMainCategoryStatus = "Ready To Submit";
-  //         movedToMainCategoryStatus = "Submitted";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Submitted",
-  //           previousMainCategoryStatus: "Ready To Submit",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //           lastAttemptSubmitted: "1st",
-  //           submittedOn: new Date()
-  //         });
-  //       } else if (newStatus === "Defaulter") {
-  //         movedFromMainCategoryStatus = "Ready To Submit";
-  //         movedToMainCategoryStatus = "Defaulter";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Defaulter",
-  //           previousMainCategoryStatus: "Ready To Submit",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-  //       } else if (newStatus === "Hold") {
-  //         movedFromMainCategoryStatus = "Ready To Submit";
-  //         movedToMainCategoryStatus = "Hold";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Hold",
-  //           previousMainCategoryStatus: "Ready To Submit",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-  //       } else if (newStatus === "Undo") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           //mainCategoryStatus: "Defaulter",
-  //         });
-  //       }
-  //       else if (newStatus === "Ready To Submit") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Ready To Submit",
-  //         });
-  //       } else {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Ready To Submit"
-  //         });
-  //       }
-  //     }
-  //     else if (mainStatus === "Submitted") {
-  //       if (newStatus === "Approved") {
-  //         movedFromMainCategoryStatus = "Submitted";
-  //         movedToMainCategoryStatus = "Approved";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Approved",
-  //           previousMainCategoryStatus: "Submitted",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-
-  //       } else if (newStatus === "Defaulter") {
-  //         movedFromMainCategoryStatus = "Submitted";
-  //         movedToMainCategoryStatus = "Defaulter";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Defaulter",
-  //           previousMainCategoryStatus: "Submitted",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-  //       } else if (newStatus === "Undo") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           //mainCategoryStatus: "Defaulter",
-  //         });
-  //       } else if (newStatus === "2nd Time Submitted") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           ThirdTimeSubmitDate: new Date(),
-  //           SecondTimeSubmitDate: new Date(),
-  //           lastAttemptSubmitted: "2nd",
-  //           //mainCategoryStatus: "Defaulter",
-  //         });
-  //       } else if (newStatus === "3rd Time Submitted") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           ThirdTimeSubmitDate: new Date(),
-  //           SecondTimeSubmitDate: new Date(),
-  //           lastAttemptSubmitted: "3rd"
-  //           //mainCategoryStatus: "Defaulter",
-  //         });
-  //       } else if (newStatus === "Submitted") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           ThirdTimeSubmitDate: new Date(),
-  //           SecondTimeSubmitDate: new Date(),
-  //           lastAttemptSubmitted: "1st",
-  //           submittedOn: new Date()
-  //           //mainCategoryStatus: "Defaulter",
-  //         });
-  //       }
-  //       else {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Submitted",
-  //           latestUpdateDate: new Date()
-  //         });
-  //       }
-  //     }
-  //     else if (mainStatus === "Defaulter") {
-  //       if (newStatus === "Working") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Process"
-  //         });
-  //       } else if (newStatus === "Hold") {
-  //         movedFromMainCategoryStatus = "Defaulter";
-  //         movedToMainCategoryStatus = "Hold";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Hold",
-  //           previousMainCategoryStatus: "Defaulter",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-  //       } else if (newStatus === "Undo") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           //mainCategoryStatus: "Defaulter",
-  //         });
-  //       }
-  //     }
-  //     else if (mainStatus === "Hold") {
-  //       if (newStatus === "Hold") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Hold"
-  //         });
-  //       } else if (newStatus === "Undo") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           //mainCategoryStatus: "Defaulter",
-  //         });
-  //       } else if (newStatus === "Defaulter") {
-  //         movedFromMainCategoryStatus = "Hold";
-  //         movedToMainCategoryStatus = "Defaulter";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: newStatus,
-  //           previousMainCategoryStatus: "Hold",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-  //       } else if (newStatus === "Working") {
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: "Process"
-  //         });
-  //       } else if (newStatus === "Submitted") {
-  //         movedFromMainCategoryStatus = "Hold";
-  //         movedToMainCategoryStatus = "Defaulter";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: newStatus,
-  //           previousMainCategoryStatus: "Hold",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //           lastAttemptSubmitted: "1st"
-  //         });
-  //       } else if (newStatus === "Process") {
-  //         movedFromMainCategoryStatus = "Hold";
-  //         movedToMainCategoryStatus = "Defaulter";
-  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: newStatus,
-  //           previousMainCategoryStatus: "Hold",
-  //           previousSubCategoryStatus: newStatus,
-  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
-  //         });
-  //       }
-  //     }
-  //     refreshData();
-  //     console.log("Status updated successfully:", response.data);
-  //   } catch (error) {
-  //     console.error("Error updating status:", error.message);
+  //   if (newStatus === "FollowUp" || newStatus === "Interested") {
+  //     // Show the dialog before changing status
+  //     setSelectedStatus(newStatus);
+  //     setShowDialog(true);  // Show the popup
+  //     return;
   //   }
+
+  //   // If status is not FollowUp/Interested, proceed with status change
+  //   changeStatus(newStatus, statusClass);
   // };
-
-
-  //console.log("status all content and brochure", writername, designername, contentStatus, brochureStatus)
-
   const handleStatusChange = async (
-    // company,
-    //employeeId,
-    // newStatus,
-    //cname,
-    //cemail,
-    //cindate,
-    //cnum,
-    // oldStatus,
-     //bdmAcceptStatus,
-    //isDeletedEmployeeCompany,
-    //ename,
     newStatus,
     statusClass,
 
@@ -484,25 +52,6 @@ const EmployeeStatusChange = ({
     setStatusClass(statusClass);
     //setNewSubStatus(newStatus);
     if (newStatus === "Matured") {
-      // // Assuming these are setter functions to update state or perform some action
-      // setCompanyName(companyName);
-      // setCompanyEmail(cemail);
-      // setCompanyInco(cindate);
-      // setCompanyId(id);
-      // setCompanyNumber(cnum);
-      // setDeletedEmployeeStatus(isDeletedEmployeeCompany)
-      // setNewBdeName(ename)
-      // // console.log("is", isDeletedEmployeeCompany)
-      // // console.log("company", company)
-      // // let isDeletedEmployeeCompany = true
-      // if (!isDeletedEmployeeCompany) {
-      //   console.log("formchal")
-      //   setFormOpen(true);
-      // } else {
-      //   console.log("addleadfromchal")
-      //   setAddFormOpen(true)
-      // }
-
       handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename);
       return true;
     }
@@ -596,8 +145,8 @@ const EmployeeStatusChange = ({
             return "support-status";
           case "Interested":
             return "need_to_call";
-            case "FollowUp":
-              return "clnt_no_repond_status";
+          case "FollowUp":
+            return "clnt_no_repond_status";
           default:
             return "";
         }
@@ -653,11 +202,30 @@ const EmployeeStatusChange = ({
     setStatusClass(getStatusClass(mainStatus, companyStatus));
   }, [mainStatus, companyStatus]);
 
-  return (
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [visibleQuestions, setVisibleQuestions] = useState({}); // Track which question's options are visible
+
+ // Function to handle Yes click (show options)
+ const handleYesClick = (questionId) => {
+  setVisibleQuestions((prev) => ({
+      ...prev,
+      [questionId]: true, // Show the options for this question
+  }));
+};
+
+// Function to handle No click (hide options)
+const handleNoClick = (questionId) => {
+  setVisibleQuestions((prev) => ({
+      ...prev,
+      [questionId]: false, // Hide the options for this question
+  }));
+};
+
+  return (<>
     <section className="rm_status_dropdown">
       <div className={mainStatus === "Matured" ? `disabled dropdown custom-dropdown status_dropdown`
-        : mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` : 
-        `dropdown custom-dropdown status_dropdown ${statusClass}`}>
+        : mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :
+          `dropdown custom-dropdown status_dropdown ${statusClass}`}>
         <button
           className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
           type="button"
@@ -708,7 +276,8 @@ const EmployeeStatusChange = ({
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Interested", "need_to_call")}
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                // onClick={() => handleStatusChange("Interested", "need_to_call")}
                 href="#"
               >
                 Interested
@@ -717,7 +286,8 @@ const EmployeeStatusChange = ({
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("FollowUp", "clnt_no_repond_status")}
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                // onClick={() => handleStatusChange("FollowUp", "clnt_no_repond_status")}
                 href="#"
               >
                 Follow Up
@@ -832,10 +402,328 @@ const EmployeeStatusChange = ({
               </a>
             </li>
           </ul>
-        )  : null}
+        ) : null}
       </div>
     </section>
-  );
+
+
+
+    {/* ---------------------modal for interested information leads---------------------------------- */}
+    <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="staticBackdropLabel">Why are you moving this lead to Interested?</h5>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div className="modal-body">
+            <div className="accordion" id="accordionQue">
+              <div className="accordion-item">
+                <div className="accordion-header p-2" id="accordionQueOne">
+                  <div className="d-flex align-items-center justify-content-between"  >
+                    <div className="int-que mr-2">
+                      1. Client asked to send documents/information on WhatsApp for review!
+                    </div>
+                    <div className="custom-Yes-No d-flex align-items-center int-opt">
+                     
+                          <div className="yes-no"
+                           onClick={() => handleYesClick("q1")}>
+                            <input type="radio" name="rGroup" value="1" id="r1" />
+                            <label 
+                            className="yes-no-alias" 
+                            for="r1" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#collapseOneQue" 
+                            aria-expanded="true" 
+                            aria-controls="collapseOneQue"
+                           >
+                              <div className="yes-alias-i"><FaCheck /></div>
+                              <div className="ml-1">Yes</div>
+                            </label>
+                          </div>
+                          <div className="yes-no ml-1"  onClick={() => handleNoClick("q1")}>
+                            <input type="radio" name="rGroup" value="2" id="r2" />
+                            <label className="yes-no-alias" for="r2">
+                              <div className="no-alias-i"><CgClose /></div>
+                              <div className="ml-1">No</div>
+                            </label>
+                          </div>
+                      
+                    </div>
+                  </div>
+                </div>
+                {visibleQuestions["q1"] &&
+                (
+                <div id="collapseOneQue" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionQueOne">
+                  <div className="accordion-body int-sub-que">
+                    <div className="row">
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Next Follow-Up Date ?</label>
+                          <input type="date" class="form-control mt-1" id="date" value="" />
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="text">Remark Box: </label>
+                          <input type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value="" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                )
+                }
+              </div>
+              <div className="accordion-item">
+                <div className="accordion-header p-2" id="accordionQuetwo">
+                  <div className="d-flex align-items-center justify-content-between"  >
+                    <div className="int-que mr-2">
+                      2. Client asked to send documents/information via email for review.
+                    </div>
+                    <div className="custom-Yes-No d-flex align-items-center int-opt">
+                     
+                        <div className="yes-no"  onClick={() => handleYesClick("q2")}>
+                        <input type="radio" name="rGroup" value="3" id="r3" />
+                        <label 
+                        className="yes-no-alias" 
+                        for="r3" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#collapsetwoQue" 
+                        aria-expanded="true" 
+                        aria-controls="collapsetwoQue"
+                       >
+                          <div className="yes-alias-i"><FaCheck /></div>
+                          <div className="ml-1">Yes</div>
+                        </label>
+                      </div>
+                      <div className="yes-no ml-1"  onClick={() => handleNoClick("q2")}>
+                        <input type="radio" name="rGroup" value="4" id="r4" />
+                        <label className="yes-no-alias" for="r4">
+                          <div className="no-alias-i"><CgClose /></div>
+                          <div className="ml-1">No</div>
+                        </label>
+                      </div>
+                   
+                    </div>
+                  </div>
+                </div>
+                {visibleQuestions["q2"] &&
+                (<div id="collapsetwoQue" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionQuetwo">
+                  <div className="accordion-body int-sub-que">
+                    <div className="row">
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Next Follow-Up Date ?</label>
+                          <input type="date" class="form-control mt-1" id="date" value="" />
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="text">Remark Box: </label>
+                          <input type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value="" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              </div>
+              <div className="accordion-item">
+                <div className="accordion-header p-2" id="accordionQuetwo">
+                  <div className="d-flex align-items-center justify-content-between"  >
+                    <div className="int-que mr-2">
+                      3. Interested in one of our services.
+                    </div>
+                    <div className="custom-Yes-No d-flex align-items-center int-opt">
+                      <div className="yes-no">
+                        <input type="radio" name="rGroup" value="3" id="r3" />
+                        <label className="yes-no-alias" for="r3" data-bs-toggle="collapse" data-bs-target="#collapsetwoQue" aria-expanded="true" aria-controls="collapsetwoQue">
+                          <div className="yes-alias-i"><FaCheck /></div>
+                          <div className="ml-1">Yes</div>
+                        </label>
+                      </div>
+                      <div className="yes-no ml-1">
+                        <input type="radio" name="rGroup" value="4" id="r4" />
+                        <label className="yes-no-alias" for="r4">
+                          <div className="no-alias-i"><CgClose /></div>
+                          <div className="ml-1">No</div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="collapsetwoQue" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionQuetwo">
+                  <div className="accordion-body int-sub-que">
+                    <div className="row">
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Services Pitched:</label>
+                          <Select
+                            isMulti
+                            options={options}
+                            onChange={(selectedOptions) => {
+                              setSelectedValues(
+                                selectedOptions.map((option) => option.value)
+                              );
+                            }}
+                            // value={selectedValues && selectedValues.map((value) => ({
+                            //   value,
+                            //   label: value,
+                            // }))}
+                            placeholder="Select Services..."
+                          />
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Services Interested In :</label>
+                          <Select
+                            isMulti
+                            options={options}
+                            onChange={(selectedOptions) => {
+                              setSelectedValues(
+                                selectedOptions.map((option) => option.value)
+                              );
+                            }}
+                            // value={selectedValues && selectedValues.map((value) => ({
+                            //   value,
+                            //   label: value,
+                            // }))}
+                            placeholder="Select Services..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Offered Price: </label>
+                          <input type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value="" />
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="text">Next Follow-Up Date: </label>
+                          <input type="date" class="form-control mt-1" id="date" value="" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-12">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Remarks: </label>
+                          <textarea type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value="" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="accordion-item">
+                <div className="accordion-header p-2" id="accordionQuetwo">
+                  <div className="d-flex align-items-center justify-content-between"  >
+                    <div className="int-que mr-2">
+                      4. Interested, but doesn't need the service right now.
+                    </div>
+                    <div className="custom-Yes-No d-flex align-items-center int-opt">
+                      <div className="yes-no">
+                        <input type="radio" name="rGroup" value="3" id="r3" />
+                        <label className="yes-no-alias" for="r3" data-bs-toggle="collapse" data-bs-target="#collapsetwoQue" aria-expanded="true" aria-controls="collapsetwoQue">
+                          <div className="yes-alias-i"><FaCheck /></div>
+                          <div className="ml-1">Yes</div>
+                        </label>
+                      </div>
+                      <div className="yes-no ml-1">
+                        <input type="radio" name="rGroup" value="4" id="r4" />
+                        <label className="yes-no-alias" for="r4">
+                          <div className="no-alias-i"><CgClose /></div>
+                          <div className="ml-1">No</div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="collapsetwoQue" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionQuetwo">
+                  <div className="accordion-body int-sub-que">
+                    <div className="row">
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Services Pitched:</label>
+                          <Select
+                            isMulti
+                            options={options}
+                            onChange={(selectedOptions) => {
+                              setSelectedValues(
+                                selectedOptions.map((option) => option.value)
+                              );
+                            }}
+                            // value={selectedValues && selectedValues.map((value) => ({
+                            //   value,
+                            //   label: value,
+                            // }))}
+                            placeholder="Select Services..."
+                          />
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Services Interested In :</label>
+                          <Select
+                            isMulti
+                            options={options}
+                            onChange={(selectedOptions) => {
+                              setSelectedValues(
+                                selectedOptions.map((option) => option.value)
+                              );
+                            }}
+                            // value={selectedValues && selectedValues.map((value) => ({
+                            //   value,
+                            //   label: value,
+                            // }))}
+                            placeholder="Select Services..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Offered Price: </label>
+                          <input type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value="" />
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="text">Next Follow-Up Date: </label>
+                          <input type="date" class="form-control mt-1" id="date" value="" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-12">
+                        <div class="form-group mt-2 mb-2">
+                          <label for="date">Remarks: </label>
+                          <textarea type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value="" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer p-0 m-0">
+            <div className='d-flex w-100 m-0'>
+              <button type="button" class="btn btn-danger w-50 m-0" data-bs-dismiss="modal" style={{ border: "none", borderRadius: "0px" }}>Close</button>
+              <button type="button" class="btn btn-primary w-50 m-0" style={{ border: "none", borderRadius: "0px" }}>Understood</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </>);
 };
 
 export default EmployeeStatusChange;

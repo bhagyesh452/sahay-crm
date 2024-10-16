@@ -146,7 +146,8 @@ function TestLeads() {
             console.error("Error fetching remarks history:", error);
         }
     };
-
+console.log("remarksHisory" , remarksHistory)
+console.log("filtered" , filteredRemarks)
 
 
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
@@ -1846,13 +1847,13 @@ function TestLeads() {
                                         <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
                                             <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
                                         </button>
-                                        <div>
+                                        {/* <div>
                                             <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
                                             <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
                                                 <LiaPagerSolid className="mr-1" />
                                                 Update Leads
                                             </button>
-                                        </div> 
+                                        </div>  */}
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center">
@@ -3824,7 +3825,8 @@ function TestLeads() {
                                         <div className="card RemarkCard position-relative">
                                             <div className="d-flex justify-content-between">
                                                 <div className="reamrk-card-innerText">
-                                                    <pre>{historyItem.remarks}</pre>
+                                                    <pre>{historyItem.remarks || historyItem.bdmRemarks}</pre>
+                                                    <pre>{historyItem.bdeName || historyItem.bdmName}</pre>
                                                 </div>
                                             </div>
 

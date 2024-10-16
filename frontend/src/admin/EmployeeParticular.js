@@ -1868,7 +1868,7 @@ function EmployeeParticular() {
 
   return (
     <div>
-      
+
       <div className="page-wrapper">
         <div style={{ margin: "3px 0px 1px 0px", }}
           className="page-header d-print-none">
@@ -2104,7 +2104,7 @@ function EmployeeParticular() {
                   </div>
                 } {...a11yProps(0)} />
               </a>
-              
+
               {bdmWorkOn && (
                 <a
                   href="#tabs-activity-5"
@@ -2574,8 +2574,9 @@ function EmployeeParticular() {
                               </>))}
                             {dataStatus === "Forwarded" && (<>
                               <th>BDM Name</th>
-                              <th>Forwarded Date</th>
                               <th>Age</th>
+                              <th>Forwarded Date</th>
+                              <th>Forwarded Age</th>
                             </>)}
 
                             {dataStatus === "Forwarded" &&
@@ -2828,7 +2829,17 @@ function EmployeeParticular() {
 
                                       {dataStatus === "Forwarded" && (<>
                                         {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
-                                        <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                        <td>
+                                          {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
+                                        </td>
+                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                          `${formatDateLeadHistory(company.bdeForwardDate)}`
+                                          : "-"
+                                        }</td>
+                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                          `${timePassedSince(company.bdeForwardDate)}`
+                                          : "-"
+                                        }</td>
                                       </>)}
 
                                       {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (

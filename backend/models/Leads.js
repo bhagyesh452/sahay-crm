@@ -1,5 +1,73 @@
 const mongoose = require('mongoose');
 
+const informationSchema = new mongoose.Schema({
+  "Company Name": {
+    type: String,
+  },
+  ename:{
+    type:String
+  },
+  mainQuestion: {
+    type: Array,
+  },
+  // Option 1: Client asked to send documents/information on WhatsApp for review
+  clientWhatsAppRequest: {
+    nextFollowUpDate: {
+      type: Date, // Calendar field for follow-up date
+    },
+    remarks: {
+      type: String, // Remark Box for additional comments
+    },
+  },
+  // Option 2: Client asked to send documents/information via email for review
+  clientEmailRequest: {
+    nextFollowUpDate: {
+      type: Date, // Calendar field for follow-up date
+    },
+    remarks: {
+      type: String, // Remark Box for additional comments
+    },
+  },
+  // Option 3: Interested in one of our services
+  interestedInServices: {
+    servicesPitched: {
+      type: [String], // Checkbox list for services pitched
+    },
+    servicesInterestedIn: {
+      type: [String], // Checkbox list for services client is interested in
+    },
+    offeredPrice: {
+      type: String, // Text field for offered price
+    },
+    nextFollowUpDate: {
+      type: Date, // Calendar field for follow-up date
+    },
+    remarks: {
+      type: String, // Remark Box for additional comments
+    },
+  },
+  // Option 4: Interested, but doesn't need the service right now
+  interestedButNotNow: {
+    servicesPitched: {
+      type: [String], // Checkbox list for services pitched
+    },
+    servicesInterestedIn: {
+      type: [String], // Checkbox list for services client is interested in
+    },
+    offeredPrice: {
+      type: String, // Text field for offered price
+    },
+    nextFollowUpDate: {
+      type: Date, // Calendar field for follow-up date
+    },
+    remarks: {
+      type: String, // Remark Box for additional comments
+    },
+  },
+}, {
+  timestamps: true,
+});
+
 const CompanySchema = new mongoose.Schema({
   "Company Name": {
     type: String,
@@ -138,7 +206,8 @@ const CompanySchema = new mongoose.Schema({
   },
   isUploadedManually:{
     type:Boolean,
-  }
+  },
+  interestedInformation:[informationSchema]
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);
