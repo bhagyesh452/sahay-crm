@@ -124,7 +124,7 @@ export default function RMCertificationNotification({ name, designation }) {
           <Avatar /> My account
         </MenuItem> */}
 
-        <Divider />
+        {/* <Divider /> */}
 
         <MenuItem onClick={handleClose}>
           <ListItemIcon>

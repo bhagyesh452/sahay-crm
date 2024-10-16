@@ -103,6 +103,12 @@ import ExpenseReport from "./DataManager/Dashboard/Expense/ExpenseReport.jsx";
 import DataAnalystLayout from "./DataManager/Components/ExtraComponents/DataAnalystLayout.jsx";
 import DataAnalystProfile from "./DataManager/Components/ExtraComponents/DataAnalystProfile.jsx";
 
+// Relationship Manager Imports
+import RelationshipManagerLogin from "./RelationshipManager/Login/RelationshipManagerLogin.jsx";
+import RelationshipManagerLayout from "./RelationshipManager/Components/RelationshipManagerLayout.jsx";
+import RelationshipManagerDashboard from "./RelationshipManager/Dashboard/RelationshipManagerDashboard.jsx";
+
+
 // Customer Panel Imports
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
 import CustomerDashboard from "./Customer-Panel/CustomerDashboard.jsx";
@@ -258,20 +264,20 @@ function App() {
           <Route path="/managing-director/login" element={<LoginAdmin setToken={setToken} />} />
           {token ? (
             <>
-            <Route element={<AdminLayout />} >
-              <Route path="/managing-director/dashboard" element={<Dashboard />} />
-              <Route path="/managing-director/employees" element={<Employees />} />
-              <Route path="/managing-director/user" element={<NewEmployee />} />
-              <Route path="/managing-director/employees/:id" element={<EmployeeParticular />} />
-              <Route path="/managing-director/employeeleads/:id" element={<AdminEmployeeTeamLeads />} />
-              <Route path="/managing-director/employees/:id/login-details" element={<LoginDetails />} />
-              <Route path="/managing-director/leads" element={<TestLeads />} />
-              <Route path="/managing-director/leads/:companyId" element={<CompanyParticular />} />
-              <Route path="/managing-director/bookings" element={<BookingList />} />
-              <Route path="/managing-director/notification" element={<ShowNotification />} />
-              <Route path="/managing-director/bookings/Addbookings" element={<RedesignedForm />} />
-              <Route path="/managing-director/servicesandschemes" element={<Services />} />
-              <Route path="/managing-director/employeeProfileView/:userId" element={<AdminEmployeeProfile/>}/>
+              <Route element={<AdminLayout />} >
+                <Route path="/managing-director/dashboard" element={<Dashboard />} />
+                <Route path="/managing-director/employees" element={<Employees />} />
+                <Route path="/managing-director/user" element={<NewEmployee />} />
+                <Route path="/managing-director/employees/:id" element={<EmployeeParticular />} />
+                <Route path="/managing-director/employeeleads/:id" element={<AdminEmployeeTeamLeads />} />
+                <Route path="/managing-director/employees/:id/login-details" element={<LoginDetails />} />
+                <Route path="/managing-director/leads" element={<TestLeads />} />
+                <Route path="/managing-director/leads/:companyId" element={<CompanyParticular />} />
+                <Route path="/managing-director/bookings" element={<BookingList />} />
+                <Route path="/managing-director/notification" element={<ShowNotification />} />
+                <Route path="/managing-director/bookings/Addbookings" element={<RedesignedForm />} />
+                <Route path="/managing-director/servicesandschemes" element={<Services />} />
+                <Route path="/managing-director/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
               </Route>
             </>
           ) : (
@@ -298,6 +304,12 @@ function App() {
           <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
           <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} />
           <Route path="/recruiter/login" element={<RecruiterLogin setRecruiterToken={setRecruiterToken} />} />
+
+          <Route path="/relationship-manager/login" element={<RelationshipManagerLogin />} />
+          <Route element={<RelationshipManagerLayout />}>
+            <Route path="/relationship-manager/dashboard/:userId" element={<RelationshipManagerDashboard />} />
+            <Route path="relationship-manager-profile-details/:userId" element={<FloorManagerProfile />} />
+          </Route>
 
         </Routes>
       </BrowserRouter>
