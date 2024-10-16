@@ -150,9 +150,6 @@ function EmployeePanelCopy() {
     const [companyIncoDate, setCompanyIncoDate] = useState(null);
     const [monthIndex, setMonthIndex] = useState(0)
     const [activeTabId, setActiveTabId] = useState("All"); // Track active tab ID
-
-    //console.log(companyName, companyInco);
-
     const currentData = employeeData.slice(startIndex, endIndex);
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
@@ -219,10 +216,19 @@ function EmployeePanelCopy() {
 
     useEffect(() => {
         fetchData();
-
+        fetchProjections();
     }, [userId]);
 
-
+    const fetchProjections = async () => {
+        try {
+            const response = await axios.get(
+                `${secretKey}/projection/projection-data/${data.ename}`
+            );
+            setProjectionData(response.data);
+        } catch (error) {
+            console.error("Error fetching Projection Data:", error.message);
+        }
+    };
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
         const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -515,11 +521,11 @@ function EmployeePanelCopy() {
             interestedTabRef.current.click(); // Trigger the Interested tab click
         } else if (activeTabId === "Matured" && maturedTabRef.current) {
             maturedTabRef.current.click(); // Trigger the Matured tab click
-        }else if (activeTabId === "All" && allTabRef.current) {
+        } else if (activeTabId === "All" && allTabRef.current) {
             allTabRef.current.click(); // Trigger the Matured tab click
-        }else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
+        } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
             notInterestedTabRef.current.click(); // Trigger the Matured tab click
-        }else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
+        } else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
             forwardedTabRef.current.click(); // Trigger the Matured tab click
         }
     };
@@ -606,7 +612,7 @@ function EmployeePanelCopy() {
                                             <a
                                                 href="#k"
                                                 ref={allTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handleDataStatusChange("All" , allTabRef)}
+                                                onClick={() => handleDataStatusChange("All", allTabRef)}
                                                 className={`nav-link ${dataStatus === "All" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
@@ -692,10 +698,10 @@ function EmployeePanelCopy() {
                                             email={data.email}
                                             secretKey={secretKey}
                                             handleShowCallHistory={handleShowCallHistory}
-                                            
+
                                         />)}
                                     </div>
-                                    <div  className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`}  id="Interested">
+                                    <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
                                         {activeTabId === "Interested" && (<EmployeeInterestedLeads
                                             interestedData={fetchedData}
                                             isLoading={isLoading}
@@ -712,10 +718,11 @@ function EmployeePanelCopy() {
                                             email={data.email}
                                             setdataStatus={setdataStatus}
                                             handleShowCallHistory={handleShowCallHistory}
-                                            
+                                            fetchProjections={fetchProjections}
+                                            projectionData={projectionData}
                                         />)}
                                     </div>
-                                    <div  className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
+                                    <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
                                         {activeTabId === "Matured" && (<EmployeeMaturedLeads
                                             maturedLeads={fetchedData}
                                             isLoading={isLoading}
@@ -732,11 +739,11 @@ function EmployeePanelCopy() {
                                             email={data.email}
                                             setdataStatus={setdataStatus}
                                             handleShowCallHistory={handleShowCallHistory}
-                                            
+
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
-                                        {activeTabId === "Forwarded" &&(<EmployeeForwardedLeads
+                                        {activeTabId === "Forwarded" && (<EmployeeForwardedLeads
                                             forwardedLeads={fetchedData}
                                             isLoading={isLoading}
                                             refetch={refetch}
@@ -756,7 +763,7 @@ function EmployeePanelCopy() {
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
-                                        {activeTabId === "Not Interested" &&(<EmployeeNotInterestedLeads
+                                        {activeTabId === "Not Interested" && (<EmployeeNotInterestedLeads
                                             notInterestedLeads={fetchedData}
                                             isLoading={isLoading}
                                             refetch={refetch}
