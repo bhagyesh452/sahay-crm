@@ -12,8 +12,8 @@ import AddLeadForm from '../../admin/AddLeadForm';
 import EmployeeNextFollowDate from '../ExtraComponents/EmployeeNextFollowUpDate';
 
 
-function EmployeeForwardedLeads({
-    forwardedLeads,
+function EmployeeNotInterestedLeads({
+    notInterestedLeads,
     isLoading,
     refetch,
     formatDateNew,
@@ -95,7 +95,7 @@ function EmployeeForwardedLeads({
                                 </tbody>
                             ) : (
                                 <tbody>
-                                    {forwardedLeads.map((company, index) => (
+                                    {notInterestedLeads.map((company, index) => (
                                         <tr
                                             key={index}
                                             style={{ border: "1px solid #ddd" }}
@@ -200,7 +200,7 @@ function EmployeeForwardedLeads({
                                     ))}
                                 </tbody>
                             )}
-                            {forwardedLeads && forwardedLeads.length === 0 && !isLoading && (
+                            {notInterestedLeads && notInterestedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
                                         <td colSpan="11" className="p-2 particular">
@@ -211,7 +211,7 @@ function EmployeeForwardedLeads({
                             )}
                         </table>
                     </div>
-                    {forwardedLeads && forwardedLeads.length !== 0 && (
+                    {notInterestedLeads && notInterestedLeads.length !== 0 && (
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} className="pagination">
                             <button onClick={prevPage} disabled={currentPage === 0}>
                                 <IconChevronLeft />
@@ -262,4 +262,4 @@ function EmployeeForwardedLeads({
     );
 }
 
-export default EmployeeForwardedLeads;
+export default EmployeeNotInterestedLeads;

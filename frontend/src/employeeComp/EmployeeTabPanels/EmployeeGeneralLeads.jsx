@@ -53,6 +53,7 @@ function EmployeeGeneralLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
+    console.log("general hua")
 
     return (
         <div className="RM-my-booking-lists">

@@ -53,6 +53,7 @@ import debounce from 'lodash/debounce';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmployeeForwardedLeads from "./EmployeeTabPanels/EmployeeForwardedLeads.jsx";
+import EmployeeNotInterestedLeads from "./EmployeeTabPanels/EmployeeNotInterestedLeads.jsx";
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
     const [isEditProjection, setIsEditProjection] = useState(false);
@@ -156,9 +157,9 @@ function EmployeePanelCopy() {
     const [newBdeName, setNewBdeName] = useState("")
 
 
-    const hanleCloseCallHistory = () => {
-        setShowCallHistory(false);
-    };
+    // const hanleCloseCallHistory = () => {
+    //     setShowCallHistory(false);
+    // };
 
 
 
@@ -221,46 +222,46 @@ function EmployeePanelCopy() {
     }, [userId]);
 
 
-    const handleSearch = (searchQuery) => {
-        const searchQueryLower = searchQuery.toLowerCase();
+    // const handleSearch = (searchQuery) => {
+    //     const searchQueryLower = searchQuery.toLowerCase();
 
-        // Check if searchQuery is empty or null
-        if (!searchQuery || searchQuery.trim().length === 0) {
-            setIsSearch(false);
-            setFilteredData(extraData); // Assuming extraData is your full dataset
-            return;
-        }
-        setIsFilter(false);
-        setIsSearch(true);
-        const filtered = extraData.filter((company) => {
-            const companyName = company["Company Name"];
-            const companyNumber = company["Company Number"];
-            const companyEmail = company["Company Email"];
-            const companyState = company.State;
-            const companyCity = company.City;
+    //     // Check if searchQuery is empty or null
+    //     if (!searchQuery || searchQuery.trim().length === 0) {
+    //         setIsSearch(false);
+    //         setFilteredData(extraData); // Assuming extraData is your full dataset
+    //         return;
+    //     }
+    //     setIsFilter(false);
+    //     setIsSearch(true);
+    //     const filtered = extraData.filter((company) => {
+    //         const companyName = company["Company Name"];
+    //         const companyNumber = company["Company Number"];
+    //         const companyEmail = company["Company Email"];
+    //         const companyState = company.State;
+    //         const companyCity = company.City;
 
-            // Check each field for a match
-            if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
-            if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
-                return true;
-            }
+    //         // Check each field for a match
+    //         if (companyName && companyName.toString().toLowerCase().includes(searchQueryLower)) {
+    //             return true;
+    //         }
+    //         if (companyNumber && companyNumber.toString().includes(searchQueryLower)) {
+    //             return true;
+    //         }
+    //         if (companyEmail && companyEmail.toString().toLowerCase().includes(searchQueryLower)) {
+    //             return true;
+    //         }
+    //         if (companyState && companyState.toString().toLowerCase().includes(searchQueryLower)) {
+    //             return true;
+    //         }
+    //         if (companyCity && companyCity.toString().toLowerCase().includes(searchQueryLower)) {
+    //             return true;
+    //         }
 
-            return false;
-        });
+    //         return false;
+    //     });
 
-        setFilteredData(filtered);
-    };
+    //     setFilteredData(filtered);
+    // };
 
     // useEffect(() => {
     //     if (filteredData.length !== 0) {
@@ -712,23 +713,31 @@ function EmployeePanelCopy() {
 
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
-            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage],
+            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage, searchQuery], // Add searchQuery to the queryKey
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees-new/${cleanString(data.ename)}`, {
                     params: {
                         dataStatus: dataStatus,
                         limit: itemsPerPage,
-                        skip: skip
-                    } // Send dataStatus as a query parameter
+                        skip: skip,
+                        search: searchQuery // Send the search query as a parameter
+                    }
                 });
                 return response.data; // Directly return the data
             },
             enabled: !!data.ename, // Only fetch if data.ename is available
-            staleTime: 60000, // Cache for 5 minutes
-            cacheTime: 60000, // Cache for 5 minutes
+            staleTime: 60000, // Cache for 1 minute
+            cacheTime: 60000, // Cache for 1 minute
         }
     );
+    
+    // Handle search
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+        setCurrentPage(0); // Reset to the first page on search
+        refetch(); // Refetch the data
+    };
 
     useEffect(() => {
         if (isLoading) {
@@ -763,79 +772,22 @@ function EmployeePanelCopy() {
         setOpenBacdrop(false)
     }
 
+    const handleShowCallHistory = (companyName , clientNumber) => {
+        setShowCallHistory(true)
+        setClientNumber(clientNumber)
+    }
+
+    const hanleCloseCallHistory = () => {
+        setShowCallHistory(false);
+    };
+
     console.log("fetcgeheddata", fetchedData)
     console.log("dataStatus", dataStatus)
 
     return (
         <div>
-
-
-
-            {!showCallHistory ? <div className="page-wrapper">
-                {/* {BDMrequests && (
-                            <Dialog open={openbdmRequest}>
-                                <DialogContent>
-                                    <div className="request-bdm-card">
-                                        <div className="request-title m-2 d-flex justify-content-between">
-                                            <div className="request-content mr-2">
-                                                {BDMrequests.bdmName} has Matured the case of{" "}
-                                                <b>{BDMrequests["Company Name"]}</b>.
-                                            </div>
-                                            <div className="request-time">
-                                                {new Date(BDMrequests.date).toLocaleTimeString(
-                                                    "en-US",
-                                                    {
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                        hour12: false,
-                                                    }
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="request-reply">
-                                            <button
-                                                onClick={handleDoneInform}
-                                                className="request-accept"
-                                            >
-                                                Ok
-                                            </button>
-                                        </div>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-                        )}
-                        {revertedData.length !== 0 && revertedData.map((item) => (
-                            <Dialog key={item._id} open={openRevertBackRequestDialog}>
-                                <DialogContent sx={{ width: "lg" }}>
-                                    <div className="request-bdm-card">
-                                        <div className="request-title m-2 d-flex justify-content-between">
-                                            <div className="request-content mr-2">
-                                                {item.ename} has rejected the request of reverted company.
-                                                <b>{item["Company Name"]}</b>.
-                                            </div>
-                                        </div>
-                                        <div className="request-reply d-flex">
-                                            <button
-                                                onClick={() => {
-                                                    setOpenRevertBackRequestDialog(false)
-                                                    handleDoneRejectedRequest(
-                                                        item._id,
-                                                        item.Status
-                                                    )
-                                                }
-                                                }
-
-                                                className="request-accept"
-                                            >
-                                                ok
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-                        ))} */}
-
+            {!showCallHistory ? 
+           ( <div className="page-wrapper">
                 <div className="page-wrapper">
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
@@ -846,6 +798,7 @@ function EmployeePanelCopy() {
                                             secretKey={secretKey}
                                             fetchData={fetchData}
                                             ename={data.ename}
+                                            refetch={refetch}
                                         //fetchNewData={//fetchNewData}
                                         />
                                     </div>
@@ -976,7 +929,7 @@ function EmployeePanelCopy() {
                                     </li>
                                     <li class="nav-item data-heading">
                                         <a
-                                            href="#tabs-home-5"
+                                            href="#NotInterested"
                                             onClick={() => {
                                                 setdataStatus("Not Interested");
                                                 setCurrentPage(0);
@@ -1032,6 +985,8 @@ function EmployeePanelCopy() {
                                         ename={data.ename}
                                         email={data.email}
                                         setdataStatus={setdataStatus}
+                                        handleShowCallHistory={handleShowCallHistory}
+                                        handleCloseCallHistory={hanleCloseCallHistory}
                                     />
                                 </div>
                                 <div class="tab-pane" id="Matured">
@@ -1070,11 +1025,33 @@ function EmployeePanelCopy() {
                                         setdataStatus={setdataStatus}
                                     />
                                 </div>
+                                <div class="tab-pane" id="NotInterested">
+                                    <EmployeeNotInterestedLeads
+                                        notInterestedLeads={fetchedData}
+                                        isLoading={isLoading}
+                                        refetch={refetch}
+                                        formatDateNew={formatDateNew}
+                                        startIndex={startIndex}
+                                        endIndex={endIndex}
+                                        totalPages={totalPages}
+                                        setCurrentPage={setCurrentPage}
+                                        currentPage={currentPage}
+                                        secretKey={secretKey}
+                                        dataStatus={dataStatus}
+                                        ename={data.ename}
+                                        email={data.email}
+                                        setdataStatus={setdataStatus}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />
+            </div>) : 
+            <CallHistory 
+            handleCloseHistory={hanleCloseCallHistory} 
+            clientNumber={clientNumber} 
+            />
 
             }
 
@@ -1241,7 +1218,6 @@ function EmployeePanelCopy() {
 }
 
 export default EmployeePanelCopy;
-
 
 
 

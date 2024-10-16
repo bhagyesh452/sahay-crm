@@ -2498,7 +2498,7 @@ function BdmLeads() {
               <div className="page-header d-print-none">
                 <div className="container-xl">
 
-                  {requestData !== null && requestData !== undefined && (
+                  {/* {requestData !== null && requestData !== undefined && (
                     <div className="notification-bar">
                       <div className="noti-text">
                         <h1>
@@ -2511,7 +2511,7 @@ function BdmLeads() {
                         </IconButton>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                   {/* <div className="row g-2 align-items-center">
                     <div

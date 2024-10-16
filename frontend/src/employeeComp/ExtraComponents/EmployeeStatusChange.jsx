@@ -689,7 +689,9 @@ const EmployeeStatusChange = ({
 
   return (
     <section className="rm_status_dropdown">
-      <div className={mainStatus === "Matured" ? `disabled dropdown custom-dropdown status_dropdown` : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
+      <div className={mainStatus === "Matured" ? `disabled dropdown custom-dropdown status_dropdown`
+        : mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` : 
+        `dropdown custom-dropdown status_dropdown ${statusClass}`}>
         <button
           className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
           type="button"
@@ -797,7 +799,7 @@ const EmployeeStatusChange = ({
           </ul>
         ) : mainStatus === "Forwarded" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-             <li>
+            <li>
               <a
                 className="dropdown-item"
                 // onClick={() => handleStatusChange("FollowUp", "clnt_no_repond_status")}

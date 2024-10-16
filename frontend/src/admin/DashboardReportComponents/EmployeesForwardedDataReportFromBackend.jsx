@@ -23,9 +23,9 @@ import Nodata from '../../components/Nodata';
 function EmployeesForwardedDataReportFromBackend() {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
 
-    const [selectedValue, setSelectedValue] = useState("")
-    const [finalEmployeeData, setFinalEmployeeData] = useState([])
     const [newSortType, setNewSortType] = useState({
         forwardedcase: "none",
         receivedcase: "none",
@@ -49,6 +49,15 @@ function EmployeesForwardedDataReportFromBackend() {
     const [filteredEmployeeStats, setFilteredEmployeeStats] = useState([]);
     const [originalFilteredData, setOriginalFilteredData] = useState([]);
 
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
+    };
+    
     const formatSalary = (amount) => {
         return new Intl.NumberFormat('en-IN').format(amount);
     };
@@ -400,7 +409,6 @@ function EmployeesForwardedDataReportFromBackend() {
         }
     };
 
-
     const handleSortGeneratedRevenue = (sortOrder) => {
         if (sortOrder === 'none') {
             setFilteredEmployeeStats([...originalFilteredData]); // Restore original filtered data
@@ -452,7 +460,7 @@ function EmployeesForwardedDataReportFromBackend() {
         filterEmployeeStats();
     }, [employeeStats, selectedBranch, searchFromName, employeeName]);
 
-    console.log("Data is :", filteredEmployeeStats)
+    // console.log("Data is :", filteredEmployeeStats)
 
 
     // --------------------------date formats--------------------------------------------
@@ -532,17 +540,6 @@ function EmployeesForwardedDataReportFromBackend() {
     //         return true;
     //     }
     // };
-
-    const ITEM_HEIGHT = 48;
-    const ITEM_PADDING_TOP = 8;
-    const MenuProps = {
-        PaperProps: {
-            style: {
-                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                width: 250,
-            },
-        },
-    };
 
     return (
         <div>
