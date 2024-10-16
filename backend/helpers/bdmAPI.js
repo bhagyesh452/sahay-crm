@@ -501,18 +501,32 @@ router.post("/bdm-status-change/:id", async (req, res) => {
 
   try {
     // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, {
-      bdmStatus: bdmnewstatus,
-      Status: bdmnewstatus,
-      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
-      bdmStatusChangeTime: time,
-    });
 
-    await CompanyModel.findByIdAndUpdate(id, {
+
+    // Conditionally delete from TeamLeadsModel if bdmnewstatus is "Busy"
+    if (bdmnewstatus === "Busy") {
+      await TeamLeadsModel.findByIdAndDelete(id);
+    } else {
+      await TeamLeadsModel.findByIdAndUpdate(id, {
+        bdmStatus: bdmnewstatus,
+        Status: bdmnewstatus,
+        bdmStatusChangeDate: new Date(bdmStatusChangeDate),
+        bdmStatusChangeTime: time,
+      });
+    }
+    const updateFields = {
       Status: bdmnewstatus,
       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
       bdmStatusChangeTime: time,
-    });
+    };
+
+
+    if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
+      updateFields.bdmAcceptStatus = "NotForwarded"
+    }
+    console.log("updateFie", updateFields)
+    // Update the CompanyModel
+    await CompanyModel.findByIdAndUpdate(id, { $set: updateFields });
 
     if (bdmnewstatus === "Interested") {
       await LeadHistoryForInterestedandFollowModel.findOneAndUpdate(
@@ -589,7 +603,7 @@ router.delete(`/post-deletecompany-interested/:companyId`, async (req, res) => {
 
   try {
     const existingData = await TeamLeadsModel.findById(companyId);
-    //console.log(existingData);
+    console.log("EXISITING DATA",existingData);
 
     if (existingData) {
       await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
@@ -609,6 +623,23 @@ router.post("/post-bdmAcceptStatusupate/:id", async (req, res) => {
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus: bdmAcceptStatus });
+
+    // Create and save a new document in the RecentUpdatesModel collectio
+
+    res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/post-update-bdmstatusfrombde/:id", async (req, res) => {
+  const { id } = req.params;
+  const { newStatus } = req.body; // Destructure the required properties from req.body
+
+  try {
+    // Update the status field in the database based on the employee id
+    await TeamLeadsModel.findByIdAndUpdate(id, { Status: newStatus });
 
     // Create and save a new document in the RecentUpdatesModel collectio
 

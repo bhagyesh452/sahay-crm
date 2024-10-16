@@ -514,7 +514,7 @@ const EmployeeStatusChange = ({
     try {
       let response;
       if (bdmAcceptStatus === "Accept") {
-        if (newStatus === "Interested" || newStatus === "FollowUp") {
+        if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
           response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${id}`);
           const response2 = await axios.post(
             `${secretKey}/company-data/update-status/${id}`,
@@ -534,13 +534,10 @@ const EmployeeStatusChange = ({
           }
           )
 
-        } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
+        } else if (newStatus === "Junk") {
           response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${id}`, {
             newStatus
           });
-
-          //console.log(response.data)
-
           const response2 = await axios.post(
             `${secretKey}/company-data/update-status/${id}`,
             {
@@ -554,7 +551,6 @@ const EmployeeStatusChange = ({
 
         }
       }
-
       // If response is not already defined, make the default API call
       if (!response) {
         response = await axios.post(
@@ -597,6 +593,8 @@ const EmployeeStatusChange = ({
             return "support-status";
           case "Interested":
             return "need_to_call";
+            case "FollowUp":
+              return "clnt_no_repond_status";
           default:
             return "";
         }
@@ -630,43 +628,18 @@ const EmployeeStatusChange = ({
           default:
             return "";
         }
-      case "Submitted":
+      case "Not Interested":
         switch (subStatus) {
-          case "Submitted":
-            return "submited-status";
-          case "Incomplete":
-            return "incomplete_status";
-          case "Approved":
-            return "approved-status";
-          case "2nd Time Submitted":
-            return "submited-status";
-          case "3rd Time Submitted":
-            return "submited-status";
-          case "Rejected":
-            return "rejected-status";
-          case "Defaulter":
+          case "Junk":
+            return "support-status";
+          case "Busy":
             return "dfaulter-status";
+          case "Not Interested":
+            return "inprogress-status";
+          case "Not Picked Up":
+            return "cdbp-status";
           default:
             return "";
-        }
-      case "Defaulter":
-        switch (subStatus) {
-          case "Working":
-            return "inprogress-status";
-          case "Defaulter":
-            return "dfaulter-status";
-          case "Hold":
-            return "created-status";
-          default:
-            return "";
-        }case "Hold":
-        switch (subStatus) {
-          case "Hold":
-            return "created-status";
-          case "Defaulter":
-            return "dfaulter-status";
-          case "Working":
-            return "inprogress-status";
         }
       default:
         return "";
@@ -676,16 +649,6 @@ const EmployeeStatusChange = ({
   useEffect(() => {
     setStatusClass(getStatusClass(mainStatus, companyStatus));
   }, [mainStatus, companyStatus]);
-
-
-
-
-
-
-
-
-
-
 
   return (
     <section className="rm_status_dropdown">
@@ -746,6 +709,15 @@ const EmployeeStatusChange = ({
                 href="#"
               >
                 Interested
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("FollowUp", "clnt_no_repond_status")}
+                href="#"
+              >
+                Follow Up
               </a>
             </li>
           </ul>
@@ -818,162 +790,46 @@ const EmployeeStatusChange = ({
               </a>
             </li>
           </ul>
-        ) : mainStatus === "Submitted" ? (
+        ) : mainStatus === "Not Interested" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Submitted", "submited-status")}
+                onClick={() => handleStatusChange("Junk", "support-status")}
                 href="#"
               >
-                Submitted
+                Junk
               </a>
             </li>
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Incomplete", "incomplete_status")}
+                onClick={() => handleStatusChange("Busy", "dfaulter-status")}
                 href="#"
               >
-                Incomplete
+                Busy
               </a>
             </li>
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Approved", "approved-status")}
+                onClick={() => handleStatusChange("Not Interested", "inprogress-status")}
                 href="#"
               >
-                Approved
+                Not Interested
               </a>
             </li>
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("2nd Time Submitted", "submited-status")}
+                onClick={() => handleStatusChange("Not Picked Up", "cdbp-status")}
                 href="#"
               >
-                2nd Time Submitted
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("3rd Time Submitted", "submited-status")}
-                href="#"
-              >
-                3rd Time Submitted
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Rejected", "rejected-status")}
-                href="#"
-              >
-                Rejected
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
-                href="#"
-              >
-                Defaulter
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Undo", "e_task_assign")}
-                href="#"
-              >
-                Undo
+                Not Picked Up
               </a>
             </li>
           </ul>
-        ) : mainStatus === "Hold" ? (
-          <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Hold", "created-status")}
-                href="#"
-              >
-                Hold
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
-                href="#"
-              >
-                Defaulter
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Working", "inprogress-status")}
-                href="#"
-              >
-                Working
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Undo", "e_task_assign")}
-                href="#"
-              >
-                Undo
-              </a>
-            </li>
-          </ul>
-        ) : mainStatus === "Defaulter" && (
-          <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Working", "inprogress-status")}
-                href="#"
-              >
-                Working
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
-                href="#"
-              >
-                Defaulter
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Hold", "created-status")}
-                href="#"
-              >
-                Hold
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Undo", "e_task_assign")}
-                href="#"
-              >
-                Undo
-              </a>
-            </li>
-          </ul>
-        )}
-
-
+        )  : null}
       </div>
     </section>
   );
