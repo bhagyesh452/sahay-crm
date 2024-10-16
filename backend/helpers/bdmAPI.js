@@ -1608,11 +1608,11 @@ router.get("/floorManagerLeadsReport", async (req, res) => {
           employeeName: employeeName,
           branchOffice: branchOffice,
           interested: 0,
-          interestedLeads: [],
+          // interestedLeads: [],
           followUp: 0,
-          followUpLeads: [],
+          // followUpLeads: [],
           forwarded: 0,
-          forwardedLeads: []
+          // forwardedLeads: []
         };
       }
 
@@ -1642,15 +1642,15 @@ router.get("/floorManagerLeadsReport", async (req, res) => {
 
         if (companyStatus === "Interested" && companyBdmAcceptStatus === "NotForwarded") {
           result[employeeName].interested++;
-          result[employeeName].interestedLeads.push(companyName);
+          // result[employeeName].interestedLeads.push(companyName);
         } else if (companyStatus === "FollowUp" && companyBdmAcceptStatus === "NotForwarded") {
           result[employeeName].followUp++;
-          result[employeeName].followUpLeads.push(companyName);
+          // result[employeeName].followUpLeads.push(companyName);
         }
 
         if (companyBdmAcceptStatus === "Pending" || companyBdmAcceptStatus === "Accept") {
           result[employeeName].forwarded++;
-          result[employeeName].forwardedLeads.push(companyName);
+          // result[employeeName].forwardedLeads.push(companyName);
         }
       });
     }

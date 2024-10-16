@@ -12,6 +12,10 @@ function FloorManagerReceivedCaseReport() {
         { value: 'last_month', label: 'Last Month' }
     ];
 
+    const formatSalary = (amount) => {
+        return new Intl.NumberFormat('en-IN').format(amount);
+    };
+
     const [summaryData, setSummaryData] = useState({});
     const [currentDateSummeryData, setCurrentDateSummaryData] = useState({});
     const [projectedSummaryData, setProjectedSummaryData] = useState({});
@@ -44,7 +48,7 @@ function FloorManagerReceivedCaseReport() {
             // console.log("Floor manager current date projected data :", res2.data);
             setCurrentDateSummaryData(res.data.summary);
             setProjectedCurrentDateSummaryData(res2.data.summary);
-            
+
         } catch (error) {
             console.log("Error fetching received cases :", error);
         }
@@ -169,7 +173,7 @@ function FloorManagerReceivedCaseReport() {
                                                 <div className="dash-card-2-head">PROJECTED REVENUE</div>
                                                 <div className="dash-card-2-body">
                                                     <div className="dash-card-2-num">
-                                                        ₹ {projectedCurrentDateSummaryData.total?.toFixed(2) || 0}
+                                                        ₹ {formatSalary(projectedCurrentDateSummaryData.total) || 0}
                                                     </div>
                                                 </div>
                                             </div>
@@ -182,7 +186,7 @@ function FloorManagerReceivedCaseReport() {
                                                 <div className="dash-card-2-head">GENERATED REVENUE</div>
                                                 <div className="dash-card-2-body">
                                                     <div className="dash-card-2-num">
-                                                        ₹ {currentDateSummeryData.generatedReceivedAmountTotal?.toFixed(2) || 0}
+                                                        ₹ {formatSalary(currentDateSummeryData.generatedReceivedAmountTotal) || 0}
                                                     </div>
                                                 </div>
                                             </div>
@@ -303,7 +307,7 @@ function FloorManagerReceivedCaseReport() {
                                                 <div className="dash-card-2-head">PROJECTED REVENUE</div>
                                                 <div className="dash-card-2-body">
                                                     <div className="dash-card-2-num">
-                                                        ₹ {projectedSummaryData.total?.toFixed(2) || 0}
+                                                        ₹ {formatSalary(projectedSummaryData.total) || 0}
                                                     </div>
                                                 </div>
                                             </div>
@@ -316,7 +320,7 @@ function FloorManagerReceivedCaseReport() {
                                                 <div className="dash-card-2-head">GENERATED REVENUE</div>
                                                 <div className="dash-card-2-body">
                                                     <div className="dash-card-2-num">
-                                                        ₹ {summaryData.generatedReceivedAmountTotal?.toFixed(2) || 0}
+                                                        ₹ {formatSalary(summaryData.generatedReceivedAmountTotal) || 0}
                                                     </div>
                                                 </div>
                                             </div>

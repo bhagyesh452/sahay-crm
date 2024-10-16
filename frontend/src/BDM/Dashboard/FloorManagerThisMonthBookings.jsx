@@ -83,8 +83,8 @@ function FloorManagerThisMonthBookings() {
     }
 
     const options = employeeDataFilter
-        .filter((obj) => obj.ename !== floorManagerName && obj.branchOffice === floorManagerBranch)
-        .map((obj) => obj.ename); // Extract only employee names
+        .filter((item) => item.ename !== floorManagerName && item.branchOffice === floorManagerBranch && item.ename !== "Vishnu Suthar" && item.ename !== "Vandit Shah" && item.ename !== "Khushi Gandhi" && item.ename !== "Yashesh Gajjar" && item.ename !== "Ravi Prajapati" && item.ename !== "Yash Goswami" && item.ename !== "DIRECT" && item.ename !== "TEST ACCOUNT")
+        .map((item) => item.ename); // Extract only employee names
 
     const uniqueBDEobjects =
         employeeData.length !== 0 &&
