@@ -739,6 +739,8 @@ function EmployeePanelCopy() {
                                             email={data.email}
                                             setdataStatus={setdataStatus}
                                             handleShowCallHistory={handleShowCallHistory}
+                                            fetchProjections={fetchProjections}
+                                            projectionData={projectionData}
 
                                         />)}
                                     </div>

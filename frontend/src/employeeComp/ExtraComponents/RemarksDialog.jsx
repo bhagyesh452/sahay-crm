@@ -377,8 +377,8 @@ const RemarksDialog = ({
   // Render button based on bdmAcceptStatus and company status
   const renderButton = () => {
     if (
-      bdmAcceptStatus !== "Accept" ||
-      ["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus)
+     (remarksKey !== "bdmRemarks") && (bdmAcceptStatus !== "Accept" || 
+      ["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
     ) {
       return (
         <button
@@ -393,8 +393,8 @@ const RemarksDialog = ({
     }
 
     if (
-      bdmAcceptStatus === "Accept" &&
-      !["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus)
+      (remarksKey === "bdmRemarks")||(bdmAcceptStatus === "Accept" &&
+      !["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
     ) {
       return (
         <button

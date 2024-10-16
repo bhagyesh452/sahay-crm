@@ -9,8 +9,13 @@ import RemarksDialog from '../ExtraComponents/RemarksDialog';
 import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
-import EmployeeNextFollowDate from '../ExtraComponents/EmployeeNextFollowUpDate';
-
+import { format } from 'date-fns';
+import axios from "axios";
+import Swal from "sweetalert2";
+import { TiArrowBack } from "react-icons/ti";
+import { TiArrowForward } from "react-icons/ti";
+import { RiInformationLine } from "react-icons/ri";
+import FeedbackDialog from '../ExtraComponents/FeedbackDialog';
 
 function EmployeeForwardedLeads({
     forwardedLeads,
@@ -56,6 +61,79 @@ function EmployeeForwardedLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
+    // --------------------------------function to take company back forwarded to bdm and not accepted by bdm--------------------------
+    const handleReverseAssign = async (
+        companyId,
+        companyName,
+        bdmAcceptStatus,
+        empStatus,
+        bdmName
+    ) => {
+        if (bdmAcceptStatus === "Pending") {
+            try {
+                const response = await axios.post(
+                    `${secretKey}/bdm-data/teamleads-reversedata/${companyId}`,
+                    {
+                        companyName,
+                        bdmAcceptStatus: "NotForwarded",
+                        bdmName: "NoOne" // Corrected parameter name
+                    }
+                );
+                const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
+                    caseType: "NotForwarded"
+                })
+                // console.log("response", response.data);
+                Swal.fire("Data Reversed");
+                refetch();
+            } catch (error) {
+                console.log("error reversing bdm forwarded data", error.message);
+            }
+        } else if (bdmAcceptStatus === "NotForwarded") {
+            Swal.fire("Cannot Reforward Data");
+        } else if (bdmAcceptStatus === "Accept") {
+            Swal.fire("BDM already accepted this data!");
+        }
+    };
+
+    //----------- function to revert back company accepted by bdm ----------------------------
+    const handleRevertAcceptedCompany = async (companyId, companyName, bdeStatus) => {
+        // Show confirmation dialog
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You wan't to revert back this company!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, revert it!'
+        });
+
+        // If confirmed, proceed with the request
+        if (result.isConfirmed) {
+            try {
+                const response = await axios.post(`${secretKey}/company-data/post-bderevertbackacceptedcompanyrequest`, null, {
+                    params: {
+                        companyId,
+                        companyName
+                    }
+                });
+                Swal.fire(
+                    'Reverted!',
+                    'The company request has been reverted back.',
+                    'success'
+                );
+
+                refetch();
+            } catch (error) {
+                console.log("Error reverting back company", error);
+                Swal.fire(
+                    'Error!',
+                    'There was an error reverting back the company request.',
+                    'error'
+                );
+            }
+        }
+    };
 
     return (
         <div className="RM-my-booking-lists">
@@ -71,11 +149,17 @@ function EmployeeForwardedLeads({
                                     <th>Call History</th>
                                     <th>BDE Status</th>
                                     <th>BDE Remarks</th>
+                                    <th>BDM Status</th>
+                                    <th>BDM Remarks</th>
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
                                     <th>Compnay Email</th>
                                     <th>Assign Date</th>
+                                    <th>BDM Name</th>
+                                    <th>Forwarded Date</th>
+                                    <th>Forward To BDM</th>
+                                    <th>Feedback</th>
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Interested" ? (
@@ -115,10 +199,10 @@ function EmployeeForwardedLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                <LuHistory 
-                                                onClick={() => {
-                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
-                                                }}
+                                                <LuHistory
+                                                    onClick={() => {
+                                                        handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                    }}
                                                     style={{
                                                         cursor: "pointer",
                                                         width: "15px",
@@ -128,7 +212,8 @@ function EmployeeForwardedLeads({
                                                 />
                                             </td>
                                             <td>
-                                                <EmployeeStatusChange
+                                                {company.bdeOldStatus}
+                                                {/* <EmployeeStatusChange
                                                     key={`${company["Company Name"]}-${index}`}
                                                     companyName={company["Company Name"]}
                                                     companyStatus={company.Status}
@@ -150,7 +235,7 @@ function EmployeeForwardedLeads({
                                                     cnum={company["Company Number"]}
                                                     ename={company.ename}
                                                     bdmAcceptStatus={company.bdmAcceptStatus}
-                                                />
+                                                /> */}
                                             </td>
                                             <td>
                                                 <div
@@ -187,7 +272,42 @@ function EmployeeForwardedLeads({
                                                     />
                                                 </div>
                                             </td>
-                                            
+                                            <td>{company.Status}</td>
+                                            <td>
+                                                <div key={company._id}
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "space-between",
+                                                        width: "100px",
+                                                    }}>
+                                                    <p
+                                                        className="rematkText text-wrap m-0"
+                                                        title={company.remarks}
+                                                    >
+                                                        {!company.bdmRemarks
+                                                            ? "No Remarks"
+                                                            : company.bdmRemarks}
+                                                    </p>
+                                                    <RemarksDialog
+                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                        currentCompanyName={company["Company Name"]}
+                                                        //filteredRemarks={filteredRemarks}
+                                                        companyId={company._id}
+                                                        remarksKey="bdmRemarks" // For BDM remarks
+                                                        isEditable={false} // Disable editing
+                                                        secretKey={secretKey}
+                                                        //fetchRemarksHistory={fetchRemarksHistory}
+                                                        bdeName={company.ename}
+                                                        fetchNewData={refetch}
+                                                        bdmName={company.bdmName}
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                        companyStatus={company.Status}
+                                                        mainRemarks={company.Remarks}
+                                                    //remarksHistory={remarksHistory} // pass your remarks history data
+                                                    />
+                                                </div>
+                                            </td>
                                             <td>
                                                 {formatDateNew(
                                                     company["Company Incorporation Date  "]
@@ -197,6 +317,93 @@ function EmployeeForwardedLeads({
                                             <td>{company["State"]}</td>
                                             <td>{company["Company Email"]}</td>
                                             <td>{formatDateNew(company["AssignDate"])}</td>
+                                            <td>{company.bdmName}</td>
+                                            <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                            <td>
+                                                {company.bdmAcceptStatus === "NotForwarded" ? (<>
+                                                    <TiArrowForward
+                                                        // onClick={() => {
+                                                        //     handleConfirmAssign(
+                                                        //         company._id,
+                                                        //         company["Company Name"],
+                                                        //         company.Status, // Corrected parameter name
+                                                        //         company.ename,
+                                                        //         company.bdmAcceptStatus
+                                                        //     );
+                                                        // }}
+                                                        style={{
+                                                            cursor: "pointer",
+                                                            width: "17px",
+                                                            height: "17px",
+                                                        }}
+                                                        color="grey"
+                                                    />
+                                                </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
+
+                                                    <TiArrowBack
+                                                        onClick={() => {
+                                                            handleReverseAssign(
+                                                                company._id,
+                                                                company["Company Name"],
+                                                                company.bdmAcceptStatus,
+                                                                company.Status,
+                                                                company.bdmName
+                                                            )
+                                                        }}
+                                                        style={{
+                                                            cursor: "pointer",
+                                                            width: "17px",
+                                                            height: "17px",
+                                                        }}
+                                                        color="#fbb900"
+                                                    />
+                                                </>) :
+                                                    (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
+                                                        <>
+                                                            <TiArrowBack
+                                                                onClick={() => handleRevertAcceptedCompany(
+                                                                    company._id,
+                                                                    company["Company Name"],
+                                                                    company.Status
+                                                                )}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    width: "17px",
+                                                                    height: "17px",
+                                                                }}
+                                                                color="black" />
+                                                        </>) :
+                                                        (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
+                                                            <>
+                                                                <TiArrowBack
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "17px",
+                                                                        height: "17px",
+                                                                    }}
+                                                                    color="lightgrey" />
+                                                            </>) : (<>
+                                                                <TiArrowForward
+                                                                    onClick={() => {
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "17px",
+                                                                        height: "17px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </>)}
+                                            </td>
+                                            <td>
+                                                <FeedbackDialog
+                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                    companyId={company._id}
+                                                    companyName={company["Company Name"]}
+                                                    feedbackRemarks={company.feedbackRemarks}
+                                                    feedbackPoints={company.feedbackPoints}
+                                                />
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
