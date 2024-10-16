@@ -26,7 +26,8 @@ function EmployeeForwardedLeads({
     dataStatus,
     setdataStatus,
     ename,
-    email
+    email,
+    handleShowCallHistory
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -114,9 +115,9 @@ function EmployeeForwardedLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                <LuHistory onClick={() => {
-                                                    // setShowCallHistory(true);
-                                                    // setClientNumber(company["Company Number"]);
+                                                <LuHistory 
+                                                onClick={() => {
+                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
                                                 }}
                                                     style={{
                                                         cursor: "pointer",
