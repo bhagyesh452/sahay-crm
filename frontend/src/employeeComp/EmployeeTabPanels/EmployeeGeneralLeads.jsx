@@ -25,7 +25,8 @@ function EmployeeGeneralLeads({
     setdataStatus,
     ename,
     email,
-    secretKey
+    secretKey,
+    handleShowCallHistory
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -113,7 +114,9 @@ function EmployeeGeneralLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                <LuHistory onClick={() => {
+                                                <LuHistory 
+                                                onClick={() => {
+                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
                                                     // setShowCallHistory(true);
                                                     // setClientNumber(company["Company Number"]);
                                                 }}
