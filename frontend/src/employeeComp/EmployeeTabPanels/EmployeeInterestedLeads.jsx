@@ -33,7 +33,8 @@ function EmployeeInterestedLeads({
     email,
     handleShowCallHistory,
     fetchProjections,
-    projectionData
+    projectionData,
+    handleOpenFormOpen
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -42,9 +43,9 @@ function EmployeeInterestedLeads({
     const [companyInco, setCompanyInco] = useState(null);
     const [companyNumber, setCompanyNumber] = useState(0);
     const [companyId, setCompanyId] = useState("");
-    const [formOpen, setFormOpen] = useState(false);
-    //const [editFormOpen, setEditFormOpen] = useState(false);
-    const [addFormOpen, setAddFormOpen] = useState(false);
+    // const [formOpen, setFormOpen] = useState(false);
+    // //const [editFormOpen, setEditFormOpen] = useState(false);
+    // const [addFormOpen, setAddFormOpen] = useState(false);
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
     const [nowToFetch, setNowToFetch] = useState(false);
@@ -67,7 +68,7 @@ function EmployeeInterestedLeads({
 
     return (
         <div className="RM-my-booking-lists">
-            {!formOpen && !addFormOpen && (
+          
                 <>
                     <div className="table table-responsive table-style-3 m-0">
                         <table className="table table-vcenter table-nowrap">
@@ -156,13 +157,14 @@ function EmployeeInterestedLeads({
                                                     setDeletedEmployeeStatus={setDeletedEmployeeStatus}
                                                     setNewBdeName={setNewBdeName}
                                                     isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
-                                                    setFormOpen={setFormOpen}
-                                                    setAddFormOpen={setAddFormOpen}
+                                                    // setFormOpen={setFormOpen}
+                                                    // setAddFormOpen={setAddFormOpen}
                                                     cemail={company["Company Email"]}
                                                     cindate={company["Incorporation Date"]}
                                                     cnum={company["Company Number"]}
                                                     ename={company.ename}
                                                     bdmAcceptStatus={company.bdmAcceptStatus}
+                                                    handleFormOpen={handleOpenFormOpen}
                                                 />
                                             </td>
                                             <td>
@@ -274,39 +276,7 @@ function EmployeeInterestedLeads({
                         </div>
                     )}
                 </>
-            )}
-            {formOpen && (
-                <>
-                    <RedesignedForm
-                        // matured={true}
-                        // companysId={companyId}
-                        setDataStatus={setdataStatus}
-                        setFormOpen={setFormOpen}
-                        companysName={companyName}
-                        companysEmail={companyEmail}
-                        companyNumber={companyNumber}
-                        setNowToFetch={setNowToFetch}
-                        companysInco={companyInco}
-                        employeeName={ename}
-                        employeeEmail={email}
-                    />
-                </>
-            )}
-            {addFormOpen && (
-                <>
-                    {" "}
-                    <AddLeadForm
-                        employeeEmail={email}
-                        newBdeName={newBdeName}
-                        isDeletedEmployeeCompany={deletedEmployeeStatus}
-                        setFormOpen={setAddFormOpen}
-                        companysName={companyName}
-                        setNowToFetch={setNowToFetch}
-                        setDataStatus={setdataStatus}
-                        employeeName={ename}
-                    />
-                </>
-            )}
+            
         </div>
     );
 }

@@ -60,7 +60,9 @@ export default function RedesignedForm({
   employeeName,
   employeeEmail,
   setNowToFetch,
-  bdmName
+  bdmName,
+  handleCloseFormOpen,
+  isEmployee
 }) {
   const [showOtherField, setShowOtherField] = useState(false); // state to track "Others" option
   const [totalServices, setTotalServices] = useState(1);
@@ -561,7 +563,11 @@ export default function RedesignedForm({
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
       // setDataStatus("Matured");
-      setFormOpen(false);
+      if(isEmployee){
+        handleCloseFormOpen()
+      }else{
+        setFormOpen(false);
+      }
     }
   };
 
@@ -1018,9 +1024,12 @@ export default function RedesignedForm({
         handleClick()
         const newaudio = new Audio(Dhanyavad);
         newaudio.play()
-        setFormOpen(false);
-        setDataStatus("Matured");
-
+        if(isEmployee){
+          handleCloseFormOpen()
+        }else{
+          setFormOpen(false);
+          setDataStatus("Matured");
+        }
         return true;
       }
       // let dataToSend = {

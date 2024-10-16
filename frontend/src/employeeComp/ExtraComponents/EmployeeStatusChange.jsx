@@ -28,7 +28,8 @@ const EmployeeStatusChange = ({
   cemail,
   cindate,
   cnum, ename,
-  bdmAcceptStatus
+  bdmAcceptStatus,
+  handleFormOpen
 }) => {
   const [status, setStatus] = useState(companyStatus);
   const [statusClass, setStatusClass] = useState("");
@@ -465,16 +466,16 @@ const EmployeeStatusChange = ({
 
   const handleStatusChange = async (
     // company,
-    // employeeId,
+    //employeeId,
     // newStatus,
-    // cname,
-    // cemail,
-    // cindate,
-    // cnum,
+    //cname,
+    //cemail,
+    //cindate,
+    //cnum,
     // oldStatus,
-    // bdmAcceptStatus,
-    // isDeletedEmployeeCompany,
-    // ename
+     //bdmAcceptStatus,
+    //isDeletedEmployeeCompany,
+    //ename,
     newStatus,
     statusClass,
 
@@ -483,24 +484,26 @@ const EmployeeStatusChange = ({
     setStatusClass(statusClass);
     //setNewSubStatus(newStatus);
     if (newStatus === "Matured") {
-      // Assuming these are setter functions to update state or perform some action
-      setCompanyName(companyName);
-      setCompanyEmail(cemail);
-      setCompanyInco(cindate);
-      setCompanyId(id);
-      setCompanyNumber(cnum);
-      setDeletedEmployeeStatus(isDeletedEmployeeCompany)
-      setNewBdeName(ename)
-      // console.log("is", isDeletedEmployeeCompany)
-      // console.log("company", company)
-      // let isDeletedEmployeeCompany = true
-      if (!isDeletedEmployeeCompany) {
-        console.log("formchal")
-        setFormOpen(true);
-      } else {
-        console.log("addleadfromchal")
-        setAddFormOpen(true)
-      }
+      // // Assuming these are setter functions to update state or perform some action
+      // setCompanyName(companyName);
+      // setCompanyEmail(cemail);
+      // setCompanyInco(cindate);
+      // setCompanyId(id);
+      // setCompanyNumber(cnum);
+      // setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+      // setNewBdeName(ename)
+      // // console.log("is", isDeletedEmployeeCompany)
+      // // console.log("company", company)
+      // // let isDeletedEmployeeCompany = true
+      // if (!isDeletedEmployeeCompany) {
+      //   console.log("formchal")
+      //   setFormOpen(true);
+      // } else {
+      //   console.log("addleadfromchal")
+      //   setAddFormOpen(true)
+      // }
+
+      handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename);
       return true;
     }
 

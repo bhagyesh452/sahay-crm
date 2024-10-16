@@ -1,46 +1,18 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import EmpNav from "./EmpNav.js";
-import Header from "../components/Header";
 import { useParams } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
 import axios from "axios";
-// import { IconChevronLeft, IconEye } from "@tabler/icons-react";
-// import { IconChevronRight } from "@tabler/icons-react";
-// import { Drawer } from "@mui/material";
-// import { IoIosClose } from "react-icons/io";
-// import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
-import Swal from "sweetalert2";
+
 import "../assets/table.css";
 import "../assets/styles.css";
-import Nodata from "../components/Nodata.jsx";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
-import io from "socket.io-client";
-import AddCircle from "@mui/icons-material/AddCircle.js";
-import { HiOutlineEye } from "react-icons/hi";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { RiEditCircleFill } from "react-icons/ri";
-import { IoCloseCircleOutline } from "react-icons/io5";
-import { IoClose } from "react-icons/io5";
-import ScaleLoader from "react-spinners/ScaleLoader";
-import ClipLoader from "react-spinners/ClipLoader";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
 import LeadFormPreview from "../admin/LeadFormPreview.jsx";
 import AddLeadForm from "../admin/AddLeadForm.jsx";
-import { FaWhatsapp } from "react-icons/fa";
-import { TiArrowBack } from "react-icons/ti";
-import { TiArrowForward } from "react-icons/ti";
 import PropTypes from "prop-types";
 import Tooltip from "@mui/material/Tooltip";
 import { IoFilterOutline } from "react-icons/io5";
-import { Country, State, City } from 'country-state-city';
-import { jwtDecode } from "jwt-decode";
 // import DrawerComponent from "../components/Drawer.js";
 import CallHistory from "./CallHistory.jsx";
-import { LuHistory } from "react-icons/lu";
-import BdmMaturedCasesDialogBox from "./BdmMaturedCasesDialogBox.jsx";
-import ProjectionDialog from "./ExtraComponents/ProjectionDialog.jsx";
-import FeedbackDialog from "./ExtraComponents/FeedbackDialog.jsx";
-import CsvImportDialog from "./ExtraComponents/ImportCSVDialog.jsx";
 import EmployeeAddLeadDialog from "./ExtraComponents/EmployeeAddLeadDialog.jsx";
 import EmployeeRequestDataDialog from "./ExtraComponents/EmployeeRequestDataDialog.jsx";
 import RemarksDialog from "./ExtraComponents/RemarksDialog.jsx";
@@ -59,36 +31,11 @@ import { FaCheck } from "react-icons/fa6";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
-    const [isEditProjection, setIsEditProjection] = useState(false);
-    const [projectingCompany, setProjectingCompany] = useState("");
-    const [BDMrequests, setBDMrequests] = useState(null);
-    const [openBooking, setOpenBooking] = useState(false);
-    const [sortStatus, setSortStatus] = useState("");
     //const [maturedID, setMaturedID] = useState("");
     const [currentForm, setCurrentForm] = useState(null);
-
     const [projectionData, setProjectionData] = useState([]);
-    const [requestDeletes, setRequestDeletes] = useState([]);
-    const [openLogin, setOpenLogin] = useState(false);
-    const [requestData, setRequestData] = useState(null);
-    const [sortOrder, setSortOrder] = useState("asc");
-    const [csvdata, setCsvData] = useState([]);
     const [dataStatus, setdataStatus] = useState("All");
-    const [changeRemarks, setChangeRemarks] = useState("");
-    const [isEdit, setIsEdit] = useState(false);
-    const [expandYear, setExpandYear] = useState(0);
-    const [bookingIndex, setBookingIndex] = useState(0);
-    const [editMoreOpen, setEditMoreOpen] = useState(false);
-    const [openCSV, openchangeCSV] = useState(false);
-    const [openRemarks, openchangeRemarks] = useState(false);
-    const [openAnchor, setOpenAnchor] = useState(false);
-    const [openProjection, setOpenProjection] = useState(false);
     const [data, setData] = useState([]);
-    const [forwardEname, setForrwardEname] = useState("");
-    const [forwardStatus, setForrwardStatus] = useState("");
-    const [teamInfo, setTeamInfo] = useState([]);
-    const [bdmName, setBdmName] = useState("");
-    const [openRevertBackRequestDialog, setOpenRevertBackRequestDialog] = useState(false)
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
     const [isFilter, setIsFilter] = useState(false)
@@ -98,69 +45,29 @@ function EmployeePanelCopy() {
     const [clientNumber, setClientNumber] = useState("");
     const [employeeData, setEmployeeData] = useState([]);
     const [nowToFetch, setNowToFetch] = useState(false);
-    const [redesignedData, setRedesignedData] = useState([])
-    const [openbdmRequest, setOpenbdmRequest] = useState(false);
-    const [selectAllChecked, setSelectAllChecked] = useState(true);
-    const [selectedYears, setSelectedYears] = useState([]);
-    const [selectedMonths, setSelectedMonths] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const [mapArray, setMapArray] = useState([]);
-    const [totalBookings, setTotalBookings] = useState([]);
     const itemsPerPage = 500;
-    const [year, setYear] = useState(0);
-    const [socketID, setSocketID] = useState("");
-    const [incoFilter, setIncoFilter] = useState("");
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const { userId } = useParams();
-    const [nextFollowUpdate, setNextFollowUpDate] = useState(null)
-    const [filteredData, setFilteredData] = useState([]);
-    const [isSearch, setIsSearch] = useState(false);
     const [searchQuery, setSearchQuery] = useState("")
-    const [remarksHistory, setRemarksHistory] = useState([]);
-    const [filteredRemarks, setFilteredRemarks] = useState([]);
+
     const [moreEmpData, setmoreEmpData] = useState([]);
-    const [tempData, setTempData] = useState([]);
+
     const [revertedData, setRevertedData] = useState([]);
-    const [bdmNames, setBdmNames] = useState([]);
+    const [formOpen, setFormOpen] = useState(false);
+    //const [editFormOpen, setEditFormOpen] = useState(false);
+    const [addFormOpen, setAddFormOpen] = useState(false)
+    const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [activeTabId, setActiveTabId] = useState("All"); // Track active tab ID
     const [companyName, setCompanyName] = useState("");
     const [maturedCompanyName, setMaturedCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
     const [companyInco, setCompanyInco] = useState(null);
     const [companyNumber, setCompanyNumber] = useState(0);
     const [companyId, setCompanyId] = useState("");
-    const [formOpen, setFormOpen] = useState(false);
-    //const [editFormOpen, setEditFormOpen] = useState(false);
-    const [addFormOpen, setAddFormOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [extraData, setExtraData] = useState([]);
-    const stateList = State.getStatesOfCountry("IN")
-    const cityList = City.getCitiesOfCountry("IN")
-    const [selectedStateCode, setSelectedStateCode] = useState("")
-    const [selectedState, setSelectedState] = useState("")
-    const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
-    const [selectedNewCity, setSelectedNewCity] = useState("")
-    const [selectedYear, setSelectedYear] = useState("")
-    const [selectedMonth, setSelectedMonth] = useState("")
-    const [selectedStatus, setSelectedStatus] = useState("")
-    const [selectedBDEName, setSelectedBDEName] = useState("")
-    const [selectedAssignDate, setSelectedAssignDate] = useState(null)
-    const [selectedAdminName, setSelectedAdminName] = useState("")
-    const [daysInMonth, setDaysInMonth] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(0)
-    const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
-    const [openBacdrop, setOpenBacdrop] = useState(false)
-    const [companyIncoDate, setCompanyIncoDate] = useState(null);
-    const [monthIndex, setMonthIndex] = useState(0)
-    const [activeTabId, setActiveTabId] = useState("All"); // Track active tab ID
-    const currentData = employeeData.slice(startIndex, endIndex);
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
-
-
-    // const hanleCloseCallHistory = () => {
-    //     setShowCallHistory(false);
-    // };
 
 
 
@@ -173,34 +80,6 @@ function EmployeePanelCopy() {
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
     }, [data.ename]);
-
-    // useEffect(() => {
-    //     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-    //         secure: true, // Use HTTPS
-    //         path: '/socket.io',
-    //         reconnection: true,
-    //         transports: ['websocket'],
-    //     });
-    //     socket.on("connect", () => {
-    //         //console.log("Socket connected with ID:", socket.id);
-    //         console.log('Connection Successful to socket io')
-    //         setSocketID(socket.id);
-    //     });
-
-    //     socket.on("request-seen", () => {
-    //         // Call fetchRequestDetails function to update request details
-    //         //fetchRequestDetails();
-    //     });
-
-    //     socket.on("data-sent", () => {
-    //         //fetchRequestDetails();
-    //     });
-
-    //     // Clean up the socket connection when the component unmounts
-    //     return () => {
-    //         socket.disconnect();
-    //     };
-    // }, []);
 
 
     const fetchData = async () => {
@@ -232,14 +111,6 @@ function EmployeePanelCopy() {
             console.error("Error fetching Projection Data:", error.message);
         }
     };
-    function formatDate(inputDate) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const formattedDate = new Date(inputDate).toLocaleDateString(
-            "en-US",
-            options
-        );
-        return formattedDate;
-    }
 
     function formatDateNew(timestamp) {
         const date = new Date(timestamp);
@@ -249,21 +120,10 @@ function EmployeePanelCopy() {
         return `${day}/${month}/${year}`;
     }
 
-    function formatDateNow(timestamp) {
-        const date = new Date(timestamp);
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
-        const year = date.getFullYear();
-        return `${year}-${month}-${day}`;
-    }
-
 
 
     // --------------------------------------forward to bdm function---------------------------------------------\
 
-    const [forwardedCompany, setForwardedCompany] = useState("");
-    const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("");
-    const [forwardCompanyId, setforwardCompanyId] = useState("");
     const [cid, setcid] = useState("");
 
     function ValueLabelComponent(props) {
@@ -283,144 +143,6 @@ function EmployeePanelCopy() {
 
     const iOSBoxShadow =
         '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
-
-
-    const [bdeOldStatus, setBdeOldStatus] = useState("");
-    const [openBdmNamePopup, setOpenBdmNamePopoup] = useState(false);
-
-    const handleConfirmAssign = (
-        companyId,
-        companyName,
-        companyStatus,
-        ename,
-        bdmAcceptStatus
-    ) => {
-        //console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
-
-        if (
-            companyStatus === "Interested" ||
-            (companyStatus === "FollowUp")
-        ) {
-            // Assuming `bdmName` is defined somewhere
-            setOpenBdmNamePopoup(true);
-            setBdeOldStatus(companyStatus);
-            setForrwardEname(ename);
-            setForrwardStatus(companyStatus);
-            setBdmNewAcceptStatus("Pending");
-            setforwardCompanyId(companyId);
-            setForwardedCompany(companyName);
-            //setConfirmationPending(true); // Set confirmation pending
-        } else {
-            Swal.fire("Your are not assigned to any bdm!");
-        }
-    };
-
-    const handleReverseAssign = async (
-        companyId,
-        companyName,
-        bdmAcceptStatus,
-        empStatus,
-        bdmName
-    ) => {
-        if (bdmAcceptStatus === "Pending") {
-            try {
-                const response = await axios.post(
-                    `${secretKey}/bdm-data/teamleads-reversedata/${companyId}`,
-                    {
-                        companyName,
-                        bdmAcceptStatus: "NotForwarded",
-                        bdmName: "NoOne" // Corrected parameter name
-                    }
-                );
-                const response2 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
-                    caseType: "NotForwarded"
-                })
-                // console.log("response", response.data);
-                Swal.fire("Data Reversed");
-                //fetchNewData(empStatus);
-            } catch (error) {
-                console.log("error reversing bdm forwarded data", error.message);
-            }
-        } else if (bdmAcceptStatus === "NotForwarded") {
-            Swal.fire("Cannot Reforward Data");
-        } else if (bdmAcceptStatus === "Accept") {
-            Swal.fire("BDM already accepted this data!");
-        }
-    };
-
-    const handleDoneInform = async () => {
-        try {
-            const id = BDMrequests._id;
-            // Send a DELETE request to your backend API to delete the object
-            const response = await axios.delete(
-                `${secretKey}/requests/delete-inform-Request/${id}`
-            );
-
-            setOpenbdmRequest(false);
-            //fetchBDMbookingRequests()
-            //console.log(response.data); // Log the response data if needed
-            // Optionally, you can update the UI or perform any other actions after the request is successful
-        } catch (error) {
-            Swal.fire("Error!", "Error Rejecting the Request", "error");
-            setOpenbdmRequest(false);
-            console.error("Error rejecting request:", error);
-            // Handle the error or display a message to the user
-        }
-    };
-
-    //----------- function to revert back company accepted by bdm ----------------------------
-    const handleRevertAcceptedCompany = async (companyId, companyName, bdeStatus) => {
-        // Show confirmation dialog
-        const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: "You wan't to revert back this company!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, revert it!'
-        });
-
-        // If confirmed, proceed with the request
-        if (result.isConfirmed) {
-            try {
-                const response = await axios.post(`${secretKey}/company-data/post-bderevertbackacceptedcompanyrequest`, null, {
-                    params: {
-                        companyId,
-                        companyName
-                    }
-                });
-                Swal.fire(
-                    'Reverted!',
-                    'The company request has been reverted back.',
-                    'success'
-                );
-
-                //fetchNewData(bdeStatus);
-            } catch (error) {
-                console.log("Error reverting back company", error);
-                Swal.fire(
-                    'Error!',
-                    'There was an error reverting back the company request.',
-                    'error'
-                );
-            }
-        }
-    };
-
-    const handleDoneRejectedRequest = async (companyId, status) => {
-        try {
-            const reponse = await axios.post(`${secretKey}/bdm-data/rejectedrequestdonebybdm`, null, {
-                params: {
-                    companyId
-                }
-            })
-            //fetchNewData(status)
-        } catch (error) {
-            console.log("Error done ok", error)
-        }
-
-    }
 
     // -------------------request dialog functions-------------------
     const [open, openchange] = useState(false);
@@ -533,12 +255,55 @@ function EmployeePanelCopy() {
         }
     };
 
+    // -----------------matured leads--------------------------
+
+    const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename) => {
+        setCompanyName(cname);
+        setCompanyEmail(cemail);
+        setCompanyInco(cindate);
+        setCompanyId(employeeId);
+        setCompanyNumber(cnum);
+        setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+        setNewBdeName(ename)
+        if (!isDeletedEmployeeCompany) {
+            console.log("formchal")
+            setFormOpen(true);
+        } else {
+            console.log("addleadfromchal")
+            setAddFormOpen(true)
+        }
+    }
+
+    const handleCloseFormOpen = () => {
+        setFormOpen(false);
+        setAddFormOpen(false);
+        setCompanyName("");
+        setCompanyEmail("");
+        setCompanyInco("");
+        setCompanyId("");
+        setCompanyNumber("");
+        setDeletedEmployeeStatus("")
+        setNewBdeName("")
+        debouncedRefetch();
+        if (activeTabId === "Interested" && interestedTabRef.current) {
+            interestedTabRef.current.click(); // Trigger the Interested tab click
+        } else if (activeTabId === "Matured" && maturedTabRef.current) {
+            maturedTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "All" && allTabRef.current) {
+            allTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
+            notInterestedTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
+            forwardedTabRef.current.click(); // Trigger the Matured tab click
+        }
+    }
+
     console.log("fetcgeheddata", fetchedData)
     console.log("dataStatus", dataStatus)
 
     return (
         <div>
-            {!showCallHistory ?
+            {!showCallHistory && !formOpen && !addFormOpen ?
                 (<div className="page-wrapper">
                     <div className="page-wrapper">
                         <div className="page-header rm_Filter m-0">
@@ -724,6 +489,7 @@ function EmployeePanelCopy() {
                                             handleShowCallHistory={handleShowCallHistory}
                                             fetchProjections={fetchProjections}
                                             projectionData={projectionData}
+                                            handleOpenFormOpen={handleOpenFormOpen}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
@@ -791,12 +557,37 @@ function EmployeePanelCopy() {
                             </div>
                         </div>
                     </div>
-                </div>) :
-                <CallHistory
-                    handleCloseHistory={hanleCloseCallHistory}
-                    clientNumber={clientNumber}
-                />
-
+                </div>) : showCallHistory ?
+                    (<CallHistory
+                        handleCloseHistory={hanleCloseCallHistory}
+                        clientNumber={clientNumber}
+                    />)
+                    : formOpen ? (
+                        <RedesignedForm
+                            isEmployee={true}
+                            companysName={companyName}
+                            companysEmail={companyEmail}
+                            companyNumber={companyNumber}
+                            setNowToFetch={refetch}
+                            companysInco={companyInco}
+                            employeeName={data.ename}
+                            employeeEmail={data.email}
+                            handleCloseFormOpen={handleCloseFormOpen}
+                        />
+                    ) : addFormOpen ? (
+                        <AddLeadForm
+                            isEmployee={true}
+                            employeeEmail={data.email}
+                            newBdeName={newBdeName}
+                            isDeletedEmployeeCompany={deletedEmployeeStatus}
+                            setFormOpen={setAddFormOpen}
+                            companysName={companyName}
+                            setNowToFetch={refetch}
+                            setDataStatus={setdataStatus}
+                            employeeName={data.ename}
+                            handleCloseFormOpen={handleCloseFormOpen}
+                        />
+                    ) : null
             }
 
             {/* --------------------------------backedrop------------------------- */}
@@ -806,161 +597,8 @@ function EmployeePanelCopy() {
                 onClick={handleCloseBackdrop}>
                 <CircularProgress color="inherit" />
             </Backdrop>)}
-            <div>
-                {/* //----------------leads filter drawer-------------------------------
-                <Drawer
-                    style={{ top: "50px" }}
-                    anchor="left"
-                    open={openFilterDrawer}
-                    onClose={functionCloseFilterDrawer}>
-                    <div style={{ width: "31em" }}>
-                        <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
-                            <h2 className="title m-0">
-                                Filters
-                            </h2>
-                            <div>
-                                <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
-                                    <IoIosClose style={{
-                                        height: "36px",
-                                        width: "32px",
-                                        color: "grey" 
-                                    }} />
-                                </button>
-                            </div>
-                        </div>
-                        <hr style={{ margin: "0px" }} />
-                        <div className="body-Drawer">
-                            <div className='container-xl mt-2 mb-2'>
-                                <div className='row'>
-                                    <div className='col-sm-12 mt-3'>
-                                        <div className='form-group'>
-                                            <label for="exampleFormControlInput1" class="form-label">Status</label>
-                                            <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedStatus}
-                                                onChange={(e) => {
-                                                    setSelectedStatus(e.target.value)
-                                                }}
-                                            >
-                                                <option selected value='Select Status'>Select Status</option>
-                                                <option value='Not Picked Up'>Not Picked Up</option>
-                                                <option value="Busy">Busy</option>
-                                                <option value="Junk">Junk</option>
-                                                <option value="Not Interested">Not Interested</option>
-                                                <option value="Untouched">Untouched</option>
-                                                <option value="Interested">Interested</option>
-                                                <option value="Matured">Matured</option>
-                                                <option value="FollowUp">Followup</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className='col-sm-12 mt-2'>
-                                        <div className='d-flex align-items-center justify-content-between'>
-                                            <div className='form-group w-50 mr-1'>
-                                                <label for="exampleFormControlInput1" class="form-label">State</label>
-                                                <select class="form-select form-select-md" aria-label="Default select example"
-                                                    value={selectedState}
-                                                    onChange={(e) => {
-                                                        setSelectedState(e.target.value)
-                                                        setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
-                                                        setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
-                                                        //handleSelectState(e.target.value)
-                                                    }}
-                                                >
-                                                    <option value=''>State</option>
-                                                    {stateList.length !== 0 && stateList.map((item) => (
-                                                        <option value={item.name}>{item.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className='form-group w-50'>
-                                                <label for="exampleFormControlInput1" class="form-label">City</label>
-                                                <select class="form-select form-select-md" aria-label="Default select example"
-                                                    value={selectedNewCity}
-                                                    onChange={(e) => {
-                                                        setSelectedNewCity(e.target.value)
-                                                    }}
-                                                >
-                                                    <option value="">City</option>
-                                                    {selectedCity.lenth !== 0 && selectedCity.map((item) => (
-                                                        <option value={item.name}>{item.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='col-sm-12 mt-2'>
-                                        <div className='form-group'>
-                                            <label for="assignon" class="form-label">Assign On</label>
-                                            <input type="date" class="form-control" id="assignon"
-                                                value={selectedAssignDate}
-                                                placeholder="dd-mm-yyyy"
-                                                defaultValue={null}
-                                                onChange={(e) => setSelectedAssignDate(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className='col-sm-12 mt-2'>
-                                        <label class="form-label">Incorporation Date</label>
-                                        <div className='row align-items-center justify-content-between'>
-                                            <div className='col form-group mr-1'>
-                                                <select class="form-select form-select-md" aria-label="Default select example"
-                                                    value={selectedYear}
-                                                    onChange={(e) => {
-                                                        setSelectedYear(e.target.value)
-                                                    }}
-                                                >
-                                                    <option value=''>Year</option>
-                                                    {years.length !== 0 && years.map((item) => (
-                                                        <option>{item}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className='col form-group mr-1'>
-                                                <select class="form-select form-select-md" aria-label="Default select example"
-                                                    value={selectedMonth}
-                                                    disabled={selectedYear === ""}
-                                                    onChange={(e) => {
-                                                        setSelectedMonth(e.target.value)
-                                                    }}
-                                                >
-                                                    <option value=''>Month</option>
-                                                    {months && months.map((item) => (
-                                                        <option value={item}>{item}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className='col form-group mr-1'>
-                                                <select class="form-select form-select-md" aria-label="Default select example"
-                                                    disabled={selectedMonth === ''}
-                                                    value={selectedDate}
-                                                    onChange={(e) => setSelectedDate(e.target.value)}
-                                                >
-                                                    <option value=''>Date</option>
-                                                    {daysInMonth.map((day) => (
-                                                        <option key={day} value={day}>{day}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="footer-Drawer d-flex justify-content-between align-items-center">
-                            <button className='filter-footer-btn btn-clear'
-                                onClick={handleClearFilter}
-                            >Clear Filter</button>
-                            <button className='filter-footer-btn btn-yellow'
-                                onClick={handleFilterData}
-                            >Apply Filter</button>
-                        </div>
-                    </div>
-                </Drawer> */}
-            </div>
 
-
-
-          
+            {/* ----------------new modal for interested leads------------------------------- */}
             <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                     <div className="modal-content">
@@ -980,8 +618,8 @@ function EmployeePanelCopy() {
                                             <div className="custom-Yes-No d-flex align-items-center int-opt">
                                                 <div className="yes-no">
                                                     <input type="radio" name="rGroup" value="1" id="r1" />
-                                                    <label className="yes-no-alias" for="r1" data-bs-toggle="collapse"  data-bs-target="#collapseOneQue" aria-expanded="true" aria-controls="collapseOneQue">
-                                                        <div className="yes-alias-i"><FaCheck/></div>
+                                                    <label className="yes-no-alias" for="r1" data-bs-toggle="collapse" data-bs-target="#collapseOneQue" aria-expanded="true" aria-controls="collapseOneQue">
+                                                        <div className="yes-alias-i"><FaCheck /></div>
                                                         <div className="ml-1">Yes</div>
                                                     </label>
                                                 </div>
@@ -1001,13 +639,13 @@ function EmployeePanelCopy() {
                                                 <div className="col-6">
                                                     <div class="form-group mt-2 mb-2">
                                                         <label for="date">Next Follow-Up Date ?</label>
-                                                        <input type="date" class="form-control mt-1" id="date" value=""/>
+                                                        <input type="date" class="form-control mt-1" id="date" value="" />
                                                     </div>
                                                 </div>
                                                 <div className="col-6">
                                                     <div class="form-group mt-2 mb-2">
                                                         <label for="text">Remark Box: </label>
-                                                        <input type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value=""/>
+                                                        <input type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value="" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1023,8 +661,8 @@ function EmployeePanelCopy() {
                                             <div className="custom-Yes-No d-flex align-items-center int-opt">
                                                 <div className="yes-no">
                                                     <input type="radio" name="rGroup" value="3" id="r3" />
-                                                    <label className="yes-no-alias" for="r3" data-bs-toggle="collapse"  data-bs-target="#collapsetwoQue" aria-expanded="true" aria-controls="collapsetwoQue">
-                                                        <div className="yes-alias-i"><FaCheck/></div>
+                                                    <label className="yes-no-alias" for="r3" data-bs-toggle="collapse" data-bs-target="#collapsetwoQue" aria-expanded="true" aria-controls="collapsetwoQue">
+                                                        <div className="yes-alias-i"><FaCheck /></div>
                                                         <div className="ml-1">Yes</div>
                                                     </label>
                                                 </div>
@@ -1044,13 +682,13 @@ function EmployeePanelCopy() {
                                                 <div className="col-6">
                                                     <div class="form-group mt-2 mb-2">
                                                         <label for="date">Next Follow-Up Date ?</label>
-                                                        <input type="date" class="form-control mt-1" id="date" value=""/>
+                                                        <input type="date" class="form-control mt-1" id="date" value="" />
                                                     </div>
                                                 </div>
                                                 <div className="col-6">
                                                     <div class="form-group mt-2 mb-2">
                                                         <label for="text">Remark Box: </label>
-                                                        <input type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value=""/>
+                                                        <input type="text" class="form-control mt-1" placeholder="Additional comments or notes" id="text" value="" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1058,10 +696,6 @@ function EmployeePanelCopy() {
                                     </div>
                                 </div>
                             </div>
-
-
-
-
                         </div>
                         <div class="modal-footer p-0 m-0">
                             <div className='d-flex w-100 m-0'>
