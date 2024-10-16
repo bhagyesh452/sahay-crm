@@ -9,6 +9,7 @@ import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import RemarksDialog from '../ExtraComponents/RemarksDialog';
+import ProjectionDialog from '../ExtraComponents/ProjectionDialog';
 
 
 function EmployeeMaturedLeads({
@@ -27,6 +28,9 @@ function EmployeeMaturedLeads({
     email,
     secretKey,
     handleShowCallHistory,
+    fetchProjections,
+    projectionData
+
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -79,6 +83,7 @@ function EmployeeMaturedLeads({
                                     <th>Assign Date</th>
                                     <th>Booking Date</th>
                                     <th>Booking Publish Date</th>
+                                    <th>Add Projections</th>
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Matured" ? (
@@ -201,6 +206,22 @@ function EmployeeMaturedLeads({
                                             <td>{formatDateNew(company["AssignDate"])}</td>
                                             <td>{formatDateNew(company.bookingDate)}</td>
                                             <td>{formatDateNew(company.bookingPublishDate)}</td>
+                                            <td>
+                                                <ProjectionDialog
+                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                    projectionCompanyName={company["Company Name"]}
+                                                    projectionData={projectionData}
+                                                    secretKey={secretKey}
+                                                    fetchProjections={fetchProjections}
+                                                    ename={company.ename}
+                                                    bdmAcceptStatus={company.bdmAcceptStatus}
+                                                    hasMaturedStatus={true}
+                                                    hasExistingProjection={projectionData?.some(
+                                                        (item) => item.companyName === company["Company Name"]
+                                                    )}
+
+                                                />
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
