@@ -17,7 +17,7 @@ function FloorManagerLeadsReport() {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
-    
+
     const [leadsReport, setLeadsReport] = useState([]);
     const [originalData, setOriginalData] = useState([]); // State to hold the original data
     const [floorManagerBranch, setFloorManagerBranch] = useState("");
@@ -313,17 +313,21 @@ function FloorManagerLeadsReport() {
                                         ) : (
                                             <>
                                                 {leadsReport.length > 0 ? (
-                                                    leadsReport.filter((emp) => emp.branchOffice === floorManagerBranch)
-                                                    .map((emp, index) => (
-                                                        <tr key={index}>
-                                                            <td>{index + 1}</td>
-                                                            <td>{emp.employeeName}</td>
-                                                            <td>{emp.branchOffice}</td>
-                                                            <td>{emp.interested}</td>
-                                                            <td>{emp.followUp}</td>
-                                                            <td>{emp.forwarded}</td>
-                                                        </tr>
-                                                    ))
+                                                    leadsReport.filter((emp) =>
+                                                        emp.branchOffice === floorManagerBranch &&
+                                                        emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
+                                                        emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
+                                                        emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami")
+                                                        .map((emp, index) => (
+                                                            <tr key={index}>
+                                                                <td>{index + 1}</td>
+                                                                <td>{emp.employeeName}</td>
+                                                                <td>{emp.branchOffice}</td>
+                                                                <td>{emp.interested}</td>
+                                                                <td>{emp.followUp}</td>
+                                                                <td>{emp.forwarded}</td>
+                                                            </tr>
+                                                        ))
                                                 ) : (
                                                     <tr>
                                                         <td colSpan="6">
@@ -338,9 +342,33 @@ function FloorManagerLeadsReport() {
                                     {leadsReport.length > 0 && <tfoot className="admin-dash-tbl-tfoot">
                                         <tr>
                                             <td colSpan={3}>Total</td>
-                                            <td>{leadsReport.reduce((sum, emp) => sum + (emp.interested || 0), 0)}</td>
-                                            <td>{leadsReport.reduce((sum, emp) => sum + (emp.followUp || 0), 0)}</td>
-                                            <td>{leadsReport.reduce((sum, emp) => sum + (emp.forwarded || 0), 0)}</td>
+                                            <td>
+                                                {leadsReport                                                
+                                                .filter((emp) =>
+                                                    emp.branchOffice === floorManagerBranch &&
+                                                    emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
+                                                    emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
+                                                    emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami")
+                                                .reduce((sum, emp) => sum + (emp.interested || 0), 0)}
+                                            </td>
+                                            <td>
+                                                {leadsReport
+                                                .filter((emp) =>
+                                                    emp.branchOffice === floorManagerBranch &&
+                                                    emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
+                                                    emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
+                                                    emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami")
+                                                .reduce((sum, emp) => sum + (emp.followUp || 0), 0)}
+                                            </td>
+                                            <td>
+                                                {leadsReport
+                                                .filter((emp) =>
+                                                    emp.branchOffice === floorManagerBranch &&
+                                                    emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
+                                                    emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
+                                                    emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami")
+                                                .reduce((sum, emp) => sum + (emp.forwarded || 0), 0)}
+                                            </td>
                                         </tr>
                                     </tfoot>}
                                 </table>

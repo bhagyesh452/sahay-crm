@@ -653,7 +653,7 @@ function FloorManagerForwardedData() {
                                                 <>
                                                     {filteredEmployeeStats.length > 0 ? (
                                                         filteredEmployeeStats
-                                                            .filter(([name, stats]) => stats.branchOffice === floorManagerBranch)    // Filter by branch office
+                                                            .filter(([name, stats]) => stats.branchOffice === floorManagerBranch && name !== "Vishnu Suthar" && name !== "Vandit Shah" && name !== "Khushi Gandhi" && name !== "Yashesh Gajjar" && name !== "Ravi Prajapati" && name !== "Yash Goswami")    // Filter by branch office
                                                             .map(([name, stats], index) => {
                                                                 const projectionData = employeeTotalAmount[name] || { forwardedProjection: 0, receivedProjection: 0 };
                                                                 const maturedData = maturedTotals[name] || { maturedCases: 0, generatedRevenue: 0 };
@@ -705,7 +705,7 @@ function FloorManagerForwardedData() {
 
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>

@@ -1557,6 +1557,7 @@ function FloorManagerThisMonthBookings() {
                                                                 (item) =>
                                                                     item.branchOffice === floorManagerBranch &&
                                                                     item.ename !== floorManagerName &&
+                                                                    item.ename !== "Vishnu Suthar" && item.ename !== "Vandit Shah" && item.ename !== "Khushi Gandhi" && item.ename !== "Yashesh Gajjar" && item.ename !== "Ravi Prajapati" && item.ename !== "Yash Goswami" &&
                                                                     item.targetDetails && item.targetDetails.length !== 0 &&
                                                                     item.targetDetails.find(
                                                                         (target) =>
