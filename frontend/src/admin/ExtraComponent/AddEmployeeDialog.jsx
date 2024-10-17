@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdDelete } from "react-icons/md";
 import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -337,7 +337,6 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                 let dataToSendUpdated = {
                     email: email,
                     number: number,
-                    employeeID: employeeID,
                     ename: `${firstName} ${lastName}`,
                     empFullName: `${firstName} ${middleName} ${lastName}`,
                     department: department,
@@ -861,7 +860,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                 </button>
             </Dialog>
         </div>
-    )
+    );
 }
 
 export default AddEmployeeDialog;

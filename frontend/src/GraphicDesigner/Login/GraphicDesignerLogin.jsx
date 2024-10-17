@@ -3,7 +3,7 @@ import axios from "axios";
 import logo from "../../static/mainLogo.png";
 import { useNavigate } from 'react-router-dom';
 
-function RelationshipManagerLogin() {
+function GraphicDesignerLogin() {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const navigate = useNavigate();
@@ -17,14 +17,14 @@ function RelationshipManagerLogin() {
         e.preventDefault();
 
         try {
-            const res = await axios.post(`${secretKey}/relationshipManager/login`, { email, password });
+            const res = await axios.post(`${secretKey}/graphicDesigner/login`, { email, password });
             // console.log("Response is :", res.data.data);
 
             if (res.data.token) {
                 setErrorMessage("");
                 // Store the JWT token in local storage or state for authentication
-                localStorage.setItem('relationshipManagerToken', res.data.token);
-                navigate(`/relationship-manager/dashboard/${res.data.data._id}`);
+                localStorage.setItem('graphicDesignerToken', res.data.token);
+                navigate(`/graphic-designer/dashboard/${res.data.data._id}`);
             }
         } catch (error) {
             // Display the error message from the backend
@@ -52,7 +52,7 @@ function RelationshipManagerLogin() {
                             <div className="col-sm-6 p-0">
                                 <div className="card card-md login-box">
                                     <div className="card-body">
-                                        <h2 className="h2 text-center mb-4">Relationship Manager Login</h2>
+                                        <h2 className="h2 text-center mb-4">Graphic Designer Login</h2>
                                         <form action="#" method="get" autocomplete="off" novalidate>
 
                                             <div className="mb-3">
@@ -130,4 +130,4 @@ function RelationshipManagerLogin() {
     );
 }
 
-export default RelationshipManagerLogin;
+export default GraphicDesignerLogin;

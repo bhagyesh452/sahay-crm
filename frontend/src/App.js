@@ -108,6 +108,10 @@ import RelationshipManagerLogin from "./RelationshipManager/Login/RelationshipMa
 import RelationshipManagerLayout from "./RelationshipManager/Components/RelationshipManagerLayout.jsx";
 import RelationshipManagerDashboard from "./RelationshipManager/Dashboard/RelationshipManagerDashboard.jsx";
 
+// Graphic Designer Imports
+import GraphicDesignerLogin from "./GraphicDesigner/Login/GraphicDesignerLogin.jsx";
+import GraphicDesignerLayout from "./GraphicDesigner/Components/GraphicDesignerLayout.jsx";
+import GraphicDesignerDashboard from "./GraphicDesigner/Dashboard/GraphicDesignerDashboard.jsx";
 
 // Customer Panel Imports
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
@@ -182,7 +186,7 @@ function App() {
           <Route path='/customer/login' element={<CustomerLogin />} />
           <Route path='/customer/dashboard/:email' element={<CustomerDashboard />} />
 
-          {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
+          {/* --------------------------------------------------floor-manager components---------------------------------------------------------- */}
           <Route path="/floormanager/login" element={<BDMLogin setBdmToken={setBdmToken} />} />
           {/* <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />}></Route>
           <Route path="/floormanager/leads/:userId" element={<BdmLeads />}></Route>
@@ -230,7 +234,7 @@ function App() {
             <Route path="/adminexecutive-profile-details/:userId" element={<AdminExecutiveProfile />} />
           </Route>
 
-          {/* -----------------------------------------datamanager components--------------------------------------- */}
+          {/* -----------------------------------------data analyst components--------------------------------------- */}
           <Route path="/dataanalyst/login" element={<DataManagerLogin setManagerToken={setManagerToken} />} />
           {/* <Route path='/dataanalyst/dashboard/:userId/' element={<DatamanagerDashboard />} />
           <Route path="/dataanalyst/manageleads" element={<ManageLeads />} ></Route>
@@ -305,10 +309,18 @@ function App() {
           <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} />
           <Route path="/recruiter/login" element={<RecruiterLogin setRecruiterToken={setRecruiterToken} />} />
 
+          {/**********************************************  relationship manager panel  ********************************************/}
           <Route path="/relationship-manager/login" element={<RelationshipManagerLogin />} />
           <Route element={<RelationshipManagerLayout />}>
             <Route path="/relationship-manager/dashboard/:userId" element={<RelationshipManagerDashboard />} />
             <Route path="relationship-manager-profile-details/:userId" element={<FloorManagerProfile />} />
+          </Route>
+
+          {/**********************************************  graphic designer panel  ********************************************/}
+          <Route path="/graphic-designer/login" element={<GraphicDesignerLogin />} />
+          <Route element={<GraphicDesignerLayout />}>
+            <Route path="/graphic-designer/dashboard/:userId" element={<GraphicDesignerDashboard />} />
+            <Route path="graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
         </Routes>

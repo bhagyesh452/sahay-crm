@@ -2643,12 +2643,12 @@ function EmployeeDashboard() {
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeTopSellingServices redesignedData={redesignedData} ename={data.ename} />
                   </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
+                  {/* <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeCallingReport />
                   </div>
                   <div className="col-sm-4 col-md-4 col-lg-4 mt-3">
                     <EmployeeForwardedReport moreEmpData={moreEmpData} />
-                  </div>
+                  </div> */}
                   {data.length !== 0 && (<div className="col-sm-4 col-md-4 col-lg-4  mt-3">
                     <EmployeeCallLogs employeeData={data} />
                   </div>)}

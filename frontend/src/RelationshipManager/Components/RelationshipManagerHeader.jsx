@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import '../../dist/css/tabler.min.css?1684106062';
 import "../../dist/css/tabler-flags.min.css?1684106062";
 import "../../dist/css/tabler-payments.min.css?1684106062";
@@ -7,22 +7,18 @@ import "../../dist/css/demo.min.css?1684106062";
 import Avatar from '@mui/material/Avatar';
 import MaleEmployee from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
-import axios from 'axios';
 import myImage from '../../static/mainLogo.png';
-import { useParams } from "react-router-dom";
 import RelationshipManagerNotification from "./RelationshipManagerNotification";
 
 function RelationshipManagerHeader({ name, id, designation, empProfile, gender }) {
 
-    const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const userId = useParams();
-    const [data, setData] = useState([])
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-    return (
-        <div>
+  return (
+    <div>
       <header className="navbar navbar-expand-md d-print-none">
         <div className="container-xl">
-          
+
           <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <a href=".">
               <img
@@ -55,7 +51,7 @@ function RelationshipManagerHeader({ name, id, designation, empProfile, gender }
                   </div>
                 </div>
               </button>
-              
+
               <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <a href="#" className="dropdown-item">
                   Status
@@ -75,17 +71,17 @@ function RelationshipManagerHeader({ name, id, designation, empProfile, gender }
                 </a>
               </div>
             </div>
-            
+
             <RelationshipManagerNotification />
 
             <div style={{ display: "flex", alignItems: "center" }} className="item">
             </div>
-            
+
           </div>
         </div>
       </header>
     </div>
-    );
+  );
 }
 
 export default RelationshipManagerHeader;

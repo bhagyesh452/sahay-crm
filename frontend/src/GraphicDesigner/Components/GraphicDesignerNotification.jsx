@@ -11,7 +11,7 @@ import Logout from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function RelationshipManagerNotification() {
+function GraphicDesignerNotification() {
 
     const { userId } = useParams();
     const navigate = useNavigate();
@@ -28,8 +28,8 @@ function RelationshipManagerNotification() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("relationshipManagerToken");
-        navigate('/relationship-manager/login');
+        localStorage.removeItem("graphicDesignerToken");
+        navigate('/graphic-designer/login');
     };
 
     return (
@@ -86,7 +86,7 @@ function RelationshipManagerNotification() {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
                 <MenuItem onClick={() => {
-                    navigate(`/relationship-manager-profile-details/${userId}`);
+                    navigate(`/graphic-designer-profile-details/${userId}`);
                     handleClose();
                 }}>
                     <Avatar /> Profile
@@ -111,4 +111,4 @@ function RelationshipManagerNotification() {
     );
 }
 
-export default RelationshipManagerNotification;
+export default GraphicDesignerNotification;
