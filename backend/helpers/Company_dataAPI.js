@@ -2567,4 +2567,43 @@ router.get("/bdmMaturedCases", async (req, res) => {
   }
 });
 
+// POST route to add/update interestedInformation
+router.post('/company/:companyName/interested-info', async (req, res) => {
+  const companyName = req.params.companyName; // Extract company name from params
+  const { newInterestedInfo, status } = req.body; // Data from the request body
+  console.log(newInterestedInfo, status)
+  
+  try {
+    // Find the company and push new interestedInformation if it already exists
+    const updatedCompany = await CompanyModel.findOneAndUpdate(
+      { "Company Name": companyName }, // Query by company name
+      { 
+        $set: {
+          Status: status // Set company status
+        },
+        $push: { 
+          interestedInformation: newInterestedInfo // Push new interested info to the array
+        } 
+      },
+      { 
+        new: true, // Return the updated document
+        upsert: true // Create a new document if it doesn't exist
+      }
+    );
+
+    if (updatedCompany) {
+      res.status(200).json({
+        message: 'Interested information added/updated successfully',
+        updatedCompany
+      });
+    } else {
+      res.status(404).json({ message: 'Company not found' });
+    }
+  } catch (error) {
+    console.error('Error updating interested information:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 module.exports = router;

@@ -26,8 +26,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmployeeForwardedLeads from "./EmployeeTabPanels/EmployeeForwardedLeads.jsx";
 import EmployeeNotInterestedLeads from "./EmployeeTabPanels/EmployeeNotInterestedLeads.jsx";
-import { CgClose } from "react-icons/cg";
-import { FaCheck } from "react-icons/fa6";
+import { jwtDecode } from "jwt-decode";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -68,7 +67,51 @@ function EmployeePanelCopy() {
     const [companyId, setCompanyId] = useState("");
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
+    // Auto logout functionality :
+    useEffect(() => {
+        // Function to check token expiry and initiate logout if expired
+        const checkTokenExpiry = () => {
+            const token = localStorage.getItem("newtoken");
+            if (token) {
+                try {
+                    const decoded = jwtDecode(token);
+                    const currentTime = Date.now() / 1000; // Get current time in seconds
+                    if (decoded.exp < currentTime) {
+                        // console.log("Decode Expirary :", decoded.exp);
+                        // Token expired, perform logout actions
+                        // console.log("Logout called");
+                        handleLogout();
+                    } else {
+                        // Token not expired, continue session
+                        const timeToExpire = decoded.exp - currentTime;
 
+                    }
+                } catch (error) {
+                    console.error("Error decoding token:", error);
+                    // console.log("Logout called");
+                    handleLogout(); // Handle invalid token or decoding errors
+                }
+            }
+        };
+
+        // Initial check on component mount
+        checkTokenExpiry();
+
+        // Periodically check token expiry (e.g., every minute)
+        const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
+
+        return () => clearInterval(interval); // Cleanup interval on unmount
+    }, []);
+
+    const handleLogout = () => {
+        // Clear local storage and redirect to login page
+        localStorage.removeItem("newtoken");
+        localStorage.removeItem("userId");
+        // localStorage.removeItem("designation");
+        // localStorage.removeItem("loginTime");
+        // localStorage.removeItem("loginDate");
+        window.location.replace("/"); // Redirect to login page
+    };
 
 
     function navigate(url) {
@@ -451,7 +494,7 @@ function EmployeePanelCopy() {
                                 </div>
                                 <div className="tab-content card-body">
                                     <div className={`tab-pane ${dataStatus === "All" ? "active" : ""}`} id="k">
-                                        {activeTabId === "All" && (<EmployeeGeneralLeads
+                                        {activeTabId === "All" && dataStatus === "All" && (<EmployeeGeneralLeads
                                             generalData={fetchedData}
                                             isLoading={isLoading}
                                             refetch={refetch}
@@ -471,7 +514,7 @@ function EmployeePanelCopy() {
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
-                                        {activeTabId === "Interested" && (<EmployeeInterestedLeads
+                                        {activeTabId === "Interested" && dataStatus === "Interested" && (<EmployeeInterestedLeads
                                             interestedData={fetchedData}
                                             isLoading={isLoading}
                                             refetch={refetch}

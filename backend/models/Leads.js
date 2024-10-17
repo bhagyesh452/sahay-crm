@@ -31,10 +31,10 @@ const informationSchema = new mongoose.Schema({
   // Option 3: Interested in one of our services
   interestedInServices: {
     servicesPitched: {
-      type: [String], // Checkbox list for services pitched
+      type: Array, // Checkbox list for services pitched
     },
     servicesInterestedIn: {
-      type: [String], // Checkbox list for services client is interested in
+      type: Array, // Checkbox list for services client is interested in
     },
     offeredPrice: {
       type: String, // Text field for offered price
@@ -49,7 +49,7 @@ const informationSchema = new mongoose.Schema({
   // Option 4: Interested, but doesn't need the service right now
   interestedButNotNow: {
     servicesPitched: {
-      type: [String], // Checkbox list for services pitched
+      type: Array, // Checkbox list for services pitched
     },
     servicesInterestedIn: {
       type: [String], // Checkbox list for services client is interested in
