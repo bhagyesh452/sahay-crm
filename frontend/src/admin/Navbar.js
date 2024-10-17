@@ -76,7 +76,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <li
+                {(adminName === "Krunal Pithadia" || adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <li
                   className={
                     location.pathname === "/managing-director/leads"
                       ? "nav-item active"
