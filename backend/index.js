@@ -71,6 +71,9 @@ const ServicesDraftAPI = require("./helpers/ServicesDraftApi.js");
 const ServicesAPI = require("./helpers/ServicesApi.js");
 const ExpenseReportAPI = require("./helpers/ExpenseReportApi.js");
 const RalationshipManagerAPI = require("./helpers/RelationshipManagerApi.js");
+const GraphicDesignerAPI = require("./helpers/GraphicDesignerApi.js");
+const FinanceAnalystAPI = require("./helpers/FinanceAnalystApi.js");
+const ContentWriterAPI = require("./helpers/ContentWriterApi.js");
 const TeamsAPI = require("./helpers/TeamsAPI.js");
 const userModel = require("./models/CompanyBusinessInput.js");
 const processAttachments = require("./helpers/sendMail3.js");
@@ -135,6 +138,9 @@ app.use('/api/serviceDraft', ServicesDraftAPI);
 app.use('/api/services', ServicesAPI);
 app.use('/api/expense', ExpenseReportAPI);
 app.use('/api/relationshipManager', RalationshipManagerAPI);
+app.use('/api/graphicDesigner', GraphicDesignerAPI);
+app.use('/api/financeAnalyst', FinanceAnalystAPI);
+app.use('/api/contentWriter', ContentWriterAPI);
 app.use('/api/recruiter',(req,res,next)=>{
   req.io = socketIO;
   next();
@@ -557,6 +563,7 @@ app.post('/api/fetch-api-data', async (req, res) => {
 //     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
+
 app.put("/api/online-status/:id/disconnect", async (req, res) => {
   const { id } = req.params;
   const date = new Date().toString();
@@ -572,6 +579,7 @@ app.put("/api/online-status/:id/disconnect", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 //  ******************************************************************* Login Details ***************************************************************************
 app.post("/api/loginDetails", (req, res) => {
   const { ename, date, time, address } = req.body;

@@ -14,7 +14,7 @@ router.post("/login", async (req, res) => {
 
         // Check if the use exists or not
         if (!user) {
-            return res.status(400).json({ message: "Invaild email or password" });
+            return res.status(400).json({ message: "User not found" });
         }
 
         // Check if email and password are correct
@@ -22,8 +22,8 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Invaild email or password" });
         }
 
-        // Check if the user's designation is "Relationship Manager"
-        if (user.newDesignation !== "Relationship Manager") {
+        // Check if the user's designation is "Content Writer"
+        if (user.newDesignation !== "Content Writer") {
             return res.status(403).json({ message: "You are not authorized to access this resource" });
         }
 

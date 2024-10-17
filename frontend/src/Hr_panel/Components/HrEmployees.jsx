@@ -378,6 +378,8 @@ function HrEmployees() {
             'success'
           );
           fetchDeletedEmployee();
+          refetchActive();
+          refetchDeleted();
         } catch (error) {
           console.log('Error deleting employee', error);
           Swal.fire({
@@ -409,8 +411,6 @@ function HrEmployees() {
   useEffect(() => {
     fetchPersonalInfo();
   }, []);
-
-
 
   return (
     <div>

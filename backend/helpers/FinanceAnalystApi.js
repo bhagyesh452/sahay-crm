@@ -22,8 +22,8 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Invaild email or password" });
         }
 
-        // Check if the user's designation is "Relationship Manager"
-        if (user.newDesignation !== "Relationship Manager") {
+        // Check if the user's designation is "Finance Analyst"
+        if (user.newDesignation !== "Finance Analyst") {
             return res.status(403).json({ message: "You are not authorized to access this resource" });
         }
 

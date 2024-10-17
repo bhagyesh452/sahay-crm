@@ -212,6 +212,21 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                 "Mr. Vishal Gohel"
             ],
         },
+        Operation: {
+            designations: [
+                "Finance Analyst",
+                "Content Writer",
+                "Relationship Manager",
+                "Graphic Designer",
+                "Research Analyst",
+            ],
+            managers: [
+                "Miss. Subhi Banthiya",
+                "Mr. Rahul Pancholi",
+                "Mr. Ronak Kumar",
+                "Mr. Nimesh Parekh"
+            ],
+        },
         Others: {
             designations: ["Receptionist"],
             managers: ["Miss. Hiral Panchal"],
@@ -604,10 +619,12 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     designation: designation, // Adjust this mapping as needed
                     newDesignation: row["Designation"],
                     branchOffice: row["Branch Office"],
-                    manager: row["Manager"],
+                    reportingManager: row["Manager"],
                     password: generatedPassword,
                     jdate: parseExcelDate(row["Joining Date"]), // Convert to Date object
                     AddedOn: new Date().toLocaleDateString(),
+                    salary:row["Salary"],
+                    gender:row["Gender"],
                     targetDetails: [], // You can add default target details here if needed
                     bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager",
                 };
@@ -623,7 +640,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                 const newDesignation = employee.newDesignation;
                 const firstName = employee.firstName;
                 const lastName = employee.lastName;
-                const manager = employee.manager;
+                const manager = employee.reportingManager;
 
                 if (departmentValidation[department]) {
                     const validDesignations = departmentValidation[department].designations;
