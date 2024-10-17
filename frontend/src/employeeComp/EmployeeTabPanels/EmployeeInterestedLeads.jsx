@@ -74,8 +74,8 @@ function EmployeeInterestedLeads({
                         <table className="table table-vcenter table-nowrap">
                             <thead>
                                 <tr className="tr-sticky">
-                                    <th>Sr. No</th>
-                                    <th>Company Name</th>
+                                    <th className="rm-sticky-left-1">Sr. No</th>
+                                    <th className="rm-sticky-left-2">Company Name</th>
                                     <th>Company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
@@ -109,10 +109,7 @@ function EmployeeInterestedLeads({
                             ) : (
                                 <tbody>
                                     {interestedData.map((company, index) => (
-                                        <tr
-                                            key={index}
-                                            style={{ border: "1px solid #ddd" }}
-                                        >
+                                        <tr key={index}      >
                                             <td className="td-sticky">{startIndex + index + 1}</td>
                                             <td className="td-sticky1">{company["Company Name"]}</td>
                                             <td>

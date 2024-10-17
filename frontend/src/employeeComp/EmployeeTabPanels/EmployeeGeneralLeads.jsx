@@ -64,8 +64,8 @@ function EmployeeGeneralLeads({
                         <table className="table table-vcenter table-nowrap">
                             <thead>
                                 <tr className="tr-sticky">
-                                    <th>Sr. No</th>
-                                    <th>Compnay Name</th>
+                                    <th className="rm-sticky-left-1">Sr. No</th>
+                                    <th className="rm-sticky-left-2">Compnay Name</th>
                                     <th>Compnay No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
@@ -100,8 +100,8 @@ function EmployeeGeneralLeads({
                                             key={index}
                                             style={{ border: "1px solid #ddd" }}
                                         >
-                                            <td className="td-sticky">{startIndex + index + 1}</td>
-                                            <td className="td-sticky1">{company["Company Name"]}</td>
+                                            <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
+                                            <td className="rm-sticky-left-2">{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
