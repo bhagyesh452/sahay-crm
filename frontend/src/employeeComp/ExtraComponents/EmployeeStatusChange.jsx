@@ -32,18 +32,6 @@ const EmployeeStatusChange = ({
   const [selectedStatus, setSelectedStatus] = useState(""); // Store the selected status for the popup confirmation
 
 
-
-  // const handleStatusChange = async (newStatus, statusClass) => {
-  //   if (newStatus === "FollowUp" || newStatus === "Interested") {
-  //     // Show the dialog before changing status
-  //     setSelectedStatus(newStatus);
-  //     setShowDialog(true);  // Show the popup
-  //     return;
-  //   }
-
-  //   // If status is not FollowUp/Interested, proceed with status change
-  //   changeStatus(newStatus, statusClass);
-  // };
   const handleStatusChange = async (
     newStatus,
     statusClass,
