@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
-import { IconChevronLeft, IconEye } from "@tabler/icons-react";
-import { IconChevronRight } from "@tabler/icons-react";
+import { GoArrowLeft } from "react-icons/go";
+import { GoArrowRight } from "react-icons/go";
 import Nodata from '../../components/Nodata';
 import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import RedesignedForm from '../../admin/RedesignedForm';
@@ -63,15 +63,15 @@ function EmployeeMaturedLeads({
 
 
     return (
-        <div className="RM-my-booking-lists">
+        <div className="sales-panels-main">
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap">
+                        <table className="table table-vcenter table-nowrap" style={{width:"2000px"}}>
                             <thead>
                                 <tr className="tr-sticky">
-                                    <th>Sr. No</th>
-                                    <th>Compnay Name</th>
+                                    <th className="rm-sticky-left-1">Sr. No</th>
+                                    <th className="rm-sticky-left-2">Compnay Name</th>
                                     <th>Compnay No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
@@ -83,13 +83,13 @@ function EmployeeMaturedLeads({
                                     <th>Assign Date</th>
                                     <th>Booking Date</th>
                                     <th>Booking Publish Date</th>
-                                    <th>Add Projections</th>
+                                    <th className="rm-sticky-action">Add Projections</th>
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Matured" ? (
                                 <tbody>
                                     <tr>
-                                        <td colSpan="11" >
+                                        <td colSpan="14" >
                                             <div className="LoaderTDSatyle w-100" >
                                                 <ClipLoader
                                                     color="lightgrey"
@@ -105,12 +105,9 @@ function EmployeeMaturedLeads({
                             ) : (
                                 <tbody>
                                     {maturedLeads.map((company, index) => (
-                                        <tr
-                                            key={index}
-                                            style={{ border: "1px solid #ddd" }}
-                                        >
-                                            <td className="td-sticky">{startIndex + index + 1}</td>
-                                            <td className="td-sticky1">{company["Company Name"]}</td>
+                                        <tr   key={index} >
+                                            <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
+                                            <td className="rm-sticky-left-2">{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
@@ -161,15 +158,7 @@ function EmployeeMaturedLeads({
                                                 />
                                             </td>
                                             <td>
-                                                <div
-                                                    key={company._id}
-                                                    style={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "space-between",
-                                                        width: "100px",
-                                                    }}
-                                                >
+                                                <div  key={company._id}  className='d-flex align-items-center justify-content-between w-100'>
                                                     <p
                                                         className="rematkText text-wrap m-0"
                                                         title={company.Remarks}
@@ -178,21 +167,23 @@ function EmployeeMaturedLeads({
                                                             ? "No Remarks"
                                                             : company.Remarks}
                                                     </p>
-                                                    <RemarksDialog
-                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                        currentCompanyName={company["Company Name"]}
-                                                        //remarksHistory={remarksHistory} // pass your remarks history data
-                                                        companyId={company._id}
-                                                        remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                        isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                        bdmAcceptStatus={company.bdmAcceptStatus}
-                                                        companyStatus={company.Status}
-                                                        secretKey={secretKey}
-                                                        //fetchRemarksHistory={fetchRemarksHistory}
-                                                        bdeName={company.ename}
-                                                        refetch={refetch}
-                                                        mainRemarks={company.Remarks}
-                                                    />
+                                                    <div>
+                                                        <RemarksDialog
+                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                            currentCompanyName={company["Company Name"]}
+                                                            //remarksHistory={remarksHistory} // pass your remarks history data
+                                                            companyId={company._id}
+                                                            remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                            isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                            bdmAcceptStatus={company.bdmAcceptStatus}
+                                                            companyStatus={company.Status}
+                                                            secretKey={secretKey}
+                                                            //fetchRemarksHistory={fetchRemarksHistory}
+                                                            bdeName={company.ename}
+                                                            refetch={refetch}
+                                                            mainRemarks={company.Remarks}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>
@@ -206,7 +197,7 @@ function EmployeeMaturedLeads({
                                             <td>{formatDateNew(company["AssignDate"])}</td>
                                             <td>{formatDateNew(company.bookingDate)}</td>
                                             <td>{formatDateNew(company.bookingPublishDate)}</td>
-                                            <td>
+                                            <td className="rm-sticky-action">
                                                 <ProjectionDialog
                                                     key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                                                     projectionCompanyName={company["Company Name"]}
@@ -229,7 +220,7 @@ function EmployeeMaturedLeads({
                             {maturedLeads && maturedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
-                                        <td colSpan="11" className="p-2 particular">
+                                        <td colSpan="14" className="p-2 particular">
                                             <Nodata />
                                         </td>
                                     </tr>
@@ -239,16 +230,20 @@ function EmployeeMaturedLeads({
 
                     </div>
                     {maturedLeads && maturedLeads.length !== 0 && (
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} className="pagination">
-                            <button onClick={prevPage} disabled={currentPage === 0}>
-                                <IconChevronLeft />
-                            </button>
-                            <span>
+                        <div className="pagination d-flex align-items-center justify-content-center w-100">
+                            <div>
+                                <button className='btn-pagination' onClick={prevPage} disabled={currentPage === 0}>
+                                    <GoArrowLeft />
+                                </button>
+                            </div>
+                            <div className='ml-3 mr-3'>
                                 Page {currentPage + 1} of {totalPages}
-                            </span>
-                            <button onClick={nextPage} disabled={currentPage >= totalPages - 1}>
-                                <IconChevronRight />
-                            </button>
+                            </div>
+                            <div>
+                                <button className='btn-pagination' onClick={nextPage} disabled={currentPage >= totalPages - 1}>
+                                    <GoArrowRight />
+                                </button>
+                            </div>
                         </div>
                     )}
                 </>)}

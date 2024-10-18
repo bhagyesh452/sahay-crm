@@ -513,10 +513,6 @@ tr:hover .td-sticky1 {
   z-index: 98;
 }
 
-.pagination button {
-  padding: 0px 0px 5px 0px;
-
-}
 
 pre {
   background: none !important;
@@ -2707,7 +2703,7 @@ td input {
   background: #43474c !important;
   color: #e4e4e4;
   border: none !important;
-  padding: 6px 8px 6px 8px !important;
+  padding: 6px 8px 6px 8px;
 }
 
 .table-style-3 table tbody tr td {

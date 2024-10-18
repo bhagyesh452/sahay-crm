@@ -133,6 +133,7 @@ import MaterialUIPickers from "./components/MaterialUIPickers.js";
 //import CompanyDetails from "./Processing/CompanyDetails.jsx";
 import "../src/assets/v2_style.css"
 import "../src/assets/hover.css"
+import "../src/assets/sales_new_style.css"
 import AdminLayout from "./admin/AdminLayout.jsx";
 import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
 import EmployeePanelCopy from "./employeeComp/EmployeePanelCopy.jsx";
