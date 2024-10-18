@@ -1134,6 +1134,10 @@ function AdminExecutiveHoldPanel({ searchText, totalFilteredDataPortal,showFilte
                           serviceName={obj.serviceName}
                           refreshData={refreshData}
                           historyRemarks={obj.Remarks}
+                          ename={employeeData.ename}
+                          designation={employeeData.designation}
+                          bdeName={obj.bdeName}
+                          bdmName={obj.bdmName}
                         />
                       </td>
                       <td>

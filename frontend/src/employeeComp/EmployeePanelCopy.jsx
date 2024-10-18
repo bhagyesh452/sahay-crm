@@ -15,7 +15,6 @@ import { IoFilterOutline } from "react-icons/io5";
 import CallHistory from "./CallHistory.jsx";
 import EmployeeAddLeadDialog from "./ExtraComponents/EmployeeAddLeadDialog.jsx";
 import EmployeeRequestDataDialog from "./ExtraComponents/EmployeeRequestDataDialog.jsx";
-import RemarksDialog from "./ExtraComponents/RemarksDialog.jsx";
 import { MdOutlinePostAdd } from "react-icons/md";
 import EmployeeGeneralLeads from "./EmployeeTabPanels/EmployeeGeneralLeads.jsx";
 import { useQuery } from '@tanstack/react-query';
@@ -138,6 +137,8 @@ function EmployeePanelCopy() {
             console.error("Error fetching data:", error.message);
         }
     };
+
+    console.log("userData" , data)
 
     useEffect(() => {
         fetchData();
@@ -512,6 +513,7 @@ function EmployeePanelCopy() {
                                             email={data.email}
                                             secretKey={secretKey}
                                             handleShowCallHistory={handleShowCallHistory}
+                                            designation={data.designation}
 
                                         />)}
                                     </div>
@@ -535,6 +537,8 @@ function EmployeePanelCopy() {
                                             fetchProjections={fetchProjections}
                                             projectionData={projectionData}
                                             handleOpenFormOpen={handleOpenFormOpen}
+                                            designation={data.designation}
+
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
@@ -556,6 +560,8 @@ function EmployeePanelCopy() {
                                             handleShowCallHistory={handleShowCallHistory}
                                             fetchProjections={fetchProjections}
                                             projectionData={projectionData}
+                                            designation={data.designation}
+
 
                                         />)}
                                     </div>
@@ -576,6 +582,8 @@ function EmployeePanelCopy() {
                                             email={data.email}
                                             setdataStatus={setdataStatus}
                                             handleShowCallHistory={handleShowCallHistory}
+                                            designation={data.designation}
+
 
                                         />)}
                                     </div>
@@ -596,6 +604,8 @@ function EmployeePanelCopy() {
                                             email={data.email}
                                             setdataStatus={setdataStatus}
                                             handleShowCallHistory={handleShowCallHistory}
+                                            designation={data.designation}
+
                                         />)}
                                     </div>
                                 </div>

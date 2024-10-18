@@ -34,7 +34,8 @@ function EmployeeInterestedLeads({
     handleShowCallHistory,
     fetchProjections,
     projectionData,
-    handleOpenFormOpen
+    handleOpenFormOpen,
+    designation
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -196,6 +197,7 @@ function EmployeeInterestedLeads({
                                                         bdeName={company.ename}
                                                         refetch={refetch}
                                                         mainRemarks={company.Remarks}
+                                                        designation={designation}
                                                     />
                                                 </div>
                                             </td>

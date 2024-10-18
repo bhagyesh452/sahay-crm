@@ -108,6 +108,7 @@ router.post("/update-status/:id", async (req, res) => {
     // Update the status field in the CompanyModel
     await CompanyModel.findByIdAndUpdate(id, {
       Status: newStatus,
+      lastActionDate: new Date()
     });
 
     // Define an array of statuses for which the lead history should be deleted
@@ -1889,18 +1890,26 @@ router.get("/employees-new/:ename", async (req, res) => {
     } else if (dataStatus === "All") {
       query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
     } else if (dataStatus === "Matured") {
-      query = { ...query, bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept" , "NotForwarded"] }, Status: { $in: ["Matured"] } };
+      query = { ...query, bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept", "NotForwarded"] }, Status: { $in: ["Matured"] } };
     } else {
       query = { ...query, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }, Status: { $in: ["Busy", "Not Picked Up", "Untouched"] } };
     }
 
     // Fetch paginated data
-    const data = await CompanyModel.find(query)
-      .sort({ AssignDate: -1 }) // Sort by AssignDate in descending order
-      .limit(limit) // Implement pagination
-      .skip(skip) // Implement pagination
-      .lean();
-
+    let data;
+    if (dataStatus === "All") {
+      data = await CompanyModel.find(query)
+        .sort({ AssignDate: -1 }) // Sort by AssignDate in descending order
+        .limit(limit) // Implement pagination
+        .skip(skip) // Implement pagination
+        .lean();
+    } else {
+      data = await CompanyModel.find(query)
+        .sort({ lastActionDate: -1 }) // Sort by AssignDate in descending order
+        .limit(limit) // Implement pagination
+        .skip(skip) // Implement pagination
+        .lean();
+    }
     // Calculate the total number of documents matching the query
     const totalDocument = await CompanyModel.countDocuments(query);
 
@@ -1909,7 +1918,7 @@ router.get("/employees-new/:ename", async (req, res) => {
 
     // Fetch redesigned data only for the relevant companies
     const companyIds = data.map(item => item._id);
-   
+
     const redesignedData = await RedesignedLeadformModel.find({
       company: { $in: companyIds }
     }).select("company bookingDate bookingPublishDate").lean(); // Only select necessary fields
@@ -1921,7 +1930,7 @@ router.get("/employees-new/:ename", async (req, res) => {
         bookingPublishDate: item.bookingPublishDate
       };
       return acc;
-    }, {}); 
+    }, {});
 
     // Update data with booking information
     const updatedData = data.map(item => ({
@@ -2572,20 +2581,21 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
   const companyName = req.params.companyName; // Extract company name from params
   const { newInterestedInfo, status } = req.body; // Data from the request body
   console.log(newInterestedInfo, status)
-  
+
   try {
     // Find the company and push new interestedInformation if it already exists
     const updatedCompany = await CompanyModel.findOneAndUpdate(
       { "Company Name": companyName }, // Query by company name
-      { 
+      {
         $set: {
-          Status: status // Set company status
+          Status: status, // Set company status
+          lastActionDate: new Date()
         },
-        $push: { 
+        $push: {
           interestedInformation: newInterestedInfo // Push new interested info to the array
-        } 
+        }
       },
-      { 
+      {
         new: true, // Return the updated document
         upsert: true // Create a new document if it doesn't exist
       }

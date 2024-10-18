@@ -16,7 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import { FaPencilAlt } from "react-icons/fa";
 
-const DscRemarks = ({
+const RMRemarksDialog = ({
   companyName,
   serviceName,
   historyRemarks,
@@ -52,7 +52,7 @@ const DscRemarks = ({
     try {
       if (changeRemarks) {
         const response = await axios.post(
-          `${secretKey}/rm-services/post-remarks-for-adminExecutive`,
+          `${secretKey}/rm-services/post-remarks-for-rmofcertification`,
           {
             companyName,
             serviceName,
@@ -70,11 +70,6 @@ const DscRemarks = ({
         if (response.status === 200) {
           refreshData();
           functionCloseRemarksPopup();
-          // Swal.fire(
-          //     'Remarks Added!',
-          //     'The remarks have been successfully added.',
-          //     'success'
-          // );
         }
       } else {
         setError("Remarks Cannot Be Empty!");
@@ -87,7 +82,7 @@ const DscRemarks = ({
   const handleDeleteRemarks = async (remarks_id) => {
     try {
       const response = await axios.delete(
-        `${secretKey}/rm-services/delete-remark-adminexecutive`,
+        `${secretKey}/rm-services/delete-remark-rmcert`,
         {
           data: {
             remarks_id,
@@ -225,4 +220,4 @@ const DscRemarks = ({
   );
 };
 
-export default DscRemarks;
+export default RMRemarksDialog;

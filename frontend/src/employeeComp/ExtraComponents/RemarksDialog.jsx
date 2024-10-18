@@ -297,7 +297,8 @@ const RemarksDialog = ({
   fetchNewData,
   bdmName,
   mainRemarks,
-  refetch
+  refetch,
+  designation
 }) => {
   const [open, setOpen] = useState(false);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
@@ -338,12 +339,15 @@ const RemarksDialog = ({
     try {
       const response = await axios.post(`${secretKey}/remarks/update-remarks/${companyId}`, {
         Remarks,
-      });
-      await axios.post(`${secretKey}/remarks/remarks-history/${companyId}`, {
-        Remarks,
         bdeName,
-        currentCompanyName
+        currentCompanyName,
+        designation
       });
+      // await axios.post(`${secretKey}/remarks/remarks-history/${companyId}`, {
+      //   Remarks,
+      //   bdeName,
+      //   currentCompanyName
+      // });
 
       if (response.status === 200) {
         Swal.fire("Remarks updated!");
