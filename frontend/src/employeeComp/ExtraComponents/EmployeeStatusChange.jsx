@@ -10,6 +10,7 @@ import { CgClose } from "react-icons/cg";
 import { FaCheck } from "react-icons/fa6";
 import { options } from "../../components/Options.js";
 import Select from "react-select";
+import EmployeeInterestedInformationDialog from "./EmployeeInterestedInformationDialog.jsx";
 
 const EmployeeStatusChange = ({
   companyName,
@@ -31,18 +32,6 @@ const EmployeeStatusChange = ({
   const [selectedStatus, setSelectedStatus] = useState(""); // Store the selected status for the popup confirmation
 
 
-
-  // const handleStatusChange = async (newStatus, statusClass) => {
-  //   if (newStatus === "FollowUp" || newStatus === "Interested") {
-  //     // Show the dialog before changing status
-  //     setSelectedStatus(newStatus);
-  //     setShowDialog(true);  // Show the popup
-  //     return;
-  //   }
-
-  //   // If status is not FollowUp/Interested, proceed with status change
-  //   changeStatus(newStatus, statusClass);
-  // };
   const handleStatusChange = async (
     newStatus,
     statusClass,
@@ -132,7 +121,7 @@ const EmployeeStatusChange = ({
   };
 
   const getStatusClass = (mainStatus, subStatus) => {
-   
+
     switch (mainStatus) {
       case "All":
         switch (subStatus) {
@@ -206,218 +195,215 @@ const EmployeeStatusChange = ({
   // ----------------------------------functions for modal--------------------------------
 
   const [selectedValues, setSelectedValues] = useState([]);
-  const [visibleQuestions, setVisibleQuestions] = useState({}); // Track which question's options are visible
+  // const [visibleQuestions, setVisibleQuestions] = useState({}); // Track which question's options are visible
 
-  // Function to handle Yes click (show options)
-  const handleYesClick = (questionId) => {
-    //console.log("questinId" , questionId)
-    setVisibleQuestions((prev) => ({
-      ...prev,
-      [questionId]: true, // Show the options for this question
-    }));
-  };
+  // // Function to handle Yes click (show options)
+  // const handleYesClick = (questionId) => {
+  //   setVisibleQuestions({
+  //     [questionId]: true, // Show the options for the clicked question
+  //   });
+  // };
 
-  // When "No" is clicked for a specific question, reset related fields
-  const handleNoClick = (questionId) => {
-    clearFieldsForQuestion(questionId); // Clear fields for that specific question
-    setVisibleQuestions((prev) => ({
-      ...prev,
-      [questionId]: false // Hide the options for this question
-    }));
-  };
+  // // When "No" is clicked for a specific question, reset related fields
+  // const handleNoClick = (questionId) => {
+  //   clearFieldsForQuestion(questionId); // Clear fields for that specific question
+  //   setVisibleQuestions((prev) => ({
+  //     ...prev,
+  //     [questionId]: false // Hide the options for this question
+  //   }));
+  // };
 
-  const [formData, setFormData] = useState({
-    clientWhatsAppRequest: {
-      nextFollowUpDate: '',
-      remarks: ''
-    },
-    clientEmailRequest: {
-      nextFollowUpDate: '',
-      remarks: ''
-    },
-    interestedInServices: {
-      servicesPitched: [],
-      servicesInterestedIn: [],
-      offeredPrice: '',
-      nextFollowUpDate: '',
-      remarks: ''
-    },
-    interestedButNotNow: {
-      servicesPitched: [],
-      servicesInterestedIn: [],
-      offeredPrice: '',
-      nextFollowUpDate: '',
-      remarks: ''
-    },
-    mainQuestion: [],// To track the "Yes" responses
-    ename: ename,
-    "Company Name": companyName
-  });
-  const handleInputChange = (section, field, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [section]: {
-        ...prevData[section],
-        [field]: value
-      }
-    }));
-  };
+  // const [formData, setFormData] = useState({
+  //   clientWhatsAppRequest: {
+  //     nextFollowUpDate: '',
+  //     remarks: ''
+  //   },
+  //   clientEmailRequest: {
+  //     nextFollowUpDate: '',
+  //     remarks: ''
+  //   },
+  //   interestedInServices: {
+  //     servicesPitched: [],
+  //     servicesInterestedIn: [],
+  //     offeredPrice: '',
+  //     nextFollowUpDate: '',
+  //     remarks: ''
+  //   },
+  //   interestedButNotNow: {
+  //     servicesPitched: [],
+  //     servicesInterestedIn: [],
+  //     offeredPrice: '',
+  //     nextFollowUpDate: '',
+  //     remarks: ''
+  //   },
+  //   mainQuestion: [],// To track the "Yes" responses
+  //   ename: ename,
+  //   "Company Name": companyName
+  // });
+  // const handleInputChange = (section, field, value) => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [section]: {
+  //       ...prevData[section],
+  //       [field]: value
+  //     }
+  //   }));
+  // };
 
-  // Example for multi-select (servicesPitched, servicesInterestedIn)
-  const handleMultiSelectChange = (section, field, selectedOptions) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [section]: {
-        ...prevData[section],
-        [field]: selectedOptions.map((option) => option.value)
-      }
-    }));
-  };
+  // // Example for multi-select (servicesPitched, servicesInterestedIn)
+  // const handleMultiSelectChange = (section, field, selectedOptions) => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [section]: {
+  //       ...prevData[section],
+  //       [field]: selectedOptions.map((option) => option.value)
+  //     }
+  //   }));
+  // };
 
-  const handleSubmitInformation = () => {
-    // Validation: Ensure that at least one question has all required fields filled
-    const isWhatsAppRequestFilled = formData.clientWhatsAppRequest.nextFollowUpDate && formData.clientWhatsAppRequest.remarks;
-    const isEmailRequestFilled = formData.clientEmailRequest.nextFollowUpDate && formData.clientEmailRequest.remarks;
-    const isInterestedServicesFilled = formData.interestedInServices.servicesPitched.length > 0 && formData.interestedInServices.servicesInterestedIn.length > 0 && formData.interestedInServices.offeredPrice && formData.interestedInServices.nextFollowUpDate && formData.interestedInServices.remarks;
-    const isInterestedButNotNowFilled = formData.interestedButNotNow.servicesPitched.length > 0 && formData.interestedButNotNow.servicesInterestedIn.length > 0 && formData.interestedButNotNow.offeredPrice && formData.interestedButNotNow.nextFollowUpDate && formData.interestedButNotNow.remarks;
+  // const handleSubmitInformation = () => {
+  //   // Validation: Ensure that at least one question has all required fields filled
+  //   const isWhatsAppRequestFilled = formData.clientWhatsAppRequest.nextFollowUpDate && formData.clientWhatsAppRequest.remarks;
+  //   const isEmailRequestFilled = formData.clientEmailRequest.nextFollowUpDate && formData.clientEmailRequest.remarks;
+  //   const isInterestedServicesFilled = formData.interestedInServices.servicesPitched.length > 0 && formData.interestedInServices.servicesInterestedIn.length > 0 && formData.interestedInServices.offeredPrice && formData.interestedInServices.nextFollowUpDate && formData.interestedInServices.remarks;
+  //   const isInterestedButNotNowFilled = formData.interestedButNotNow.servicesPitched.length > 0 && formData.interestedButNotNow.servicesInterestedIn.length > 0 && formData.interestedButNotNow.offeredPrice && formData.interestedButNotNow.nextFollowUpDate && formData.interestedButNotNow.remarks;
 
-    if (isWhatsAppRequestFilled || isEmailRequestFilled || isInterestedServicesFilled || isInterestedButNotNowFilled) {
-      // At least one section is fully answered, proceed with submission
-      handleSubmitToBackend();
-    } else {
-      // Show an error if no section is fully answered
-      Swal.fire("Please complete at least one question with all required fields.");
-    }
-  };
+  //   if (isWhatsAppRequestFilled || isEmailRequestFilled || isInterestedServicesFilled || isInterestedButNotNowFilled) {
+  //     // At least one section is fully answered, proceed with submission
+  //     handleSubmitToBackend();
+  //   } else {
+  //     // Show an error if no section is fully answered
+  //     Swal.fire("Please complete at least one question with all required fields.");
+  //   }
+  // };
 
-  const handleSubmitToBackend = async () => {
-    const payload = {
-      ...formData ,
-      "Company Name"  : companyName,
-      ename : ename
-    }
-    try {
-      const response = await axios.post(`${secretKey}/company-data/company/${companyName}/interested-info`,
-        {
-          newInterestedInfo: payload, // The formData object
-          status: status // Include the company status
-        }
-      );
-      if (response.status === 200) {
-        Swal.fire('Data saved successfully');
-        handleClearInterestedInformation()
-        refetch()
-      }
-    } catch (error) {
-      console.error('Error saving data:', error);
-    }
-  };
+  // const handleSubmitToBackend = async () => {
+  //   const payload = {
+  //     ...formData,
+  //     "Company Name": companyName,
+  //     ename: ename
+  //   }
+  //   try {
+  //     const response = await axios.post(`${secretKey}/company-data/company/${companyName}/interested-info`,
+  //       {
+  //         newInterestedInfo: payload, // The formData object
+  //         status: status // Include the company status
+  //       }
+  //     );
+  //     if (response.status === 200) {
+  //       Swal.fire('Data saved successfully');
+  //       handleClearInterestedInformation()
+  //       refetch()
+  //     }
+  //   } catch (error) {
+  //     console.error('Error saving data:', error);
+  //   }
+  // };
 
-  // Reset form data to initial state
-  const handleClearInterestedInformation = () => {
-    setFormData({
-      clientWhatsAppRequest: {
-        nextFollowUpDate: '',
-        remarks: ''
-      },
-      clientEmailRequest: {
-        nextFollowUpDate: '',
-        remarks: ''
-      },
-      interestedInServices: {
-        servicesPitched: [],
-        servicesInterestedIn: [],
-        offeredPrice: '',
-        nextFollowUpDate: '',
-        remarks: ''
-      },
-      interestedButNotNow: {
-        servicesPitched: [],
-        servicesInterestedIn: [],
-        offeredPrice: '',
-        nextFollowUpDate: '',
-        remarks: ''
-      },
-      mainQuestion: [], // Reset the main questions tracking
-      ename: ename,
-      "Company Name": companyName
-    });
-    setStatus(companyStatus)
-    setStatusClass("untouched_status")
-    //refetch()
-    // Manually hide the modal
-    const modalElement = document.getElementById(modalId);
-    modalElement.classList.remove("show");
-    modalElement.setAttribute("aria-hidden", "true");
-    modalElement.style.display = "none";
+  // // Reset form data to initial state
+  // const handleClearInterestedInformation = () => {
+  //   setFormData({
+  //     clientWhatsAppRequest: {
+  //       nextFollowUpDate: '',
+  //       remarks: ''
+  //     },
+  //     clientEmailRequest: {
+  //       nextFollowUpDate: '',
+  //       remarks: ''
+  //     },
+  //     interestedInServices: {
+  //       servicesPitched: [],
+  //       servicesInterestedIn: [],
+  //       offeredPrice: '',
+  //       nextFollowUpDate: '',
+  //       remarks: ''
+  //     },
+  //     interestedButNotNow: {
+  //       servicesPitched: [],
+  //       servicesInterestedIn: [],
+  //       offeredPrice: '',
+  //       nextFollowUpDate: '',
+  //       remarks: ''
+  //     },
+  //     mainQuestion: [], // Reset the main questions tracking
+  //     ename: ename,
+  //     "Company Name": companyName
+  //   });
+  //   setStatus(companyStatus)
+  //   setStatusClass("untouched_status")
+  //   //refetch()
+  //   // Manually hide the modal
+  //   const modalElement = document.getElementById(modalId);
+  //   modalElement.classList.remove("show");
+  //   modalElement.setAttribute("aria-hidden", "true");
+  //   modalElement.style.display = "none";
 
-    // Remove the backdrop if it exists
-    const modalBackdrop = document.querySelector('.modal-backdrop');
-    if (modalBackdrop) {
-      modalBackdrop.parentNode.removeChild(modalBackdrop);
-    }
+  //   // Remove the backdrop if it exists
+  //   const modalBackdrop = document.querySelector('.modal-backdrop');
+  //   if (modalBackdrop) {
+  //     modalBackdrop.parentNode.removeChild(modalBackdrop);
+  //   }
 
-    // Cleanup: Remove any leftover 'modal-open' classes and inline styles from body
-    document.body.classList.remove('modal-open');
-    document.body.style.removeProperty('overflow');
-    document.body.style.removeProperty('padding-right');
-  };
+  //   // Cleanup: Remove any leftover 'modal-open' classes and inline styles from body
+  //   document.body.classList.remove('modal-open');
+  //   document.body.style.removeProperty('overflow');
+  //   document.body.style.removeProperty('padding-right');
+  // };
 
-  // Clear fields related to a specific question
-  const clearFieldsForQuestion = (questionId) => {
-    switch (questionId) {
-      case "q1":
-        setFormData((prevData) => ({
-          ...prevData,
-          clientWhatsAppRequest: {
-            nextFollowUpDate: '',
-            remarks: ''
-          }
-        }));
-        break;
-      case "q2":
-        setFormData((prevData) => ({
-          ...prevData,
-          clientEmailRequest: {
-            nextFollowUpDate: '',
-            remarks: ''
-          }
-        }));
-        break;
-      case "q3":
-        setFormData((prevData) => ({
-          ...prevData,
-          interestedInServices: {
-            servicesPitched: [],
-            servicesInterestedIn: [],
-            offeredPrice: '',
-            nextFollowUpDate: '',
-            remarks: ''
-          }
-        }));
-        break;
-      case "q4":
-        setFormData((prevData) => ({
-          ...prevData,
-          interestedButNotNow: {
-            servicesPitched: [],
-            servicesInterestedIn: [],
-            offeredPrice: '',
-            nextFollowUpDate: '',
-            remarks: ''
-          }
-        }));
-        break;
-      default:
-        break;
-    }
-  };
+  // // Clear fields related to a specific question
+  // const clearFieldsForQuestion = (questionId) => {
+  //   switch (questionId) {
+  //     case "q1":
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         clientWhatsAppRequest: {
+  //           nextFollowUpDate: '',
+  //           remarks: ''
+  //         }
+  //       }));
+  //       break;
+  //     case "q2":
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         clientEmailRequest: {
+  //           nextFollowUpDate: '',
+  //           remarks: ''
+  //         }
+  //       }));
+  //       break;
+  //     case "q3":
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         interestedInServices: {
+  //           servicesPitched: [],
+  //           servicesInterestedIn: [],
+  //           offeredPrice: '',
+  //           nextFollowUpDate: '',
+  //           remarks: ''
+  //         }
+  //       }));
+  //       break;
+  //     case "q4":
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         interestedButNotNow: {
+  //           servicesPitched: [],
+  //           servicesInterestedIn: [],
+  //           offeredPrice: '',
+  //           nextFollowUpDate: '',
+  //           remarks: ''
+  //         }
+  //       }));
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
   // console.log("status" , status , companyName , companyStatus)
 
   const modalId = `modal-${companyName.replace(/\s+/g, '')}`; // Generate a unique modal ID
 
-  console.log("relevant" , visibleQuestions)
 
   return (<>
     <section className="rm_status_dropdown">
@@ -477,7 +463,7 @@ const EmployeeStatusChange = ({
                 data-bs-toggle="modal"
                 data-bs-target={`#${modalId}`} // Use dynamic modal ID
                 value={companyStatus}
-                onClick={(e)=>{
+                onClick={(e) => {
                   setStatus("Interested")
                   setStatusClass("need_to_call")
                 }}
@@ -489,9 +475,9 @@ const EmployeeStatusChange = ({
             <li>
               <button
                 className="dropdown-item"
-                data-bs-toggle="modal" 
+                data-bs-toggle="modal"
                 data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                onClick={(e)=>{
+                onClick={(e) => {
                   setStatus("FollowUp")
                   setStatusClass("clnt_no_repond_status")
                 }}
@@ -612,19 +598,37 @@ const EmployeeStatusChange = ({
         ) : null}
       </div>
     </section>
-
+    <EmployeeInterestedInformationDialog
+      modalId={modalId}
+      companyName={companyName}
+      secretKey={secretKey}
+      // formData={formData}
+      // handleInputChange={handleInputChange}
+      // handleMultiSelectChange={handleMultiSelectChange}
+      // handleSubmitInformation={handleSubmitInformation}
+      // handleClearInterestedInformation={handleClearInterestedInformation}
+      // visibleQuestions={visibleQuestions}
+      // handleYesClick={handleYesClick}
+      // handleNoClick={handleNoClick}
+      refetch={refetch}
+      ename={ename}
+      status={status}
+      setStatus={setStatus}
+      setStatusClass={setStatusClass}
+      companyStatus={companyStatus}
+    />
 
 
     {/* ---------------------modal for interested information leads---------------------------------- */}
-    <div className="modal fade" id={modalId} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    {/* <div className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="staticBackdropLabel">Why are you moving this lead to Interested?</h5>
-            <button type="button" 
-            className="btn-close"  
-            aria-label="Close"
-            onClick={handleClearInterestedInformation}
+            <button type="button"
+              className="btn-close"
+              aria-label="Close"
+              onClick={handleClearInterestedInformation}
             ></button>
           </div>
           <div className="modal-body">
@@ -1006,7 +1010,7 @@ const EmployeeStatusChange = ({
           </div>
         </div>
       </div>
-    </div>
+    </div> */}
 
   </>);
 };

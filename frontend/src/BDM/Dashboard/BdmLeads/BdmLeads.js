@@ -62,6 +62,7 @@ import { IoIosClose } from "react-icons/io";
 import { Country, State, City } from 'country-state-city';
 import { LuHistory } from "react-icons/lu";
 import CallHistory from "../../../employeeComp/CallHistory.jsx";
+import EmployeeStatusChange from "../../../employeeComp/ExtraComponents/EmployeeStatusChange.jsx";
 
 function BdmLeads() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -1003,6 +1004,7 @@ function BdmLeads() {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  
 
   const currentData = employeeData.slice(startIndex, endIndex);
 
@@ -2010,30 +2012,6 @@ function BdmLeads() {
   // Call the function to create the new array
   const resultArray = moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
 
-  // const handleYearFilterChange = (e, selectedYear) => {
-  //   const isChecked = e.target.checked;
-
-  //   // Filter the employeeData based on the selected year
-  //   if (isChecked) {
-  //     const filteredData = employeeData.filter((data) => {
-  //       const year = new Date(
-  //         data["Company Incorporation Date  "]
-  //       ).getFullYear();
-  //       return year.toString() === selectedYear.toString();
-  //     });
-  //     setEmployeeData(filteredData);
-  //     console.log("Filtered Year data", filteredData);
-  //   } else {
-  //     // If the checkbox is unchecked, reset the filter
-  //     // You can implement this according to your requirements
-  //     // For example, if you want to reset to the original data, you can fetch it again from the server
-  //     // setEmployeeData(originalEmployeeData);
-  //   }
-  // };
-  // const handleMonthFilterChange = () => {
-  //   console.log("Month is filtering");
-  // };
-
   // Handle "Select All" checkbox change
   const handleSelectAllChange = (e) => {
     const isChecked = e.target.checked;
@@ -2334,92 +2312,6 @@ function BdmLeads() {
 
   // ------------------------------------------------------payment-link-work-----------------------------------------
 
-  const [paymentLink, setPaymentLink] = useState("");
-  const [error, setError] = useState("");
-  const [orderId, setOrderId] = useState("");
-
-  // let cashfree;
-
-  // let insitialzeSDK = async function () {
-
-  //   cashfree = await load({
-  //     mode: "sandbox",
-  //   })
-  // }
-
-  // insitialzeSDK()
-
-  // //let version = cashfree.version();
-
-  // const getSessionId = async () => {
-  //   try {
-  //     let res = await axios.get(`${secretKey}/payment`)
-  //     console.log(res.data)
-  //     if (res.data && res.data.payment_session_id) {
-  //       console.log(res.data)
-  //       setOrderId(res.data.order_id)
-  //       return res.data.payment_session_id
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
-  // const verifyPayment = async () => {
-  //   try {
-
-  //     let res = await axios.post(`${secretKey}/verify`, {
-  //       orderId: orderId
-  //     })
-
-  //     if (res && res.data) {
-  //       alert("payment verified")
-  //     }
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-  // const handlePayment = async (e) => {
-  //   e.preventDefault()
-  //   try {
-
-  //     let sessionId = await getSessionId()
-  //     let checkoutOptions = {
-  //       paymentSessionId: sessionId,
-  //       redirectTarget: "_modal",
-  //     }
-
-  //     cashfree.checkout(checkoutOptions).then((res) => {
-  //       console.log("payment initialized")
-
-  //       verifyPayment(orderId)
-  //     })
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-
-  // }
-
-  // const generatePaymentLink = async () => {
-  //   try {
-  //     const response = await axios.post(`${secretKey}/generatePaymentLink`, {
-  //       orderId: '121',
-  //       amount: 100, // Amount in INR
-  //       customerName: 'John Doe',
-  //       customerEmail: 'john@example.com',
-  //       customerPhone: '9876543210',
-  //     });
-  //     console.log(response.data.paymentLink)
-  //     setPaymentLink(response.data.paymentLink);
-  //   } catch (error) {
-  //     setError('Could not generate payment link');
-  //   }
-  // };
-
-  // console.log(paymentLink)
-
   const functionCloseFilterDrawer = () => {
     setOpenFilterDrawer(false)
   };
@@ -2485,6 +2377,26 @@ function BdmLeads() {
     //fetchData(1, latestSortCount)
   };
 
+
+  const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
+  const [newBdeName, setNewBdeName] = useState("")
+  const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename) => {
+    setCompanyName(cname);
+    setCompanyEmail(cemail);
+    setCompanyInco(cindate);
+    setCompanyId(employeeId);
+    setCompanyNumber(cnum);
+    setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+    setNewBdeName(ename)
+    if (!isDeletedEmployeeCompany) {
+        console.log("formchal")
+        setFormOpen(true);
+    } else {
+        console.log("addleadfromchal")
+        setAddFormOpen(true)
+    }
+}
+
   return (
     <div>
       {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
@@ -2498,535 +2410,7 @@ function BdmLeads() {
               <div className="page-header d-print-none">
                 <div className="container-xl">
 
-                  {/* {requestData !== null && requestData !== undefined && (
-                    <div className="notification-bar">
-                      <div className="noti-text">
-                        <h1>
-                          You have just received {requestData.dAmount} data!
-                        </h1>
-                      </div>
-                      <div className="close-icon">
-                        <IconButton onClick={handleMarktrue}>
-                          <CloseIcon />
-                        </IconButton>
-                      </div>
-                    </div>
-                  )} */}
 
-                  {/* <div className="row g-2 align-items-center">
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                      }}
-                      className="features">
-                      <div style={{ display: "flex" }} className="feature1"> */}
-                  {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
-                        Gmail SignIn
-                    </button>
-                    <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
-                      <DialogTitle>
-                      <h1>Login Page</h1>
-                      </DialogTitle>
-                      <DialogContent>
-                      <div className="sign-in-google">
-
-                           <p>Please sign in with your Google account.</p>
-                          <button onClick={handleGoogleLogin} >Sign in with Google</button>
-                               </div>
-                      </DialogContent>
-
-                    </Dialog> */}
-
-                  {/* <div
-                          className="form-control"
-                          style={{ height: "fit-content", width: "auto" }}>
-                          <select
-                            style={{
-                              border: "none",
-                              outline: "none",
-                              width: "fit-content",
-                            }}
-                            value={selectedField}
-                            onChange={handleFieldChange}>
-                            <option value="Company Name">Company Name</option>
-                            <option value="Company Number">
-                              Company Number
-                            </option>
-                            <option value="Company Email">Company Email</option>
-                            <option value="Company Incorporation Date  ">
-                              Company Incorporation Date
-                            </option>
-                            <option value="City">City</option>
-                            <option value="State">State</option>
-                            <option value="Status">Status</option>
-                            <option value="AssignDate">Assigned Date</option>
-                          </select>
-                        </div>
-                        {visibility === "block" && (
-                          <div>
-                            <input
-                              onChange={handleDateChange}
-                              style={{
-                                display: visibility,
-                                width: "83%",
-                                marginLeft: "10px",
-                              }}
-                              type="date"
-                              className="form-control"
-                            />
-                          </div>
-                        )}
-
-                        {visibilityOther === "block" ? (
-                          <div
-                            style={{
-                              //width: "20vw",
-                              margin: "0px 0px 0px 9px",
-                              display: visibilityOther,
-                            }}
-                            className="input-icon"
-                          >
-                            <span className="input-icon-addon"> */}
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                  {/* <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="icon"
-                                width="20"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                stroke-width="2"
-                                stroke="currentColor"
-                                fill="none"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              >
-                                <path
-                                  stroke="none"
-                                  d="M0 0h24v24H0z"
-                                  fill="none"
-                                />
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                                <path d="M21 21l-6 -6" />
-                              </svg>
-                            </span>
-                            <input
-                              type="text"
-                              value={searchText}
-                              onChange={(e) => {
-                                setSearchText(e.target.value);
-                                setCurrentPage(0);
-                              }}
-                              className="form-control"
-                              placeholder="Search…"
-                              aria-label="Search in website"
-                              style={{ width: "60%" }}
-                            />
-                          </div>
-                        ) : (
-                          <div></div>
-                        )}
-                        {visibilityOthernew === "block" ? (
-                          <div
-                            style={{
-                              //width: "20vw",
-                              margin: "0px 0px 0px 9px",
-                              display: visibilityOthernew,
-                            }}
-                            className="input-icon"
-                          >
-                            <select
-                              value={searchText}
-                              onChange={(e) => {
-                                setSearchText(e.target.value);
-                                // Set dataStatus based on selected option
-                                if (
-                                  e.target.value === "All" ||
-                                  e.target.value === "Busy" ||
-                                  e.target.value === "Not Picked Up"
-                                ) {
-                                  setdataStatus("All");
-                                  setEmployeeData(
-                                    moreEmpData.filter(
-                                      (obj) =>
-                                        obj.Status === "Busy" ||
-                                        obj.Status === "Not Picked Up" ||
-                                        obj.Status === "Untouched"
-                                    )
-                                  );
-                                } else if (
-                                  e.target.value === "Junk" ||
-                                  e.target.value === "Not Interested"
-                                ) {
-                                  setdataStatus("NotInterested");
-                                  setEmployeeData(
-                                    moreEmpData.filter(
-                                      (obj) =>
-                                        obj.Status === "Not Interested" ||
-                                        obj.Status === "Junk"
-                                    )
-                                  );
-                                } else if (e.target.value === "Interested") {
-                                  setdataStatus("Interested");
-                                  setEmployeeData(
-                                    moreEmpData.filter(
-                                      (obj) => obj.Status === "Interested"
-                                    )
-                                  );
-                                } else if (e.target.value === "Untouched") {
-                                  setdataStatus("All");
-                                  setEmployeeData(
-                                    moreEmpData.filter(
-                                      (obj) => obj.Status === "Untouched"
-                                    )
-                                  );
-                                }
-                              }}
-                              className="form-select"
-                            >
-                              <option value="All">All </option>
-                              <option value="Busy">Busy </option>
-                              <option value="Not Picked Up">
-                                Not Picked Up{" "}
-                              </option>
-                              <option value="Junk">Junk</option>
-                              <option value="Interested">Interested</option>
-                              <option value="Not Interested">
-                                Not Interested
-                              </option>
-                              <option value="Untouched">Untouched</option>
-                            </select>
-                          </div>
-                        ) : (
-                          <div></div>
-                        )}
-                        {searchText !== "" && (
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "end",
-                              fontsize: "10px",
-                              fontfamily: "Poppins",
-                              //marginLeft: "-70px"
-                            }}
-                            className="results"
-                          >
-                            {filteredData.length} results found
-                          </div>
-                        )}
-                      </div>
-                      <div
-                        style={{ display: "flex", alignItems: "center" }}
-                        className="feature2">
-                        <div
-                          className="form-control mr-1 sort-by"
-                          style={{ width: "190px" }}>
-                          <label htmlFor="sort-by">Sort By:</label>
-                          <select
-                            style={{
-                              border: "none",
-                              outline: "none",
-                              color: "#666a66",
-                            }}
-                            name="sort-by"
-                            id="sort-by"
-                            onChange={(e) => {
-                              setSortStatus(e.target.value);
-                              const selectedOption = e.target.value;
-
-                              switch (selectedOption) {
-                                case "Busy":
-                                case "Untouched":
-                                case "Not Picked Up":
-                                  setdataStatus("All");
-                                  setEmployeeData(
-                                    moreEmpData
-                                      .filter((data) =>
-                                        [
-                                          "Busy",
-                                          "Untouched",
-                                          "Not Picked Up",
-                                        ].includes(data.Status)
-                                      )
-                                      .sort((a, b) => {
-                                        if (a.Status === selectedOption)
-                                          return -1;
-                                        if (b.Status === selectedOption)
-                                          return 1;
-                                        return 0;
-                                      })
-                                  );
-                                  break;
-                                case "Interested":
-                                  setdataStatus("Interested");
-                                  setEmployeeData(
-                                    moreEmpData
-                                      .filter(
-                                        (data) => data.Status === "Interested"
-                                      )
-                                      .sort((a, b) =>
-                                        a.AssignDate.localeCompare(b.AssignDate)
-                                      )
-                                  );
-                                  break;
-                                case "Not Interested":
-                                  setdataStatus("NotInterested");
-                                  setEmployeeData(
-                                    moreEmpData
-                                      .filter((data) =>
-                                        ["Not Interested", "Junk"].includes(
-                                          data.Status
-                                        )
-                                      )
-                                      .sort((a, b) =>
-                                        a.AssignDate.localeCompare(b.AssignDate)
-                                      )
-                                  );
-                                  break;
-                                case "FollowUp":
-                                  setdataStatus("FollowUp");
-                                  setEmployeeData(
-                                    moreEmpData
-                                      .filter(
-                                        (data) => data.Status === "FollowUp"
-                                      )
-                                      .sort((a, b) =>
-                                        a.AssignDate.localeCompare(b.AssignDate)
-                                      )
-                                  );
-                                  break;
-
-                                default:
-                                  // No filtering if default option selected
-                                  setdataStatus("All");
-                                  setEmployeeData(
-                                    moreEmpData.sort((a, b) => {
-                                      if (a.Status === selectedOption)
-                                        return -1;
-                                      if (b.Status === selectedOption) return 1;
-                                      return 0;
-                                    })
-                                  );
-                                  break;
-                              }
-                            }}
-                          >
-                            <option value="" disabled selected>
-                              Select Status
-                            </option>
-                            <option value="Untouched">Untouched</option>
-                            <option value="Busy">Busy</option>
-                            <option value="Not Picked Up">Not Picked Up</option>
-                            <option value="FollowUp">Follow Up</option>
-                            <option value="Interested">Interested</option>
-                            <option value="Not Interested">
-                              Not Interested
-                            </option>
-                          </select>
-                        </div>
-
-                        {selectedField === "State" && (
-                          <div style={{ width: "15vw" }} className="input-icon">
-                            <span className="input-icon-addon"> */}
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                  {/* <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="icon"
-                                width="20"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                stroke-width="2"
-                                stroke="currentColor"
-                                fill="none"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              >
-                                <path
-                                  stroke="none"
-                                  d="M0 0h24v24H0z"
-                                  fill="none"
-                                />
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                                <path d="M21 21l-6 -6" />
-                              </svg>
-                            </span>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={citySearch}
-                              onChange={(e) => {
-                                setcitySearch(e.target.value);
-                                setCurrentPage(0);
-                              }}
-                              placeholder="Search City"
-                              aria-label="Search in website"
-                            />
-                          </div>
-                        )}
-                        {selectedField === "Company Incorporation Date  " && (
-                          <>
-                            <div
-                              style={{ width: "fit-content" }}
-                              className="form-control"
-                            >
-                              <select
-                                style={{
-                                  border: "none",
-                                  outline: "none",
-                                  marginRight: "10px",
-                                  width: "115px",
-                                  paddingLeft: "10px",
-                                }}
-                                onChange={(e) => {
-                                  setMonth(e.target.value);
-                                  setCurrentPage(0);
-                                }}
-                              >
-                                <option value="" disabled selected>
-                                  Select Month
-                                </option>
-                                <option value="12">December</option>
-                                <option value="11">November</option>
-                                <option value="10">October</option>
-                                <option value="9">September</option>
-                                <option value="8">August</option>
-                                <option value="7">July</option>
-                                <option value="6">June</option>
-                                <option value="5">May</option>
-                                <option value="4">April</option>
-                                <option value="3">March</option>
-                                <option value="2">February</option>
-                                <option value="1">January</option>
-                              </select>
-                            </div>
-                            <div
-                              className="input-icon  form-control"
-                              style={{ margin: "0px 10px", width: "110px" }}
-                            > */}
-                  {/* <input
-                            type="number"
-                            value={year}
-                            defaultValue="Select Year"
-                            className="form-control"
-                            placeholder="Select Year.."
-                            onChange={(e) => {
-                              setYear(e.target.value);
-                            }}
-                            aria-label="Search in website"
-                          /> */}
-                  {/* <select
-                                select
-                                style={{ border: "none", outline: "none" }}
-                                value={year}
-                                onChange={(e) => {
-                                  setYear(e.target.value);
-                                  setCurrentPage(0); // Reset page when year changes
-                                }}
-                              >
-                                <option value="">Select Year</option>
-                                {[...Array(15)].map((_, index) => {
-                                  const yearValue = 2024 - index;
-                                  return (
-                                    <option key={yearValue} value={yearValue}>
-                                      {yearValue}
-                                    </option>
-                                  );
-                                })}
-                              </select>
-                            </div>
-                          </>
-                        )}
-
-                        <div
-                          className="request"
-                          style={{ marginRight: "15px" }}>
-                          <div className="btn-list">
-                            <button
-                              onClick={functionopenpopup}
-                              className="btn btn-primary d-none d-sm-inline-block"
-                            >
-                              Request Data
-                            </button>
-                            <a
-                              href="#"
-                              className="btn btn-primary d-sm-none btn-icon"
-                              data-bs-toggle="modal"
-                              data-bs-target="#modal-report"
-                              aria-label="Create new report"
-                            > */}
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                  {/* </a>
-                          </div>
-                        </div>
-                        <div
-                          className="request"
-                          style={{ marginRight: "15px" }}>
-                          <div className="btn-list">
-                            <button
-                              onClick={functionopenpopupNew}
-                              className="btn btn-primary d-none d-sm-inline-block"
-                            >
-                              ADD Leads
-                            </button>
-                            <a
-                              href="#"
-                              className="btn btn-primary d-sm-none btn-icon"
-                              data-bs-toggle="modal"
-                              data-bs-target="#modal-report"
-                              aria-label="Create new report"
-                            > */}
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                  {/* </a>
-                          </div>
-                        </div>
-                        <div className="importCSV request">
-                          <div className="btn-list">
-                            <button
-                              className="btn btn-primary d-none d-sm-inline-block"
-                              onClick={functionopenpopupCSV}
-                            > */}
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                  {/* <svg
-                                style={{
-                                  verticalAlign: "middle",
-                                }}
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="icon"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                stroke-width="2"
-                                stroke="currentColor"
-                                fill="none"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              >
-                                <path
-                                  stroke="none"
-                                  d="M0 0h24v24H0z"
-                                  fill="none"
-                                />
-                                <path d="M12 5l0 14" />
-                                <path d="M5 12l14 0" />
-                              </svg>
-                              Import CSV
-                            </button>
-                            <a
-                              href="#"
-                              className="btn btn-primary d-sm-none btn-icon"
-                              data-bs-toggle="modal"
-                              data-bs-target="#modal-report"
-                              aria-label="Create new report"
-                            > */}
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                  {/* </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div> */}
-                  {/* <!-- Page title actions --> */}
-                  {/* </div> */}
 
                   <div className="d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center">
@@ -3300,12 +2684,12 @@ function BdmLeads() {
                   </div>
                   <div className="card">
                     <div className="card-body p-0">
-                      <div
-                        style={{
-                          overflowX: "auto",
-                          overflowY: "auto",
-                          maxHeight: "66vh",
-                        }}
+                      <div className="table table-responsive table-style-3 m-0"
+                        // style={{
+                        //   overflowX: "auto",
+                        //   overflowY: "auto",
+                        //   maxHeight: "66vh",
+                        // }}
                       >
                         <table
                           style={{
@@ -3313,12 +2697,12 @@ function BdmLeads() {
                             borderCollapse: "collapse",
                             border: "1px solid #ddd",
                           }}
-                          className="table-vcenter table-nowrap"
+                          className="table table-vcenter table-nowrap"
                         >
                           <thead>
                             <tr className="tr-sticky">
-                              <th className="th-sticky">Sr.No</th>
-                              <th className="th-sticky1">Company Name</th>
+                              <th className="rm-sticky-left-1">Sr.No</th>
+                              <th className="rm-sticky-left-2">Company Name</th>
                               <th>Company Number</th>
                               <th>Call History</th>
                               <th>Status</th>
@@ -3575,8 +2959,34 @@ function BdmLeads() {
                                       color="grey"
                                     />
                                   </td>
-
                                   <td>
+                                    <EmployeeStatusChange
+                                      key={`${company["Company Name"]}-${index}`}
+                                      companyName={company["Company Name"]}
+                                      companyStatus={company.Status}
+                                      id={company._id}
+                                      refetch={fetchNewData}
+                                      mainStatus={dataStatus}
+                                      setCompanyName={setCompanyName}
+                                      setCompanyEmail={setCompanyEmail}
+                                      setCompanyInco={setCompanyInco}
+                                      setCompanyId={setCompanyId}
+                                      setCompanyNumber={setCompanyNumber}
+                                      setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                                      setNewBdeName={setNewBdeName}
+                                      isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
+                                      // setFormOpen={setFormOpen}
+                                      // setAddFormOpen={setAddFormOpen}
+                                      cemail={company["Company Email"]}
+                                      cindate={company["Incorporation Date"]}
+                                      cnum={company["Company Number"]}
+                                      ename={company.ename}
+                                      bdmAcceptStatus={company.bdmAcceptStatus}
+                                      handleFormOpen={handleOpenFormOpen}
+                                    />
+                                  </td>
+
+                                  {/* <td>
                                     {company["Status"] === "Matured" ? (
                                       <span>{company["Status"]}</span>
                                     ) : (
@@ -3629,12 +3039,7 @@ function BdmLeads() {
 
                                         {dataStatus === "Interested" && (
                                           <>
-                                            {/* <option value="Interested">
-                                              Interested
-                                            </option>
-                                            <option value="FollowUp">
-                                              Follow Up{" "}
-                                            </option> */}
+                                           
                                             <option value="Matured">
                                               Matured
                                             </option>
@@ -3643,9 +3048,7 @@ function BdmLeads() {
 
                                         {dataStatus === "FollowUp" && (
                                           <>
-                                            {/* <option value="FollowUp">
-                                              Follow Up{" "}
-                                            </option> */}
+                                            
                                             <option value="Matured">
                                               Matured
                                             </option>
@@ -3653,7 +3056,7 @@ function BdmLeads() {
                                         )}
                                       </select>
                                     )}
-                                  </td>
+                                  </td> */}
 
                                   <td>
                                     <div

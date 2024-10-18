@@ -329,6 +329,8 @@ router.post('/addemployee/hrside', async (req, res) => {
       jdate,
       AddedOn,
       targetDetails,
+      salary,
+      gender,
       bdmWork
     } = req.body;
     console.log("Received request for adding employee:", req.body);
@@ -380,7 +382,9 @@ router.post('/addemployee/hrside', async (req, res) => {
       jdate,
       AddedOn,
       targetDetails,
-      bdmWork
+      bdmWork,
+      salary,
+      gender
     });
 
     // Step 5: Save the new employee to the database

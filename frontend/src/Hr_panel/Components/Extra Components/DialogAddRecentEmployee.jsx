@@ -23,6 +23,8 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
     const [employeeID, setEmployeeID] = useState("");
     const [ename, setEname] = useState("");
     const [email, setEmail] = useState("");
+    const [salary, setSalary] = useState("")
+    const [gender, setGender] = useState("")
     const [password, setPassword] = useState("");
     const [number, setNumber] = useState(0);
     const [firstName, setFirstName] = useState("");
@@ -93,6 +95,8 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
         if (!middleName) newErrors.middleName = "Middle name is required";
         if (!lastName) newErrors.lastName = "Last name is required";
         if (!email) newErrors.email = "Email is required";
+        if (!salary) newErrors.salary = "Salary is required";
+        if (!gender) newErrors.gender = "Gender is required";
         // if (!password) newErrors.password = "Password is required";
         if (!department || department === "Select Department") newErrors.department = "Department is required";
         if (!newDesignation || newDesignation === "Select Designation") newErrors.newDesignation = "Designation is required";
@@ -267,6 +271,12 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
             case "email":
                 setEmail(value);
                 break;
+            case "salary":
+                setSalary(value);
+                break;
+            case "gender":
+                setGender(value);
+                break;
             // case "password":
             //     setPassword(value);
             //     break;
@@ -346,6 +356,8 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     password: generatedPassword,
                     jdate: jdate,
                     AddedOn: AddedOn,
+                    salary: salary,
+                    gender: gender,
                     targetDetails: targetObjects,
                     // bdmWork,
                 };
@@ -389,7 +401,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     text: "Something went wrong!",
                 });
                 console.error("Internal server error");
-            }finally{
+            } finally {
                 setOpenBacdrop(false);
             }
         }
@@ -418,7 +430,9 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
         setMiddleName("");
         setLastName("");
         setEname("");
-        setEmail("");
+        setEmail("")
+        setSalary("");
+        setGender("");
         setNumber(0);
         // setPassword("");
         setDepartment("");
@@ -475,103 +489,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
             e.dataTransfer.clearData(); // Clear data after drop
         }
     };
-    // Handle form submission for bulk upload
-    // const handleBulkUploadSubmit = async () => {
-    //     if (!uploadedFile) {
-    //         Swal.fire({
-    //             icon: 'error',
-    //             title: 'Missing File',
-    //             text: 'Please upload an Excel file.',
-    //         });
-    //         return;
-    //     }
-    //     const parseExcelDate = (serial) => {
-    //         const excelEpoch = new Date(Date.UTC(1900, 0, 1)); // Excel's epoch starts at January 1, 1900
-    //         const utcDays = serial - 2; // Excel counts incorrectly starting from 1900 (1900 is considered a leap year by Excel)
-    //         const dateInMilliseconds = utcDays * 24 * 60 * 60 * 1000;
-    //         return new Date(excelEpoch.getTime() + dateInMilliseconds);
-    //     };
 
-    //     // Generate password if creating a new employee
-    //     let generatedPassword = "";
-    //     if (!isUpdateMode) {
-    //         generatedPassword = generateRandomPassword(firstName);
-    //     }
-    //     // Read and parse the Excel file using XLSX
-    //     const reader = new FileReader();
-    //     reader.onload = async (e) => {
-    //         const data = new Uint8Array(e.target.result);
-    //         const workbook = XLSX.read(data, { type: 'array' });
-    //         const sheetName = workbook.SheetNames[0];
-    //         const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
-    //         // Prepare employee data for each row
-    //         const employeesData = sheetData.map((row) => {
-    //             const generatedPassword = generateRandomPassword(row["First Name"]);
-    //             let designation;
-    //             if (row["Designation"] === "Business Development Executive" || row["Designation"] === "Business Development Manager") {
-    //                 designation = "Sales Executive";
-    //             } else if (row["Designation"] === "Floor Manager") {
-    //                 designation = "Sales Manager";
-    //             } else if (row["Designation"] === "Data Analyst") {
-    //                 designation = "Data Manager";
-    //             } else if (row["Designation"] === "Admin Head") {
-    //                 designation = "RM-Certification";
-    //             } else if (row["Designation"] === "HR Manager") {
-    //                 designation = "HR";
-    //             } else {
-    //                 designation = row["Designation"];
-    //             }
-    //             console.log("row", row["Joining Date"])
-    //             return {
-    //                 firstName: row["First Name"],
-    //                 middleName: row["Middle Name"],
-    //                 lastName: row["Last Name"],
-    //                 email: row["Email  Address"],
-    //                 number: row["Number"],
-    //                 ename: `${row["First Name"]} ${row["Last Name"]}`,
-    //                 empFullName: `${row["First Name"]} ${row["Middle Name"]} ${row["Last Name"]}`,
-    //                 department: row["Department"],
-    //                 designation: designation, // Adjust this mapping as needed
-    //                 newDesignation: row["Designation"],
-    //                 branchOffice: row["Branch Office"],
-    //                 reportingManager: row["Manager"],
-    //                 password: generatedPassword,
-    //                 jdate: parseExcelDate(row["Joining Date"]), // Convert to Date object
-    //                 AddedOn: new Date().toLocaleDateString(),
-    //                 targetDetails: [], // You can add default target details here if needed
-    //                 bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager",
-    //             };
-    //         });
-    //         console.log("employeesDATA", employeesData)
-    //         try {
-    //             setOpenBacdrop(true)
-    //             // Send the data to the backend
-    //             const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData });
-    //             console.log("response.data", response.data)
-    //             if (response.status === 200) {
-    //                 Swal.fire({
-    //                     title: 'Employees Added!',
-    //                     html: `The employees have been successfully added.<br>Added Employees:${response.data.successCount} Duplicate Data:${response.data.failureCount}</br>`,
-    //                     icon: 'success',
-    //                 });
-    //                 handleCloseDialog(); // Close the modal
-    //                 refetch()
-    //             }
-    //         } catch (error) {
-    //             Swal.fire({
-    //                 icon: 'error',
-    //                 title: 'Bulk Upload Failed',
-    //                 text: `Error occurred during bulk upload: ${error.message}`,
-    //             });
-    //         }
-    //         finally {
-    //             setOpenBacdrop(false)
-    //         }
-    //     }
-
-    //     reader.readAsArrayBuffer(uploadedFile);
-    // };
 
     const handleBulkUploadSubmit = async () => {
         if (!uploadedFile) {
@@ -623,8 +541,8 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     password: generatedPassword,
                     jdate: parseExcelDate(row["Joining Date"]), // Convert to Date object
                     AddedOn: new Date().toLocaleDateString(),
-                    salary:row["Salary"],
-                    gender:row["Gender"],
+                    salary: row["Salary"],
+                    gender: row["Gender"],
                     targetDetails: [], // You can add default target details here if needed
                     bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager",
                 };
@@ -818,6 +736,38 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                                                 onChange={(e) => handleInputChange("email", e.target.value)}
                                             />
                                             {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
+                                        </div>
+                                    </div>
+                                    <div className='row'>
+                                        <div className=" col-lg-6 mb-3">
+                                            <label className="form-label">Salary</label>
+                                            <input
+                                                value={salary}
+                                                type="text"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Salary"
+                                                onChange={(e) => handleInputChange("salary", e.target.value)}
+                                            />
+                                            {errors.salary && <p style={{ color: 'red' }}>{errors.salary}</p>}
+                                        </div>
+                                        <div className=" col-lg-6 mb-3">
+                                            <label className="form-label">Gender</label>
+                                            <select
+                                                className="form-select"
+                                                value={gender}
+                                                required
+                                                onChange={(e) => {
+                                                    handleInputChange("gender", e.target.value);
+                                                    setIsDepartmentSelected(e.target.value !== "Select Gender");
+                                                }}
+                                            >
+                                                <option value="Select Department" selected> Select Gender</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                               
+                                            </select>
+                                            {errors.gender && <p style={{ color: 'red' }}>{errors.gender}</p>}
                                         </div>
                                     </div>
                                     <div className="row">
