@@ -410,6 +410,8 @@ function EmployeeTeamLeads() {
         // Now you have the updated Status and Remarks, perform the update logic
         //console.log(cid, cstat, changeRemarks, remarksBdmName);
         const Remarks = changeRemarks;
+        const designation = data.designation
+        const bdmWork = data.bdmWork
         if (Remarks === "") {
             Swal.fire({ title: "Empty Remarks!", icon: "warning" });
             return true;
@@ -468,15 +470,19 @@ function EmployeeTeamLeads() {
             } else {
                 const response = await axios.post(`${secretKey}/remarks/update-remarks-bdm/${cid}`, {
                     Remarks,
+                    remarksBdmName,
+                    currentCompanyName,
+                    designation,
+                    bdmWork
                 });
-                const response2 = await axios.post(
-                    `${secretKey}/remarks/remarks-history-bdm/${cid}`,
-                    {
-                        Remarks,
-                        remarksBdmName,
+                // const response2 = await axios.post(
+                //     `${secretKey}/remarks/remarks-history-bdm/${cid}`,
+                //     {
+                //         Remarks,
 
-                    }
-                );
+
+                //     }
+                // );
                 //console.log("remarks", Remarks)
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");
@@ -602,7 +608,7 @@ function EmployeeTeamLeads() {
             } else {
                 const currentObject = teamData.find(obj => obj["Company Name"] === cname);
                 setMaturedBooking(currentObject);
-                console.log("currentObject" , currentObject)
+                console.log("currentObject", currentObject)
                 setDeletedEmployeeStatus(isDeletedEmployeeCompany)
                 if (!isDeletedEmployeeCompany) {
                     console.log("formchal")
@@ -891,7 +897,7 @@ function EmployeeTeamLeads() {
                     finalData
                 );
 
-               
+
 
                 //console.log(response.data)
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -1040,7 +1046,7 @@ function EmployeeTeamLeads() {
 
     //---------------------------------- function to revert back company-------------------------------------
     const handleRevertBackCompany = async (companyId, companyName, bdmStatus) => {
-    
+
         try {
             const reponse = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, null, {
                 params: {
@@ -1088,8 +1094,8 @@ function EmployeeTeamLeads() {
 
     // Currently running for searching the data :
     const handleSearch = (searchQuery) => {
-       
-        
+
+
 
         setIsFilter(false);
 
@@ -1125,8 +1131,8 @@ function EmployeeTeamLeads() {
     };
 
     const filterByTab = (data) => {
-       
-        
+
+
         let filtered;
 
         switch (activeTab) {
@@ -1198,8 +1204,8 @@ function EmployeeTeamLeads() {
         }
     }, [filteredData, activeTab]);
 
-   
-    
+
+
 
     // To clear filter data :
     const handleClearFilter = () => {
@@ -1221,8 +1227,8 @@ function EmployeeTeamLeads() {
     // To apply filter :
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
         const bdmName = data.ename;
-      
-        
+
+
         try {
             setIsFilter(true);
             setOpenBacdrop(true);
@@ -1258,7 +1264,7 @@ function EmployeeTeamLeads() {
     };
 
     // console.log("Team data :", teamData);
- 
+
     // console.log("Team lead data :", teamleadsData);
     // console.log("Is Filter :", isFilter);
 
@@ -1356,7 +1362,7 @@ function EmployeeTeamLeads() {
 
     }, [filteredData, activeTab]);
 
-  
+
 
 
 
@@ -2715,8 +2721,8 @@ function EmployeeTeamLeads() {
             {formOpen && !addFormOpen && maturedBooking && (
                 <>
                     <RedesignedForm
-                      
-                      setFormOpen={setFormOpen}
+
+                        setFormOpen={setFormOpen}
                         companysName={maturedBooking["Company Name"]}
                         companysEmail={maturedBooking["Company Email"]}
                         companyNumber={maturedBooking["Company Number"]}

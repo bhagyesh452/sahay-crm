@@ -6,6 +6,7 @@ const EmployeeNextFollowDate = ({
     id,
     nextFollowDate,
     refetch,
+    status
 }) => {
 
   
@@ -33,8 +34,7 @@ const EmployeeNextFollowDate = ({
 
 
     return (
-        <section className="rm_status_dropdown d-flex align-items-center justify-content-around">
-            
+        <section className={status === "Interested" ? "disabled d-flex align-items-center justify-content-around" : `rm_status_dropdown d-flex align-items-center justify-content-around`}>
                 <div className="card-footer">
                     <div className="remarks-input">
                         <input

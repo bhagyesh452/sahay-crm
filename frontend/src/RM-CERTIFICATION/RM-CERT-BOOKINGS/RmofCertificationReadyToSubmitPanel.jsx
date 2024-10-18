@@ -32,6 +32,7 @@ import FilterableTable from '../Extra-Components/FilterableTable';
 import NSWSMobileNo from '../Extra-Components/NSWSMobileNo';
 import OtpVerificationStatus from '../Extra-Components/OtpVerificationStatus';
 import DscLetterStatusAdHead from '../Extra-Components/DscLetterStatusAdHead';
+import RMRemarksDialog from '../Extra-Components/RMRemarksDialog';
 
 
 function RmofCertificationReadyToSubmitPanel({
@@ -226,8 +227,8 @@ function RmofCertificationReadyToSubmitPanel({
             });
 
             const { data, totalPages } = servicesResponse.data;
-            console.log("data" , data)
-            console.log("response" , servicesResponse)
+            console.log("data", data)
+            console.log("response", servicesResponse)
 
             if (page === 1) {
                 setRmServicesData(data);
@@ -287,72 +288,72 @@ function RmofCertificationReadyToSubmitPanel({
         return `${date}/${month}/${year}`
     }
 
-    //------------------------Remarks Popup Section-----------------------------
-    const handleOpenRemarksPopup = async (companyName, serviceName) => {
-        console.log("RemarksPopup")
-    }
-    const functionCloseRemarksPopup = () => {
-        setChangeRemarks('')
-        setError('')
-        setOpenRemarksPopUp(false)
-    }
-    const debouncedSetChangeRemarks = useCallback(
-        debounce((value) => {
-            setChangeRemarks(value);
-        }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
-        [] // Empty dependency array to ensure the function is memoized
-    );
+    // //------------------------Remarks Popup Section-----------------------------
+    // const handleOpenRemarksPopup = async (companyName, serviceName) => {
+    //     console.log("RemarksPopup")
+    // }
+    // const functionCloseRemarksPopup = () => {
+    //     setChangeRemarks('')
+    //     setError('')
+    //     setOpenRemarksPopUp(false)
+    // }
+    // const debouncedSetChangeRemarks = useCallback(
+    //     debounce((value) => {
+    //         setChangeRemarks(value);
+    //     }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+    //     [] // Empty dependency array to ensure the function is memoized
+    // );
 
-    const handleSubmitRemarks = async () => {
-        console.log("changeremarks", changeRemarks)
-        try {
-            if (changeRemarks) {
-                const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                    currentCompanyName,
-                    currentServiceName,
-                    changeRemarks,
-                    updatedOn: new Date()
-                });
+    // const handleSubmitRemarks = async () => {
+    //     console.log("changeremarks", changeRemarks)
+    //     try {
+    //         if (changeRemarks) {
+    //             const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+    //                 currentCompanyName,
+    //                 currentServiceName,
+    //                 changeRemarks,
+    //                 updatedOn: new Date()
+    //             });
 
-                //console.log("response", response.data);
+    //             //console.log("response", response.data);
 
-                if (response.status === 200) {
-                    if (filteredData && filteredData.length > 0) {
-                        fetchData(searchText, page, true);
-                    } else {
-                        console.log("yahan chal yr")
-                        fetchData(searchText, page, false);
-                    }
-                    functionCloseRemarksPopup();
-                }
-            } else {
-                setError('Remarks Cannot Be Empty!')
-            }
+    //             if (response.status === 200) {
+    //                 if (filteredData && filteredData.length > 0) {
+    //                     fetchData(searchText, page, true);
+    //                 } else {
+    //                     console.log("yahan chal yr")
+    //                     fetchData(searchText, page, false);
+    //                 }
+    //                 functionCloseRemarksPopup();
+    //             }
+    //         } else {
+    //             setError('Remarks Cannot Be Empty!')
+    //         }
 
-        } catch (error) {
-            console.log("Error Submitting Remarks", error.message);
-        }
-    };
+    //     } catch (error) {
+    //         console.log("Error Submitting Remarks", error.message);
+    //     }
+    // };
 
-    const handleDeleteRemarks = async (remarks_id) => {
-        try {
-            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-            });
-            if (response.status === 200) {
-                if (filteredData && filteredData.length > 0) {
-                    fetchData(searchText, page, true);
-                } else {
-                    fetchData(searchText, page, false);
-                }
+    // const handleDeleteRemarks = async (remarks_id) => {
+    //     try {
+    //         const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+    //             data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+    //         });
+    //         if (response.status === 200) {
+    //             if (filteredData && filteredData.length > 0) {
+    //                 fetchData(searchText, page, true);
+    //             } else {
+    //                 fetchData(searchText, page, false);
+    //             }
 
-                functionCloseRemarksPopup();
-            }
-            // Refresh the list
-        } catch (error) {
-            console.error("Error deleting remark:", error);
-        }
-    };
+    //             functionCloseRemarksPopup();
+    //         }
+    //         // Refresh the list
+    //     } catch (error) {
+    //         console.error("Error deleting remark:", error);
+    //     }
+    // };
 
 
 
@@ -1459,7 +1460,18 @@ function RmofCertificationReadyToSubmitPanel({
                                                 )}
                                             </div>
                                         </td>
-                                        <td className='td_of_remarks'>
+                                        <RMRemarksDialog
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            historyRemarks={obj.Remarks}
+                                            ename={employeeData.ename}
+                                            designation={employeeData.designation}
+                                            bdeName={obj.bdeName}
+                                            bdmName={obj.bdmName}
+                                        />
+                                        {/* <td className='td_of_remarks'>
                                             <div className="d-flex align-items-center justify-content-between wApp">
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     {(() => {
@@ -1499,7 +1511,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     <FaPencilAlt />
                                                 </button>
                                             </div>
-                                        </td>
+                                        </td> */}
                                         <td className="td_of_weblink">
                                             <WebsiteLink
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -1664,7 +1676,7 @@ function RmofCertificationReadyToSubmitPanel({
 
                                                 <div>
                                                     {obj.bdmName}
-                                                {
+                                                    {
                                                         completeEmployeeInfo
                                                             .filter((employee) => employee.ename === obj.bdmName)
                                                             .map((employee) => (
@@ -1729,7 +1741,7 @@ function RmofCertificationReadyToSubmitPanel({
             </div>
             {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
 
-            <Dialog className='My_Mat_Dialog'
+            {/* <Dialog className='My_Mat_Dialog'
                 open={openRemarksPopUp}
                 onClose={functionCloseRemarksPopup}
                 fullWidth
@@ -1806,24 +1818,8 @@ function RmofCertificationReadyToSubmitPanel({
                 >
                     Submit
                 </button>
-            </Dialog>
+            </Dialog> */}
 
-            {/* ---------------------filter component---------------------------
-              {showFilterMenu && (
-                <div
-                    className="filter-menu"
-                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                >
-                    <FilterableTable
-                        data={rmServicesData}
-                        filterField={filterField}
-                        onFilter={handleFilter}
-                        completeData={completeRmData}
-                        showingMenu={setShowFilterMenu}
-                        dataForFilter={dataToFilter}
-                    />
-                </div>
-            )} */}
         </div>
     )
 }

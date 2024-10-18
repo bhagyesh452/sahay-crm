@@ -34,7 +34,8 @@ function EmployeeInterestedLeads({
     handleShowCallHistory,
     fetchProjections,
     projectionData,
-    handleOpenFormOpen
+    handleOpenFormOpen,
+    designation
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -174,23 +175,22 @@ function EmployeeInterestedLeads({
                                                             ? "No Remarks"
                                                             : company.Remarks}
                                                     </p>
-                                                    <div>
-                                                        <RemarksDialog
-                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                            currentCompanyName={company["Company Name"]}
-                                                            //remarksHistory={remarksHistory} // pass your remarks history data
-                                                            companyId={company._id}
-                                                            remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                            isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                            bdmAcceptStatus={company.bdmAcceptStatus}
-                                                            companyStatus={company.Status}
-                                                            secretKey={secretKey}
-                                                            //fetchRemarksHistory={fetchRemarksHistory}
-                                                            bdeName={company.ename}
-                                                            refetch={refetch}
-                                                            mainRemarks={company.Remarks}
-                                                        />
-                                                    </div>
+                                                    <RemarksDialog
+                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                        currentCompanyName={company["Company Name"]}
+                                                        //remarksHistory={remarksHistory} // pass your remarks history data
+                                                        companyId={company._id}
+                                                        remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                        isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                        companyStatus={company.Status}
+                                                        secretKey={secretKey}
+                                                        //fetchRemarksHistory={fetchRemarksHistory}
+                                                        bdeName={company.ename}
+                                                        refetch={refetch}
+                                                        mainRemarks={company.Remarks}
+                                                        designation={designation}
+                                                    />
                                                 </div>
                                             </td>
                                             <td>
@@ -200,6 +200,7 @@ function EmployeeInterestedLeads({
                                                     id={company._id}
                                                     nextFollowDate={company.bdeNextFollowUpDate}
                                                     refetch={refetch}
+                                                    status={company.Status}
                                                 />
                                             </td>
                                             <td>

@@ -982,6 +982,8 @@ function EmployeePanel() {
   const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
   const [newBdeName, setNewBdeName] = useState("")
 
+  console.log("employeeData" , employeeData)
+
   const handleStatusChange = async (
     company,
     employeeId,

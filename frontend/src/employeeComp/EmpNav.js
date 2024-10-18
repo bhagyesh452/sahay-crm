@@ -120,8 +120,6 @@ function EmpNav({ userId, bdmWork }) {
                   </a>
                   {/* </Link> */}
                 </Link>
-
-
                 {bdmWork && (
                   <Link style={{ textDecoration: "none", color: "black" }} className={
                     location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"

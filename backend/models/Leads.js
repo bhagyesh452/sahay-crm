@@ -207,6 +207,10 @@ const CompanySchema = new mongoose.Schema({
   isUploadedManually:{
     type:Boolean,
   },
+  lastActionDate:{
+    type:Date,
+    default:new Date()
+  },
   interestedInformation:[informationSchema]
 });
 
