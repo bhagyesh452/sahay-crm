@@ -56,7 +56,7 @@ function CallingReportView({ employeeInformation }) {
     const [callingData, setCallingData] = useState([])
     const [loading, setLoading] = useState(false)
     const fetchCallingData = async () => {
-        const emp_number = employeeInformation.number;
+        const emp_number = employeeInformation?.number;
         const month = selectedMonth;
         const monthNamesToNumbers = {
             "January": "01",
@@ -544,7 +544,7 @@ function CallingReportView({ employeeInformation }) {
     useEffect(() => {
         fetchAttendance();
         monthArray(selectedYear);
-    }, [selectedYear, selectedMonth, employeeInformation._id]);
+    }, [selectedYear, selectedMonth, employeeInformation?._id]);
 
     const convertTo12HourFormat = (time) => {
         let [hours, minutes] = time.split(':').map(Number); // Split and convert to numbers

@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
-import { IconChevronLeft, IconEye } from "@tabler/icons-react";
-import { IconChevronRight } from "@tabler/icons-react";
+import { GoArrowLeft } from "react-icons/go";
+import { GoArrowRight } from "react-icons/go";
 import Nodata from '../../components/Nodata';
 import RemarksDialog from '../ExtraComponents/RemarksDialog';
 import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
@@ -68,11 +68,11 @@ function EmployeeInterestedLeads({
 
 
     return (
-        <div className="RM-my-booking-lists">
+        <div className="sales-panels-main">
           
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap">
+                        <table className="table table-vcenter table-nowrap" style={{width:"2000px"}}>
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="rm-sticky-left-1">Sr. No</th>
@@ -88,13 +88,13 @@ function EmployeeInterestedLeads({
                                     <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>Add Projection</th>
-                                    <th>Forward To Bdm</th>
+                                    <th className="rm-sticky-action">Forward To Bdm</th>
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Interested" ? (
                                 <tbody>
                                     <tr>
-                                        <td colSpan="11" >
+                                        <td colSpan="14" >
                                             <div className="LoaderTDSatyle w-100" >
                                                 <ClipLoader
                                                     color="lightgrey"
@@ -111,8 +111,8 @@ function EmployeeInterestedLeads({
                                 <tbody>
                                     {interestedData.map((company, index) => (
                                         <tr key={index}      >
-                                            <td className="td-sticky">{startIndex + index + 1}</td>
-                                            <td className="td-sticky1">{company["Company Name"]}</td>
+                                            <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
+                                            <td className="rm-sticky-left-2">{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
@@ -166,15 +166,7 @@ function EmployeeInterestedLeads({
                                                 />
                                             </td>
                                             <td>
-                                                <div
-                                                    key={company._id}
-                                                    style={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "space-between",
-                                                        width: "100px",
-                                                    }}
-                                                >
+                                                <div   key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                                     <p
                                                         className="rematkText text-wrap m-0"
                                                         title={company.Remarks}
@@ -234,7 +226,7 @@ function EmployeeInterestedLeads({
                                                     )}
                                                 />
                                             </td>
-                                            <td>
+                                            <td className="rm-sticky-action">
                                                 <BdmMaturedCasesDialogBox
                                                     currentData={interestedData}
                                                     forwardedCompany={company["Company Name"]}
@@ -253,7 +245,7 @@ function EmployeeInterestedLeads({
                             {interestedData && interestedData.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
-                                        <td colSpan="11" className="p-2 particular">
+                                        <td colSpan="14" className="p-2 particular">
                                             <Nodata />
                                         </td>
                                     </tr>
@@ -262,16 +254,20 @@ function EmployeeInterestedLeads({
                         </table>
                     </div>
                     {interestedData && interestedData.length !== 0 && (
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} className="pagination">
-                            <button onClick={prevPage} disabled={currentPage === 0}>
-                                <IconChevronLeft />
-                            </button>
-                            <span>
+                        <div className="pagination d-flex align-items-center justify-content-center w-100">
+                            <div>
+                                <button className='btn-pagination' onClick={prevPage} disabled={currentPage === 0}>
+                                    <GoArrowLeft />
+                                </button>
+                            </div>
+                            <div className='ml-3 mr-3'>
                                 Page {currentPage + 1} of {totalPages}
-                            </span>
-                            <button onClick={nextPage} disabled={currentPage >= totalPages - 1}>
-                                <IconChevronRight />
-                            </button>
+                            </div>
+                            <div>
+                                <button className='btn-pagination' onClick={nextPage} disabled={currentPage >= totalPages - 1}>
+                                    <GoArrowRight />
+                                </button>
+                            </div>
                         </div>
                     )}
                 </>

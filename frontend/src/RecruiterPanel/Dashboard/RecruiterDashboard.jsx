@@ -138,12 +138,12 @@ function RecruiterDashboard() {
   }, []);
   return (
     <div className="admin-dashboard">
-      <RecruiterHeader id={employeeData._id}
+      {/* <RecruiterHeader id={employeeData._id}
         name={employeeData.ename}
         empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename}
         gender={employeeData.gender}
         designation={employeeData.newDesignation} />
-      <RecuiterNavbar recruiterUserId={recruiterUserId} />
+      <RecuiterNavbar recruiterUserId={recruiterUserId} /> */}
       {/* --------------------------------------TABLE-------------------------------------- */}
       <RecruiterApplicantReport
         recruiterData={rmServicesData} />
