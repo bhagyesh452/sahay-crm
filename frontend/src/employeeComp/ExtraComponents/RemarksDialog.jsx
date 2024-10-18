@@ -294,8 +294,6 @@ const RemarksDialog = ({
   companyStatus,
   secretKey,
   bdeName,
-  fetchNewData,
-  bdmName,
   mainRemarks,
   refetch,
   designation

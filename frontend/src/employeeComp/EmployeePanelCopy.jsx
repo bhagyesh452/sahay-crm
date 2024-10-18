@@ -224,8 +224,8 @@ function EmployeePanelCopy() {
                 return response.data; // Directly return the data
             },
             enabled: !!data.ename, // Only fetch if data.ename is available
-            staleTime: 60000, // Cache for 1 minute
-            cacheTime: 60000, // Cache for 1 minute
+            staleTime:300000, // Cache for 1 minute
+            cacheTime: 300000, // Cache for 1 minute
         }
     );
 

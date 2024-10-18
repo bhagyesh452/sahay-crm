@@ -28,7 +28,7 @@ function EmployeeGeneralLeads({
     secretKey,
     handleShowCallHistory
 }) {
-
+    console.log("isLoaidng", isLoading)
     const [companyName, setCompanyName] = useState("");
     const [maturedCompanyName, setMaturedCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
@@ -77,7 +77,7 @@ function EmployeeGeneralLeads({
                                     <th>Assign Date</th>
                                 </tr>
                             </thead>
-                            {isLoading && dataStatus !== "All"  ? (
+                            {isLoading && dataStatus !== "All" ? (
                                 <tbody>
                                     <tr>
                                         <td colSpan="11" >
@@ -111,12 +111,12 @@ function EmployeeGeneralLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                <LuHistory 
-                                                onClick={() => {
-                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
-                                                    // setShowCallHistory(true);
-                                                    // setClientNumber(company["Company Number"]);
-                                                }}
+                                                <LuHistory
+                                                    onClick={() => {
+                                                        handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                        // setShowCallHistory(true);
+                                                        // setClientNumber(company["Company Number"]);
+                                                    }}
                                                     style={{
                                                         cursor: "pointer",
                                                         width: "15px",
@@ -151,7 +151,7 @@ function EmployeeGeneralLeads({
                                                 />
                                             </td>
                                             <td>
-                                                <div   key={company._id} className='d-flex align-items-center justify-content-between w-100' >
+                                                <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                                     <p
                                                         className="rematkText text-wrap mb-0 mr-1"
                                                         title={company.Remarks}

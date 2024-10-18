@@ -162,23 +162,7 @@ function EmployeeForwardedLeads({
                                     <th className="rm-sticky-action">Feedback</th>
                                 </tr>
                             </thead>
-                            {isLoading && dataStatus !== "Interested" ? (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="17" >
-                                            <div className="LoaderTDSatyle w-100" >
-                                                <ClipLoader
-                                                    color="lightgrey"
-                                                    loading
-                                                    size={30}
-                                                    aria-label="Loading Spinner"
-                                                    data-testid="loader"
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            ) : (
+                           
                                 <tbody>
                                     {forwardedLeads.map((company, index) => (
                                         <tr  key={index} >
@@ -390,14 +374,14 @@ function EmployeeForwardedLeads({
                                                     key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                                                     companyId={company._id}
                                                     companyName={company["Company Name"]}
-                                                    feedbackRemarks={company.feedbackRemarks}
-                                                    feedbackPoints={company.feedbackPoints}
+                                                    feedbackRemarks={company.feedbackRemarks ? company.feedbackRemarks : "No Remarks"}
+                                                    feedbackPoints={company.feedbackPoints ? company.feedbackPoints : "0"}
                                                 />
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
-                            )}
+                        
                             {forwardedLeads && forwardedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>

@@ -88,7 +88,7 @@ function EmployeeInterestedLeads({
                                     <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>Add Projection</th>
-                                    <th className="rm-sticky-action">Forward To Bdm</th>
+                                    <th >Forward To Bdm</th>
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Interested" ? (
@@ -200,6 +200,7 @@ function EmployeeInterestedLeads({
                                                     id={company._id}
                                                     nextFollowDate={company.bdeNextFollowUpDate}
                                                     refetch={refetch}
+                                                    status={company.Status}
                                                 />
                                             </td>
                                             <td>
@@ -226,7 +227,7 @@ function EmployeeInterestedLeads({
                                                     )}
                                                 />
                                             </td>
-                                            <td className="rm-sticky-action">
+                                            <td >
                                                 <BdmMaturedCasesDialogBox
                                                     currentData={interestedData}
                                                     forwardedCompany={company["Company Name"]}
