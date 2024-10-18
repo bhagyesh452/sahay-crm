@@ -530,7 +530,7 @@ function RecruiterBox() {
                 totalDocumentsDisqualified,
                 totalDocumentsRejected,
                 totalDocumentsSelected,
-                
+
 
             } = response.data;
             // console.log("response", response.data)
@@ -549,7 +549,7 @@ function RecruiterBox() {
             setTotalDocumentsDisqualified(totalDocumentsDisqualified)
             settotalDocumentsRejected(totalDocumentsRejected)
             settotalDocumentsSelected(totalDocumentsSelected)
-           
+
             setTotalPages(totalPages); // Update total pages
         } catch (error) {
             console.error("Error fetching data", error.message);
@@ -583,9 +583,6 @@ function RecruiterBox() {
 
     return (
         <div>
-            <RecruiterHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
-            <RecruiterNavbar recruiterUserId={recruiterUserId} />
-
 
             <div className="page-wrapper rm-mybookingmain">
                 <div className="page-header rm_Filter m-0">
@@ -627,7 +624,6 @@ function RecruiterBox() {
                                                             ? totalDocumentsRejected
                                                             : activeTab === "Selected"
                                                                 ? totalDocumentsSelected
-
                                                                 : 0}
                                     </b>
                                 </div>
@@ -778,28 +774,28 @@ function RecruiterBox() {
                                     />
                                 </div>
                                 <div class="tab-pane" id="Approved">
-                                        <RecruiterRejected
-                                            showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "Rejected" ? setNoOfData : () => { }}
-                                            searchText={search}
-                                            activeTab={activeTab}
-                                            showFilter={showFilterIcon.Approved}
-                                            completeEmployeeInfo={completeEmployeeInfo}
+                                    <RecruiterRejected
+                                        showingFilterIcon={setShowNoOfFilteredData}
+                                        totalFilteredData={activeTab === "Rejected" ? setNoOfData : () => { }}
+                                        searchText={search}
+                                        activeTab={activeTab}
+                                        showFilter={showFilterIcon.Approved}
+                                        completeEmployeeInfo={completeEmployeeInfo}
 
-                                        />
-                                    </div>
-                                    <div class="tab-pane" id="Hold">
-                                        <RecruiterSelected
-                                            showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "Selected" ? setNoOfData : () => { }}
-                                            searchText={search}
-                                            activeTab={activeTab}
-                                            showFilter={showFilterIcon.Hold}
-                                            completeEmployeeInfo={completeEmployeeInfo}
+                                    />
+                                </div>
+                                <div class="tab-pane" id="Hold">
+                                    <RecruiterSelected
+                                        showingFilterIcon={setShowNoOfFilteredData}
+                                        totalFilteredData={activeTab === "Selected" ? setNoOfData : () => { }}
+                                        searchText={search}
+                                        activeTab={activeTab}
+                                        showFilter={showFilterIcon.Hold}
+                                        completeEmployeeInfo={completeEmployeeInfo}
 
-                                        />
-                                    </div>
-                                    
+                                    />
+                                </div>
+
                             </div>
                         </div>
                     </div>

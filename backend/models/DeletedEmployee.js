@@ -24,6 +24,10 @@ const yourSchema = new mongoose.Schema({
   dob: {
     type: Date
   },
+  bloodGroup: {
+    type: String,
+    default:""
+  },
   gender: {
     type: String
   },

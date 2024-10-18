@@ -62,6 +62,7 @@ import { IoIosClose } from "react-icons/io";
 import { Country, State, City } from 'country-state-city';
 import { LuHistory } from "react-icons/lu";
 import CallHistory from "../../../employeeComp/CallHistory.jsx";
+import EmployeeStatusChange from "../../../employeeComp/ExtraComponents/EmployeeStatusChange.jsx";
 
 function BdmLeads() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -702,7 +703,9 @@ function BdmLeads() {
       console.error("Error fetching remarks history:", error);
     }
   };
-  
+  //console.log(requestData);
+  // const [locationAccess, setLocationAccess] = useState(false);
+
   useEffect(() => {
     fetchProjections();
   }, [data]);
@@ -712,14 +715,147 @@ function BdmLeads() {
     fetchBookingDeleteRequests();
     fetchRequestDetails();
     fetchEditRequests();
+    // let watchId;
+    // const successCallback = (position) => {
+    //   const userLatitude = position.coords.latitude;
+    //   const userLongitude = position.coords.longitude;
+
+    //   // console.log("User Location:", userLatitude, userLongitude);
+    //   if (
+    //     Number(userLatitude.toFixed(3)) === 23.114 &&
+    //     Number(userLongitude.toFixed(3)) === 72.541
+    //   ) {
+    //     setLocationAccess(true);
+    //     // console.log("Location accessed")
+    //   }
+    //   // Now you can send these coordinates to your server for further processing
+    // };
+    // // console.log(localStorage.getItem("newtoken"), locationAccess);
+
     if (userId !== localStorage.getItem("bdmUserId")) {
       localStorage.removeItem("bdmToken");
       window.location.replace("/bdmlogin");
     }
 
+    // const errorCallback = (error) => {
+    //   console.error("Geolocation error:", error.message);
+    //   setLocationAccess(false);
+    //   // Handle the error, e.g., show a message to the user
+    // };
+
+    // navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+
+    // // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
+
+    // // Cleanup function to clear the watch if the component unmounts
+    // return () => {
+    //   navigator.geolocation.clearWatch(watchId);
+    // };
   }, []);
 
- 
+  // console.log(locationAccess);
+
+  // console.log(employeeData);
+
+  // const filteredData = employeeData.filter((company) => {
+  //   const fieldValue = company[selectedField];
+
+  //   if (selectedField === "State" && citySearch) {
+  //     // Handle filtering by both State and City
+  //     const stateMatches = fieldValue
+  //       .toLowerCase()
+  //       .includes(searchText.toLowerCase());
+  //     const cityMatches = company.City.toLowerCase().includes(
+  //       citySearch.toLowerCase()
+  //     );
+  //     return stateMatches && cityMatches;
+  //   } else if (selectedField === "Company Incorporation Date  ") {
+  //     // Assuming you have the month value in a variable named `month`
+  //     if (month == 0) {
+  //       return fieldValue.includes(searchText);
+  //     } else if (year == 0) {
+  //       return fieldValue.includes(searchText);
+  //     }
+  //     const selectedDate = new Date(fieldValue);
+  //     const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+  //     const selectedYear = selectedDate.getFullYear();
+
+  //     // Use the provided month variable in the comparison
+  //     return (
+  //       selectedMonth.toString().includes(month) &&
+  //       selectedYear.toString().includes(year)
+  //     );
+  //   } else if (selectedField === "AssignDate") {
+  //     // Assuming you have the month value in a variable named `month`
+  //     return fieldValue.includes(searchText);
+  //   } else if (selectedField === "Status" && searchText === "All") {
+  //     // Display all data when Status is "All"
+  //     return true;
+  //   } else {
+  //     // Your existing filtering logic for other fields
+  //     if (typeof fieldValue === "string") {
+  //       return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+  //     } else if (typeof fieldValue === "number") {
+  //       return fieldValue.toString().includes(searchText);
+  //     } else if (fieldValue instanceof Date) {
+  //       // Handle date fields
+  //       return fieldValue.includes(searchText);
+  //     }
+
+  //     return false;
+  //   }
+  // });
+  //console.log(companyName, companyInco);
+  //console.log("currentData", currentData)
+
+  // const handleStatusChange = async (
+  //   employeeId,
+  //   newStatus,
+  //   cname,
+  //   cemail,
+  //   cindate,
+  //   cnum,
+  //   oldStatus
+  // ) => {
+  //   if (newStatus === "Matured") {
+  //     setCompanyName(cname);
+  //     setCompanyEmail(cemail);
+  //     setCompanyInco(cindate);
+  //     setCompanyId(employeeId);
+  //     setCompanyNumber(cnum);
+  //     setFormOpen(true);
+  //     return true;
+  //   }
+  //   const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
+  //   const DT = new Date();
+  //   const date = DT.toLocaleDateString();
+  //   const time = DT.toLocaleTimeString();
+  //   try {
+  //     // Make an API call to update the employee status in the database
+  //     const response = await axios.post(
+  //       `${secretKey}/update-status/${employeeId}`,
+  //       {
+  //         newStatus,
+  //         title,
+  //         date,
+  //         time,
+  //       }
+  //     );
+
+  //     // Check if the API call was successful
+  //     if (response.status === 200) {
+  //       // Assuming fetchData is a function to fetch updated employee data
+
+  //       fetchNewData(oldStatus);
+  //     } else {
+  //       // Handle the case where the API call was not successful
+  //       console.error("Failed to update status:", response.data.message);
+  //     }
+  //   } catch (error) {
+  //     // Handle any errors that occur during the API call
+  //     console.error("Error updating status:", error.message);
+  //   }
+  // };
 
   const handleSearch = (searchQuery) => {
     const searchQueryLower = searchQuery.toLowerCase();
@@ -868,6 +1004,7 @@ function BdmLeads() {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  
 
   const currentData = employeeData.slice(startIndex, endIndex);
 
@@ -1875,30 +2012,6 @@ function BdmLeads() {
   // Call the function to create the new array
   const resultArray = moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
 
-  // const handleYearFilterChange = (e, selectedYear) => {
-  //   const isChecked = e.target.checked;
-
-  //   // Filter the employeeData based on the selected year
-  //   if (isChecked) {
-  //     const filteredData = employeeData.filter((data) => {
-  //       const year = new Date(
-  //         data["Company Incorporation Date  "]
-  //       ).getFullYear();
-  //       return year.toString() === selectedYear.toString();
-  //     });
-  //     setEmployeeData(filteredData);
-  //     console.log("Filtered Year data", filteredData);
-  //   } else {
-  //     // If the checkbox is unchecked, reset the filter
-  //     // You can implement this according to your requirements
-  //     // For example, if you want to reset to the original data, you can fetch it again from the server
-  //     // setEmployeeData(originalEmployeeData);
-  //   }
-  // };
-  // const handleMonthFilterChange = () => {
-  //   console.log("Month is filtering");
-  // };
-
   // Handle "Select All" checkbox change
   const handleSelectAllChange = (e) => {
     const isChecked = e.target.checked;
@@ -2199,9 +2312,6 @@ function BdmLeads() {
 
   // ------------------------------------------------------payment-link-work-----------------------------------------
 
-  const [paymentLink, setPaymentLink] = useState("");
-  const [error, setError] = useState("");
-  const [orderId, setOrderId] = useState("");
   const functionCloseFilterDrawer = () => {
     setOpenFilterDrawer(false)
   };
@@ -2267,6 +2377,26 @@ function BdmLeads() {
     //fetchData(1, latestSortCount)
   };
 
+
+  const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
+  const [newBdeName, setNewBdeName] = useState("")
+  const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename) => {
+    setCompanyName(cname);
+    setCompanyEmail(cemail);
+    setCompanyInco(cindate);
+    setCompanyId(employeeId);
+    setCompanyNumber(cnum);
+    setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+    setNewBdeName(ename)
+    if (!isDeletedEmployeeCompany) {
+        console.log("formchal")
+        setFormOpen(true);
+    } else {
+        console.log("addleadfromchal")
+        setAddFormOpen(true)
+    }
+}
+
   return (
     <div>
       {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
@@ -2279,6 +2409,9 @@ function BdmLeads() {
             {!showCallHistory ? <div className="page-wrapper">
               <div className="page-header d-print-none">
                 <div className="container-xl">
+
+
+
                   <div className="d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center">
                       <div className="btn-group mr-2">
@@ -2551,12 +2684,12 @@ function BdmLeads() {
                   </div>
                   <div className="card">
                     <div className="card-body p-0">
-                      <div
-                        style={{
-                          overflowX: "auto",
-                          overflowY: "auto",
-                          maxHeight: "66vh",
-                        }}
+                      <div className="table table-responsive table-style-3 m-0"
+                        // style={{
+                        //   overflowX: "auto",
+                        //   overflowY: "auto",
+                        //   maxHeight: "66vh",
+                        // }}
                       >
                         <table
                           style={{
@@ -2564,12 +2697,12 @@ function BdmLeads() {
                             borderCollapse: "collapse",
                             border: "1px solid #ddd",
                           }}
-                          className="table-vcenter table-nowrap"
+                          className="table table-vcenter table-nowrap"
                         >
                           <thead>
                             <tr className="tr-sticky">
-                              <th className="th-sticky">Sr.No</th>
-                              <th className="th-sticky1">Company Name</th>
+                              <th className="rm-sticky-left-1">Sr.No</th>
+                              <th className="rm-sticky-left-2">Company Name</th>
                               <th>Company Number</th>
                               <th>Call History</th>
                               <th>Status</th>
@@ -2826,8 +2959,34 @@ function BdmLeads() {
                                       color="grey"
                                     />
                                   </td>
-
                                   <td>
+                                    <EmployeeStatusChange
+                                      key={`${company["Company Name"]}-${index}`}
+                                      companyName={company["Company Name"]}
+                                      companyStatus={company.Status}
+                                      id={company._id}
+                                      refetch={fetchNewData}
+                                      mainStatus={dataStatus}
+                                      setCompanyName={setCompanyName}
+                                      setCompanyEmail={setCompanyEmail}
+                                      setCompanyInco={setCompanyInco}
+                                      setCompanyId={setCompanyId}
+                                      setCompanyNumber={setCompanyNumber}
+                                      setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                                      setNewBdeName={setNewBdeName}
+                                      isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
+                                      // setFormOpen={setFormOpen}
+                                      // setAddFormOpen={setAddFormOpen}
+                                      cemail={company["Company Email"]}
+                                      cindate={company["Incorporation Date"]}
+                                      cnum={company["Company Number"]}
+                                      ename={company.ename}
+                                      bdmAcceptStatus={company.bdmAcceptStatus}
+                                      handleFormOpen={handleOpenFormOpen}
+                                    />
+                                  </td>
+
+                                  {/* <td>
                                     {company["Status"] === "Matured" ? (
                                       <span>{company["Status"]}</span>
                                     ) : (
@@ -2880,12 +3039,7 @@ function BdmLeads() {
 
                                         {dataStatus === "Interested" && (
                                           <>
-                                            {/* <option value="Interested">
-                                              Interested
-                                            </option>
-                                            <option value="FollowUp">
-                                              Follow Up{" "}
-                                            </option> */}
+                                           
                                             <option value="Matured">
                                               Matured
                                             </option>
@@ -2894,9 +3048,7 @@ function BdmLeads() {
 
                                         {dataStatus === "FollowUp" && (
                                           <>
-                                            {/* <option value="FollowUp">
-                                              Follow Up{" "}
-                                            </option> */}
+                                            
                                             <option value="Matured">
                                               Matured
                                             </option>
@@ -2904,7 +3056,7 @@ function BdmLeads() {
                                         )}
                                       </select>
                                     )}
-                                  </td>
+                                  </td> */}
 
                                   <td>
                                     <div

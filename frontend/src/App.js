@@ -29,6 +29,7 @@ import EmployeeInterestedCompanies from "./admin/EmployeeInterestestedCompanies.
 import EmployeeFolowUpCompanies from "./admin/EmployeeFolowUpCompanies.jsx";
 
 // Employee Panel Imports 
+import EmployeeLayout from "./employeeComp/EmployeeLayout.jsx";
 import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import EmployeePanel from "./employeeComp/EmployeePanel";
 import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
@@ -37,18 +38,18 @@ import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
 import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
-import EmployeeLayout from "./employeeComp/EmployeeLayout.jsx";
 
 // Floor Manager Imports
+import FloorManagerLayout from "./BDM/Dashboard/FloorManagerLayout.jsx";
 import BDMLogin from "./BDM/Login/BDMLogin.jsx";
 import BdmDashboard from "./BDM/Dashboard/BdmDashboard.jsx";
 import BdmLeads from "./BDM/Dashboard/BdmLeads/BdmLeads.js";
 import BdmTeamLeads from "./BDM/Dashboard/BdmTeamLeads/BdmTeamLeads";
 import BdmBookings from "./BDM/Dashboard/BdmBookings.jsx";
 import FloorManagerProfile from "./BDM/Dashboard/FloorManagerProfile.jsx";
-import FloorManagerLayout from "./BDM/Dashboard/FloorManagerLayout.jsx";
 
 // Admin Head/RM of Certification Imports
+import AdminHeadLayout from "./RM-CERTIFICATION/RM-CERT-COMPONENTS/AdminHeadLayout.jsx";
 import RMofCertification from "./RM-CERTIFICATION/RM-CERT-LOGIN/RMofCertification.jsx";
 import RmCertificationDashboard from "./RM-CERTIFICATION/RM-CERT-DASHBOARD/RmCertificationDashboard.jsx";
 import RMofFundingLogin from "./RM-FUNDING/RM-FUNDING-LOGIN/RMofFundingLogin.jsx";
@@ -56,18 +57,18 @@ import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingD
 import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
-import AdminHeadLayout from "./RM-CERTIFICATION/RM-CERT-COMPONENTS/AdminHeadLayout.jsx";
 import AdminHeadProfile from "./RM-CERTIFICATION/RM-CERT-COMPONENTS/AdminHeadProfile.jsx";
 
 // Admin Executive Imports
+import AdminExecutiveLayout from "./AdminExecutive/Components/AdminExecutiveLayout.jsx";
 import AdminExecutiveLogin from "./AdminExecutive/Login/AdminExecutiveLogin.jsx";
 import AdminExecutiveDashboard from "./AdminExecutive/Dashboard/AdminExecutiveDashboard.jsx";
 import AdminExecutiveRecievedBox from "./AdminExecutive/RecievedBookingBox/AdminExecutiveRecievedBox.jsx";
 import AdminExecutiveMyBookings from "./AdminExecutive/AdminExecutiveBookings/AdminExecutiveMyBookings.jsx";
-import AdminExecutiveLayout from "./AdminExecutive/Components/AdminExecutiveLayout.jsx";
 import AdminExecutiveProfile from "./AdminExecutive/Components/AdminExecutiveProfile.jsx";
 
 // Hr Panel Imports
+import HrLayout from "./Hr_panel/Components/HrLayout.jsx";
 import HrLogin from "./Hr_panel/Login/HrLogin.jsx";
 import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
@@ -77,16 +78,17 @@ import Attendance from "./Hr_panel/Components/Attendance/Attendance.jsx";
 //import Employee from "./Hr_panel/Components/EmployeeView.jsx";
 import EmployeeView from "./Hr_panel/Components/EmployeeView.jsx";
 import EmployeeSalaryView from "./Hr_panel/Components/Attendance/EmployeeSalaryView.jsx";
-import HrLayout from "./Hr_panel/Components/HrLayout.jsx";
 import HrManagerProfile from "./Hr_panel/Components/HrManagerProfile.jsx";
 
 // Recruiter Panel Imports
+import RecruiterLayout from "./RecruiterPanel/Components/RecruiterLayout.jsx";
+import RecruiterLogin from "./RecruiterPanel/Login/RecruiterLogin.jsx";
 import ApplicationForm from "./RecruiterPanel/ApplicationForm/ApplicationForm.jsx";
 import RecruiterDashboard from "./RecruiterPanel/Dashboard/RecruiterDashboard.jsx";
-import RecruiterLogin from "./RecruiterPanel/Login/RecruiterLogin.jsx";
 import RecruiterBox from "./RecruiterPanel/TabPanels/RecruiterBox.jsx";
 
 // Data Analyst Imports
+import DataAnalystLayout from "./DataManager/Components/ExtraComponents/DataAnalystLayout.jsx";
 import DataManagerLogin from "./DataManager/DataMangerLogin/DataManagerLogin.jsx";
 import DataManagerDashboard from "./DataManager/Dashboard/DataManagerDashboard.jsx";
 import ManagerBookings from "./DataManager/Dashboard/ManageLeads/ManagerBookings.jsx";
@@ -100,17 +102,16 @@ import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerD
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
 import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
 import ExpenseReport from "./DataManager/Dashboard/Expense/ExpenseReport.jsx";
-import DataAnalystLayout from "./DataManager/Components/ExtraComponents/DataAnalystLayout.jsx";
 import DataAnalystProfile from "./DataManager/Components/ExtraComponents/DataAnalystProfile.jsx";
 
 // Relationship Manager Imports
-import RelationshipManagerLogin from "./RelationshipManager/Login/RelationshipManagerLogin.jsx";
 import RelationshipManagerLayout from "./RelationshipManager/Components/RelationshipManagerLayout.jsx";
+import RelationshipManagerLogin from "./RelationshipManager/Login/RelationshipManagerLogin.jsx";
 import RelationshipManagerDashboard from "./RelationshipManager/Dashboard/RelationshipManagerDashboard.jsx";
 
 // Graphic Designer Imports
-import GraphicDesignerLogin from "./GraphicDesigner/Login/GraphicDesignerLogin.jsx";
 import GraphicDesignerLayout from "./GraphicDesigner/Components/GraphicDesignerLayout.jsx";
+import GraphicDesignerLogin from "./GraphicDesigner/Login/GraphicDesignerLogin.jsx";
 import GraphicDesignerDashboard from "./GraphicDesigner/Dashboard/GraphicDesignerDashboard.jsx";
 
 // Customer Panel Imports
@@ -283,6 +284,7 @@ function App() {
                 <Route path="/managing-director/bookings/Addbookings" element={<RedesignedForm />} />
                 <Route path="/managing-director/servicesandschemes" element={<Services />} />
                 <Route path="/managing-director/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
+                <Route path="/managing-director/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />
               </Route>
             </>
           ) : (
@@ -300,15 +302,21 @@ function App() {
             <Route path="/hr/edit/employee/:empId" element={<HREditEmployee />} />
             <Route path="/hr/employees/attendance" element={<Attendance />} />
             <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />} />
+            <Route path='hr-deleted-employee-profile-details/:userId' element={<EmployeeView />} />
             <Route path='/hr/employees/salarypage' element={<EmployeeSalaryView />} />
             <Route path="/hr-profile-details" element={<HrManagerProfile />} />
           </Route>
 
           {/**********************************************  RecruiterPanel  *******************************************************/}
-          <Route path="/recruiter/appynowform" element={<ApplicationForm />} />
-          <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
-          <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} />
           <Route path="/recruiter/login" element={<RecruiterLogin setRecruiterToken={setRecruiterToken} />} />
+          <Route path="/recruiter/appynowform" element={<ApplicationForm />} />
+          {/* <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
+          <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} /> */}
+          <Route element={<RecruiterLayout />}>
+            <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
+            <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} />
+          </Route>
+
 
           {/**********************************************  relationship manager panel  ********************************************/}
           <Route path="/relationship-manager/login" element={<RelationshipManagerLogin />} />

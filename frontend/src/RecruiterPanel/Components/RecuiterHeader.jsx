@@ -7,7 +7,6 @@ import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import myImage from "../../static/mainLogo.png";
 import Avatar from '@mui/material/Avatar';
-import io from 'socket.io-client';
 import MaleEmployee from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 import { SnackbarProvider, enqueueSnackbar, MaterialDesignContent } from 'notistack';
@@ -15,9 +14,13 @@ import notification_audio from "../../assets/media/notification_tone.mp3";
 import ReportComplete from "../../components/ReportComplete.jsx";
 import RecruiterBell from "./RecruiterBell.jsx";
 import RecruiterNotification from "./RecruiterNotification.jsx";
+import axios from "axios";
+import io from 'socket.io-client';
 
-function RecruiterHeader({ name, id, designation, empProfile, gender }) {
+function RecruiterHeader({ id, name, empProfile, gender, designation }) {
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [socketID, setSocketID] = useState("");
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -27,10 +30,13 @@ function RecruiterHeader({ name, id, designation, empProfile, gender }) {
             transports: ['websocket'],
         });
 
+        socket.on("connect", () => {
+            //console.log("Socket connected with ID:", socket.id);
+            console.log('Connection Successful to socket io')
+            setSocketID(socket.id);
+        });
+
         // Listen for the 'welcome' event from the server
-
-
-
         // socket.on("adminexecutive-letter-updated", (res) => {
         //   console.log("socketchala" , res.updatedDocument)
         //   if(res.updatedDocument){
@@ -48,9 +54,45 @@ function RecruiterHeader({ name, id, designation, empProfile, gender }) {
         };
     }, []);
 
+    const activeStatus = async () => {
+        if (id && socketID) {
+            try {
+                console.log("Request is sending for" + socketID + " " + id)
+                const response = await axios.put(`${secretKey}/employee/online-status/${id}/${socketID}`);
+                //console.log(response.data); // Log response for debugging
+                return response.data; // Return response data if needed
+            } catch (error) {
+                console.error("Error:", error);
+                throw error; // Throw error for handling in the caller function
+            }
+        } else {
+            console.log(id, socketID, "This is it")
+        }
+    };
 
+    useEffect(() => {
+        const checkAndRunActiveStatus = () => {
+            if (id) {
+                activeStatus();
+            } else {
+                const intervalId = setInterval(() => {
+                    if (id) {
+                        activeStatus();
+                        clearInterval(intervalId);
+                    }
+                }, 1000);
+                return () => clearInterval(intervalId); // Cleanup interval on unmount
+            }
+        };
 
+        const timerId = setTimeout(() => {
+            checkAndRunActiveStatus();
+        }, 2000);
 
+        return () => {
+            clearTimeout(timerId);
+        };
+    }, [socketID, id]);
 
     return (
         <div>
@@ -67,8 +109,8 @@ function RecruiterHeader({ name, id, designation, empProfile, gender }) {
                     >
                         <span className="navbar-toggler-icon"></span>
                     </button>
-                    <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
 
+                    <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
                         <img
                             src={myImage}
                             width="110"
@@ -76,8 +118,8 @@ function RecruiterHeader({ name, id, designation, empProfile, gender }) {
                             alt="Start-Up Sahay"
                             className="navbar-brand-image"
                         />
-
                     </h1>
+
                     <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
                         <RecruiterBell name={name} />
                         {empProfile ? <Avatar src={`${secretKey}/employee/fetchProfilePhoto/${id}/${encodeURIComponent(empProfile)}`}
@@ -86,6 +128,7 @@ function RecruiterHeader({ name, id, designation, empProfile, gender }) {
                                 src={gender === "Male" ? MaleEmployee : FemaleEmployee}
                                 className="My-Avtar" sx={{ width: 36, height: 36 }} />
                         }
+
                         <div className="nav-item dropdown">
                             <button
                                 className="nav-link d-flex lh-1 text-reset p-0"
@@ -99,6 +142,7 @@ function RecruiterHeader({ name, id, designation, empProfile, gender }) {
                                     </div>
                                 </div>
                             </button>
+
                             <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                 <a href="#" className="dropdown-item">
                                     Status
@@ -118,16 +162,13 @@ function RecruiterHeader({ name, id, designation, empProfile, gender }) {
                                 </a>
                             </div>
                         </div>
-                        <RecruiterNotification name={name} designation={designation} />
-                        <div
-                            style={{ display: "flex", alignItems: "center" }}
-                            className="item"
-                        >
 
-                        </div>
+                        <RecruiterNotification name={name} designation={designation} />
+
                     </div>
                 </div>
             </header>
+
             <SnackbarProvider Components={{
                 reportComplete: ReportComplete
             }} iconVariant={{
@@ -136,10 +177,9 @@ function RecruiterHeader({ name, id, designation, empProfile, gender }) {
                 warning: '⚠️',
                 info: 'ℹ️',
             }} maxSnack={3}>
-
             </SnackbarProvider>
         </div>
-    )
+    );
 }
 
 export default RecruiterHeader;

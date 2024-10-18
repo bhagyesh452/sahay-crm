@@ -14,7 +14,7 @@ import { GrDocumentStore } from "react-icons/gr";
 import { FaList } from "react-icons/fa6";
 import { FaTableCellsLarge } from "react-icons/fa6";
 
-function RecuiterNavbar({ recruiterUserId }) {
+function RecuiterNavbar({ userId }) {
   const location = useLocation();
 
   //console.log("bdmWORKON NAV", bdmWork)
@@ -25,7 +25,7 @@ function RecuiterNavbar({ recruiterUserId }) {
   //   window.location.replace(`/employee-team-leads/${userId}`);
   // };
   const handleDashboardClick = () => {
-    window.location.replace(`/recruiter/dashboard/${recruiterUserId}`)
+    window.location.replace(`/recruiter/dashboard/${userId}`)
   }
 
 
@@ -38,8 +38,8 @@ function RecuiterNavbar({ recruiterUserId }) {
             <div className="container-xl">
               <ul className="navbar-nav">
                 <Link style={{ textDecoration: "none", color: "black" }}
-                  className={location.pathname === `/recruiter/dashboard/${recruiterUserId}` ? "nav-item active" : 'nav-item'}
-                  to={`/recruiter/dashboard/${recruiterUserId}`}
+                  className={location.pathname === `/recruiter/dashboard/${userId}` ? "nav-item active" : 'nav-item'}
+                  to={`/recruiter/dashboard/${userId}`}
                 >
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -67,8 +67,8 @@ function RecuiterNavbar({ recruiterUserId }) {
                 </Link>
 
                 <Link style={{ textDecoration: "none", color: "black" }}
-                  className={location.pathname === `/recruiter/employeesbox/${recruiterUserId}` ? "nav-item active" : 'nav-item'}
-                  to={`/recruiter/employeesbox/${recruiterUserId}`}
+                  className={location.pathname === `/recruiter/employeesbox/${userId}` ? "nav-item active" : 'nav-item'}
+                  to={`/recruiter/employeesbox/${userId}`}
                 >
                   <a className="nav-link" href="./">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">

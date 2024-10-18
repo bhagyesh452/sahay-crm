@@ -59,9 +59,9 @@ function BdmDashboard() {
   //   lastbookingdate: "none"
   // });
 
-  // useEffect(() => {
-  //   document.title = `Floor-Manager-Sahay-CRM`;
-  // }, []);
+  useEffect(() => {
+    document.title = `Floor-Manager-Sahay-CRM`;
+  }, []);
 
   // const fetchData = async () => {
   //   try {

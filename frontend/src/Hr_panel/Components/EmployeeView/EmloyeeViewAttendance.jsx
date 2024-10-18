@@ -388,7 +388,7 @@ function EmployeeViewAttendance({ data }) {
     useEffect(() => {
         fetchAttendance();
         monthArray(selectedYear);
-    }, [selectedYear, selectedMonth, data._id]);
+    }, [selectedYear, selectedMonth, data?._id]);
 
     const convertTo12HourFormat = (time) => {
         let [hours, minutes] = time.split(':').map(Number); // Split and convert to numbers

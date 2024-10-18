@@ -60,10 +60,14 @@ import EmployeeViewPayrollView from "../Hr_panel/Components/EmployeeView/Employe
 import BusinessCardView from "../Hr_panel/Components/EmployeeView/BusinessCardView.jsx";
 import SalaryCalculationView from "../Hr_panel/Components/EmployeeView/SalaryCalculationView.jsx";
 import { FaRegEye } from "react-icons/fa";
+import ClipLoader from "react-spinners/ClipLoader.js";
 
 function AdminEmployeeProfile() {
 
     const { userId } = useParams();
+    const path = window.location.pathname;
+    // console.log("Full url path is :", path);
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const personalUserId = localStorage.getItem("hrUserId");
 
@@ -72,6 +76,8 @@ function AdminEmployeeProfile() {
     const [myInfo, setMyInfo] = useState([]);
     const [employeeData, setEmployeeData] = useState([]);
     const [showProfileUploadWindow, setShowProfileUploadWindow] = useState(false);
+    const [isDeleted, setIsDeleted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [editField, setEditField] = useState("");
 
     const [officialEmail, setOfficialEmail] = useState("");
@@ -98,17 +104,12 @@ function AdminEmployeeProfile() {
     );
 
     useEffect(() => {
-        document.title = `HR-Sahay-CRM`;
+        document.title = `Admin-Sahay-CRM`;
     }, []);
 
     const [selectedFile, setSelectedFile] = useState(null);
     const [open, setOpen] = useState(false);
     const [editempinfo, setEditEmpInfo] = useState(false);
-
-    // const [personal_email, setPersonalEmail] = useState('');
-    // const [personal_number, setPersonalPhone] = useState('');
-    // const [personal_contact_person, setContactPerson] = useState('');
-    // const [personal_address, setPersonalAddress] = useState('');
 
     useEffect(() => {
         const savedImage = localStorage.getItem("empImg1");
@@ -168,7 +169,7 @@ function AdminEmployeeProfile() {
             formData.append("profilePhoto", selectedFile);
 
             try {
-                const response = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${data._id}`, formData, {
+                const response = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${data?._id}`, formData, {
                     headers: {
                         // "Content-Type": "multipart/form-data",
                         Authorization: `Bearer ${newtoken}`,
@@ -242,19 +243,22 @@ function AdminEmployeeProfile() {
     //-----------------fetching employee details----------------------------------
     const fetchEmployeeData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
+            let response;
+            if (path === `/managing-director/employeeProfileView/${userId}`) {
+                setIsLoading(true);
+                response = await axios.get(`${secretKey}/employee/einfo`);
+            } else {
+                response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+                setIsLoading(true);
+                setIsDeleted(true);
+            }
+
             // console.log(response.data, userId);
             const tempData = response.data;
             const data = tempData.find((item) => item._id === userId);
-            // console.log(data);
+            console.log(data);
+
             setEmployeeData(data);
-
-            // set the personal details fields
-            // setPersonalEmail(data.personal_email || '')
-            // setPersonalPhone(data.personal_number || '');
-            // setContactPerson(data.personal_contact_person || '');
-            // setPersonalAddress(data.personal_address || '');
-
             setdata(data);
             setDepartment(data.department);
             setEmploymentType(data.employeementType);
@@ -264,9 +268,11 @@ function AdminEmployeeProfile() {
             setRelationship(data.relationship);
             setCurrentAddress(data.currentAddress);
             setPermanentAddress(data.permanentAddress);
-
         } catch (error) {
             console.error("Error fetching employee data", error);
+            setIsLoading(false);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -326,13 +332,17 @@ function AdminEmployeeProfile() {
         }
     };
 
-
-
     return (
         <div>
-            {/* <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
-      <Navbar /> */}
-            <div className="page-wrapper">
+            {isLoading ? <div className="d-flex align-items-center justify-content-center"
+                style={{ height: '80vh', width: '100vw' }}>
+                <ClipLoader
+                    color="lightgrey"
+                    size={30}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                />
+            </div> : <div className="page-wrapper">
                 <div className="page-header m-0">
                     <div className="container-xl">
                         <nav aria-label="breadcrumb">
@@ -343,6 +353,7 @@ function AdminEmployeeProfile() {
                         </nav>
                     </div>
                 </div>
+
                 <div className="page-body hr_Dtl_box m-0">
                     <div className="container-xl">
                         <div className="d-flex mt-1">
@@ -352,8 +363,8 @@ function AdminEmployeeProfile() {
                                         <div className="p-3">
                                             <label className="emply_e_card_profile_inner_lbl">
                                                 <div className="emply_e_card_profile_div">
-                                                    {data.profilePhoto?.length !== 0 ? <img src={`${secretKey}/employee/fetchProfilePhoto/${data._id}/${encodeURIComponent(data.profilePhoto?.[0]?.filename)}`} />
-                                                        : <img src={data.gender === "Male" ? MaleEmployee : FemaleEmployee} />
+                                                    {data?.profilePhoto?.length !== 0 ? <img src={`${secretKey}/employee/fetchProfilePhoto/${data?._id}/${encodeURIComponent(data?.profilePhoto?.[0]?.filename)}`} />
+                                                        : <img src={data?.gender === "Male" ? MaleEmployee : FemaleEmployee} />
                                                     }
                                                     {/* <img src={MaleEmployee}></img> */}
                                                 </div>
@@ -365,14 +376,15 @@ function AdminEmployeeProfile() {
                                                 </div>
                                             </label>
                                         </div>
+
                                         <div className="emply_e_card_profile_name bdr-left-eee">
                                             <div className="EP_Name d-flex justify-content-between align-items-center">
                                                 <h3 className="m-0">
-                                                    <span className="clr-ffb900">{data.ename || "-"}</span>
-                                                    <div className="EP_Designation">{data.newDesignation || "-"}</div>
+                                                    <span className="clr-ffb900">{data?.ename || "-"}</span>
+                                                    <div className="EP_Designation">{data?.newDesignation || "-"}</div>
                                                 </h3>
                                                 <div className="d-flex align-items-center">
-                                                    {(data.designation === "Sales Executive" || data.designation === "Sales Manager") && (<div className="employee_panel mr-1">
+                                                    {(data?.designation === "Sales Executive" || data?.designation === "Sales Manager") && (<div className="employee_panel mr-1">
                                                         <Link
                                                             style={{ textDecoration: "none", color: 'inherit' }}
                                                             to={`/managing-director/employees/${data._id}`}
@@ -380,9 +392,14 @@ function AdminEmployeeProfile() {
                                                             Panel
                                                         </Link>
                                                     </div>)}
-                                                    <div className="employee_active">Active</div>
+                                                    {!isDeleted ? (
+                                                        <div className="employee_active">Active</div>
+                                                    ) : (
+                                                        <div className="employee_inactive">Inactive</div>
+                                                    )}
                                                 </div>
                                             </div>
+
                                             <div className="row m-0 aling-items-start">
                                                 <div className="col p-0">
                                                     <div className="EP_Other_info">
@@ -401,7 +418,7 @@ function AdminEmployeeProfile() {
                                                                 </div>
                                                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                                                     <div className="">
-                                                                        <div className="ep_info_t">{data.employeeID || "-"}</div>
+                                                                        <div className="ep_info_t">{data?.employeeID || "-"}</div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -419,18 +436,18 @@ function AdminEmployeeProfile() {
                                                                     {editField !== "officialEmail" ? (
                                                                         <div className="d-flex align-items-center justify-content-between ep_info">
                                                                             <div className="ep_info_t">
-                                                                                {data.email || "-"}
+                                                                                {data?.email || "-"}
                                                                             </div>
-                                                                            <div className="ep_info_icon">
+                                                                            {!isDeleted && <div className="ep_info_icon">
                                                                                 <MdOutlineEdit onClick={() => {
                                                                                     if (editField !== "") {
                                                                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                         return;
                                                                                     }
-                                                                                    setOfficialEmail(data.email);
+                                                                                    setOfficialEmail(data?.email);
                                                                                     setEditField("officialEmail");
                                                                                 }} />
-                                                                            </div>
+                                                                            </div>}
                                                                         </div>
                                                                     ) : (
                                                                         <div className="d-flex align-items-center justify-content-between">
@@ -462,18 +479,18 @@ function AdminEmployeeProfile() {
                                                                     {editField !== "officialNumber" ? (
                                                                         <div className="d-flex align-items-center justify-content-between ep_info">
                                                                             <div className="ep_info_t">
-                                                                                {data.number || "-"}
+                                                                                {data?.number || "-"}
                                                                             </div>
-                                                                            <div className="ep_info_icon">
+                                                                            {!isDeleted && <div className="ep_info_icon">
                                                                                 <MdOutlineEdit onClick={() => {
                                                                                     if (editField !== "") {
                                                                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                         return;
                                                                                     }
-                                                                                    setOfficialNumber(data.number);
+                                                                                    setOfficialNumber(data?.number);
                                                                                     setEditField("officialNumber");
                                                                                 }} />
-                                                                            </div>
+                                                                            </div>}
                                                                         </div>
                                                                     ) : (
                                                                         <div className="d-flex align-items-center justify-content-between">
@@ -507,18 +524,18 @@ function AdminEmployeeProfile() {
                                                                     {editField !== "joiningDate" ? (
                                                                         <div className="d-flex align-items-center justify-content-between ep_info">
                                                                             <div className="ep_info_t">
-                                                                                {data.jdate ? formatDateNew(data.jdate) : "-"}
+                                                                                {data?.jdate ? formatDateNew(data?.jdate) : "-"}
                                                                             </div>
-                                                                            <div className="ep_info_icon">
+                                                                            {!isDeleted && <div className="ep_info_icon">
                                                                                 <MdOutlineEdit onClick={() => {
                                                                                     if (editField !== "") {
                                                                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                         return;
                                                                                     }
-                                                                                    setJoiningDate(formatDateForInput(data.jdate));
+                                                                                    setJoiningDate(formatDateForInput(data?.jdate));
                                                                                     setEditField("joiningDate");
                                                                                 }} />
-                                                                            </div>
+                                                                            </div>}
                                                                         </div>
                                                                     ) : (
                                                                         <div className="d-flex align-items-center justify-content-between">
@@ -565,8 +582,8 @@ function AdminEmployeeProfile() {
                                         <div class="tab-pane active" id="eI">
                                             <div className="my-card mt-2" >
                                                 {/* <div className="my-card-head">
-                          Employment Information
-                        </div> */}
+                                                    Employment Information
+                                                </div> */}
                                                 <div className="my-card-body">
 
                                                     <div className="row m-0 bdr-btm-eee">
@@ -582,18 +599,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "department" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.department || "-"}
+                                                                        {data?.department || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setDepartment(data.department);
+                                                                            setDepartment(data?.department);
                                                                             setEditField("department");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -633,18 +650,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "branchOffice" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.branchOffice || "-"}
+                                                                        {data?.branchOffice || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setBranchOffice(data.branchOffice);
+                                                                            setBranchOffice(data?.branchOffice);
                                                                             setEditField("branchOffice");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -680,18 +697,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "employmentType" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.employeementType || "-"}
+                                                                        {data?.employeementType || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setEmploymentType(data.employeementType);
+                                                                            setEmploymentType(data?.employeementType);
                                                                             setEditField("employmentType");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -730,18 +747,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "reportingManager" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.reportingManager || "-"}
+                                                                        {data?.reportingManager || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setReportingManager(data.reportingManager);
+                                                                            setReportingManager(data?.reportingManager);
                                                                             setEditField("reportingManager");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -771,8 +788,8 @@ function AdminEmployeeProfile() {
 
                                             <div className="my-card mt-2" >
                                                 {/* <div className="my-card-head">
-                          Personal Information
-                        </div> */}
+                                                        Personal Information
+                                                </div> */}
                                                 <div className="my-card-body">
 
                                                     <div className="row m-0 bdr-btm-eee">
@@ -788,18 +805,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "empFullName" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.empFullName || "-"}
+                                                                        {data?.empFullName || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setFullName(data.empFullName);
+                                                                            setFullName(data?.empFullName);
                                                                             setEditField("empFullName");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -831,19 +848,19 @@ function AdminEmployeeProfile() {
                                                             {editField !== "dob" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.dob ? formatDateNew(data.dob) : "-"}
+                                                                        {data?.dob ? formatDateNew(data?.dob) : "-"}
                                                                         {/* 2<sup>nd</sup> Dec 2024 */}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setDob(formatDateForInput(data.dob));
+                                                                            setDob(formatDateForInput(data?.dob));
                                                                             setEditField("dob");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -874,19 +891,19 @@ function AdminEmployeeProfile() {
                                                             {editField !== "bloodGroup" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.bloodGroup ? data.bloodGroup : "-"}
+                                                                        {data?.bloodGroup ? data?.bloodGroup : "-"}
                                                                         {/* 2<sup>nd</sup> Dec 2024 */}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setBloodGroup(data.bloodGroup);
+                                                                            setBloodGroup(data?.bloodGroup);
                                                                             setEditField("bloodGroup");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -928,18 +945,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "gender" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.gender || "-"}
+                                                                        {data?.gender || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setGender(data.gender);
+                                                                            setGender(data?.gender);
                                                                             setEditField("gender");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -975,18 +992,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "personalNumber" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.personal_number || "-"}
+                                                                        {data?.personal_number || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setPersonalNumber(data.personal_number);
+                                                                            setPersonalNumber(data?.personal_number);
                                                                             setEditField("personalNumber");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -1018,18 +1035,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "personalEmail" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.personal_email || "-"}
+                                                                        {data?.personal_email || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setPersonalEmail(data.personal_email);
+                                                                            setPersonalEmail(data?.personal_email);
                                                                             setEditField("personalEmail");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -1074,18 +1091,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "emergencyContact" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.personal_contact_person || "-"}
+                                                                        {data?.personal_contact_person || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setEmergencyContactName(data.personal_contact_person);
+                                                                            setEmergencyContactName(data?.personal_contact_person);
                                                                             setEditField("emergencyContact");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -1117,18 +1134,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "relationship" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.personal_contact_person_relationship || "-"}
+                                                                        {data?.personal_contact_person_relationship || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setRelationship(data.personal_contact_person_relationship);
+                                                                            setRelationship(data?.personal_contact_person_relationship);
                                                                             setEditField("relationship");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -1165,18 +1182,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "emergencyContactNo" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.personal_contact_person_number || "-"}
+                                                                        {data?.personal_contact_person_number || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setEmergencyContactNumber(data.personal_contact_person_number);
+                                                                            setEmergencyContactNumber(data?.personal_contact_person_number);
                                                                             setEditField("emergencyContactNo");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -1214,18 +1231,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "currentAddress" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.currentAddress || "-"}
+                                                                        {data?.currentAddress || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setCurrentAddress(data.currentAddress);
+                                                                            setCurrentAddress(data?.currentAddress);
                                                                             setEditField("currentAddress");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -1257,18 +1274,18 @@ function AdminEmployeeProfile() {
                                                             {editField !== "permanentAddress" ? (
                                                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                                                     <div className="ep_info_t">
-                                                                        {data.permanentAddress || "-"}
+                                                                        {data?.permanentAddress || "-"}
                                                                     </div>
-                                                                    <div className="ep_info_icon">
+                                                                    {!isDeleted && <div className="ep_info_icon">
                                                                         <MdOutlineEdit onClick={() => {
                                                                             if (editField !== "") {
                                                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
                                                                                 return;
                                                                             }
-                                                                            setPermanentAddress(data.permanentAddress);
+                                                                            setPermanentAddress(data?.permanentAddress);
                                                                             setEditField("permanentAddress");
                                                                         }} />
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             ) : (
                                                                 <div className="d-flex align-items-center justify-content-between">
@@ -1348,7 +1365,8 @@ function AdminEmployeeProfile() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>}
+
             {/* Profile upload dialog box */}
             <Dialog
                 open={showProfileUploadWindow}

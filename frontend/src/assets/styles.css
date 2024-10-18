@@ -2430,6 +2430,17 @@ td input {
   box-shadow: 3px 2px 10px -4px #38e037;
 }
 
+.employee_inactive {
+  padding: 3px 10px 3px 10px;
+  background: #ee2d18;
+  /* margin-left: 18px;
+  margin-top: 2px; */
+  border-radius: 3px;
+  font-size: 11px;
+  color: #fff;
+  box-shadow: 3px 2px 10px -4px #ee2d18;
+}
+
 .employee_panel {
   padding: 3px 10px 3px 10px;
   background: #ffba00;

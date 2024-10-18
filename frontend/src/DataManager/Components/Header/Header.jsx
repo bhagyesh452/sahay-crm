@@ -5,10 +5,7 @@ import "../../../dist/css/tabler-flags.min.css?1684106062";
 import "../../../dist/css/tabler-payments.min.css?1684106062";
 import "../../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../../dist/css/demo.min.css?1684106062";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import myImage from "../../../static/mainLogo.png";
-import { useNavigate } from "react-router-dom";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
 //import Notification from "./Notification";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
@@ -26,7 +23,9 @@ import MaleEmployee from "../../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 
 function Header({ name, id, designation, empProfile, gender }) {
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const [socketID, setSocketID] = useState("");
 
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -36,57 +35,65 @@ function Header({ name, id, designation, empProfile, gender }) {
       transports: ['websocket'],
     });
 
+    socket.on("connect", () => {
+      //console.log("Socket connected with ID:", socket.id);
+      console.log('Connection Successful to socket io')
+      setSocketID(socket.id);
+    });
+
     // Listen for the 'welcome' event from the server
-
-
     socket.on("delete-booking-requested", (res) => {
       enqueueSnackbar(`Booking Delete Request Received From ${res}`, {
         variant: 'reportComplete',
-        persist:true
+        persist: true
       });
-    
+
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
+
     socket.on("booking-submitted", (res) => {
-      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete" , persist:true });
-    
+      enqueueSnackbar(`Booking Received from ${res}`, { variant: "reportComplete", persist: true });
+
       const audioplayer = new Audio(booking_audio);
       audioplayer.play();
     });
+
     socket.on("newRequest", (res) => {
       enqueueSnackbar(`${res.name} Is Asking For Data`, {
         variant: 'reportComplete',
-        persist:true
+        persist: true
       });
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
+
     socket.on("editBooking_requested", (res) => {
       enqueueSnackbar(`Booking Edit Request Received From ${res.bdeName}`, {
         variant: 'reportComplete',
-        persist:true
+        persist: true
       });
-    
+
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
+
     socket.on("approve-request", (res) => {
       enqueueSnackbar(`Lead Upload Request Received From ${res}`, {
         variant: 'reportComplete',
-        persist:true
+        persist: true
       });
 
-      socket.on("payment-approval-request" , (res)=>{
+      socket.on("payment-approval-request", (res) => {
         enqueueSnackbar(`Payment Approval Requests Recieved From ${res.name}`, {
           variant: 'reportComplete',
           persist: true
         });
-  
+
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       })
-    
+
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
@@ -95,10 +102,47 @@ function Header({ name, id, designation, empProfile, gender }) {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [name]);
 
-  const dataManagerName = localStorage.getItem("dataManagerName")
+  const activeStatus = async () => {
+    if (id && socketID) {
+      try {
+        console.log("Request is sending for" + socketID + " " + id)
+        const response = await axios.put(`${secretKey}/employee/online-status/${id}/${socketID}`);
+        //console.log(response.data); // Log response for debugging
+        return response.data; // Return response data if needed
+      } catch (error) {
+        console.error("Error:", error);
+        throw error; // Throw error for handling in the caller function
+      }
+    } else {
+      console.log(id, socketID, "This is it")
+    }
+  };
 
+  useEffect(() => {
+    const checkAndRunActiveStatus = () => {
+      if (id) {
+        activeStatus();
+      } else {
+        const intervalId = setInterval(() => {
+          if (id) {
+            activeStatus();
+            clearInterval(intervalId);
+          }
+        }, 1000);
+        return () => clearInterval(intervalId); // Cleanup interval on unmount
+      }
+    };
+
+    const timerId = setTimeout(() => {
+      checkAndRunActiveStatus();
+    }, 2000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [socketID, id]);
 
   return (
     <div>
@@ -115,6 +159,7 @@ function Header({ name, id, designation, empProfile, gender }) {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
+          
           <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <a href=".">
               <img
@@ -126,15 +171,17 @@ function Header({ name, id, designation, empProfile, gender }) {
               />
             </a>
           </h1>
+
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
             {/* <Bellicon data={requestData} gdata={requestGData} adata={mapArray} /> */}
-            <Notification_BOX isDM={true}/>
+            <Notification_BOX isDM={true} />
             {empProfile ? <Avatar src={`${secretKey}/employee/fetchProfilePhoto/${id}/${encodeURIComponent(empProfile)}`}
               className="My-Avtar" sx={{ width: 36, height: 36 }} />
               : <Avatar
                 src={gender === "Male" ? MaleEmployee : FemaleEmployee}
                 className="My-Avtar" sx={{ width: 36, height: 36 }} />
             }
+
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
@@ -144,12 +191,13 @@ function Header({ name, id, designation, empProfile, gender }) {
                   <div style={{ textTransform: "capitalize", textAlign: "left" }}>{name ? name : "Name"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     {/* {designation} */}
-                    {designation === "Business Development Executive" && "BDE" || 
-                    designation === "Business Development Manager" && "BDM" || designation}
+                    {designation === "Business Development Executive" && "BDE" ||
+                      designation === "Business Development Manager" && "BDM" || designation}
                   </div>
                 </div>
                 {/* <AiOutlineLogout style={{ width: "25px", height: "25px", marginLeft: "5px" }} onClick={() => handleLogout()} /> */}
               </button>
+
               <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <a href="#" className="dropdown-item">
                   Status
@@ -169,11 +217,9 @@ function Header({ name, id, designation, empProfile, gender }) {
                 </a>
               </div>
             </div>
+
             <Notification />
-            <div
-              style={{ display: "flex", alignItems: "center" }}
-              className="item">
-            </div>
+
           </div>
         </div>
       </header>

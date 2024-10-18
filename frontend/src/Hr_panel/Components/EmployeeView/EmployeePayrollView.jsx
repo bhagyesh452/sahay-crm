@@ -17,8 +17,10 @@ import { h } from "@fullcalendar/core/preact.js";
 
 function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManagerUserId }) {
 
-    const { userId } = useParams();
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const { userId } = useParams();
+    const path = window.location.pathname;
+    console.log("Full url path is :", path);
 
     const [data, setData] = useState([]);
     const [accountNo, setAccountNo] = useState("");
@@ -34,17 +36,23 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
 
     const fetchEmployeeData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-            // console.log(response.data, userId);
-            const tempData = response.data;
-            let data;
-            if (hrUserId) {
-                data = tempData.find((item) => item._id === hrUserId);
-            } else if (dataManagerUserId) {
-                data = tempData.find((item) => item._id === dataManagerUserId);
+            let response;
+            if (path === `/hr-employee-profile-details/${userId}` || path === `/managing-director/employeeProfileView/${userId}`) {
+                response = await axios.get(`${secretKey}/employee/einfo`);
             } else {
-                data = tempData.find((item) => item._id === userId);
+                response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             }
+
+            // console.log("Deleted data is :",response.data);
+            const tempData = response.data;
+            // let data;
+            // if (hrUserId) {
+            //     data = tempData.find((item) => item._id === hrUserId);
+            // } else if (dataManagerUserId) {
+            //     data = tempData.find((item) => item._id === dataManagerUserId);
+            // } else {
+            const data = tempData.find((item) => item._id === userId);
+            // }
             // console.log("Payroll Info is :", data);
 
             setData(data);
@@ -132,7 +140,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "accountNo" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.accountNo || "-"}
+                                        {data?.accountNo || "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
@@ -175,7 +183,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "nameAsPerBankRecord" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.nameAsPerBankRecord || "-"}
+                                        {data?.nameAsPerBankRecord || "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
@@ -218,7 +226,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "ifscCode" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.ifscCode || "-"}
+                                        {data?.ifscCode || "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
@@ -267,7 +275,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "basicSalary" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.salary ? `₹ ${formatSalary(data.salary)}` : "-"}
+                                        {data?.salary ? `₹ ${formatSalary(data?.salary)}` : "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
@@ -310,7 +318,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "firstMonthSalaryCondition" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.firstMonthSalaryCondition ? `${data.firstMonthSalaryCondition}%` : "-"}
+                                        {data?.firstMonthSalaryCondition ? `${data?.firstMonthSalaryCondition}%` : "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
@@ -356,7 +364,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                         </div>
                         <div className="col-7 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                {data.firstMonthSalary ? `₹ ${formatSalary(data.firstMonthSalary)}` : "-"}
+                                {data?.firstMonthSalary ? `₹ ${formatSalary(data?.firstMonthSalary)}` : "-"}
                             </div>
                         </div>
                     </div>
@@ -380,7 +388,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "panNumber" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.panNumber || "-"}
+                                        {data?.panNumber || "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
@@ -423,7 +431,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "aadharNumber" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.aadharNumber || "-"}
+                                        {data?.aadharNumber || "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
@@ -466,7 +474,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "uanNumber" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.uanNumber || "-"}
+                                        {data?.uanNumber || "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
@@ -509,7 +517,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
                             {editField !== "pfNumber" ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
-                                        {data.pfNumber || "-"}
+                                        {data?.pfNumber || "-"}
                                     </div>
                                     {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
