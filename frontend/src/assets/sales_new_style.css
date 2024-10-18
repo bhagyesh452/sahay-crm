@@ -1,0 +1,64 @@
+.sales-nav-tabs .sales-nav-item .nav-link.active {
+    color: #ffffff !important;
+    border: 1px solid #43474c !important;
+    background: #43474c !important;
+}
+.sales-nav-tabs .sales-nav-item .nav-link 
+{
+    padding: 8px 10px !important;
+}
+.sales-nav-tabs .sales-nav-item .nav-link .no_badge
+{
+    text-align: center;
+    width: -moz-fit-content;
+    width: fit-content;
+    padding: 5px 6px;
+    color: #efad00;
+    background: #fff4d6;
+    margin-left: 8px;
+    font-weight: bold;
+    font-size: 10px;
+    border-radius: 5px;
+    line-height: 10px;
+    min-width: 26px;
+}
+.sales-panels-main .table-style-3
+{
+    height: calc(100vh - 270px) !important;
+}
+.sales-panels-main .pagination
+{
+    width: 100%;
+    background: #fff;
+    padding: 6px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+.sales-panels-main .btn-pagination
+{
+    width: 25px;
+    height: 25px;
+    line-height: 8px;
+    font-size: 15px;
+    border-radius: 100px;
+    border: 1px solid #c3c3c3;
+    background: #ececec;
+    padding: 0px !important;
+    cursor: pointer;
+}
+.sales-panels-main .rm-sticky-left-1 {
+    position: sticky;
+    left: 0;
+    width: 66px;
+    z-index: 1;
+}
+.sales-panels-main .rm-sticky-left-2 {
+    position: sticky;
+    left: 66px;
+    box-shadow: 3px 0px 4px -4px #cccccc !important;
+    z-index: 1;
+}
+/* .sales-panels-main table
+{
+    width: max-content !important;
+} */
