@@ -28,7 +28,7 @@ import TestLeads from "./admin/TestLeads.jsx";
 import EmployeeInterestedCompanies from "./admin/EmployeeInterestestedCompanies.jsx";
 import EmployeeFolowUpCompanies from "./admin/EmployeeFolowUpCompanies.jsx";
 
-// Employee Panel Imports 
+// Employee/BDE/BDM Panel Imports 
 import EmployeeLayout from "./employeeComp/EmployeeLayout.jsx";
 import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import EmployeePanel from "./employeeComp/EmployeePanel";
@@ -113,6 +113,11 @@ import RelationshipManagerDashboard from "./RelationshipManager/Dashboard/Relati
 import GraphicDesignerLayout from "./GraphicDesigner/Components/GraphicDesignerLayout.jsx";
 import GraphicDesignerLogin from "./GraphicDesigner/Login/GraphicDesignerLogin.jsx";
 import GraphicDesignerDashboard from "./GraphicDesigner/Dashboard/GraphicDesignerDashboard.jsx";
+
+// Content Writer Imports
+import ContentWriterLogin from "./ContentWriter/Login/ContentWriterLogin.jsx";
+
+// Finance Analyst Imports
 
 // Customer Panel Imports
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
@@ -330,6 +335,13 @@ function App() {
             <Route path="/graphic-designer/dashboard/:userId" element={<GraphicDesignerDashboard />} />
             <Route path="graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
+
+          {/**********************************************  content writer panel  ********************************************/}
+          <Route path="/content-writer/login" element={<ContentWriterLogin />} />
+          {/* <Route element={<GraphicDesignerLayout />}>
+            <Route path="/graphic-designer/dashboard/:userId" element={<GraphicDesignerDashboard />} />
+            <Route path="graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
+          </Route> */}
 
         </Routes>
       </BrowserRouter>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import logo from "../../static/mainLogo.png";
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,10 @@ function GraphicDesignerLogin() {
             setErrorMessage(error.response.data.message || "An error occurred");
         }
     };
+
+    useEffect(() => {
+        document.title = "Graphic-Designer-Sahay-CRM";
+    }, []);
 
     return (
         <div>
