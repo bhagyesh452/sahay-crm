@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 import ClipLoader from 'react-spinners/ClipLoader';
 import axios from 'axios';
 
-
 function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeForEdit, refetch }) {
 
     if (!openForAdd) {
@@ -513,145 +512,145 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                     </IconButton>{" "}
                 </DialogTitle>
                 <DialogContent>
-                    {isLoading ? 
-                    <div>
-                        <div className="LoaderTDSatyle w-100">
-                            <ClipLoader
-                                color="lightgrey"
-                                loading={true}
-                                size={30}
-                                aria-label="Loading Spinner"
-                                data-testid="loader"
-                            />
-                        </div>
-                    </div> : 
-                    <div className="modal-dialog modal-lg" role="document">
-                        <div className="modal-content">
-                            <div className="modal-body">
-                                <div className="mb-3">
-                                    <label className="form-label">Employee Name</label>
-                                    <div className="d-flex">
+                    {isLoading ?
+                        <div>
+                            <div className="LoaderTDSatyle w-100">
+                                <ClipLoader
+                                    color="lightgrey"
+                                    loading={true}
+                                    size={30}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                />
+                            </div>
+                        </div> :
+                        <div className="modal-dialog modal-lg" role="document">
+                            <div className="modal-content">
+                                <div className="modal-body">
+                                    <div className="mb-3">
+                                        <label className="form-label">Employee Name</label>
+                                        <div className="d-flex">
 
-                                        <div className="col-4 me-1">
-                                            <input
-                                                type="text"
-                                                name="firstName"
-                                                className="form-control mt-1"
-                                                placeholder="First name"
-                                                value={firstName?.trim()}
-                                                onChange={(e) => handleInputChange("firstName", e.target.value)}
-                                            />
-                                            {errors.firstName && <p style={{ color: 'red' }}>{errors.firstName}</p>}
-                                        </div>
+                                            <div className="col-4 me-1">
+                                                <input
+                                                    type="text"
+                                                    name="firstName"
+                                                    className="form-control mt-1"
+                                                    placeholder="First name"
+                                                    value={firstName?.trim()}
+                                                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                                                />
+                                                {errors.firstName && <p style={{ color: 'red' }}>{errors.firstName}</p>}
+                                            </div>
 
-                                        <div className="col-4 me-1">
-                                            <input
-                                                type="text"
-                                                name="middleName"
-                                                className="form-control mt-1"
-                                                placeholder="Middle name"
-                                                value={middleName?.trim()}
-                                                onChange={(e) => handleInputChange("middleName", e.target.value)}
-                                            />
-                                            {errors.middleName && <p style={{ color: 'red' }}>{errors.middleName}</p>}
-                                        </div>
+                                            <div className="col-4 me-1">
+                                                <input
+                                                    type="text"
+                                                    name="middleName"
+                                                    className="form-control mt-1"
+                                                    placeholder="Middle name"
+                                                    value={middleName?.trim()}
+                                                    onChange={(e) => handleInputChange("middleName", e.target.value)}
+                                                />
+                                                {errors.middleName && <p style={{ color: 'red' }}>{errors.middleName}</p>}
+                                            </div>
 
-                                        <div className="col-4">
-                                            <input
-                                                type="text"
-                                                name="lastName"
-                                                className="form-control mt-1"
-                                                placeholder="Last name"
-                                                value={lastName?.trim()}
-                                                onChange={(e) => handleInputChange("lastName", e.target.value)}
-                                            />
-                                            {errors.lastName && <p style={{ color: 'red' }}>{errors.lastName}</p>}
+                                            <div className="col-4">
+                                                <input
+                                                    type="text"
+                                                    name="lastName"
+                                                    className="form-control mt-1"
+                                                    placeholder="Last name"
+                                                    value={lastName?.trim()}
+                                                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                                                />
+                                                {errors.lastName && <p style={{ color: 'red' }}>{errors.lastName}</p>}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="mb-3">
-                                    <label className="form-label">Email Address</label>
-                                    <input
-                                        value={email}
-                                        type="email"
-                                        className="form-control"
-                                        name="example-text-input"
-                                        placeholder="Email"
-                                        onChange={(e) => handleInputChange("email", e.target.value)}
-                                    />
-                                    {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
-                                </div>
-
-                                <div className="mb-3">
-                                    <label className="form-label">Password</label>
-                                    <div className="input-group">
+                                    <div className="mb-3">
+                                        <label className="form-label">Email Address</label>
                                         <input
-                                            type={showPassword ? "text" : "password"}
-                                            value={password}
+                                            value={email}
+                                            type="email"
                                             className="form-control"
                                             name="example-text-input"
-                                            placeholder="Password"
-                                            required
-                                            onChange={(e) => handleInputChange("password", e.target.value)}
+                                            placeholder="Email"
+                                            onChange={(e) => handleInputChange("email", e.target.value)}
                                         />
-                                        <button
-                                            className="btn btn-outline-secondary"
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
-                                            {showPassword ? "Hide" : "Show"}
-                                        </button>
+                                        {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
                                     </div>
-                                    {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
-                                </div>
 
-                                <div className="row">
-
-                                    <div className="col-lg-6 mb-3">
-                                        <label className="form-label">Department</label>
-                                        <div >
-                                            <select
-                                                className="form-select"
-                                                value={department}
+                                    <div className="mb-3">
+                                        <label className="form-label">Password</label>
+                                        <div className="input-group">
+                                            <input
+                                                type={showPassword ? "text" : "password"}
+                                                value={password}
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Password"
                                                 required
-                                                onChange={(e) => {
-                                                    handleInputChange("department", e.target.value);
-                                                    setIsDepartmentSelected(e.target.value !== "Select Department");
-                                                }}
+                                                onChange={(e) => handleInputChange("password", e.target.value)}
+                                            />
+                                            <button
+                                                className="btn btn-outline-secondary"
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
                                             >
-                                                <option value="Select Department" selected> Select Department</option>
-                                                <option value="Start-Up">Start-Up</option>
-                                                <option value="HR">HR</option>
-                                                <option value="Operation">Operation</option>
-                                                <option value="IT">IT</option>
-                                                <option value="Sales">Sales</option>
-                                                <option value="Others">Others</option>
-                                            </select>
+                                                {showPassword ? "Hide" : "Show"}
+                                            </button>
                                         </div>
-                                        {errors.department && <p style={{ color: 'red' }}>{errors.department}</p>}
+                                        {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
                                     </div>
 
-                                    <div className="col-lg-6 mb-3">
-                                        <label className="form-label">Designation/Job Title</label>
-                                        <div>
-                                            <select className="form-select"
-                                                name="newDesignation"
-                                                id="newDesignation"
-                                                value={newDesignation}
-                                                onChange={(e) => handleInputChange("newDesignation", e.target.value)}
-                                                disabled={!openForEdit && !isDepartmentSelected}
-                                            >
-                                                <option value="Select Designation">Select Designation</option>
-                                                {renderDesignationOptions()}
-                                            </select>
-                                        </div>
-                                        {errors.newDesignation && <p style={{ color: 'red' }}>{errors.newDesignation}</p>}
-                                    </div>
-                                </div>
+                                    <div className="row">
 
-                                {/* If the designation is others */}
-                                {/* {designation === "Others" && (
+                                        <div className="col-lg-6 mb-3">
+                                            <label className="form-label">Department</label>
+                                            <div >
+                                                <select
+                                                    className="form-select"
+                                                    value={department}
+                                                    required
+                                                    onChange={(e) => {
+                                                        handleInputChange("department", e.target.value);
+                                                        setIsDepartmentSelected(e.target.value !== "Select Department");
+                                                    }}
+                                                >
+                                                    <option value="Select Department" selected> Select Department</option>
+                                                    <option value="Start-Up">Start-Up</option>
+                                                    <option value="HR">HR</option>
+                                                    <option value="Operation">Operation</option>
+                                                    <option value="IT">IT</option>
+                                                    <option value="Sales">Sales</option>
+                                                    <option value="Others">Others</option>
+                                                </select>
+                                            </div>
+                                            {errors.department && <p style={{ color: 'red' }}>{errors.department}</p>}
+                                        </div>
+
+                                        <div className="col-lg-6 mb-3">
+                                            <label className="form-label">Designation/Job Title</label>
+                                            <div>
+                                                <select className="form-select"
+                                                    name="newDesignation"
+                                                    id="newDesignation"
+                                                    value={newDesignation}
+                                                    onChange={(e) => handleInputChange("newDesignation", e.target.value)}
+                                                    disabled={!openForEdit && !isDepartmentSelected}
+                                                >
+                                                    <option value="Select Designation">Select Designation</option>
+                                                    {renderDesignationOptions()}
+                                                </select>
+                                            </div>
+                                            {errors.newDesignation && <p style={{ color: 'red' }}>{errors.newDesignation}</p>}
+                                        </div>
+                                    </div>
+
+                                    {/* If the designation is others */}
+                                    {/* {designation === "Others" && (
                                     <div className="mb-3">
                                         <input
                                             value={otherdesignation}
@@ -666,193 +665,193 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                                     </div>
                                 )} */}
 
-                                <div className="row">
-                                    <div className="col-lg-6 mb-3">
-                                        <label className="form-label">Branch Office</label>
-                                        <div>
-                                            <select
-                                                className="form-select"
-                                                value={branchOffice}
-                                                required
-                                                onChange={(e) => handleInputChange("branchOffice", e.target.value)}
-                                            >
-                                                <option value="" selected>Select Branch Office</option>
-                                                <option value="Gota">Gota</option>
-                                                <option value="Sindhu Bhawan">Sindhu Bhawan</option>
-                                            </select>
+                                    <div className="row">
+                                        <div className="col-lg-6 mb-3">
+                                            <label className="form-label">Branch Office</label>
+                                            <div>
+                                                <select
+                                                    className="form-select"
+                                                    value={branchOffice}
+                                                    required
+                                                    onChange={(e) => handleInputChange("branchOffice", e.target.value)}
+                                                >
+                                                    <option value="" selected>Select Branch Office</option>
+                                                    <option value="Gota">Gota</option>
+                                                    <option value="Sindhu Bhawan">Sindhu Bhawan</option>
+                                                </select>
+                                            </div>
+                                            {errors.branchOffice && <p style={{ color: 'red' }}>{errors.branchOffice}</p>}
                                         </div>
-                                        {errors.branchOffice && <p style={{ color: 'red' }}>{errors.branchOffice}</p>}
-                                    </div>
 
-                                    <div className="col-lg-6 mb-3">
-                                        <label className="form-label">Manager</label>
-                                        <div>
-                                            <select className="form-select"
-                                                name="reportingManager"
-                                                id="reportingManager"
-                                                value={reportingManager}
-                                                onChange={(e) => handleInputChange("reportingManager", e.target.value)}
-                                                disabled={!openForEdit && !isDepartmentSelected}
-                                            >
-                                                <option value="Select Designation">Select Manager</option>
-                                                {department === "Sales" && newDesignation === "Floor Manager"
-                                                    ? <option value="Mr. Ronak Kumar">Mr. Ronak Kumar</option> : <>{renderManagerOptions()}</>
-                                                }
-                                            </select>
-                                        </div>
-                                        {errors.reportingManager && <p style={{ color: 'red' }}>{errors.reportingManager}</p>}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="row">
-                                <div className="col-lg-6">
-                                    <div className="mb-3">
-                                        <label className="form-label">Phone No.</label>
-                                        <input
-                                            value={number}
-                                            type="number"
-                                            className="form-control"
-                                            onChange={(e) => handleInputChange("number", e.target.value)}
-                                        />
-                                        {errors.number && <p style={{ color: 'red' }}>{errors.number}</p>}
-                                    </div>
-                                </div>
-                                <div className="col-lg-6">
-                                    <div className="mb-3">
-                                        <label className="form-label">Joining Date</label>
-                                        <input
-                                            value={jdate}
-                                            type="date"
-                                            onChange={(e) => handleInputChange("jdate", e.target.value)}
-                                            className="form-control"
-                                        />
-                                        {errors.jdate && <p style={{ color: 'red' }}>{errors.jdate}</p>}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <label className="form-label">ADD Target</label>
-                            {targetObjects.map((obj, index) => (
-                                <div className="row">
-                                    <div className="col-lg-3">
-                                        <div className="mb-3">
+                                        <div className="col-lg-6 mb-3">
+                                            <label className="form-label">Manager</label>
                                             <div>
                                                 <select className="form-select"
-                                                    value={obj.year}
+                                                    name="reportingManager"
+                                                    id="reportingManager"
+                                                    value={reportingManager}
+                                                    onChange={(e) => handleInputChange("reportingManager", e.target.value)}
+                                                    disabled={!openForEdit && !isDepartmentSelected}
+                                                >
+                                                    <option value="Select Designation">Select Manager</option>
+                                                    {department === "Sales" && newDesignation === "Floor Manager"
+                                                        ? <option value="Mr. Ronak Kumar">Mr. Ronak Kumar</option> : <>{renderManagerOptions()}</>
+                                                    }
+                                                </select>
+                                            </div>
+                                            {errors.reportingManager && <p style={{ color: 'red' }}>{errors.reportingManager}</p>}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-lg-6">
+                                        <div className="mb-3">
+                                            <label className="form-label">Phone No.</label>
+                                            <input
+                                                value={number}
+                                                type="number"
+                                                className="form-control"
+                                                onChange={(e) => handleInputChange("number", e.target.value)}
+                                            />
+                                            {errors.number && <p style={{ color: 'red' }}>{errors.number}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="mb-3">
+                                            <label className="form-label">Joining Date</label>
+                                            <input
+                                                value={jdate}
+                                                type="date"
+                                                onChange={(e) => handleInputChange("jdate", e.target.value)}
+                                                className="form-control"
+                                            />
+                                            {errors.jdate && <p style={{ color: 'red' }}>{errors.jdate}</p>}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <label className="form-label">ADD Target</label>
+                                {targetObjects.map((obj, index) => (
+                                    <div className="row">
+                                        <div className="col-lg-3">
+                                            <div className="mb-3">
+                                                <div>
+                                                    <select className="form-select"
+                                                        value={obj.year}
+                                                        onChange={(e) => {
+                                                            setTargetObjects(prevState => {
+                                                                const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                                                                updatedTargets[index] = { ...updatedTargets[index], year: e.target.value }; // Update the specific object at the given index
+                                                                return updatedTargets; // Set the updated array as the new state
+                                                            });
+                                                        }}
+                                                    >
+                                                        <option value="" disabled selected>
+                                                            Select Year
+                                                        </option>
+                                                        <option value="2024">2024</option>
+                                                        <option value="2023">2023</option>
+                                                        <option value="2022">2022</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-3">
+                                            <div className="mb-3">
+                                                <div>
+                                                    <select className="form-select"
+                                                        value={obj.month}
+                                                        onChange={(e) => {
+                                                            setTargetObjects(prevState => {
+                                                                const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                                                                updatedTargets[index] = { ...updatedTargets[index], month: e.target.value }; // Update the specific object at the given index
+                                                                return updatedTargets; // Set the updated array as the new state
+                                                            });
+                                                        }}
+                                                    >
+                                                        <option value="" disabled selected>
+                                                            Select Month
+                                                        </option>
+                                                        <option value="January">January</option>
+                                                        <option value="February">February</option>
+                                                        <option value="March">March</option>
+                                                        <option value="April">April</option>
+                                                        <option value="May">May</option>
+                                                        <option value="June">June</option>
+                                                        <option value="July">July</option>
+                                                        <option value="August">August</option>
+                                                        <option value="September">September</option>
+                                                        <option value="October">October</option>
+                                                        <option value="November">November</option>
+                                                        <option value="December">December</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-3">
+                                            <div className="mb-3">
+                                                <input
+                                                    placeholder="ADD Target value"
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={obj.amount}
                                                     onChange={(e) => {
                                                         setTargetObjects(prevState => {
                                                             const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                                                            updatedTargets[index] = { ...updatedTargets[index], year: e.target.value }; // Update the specific object at the given index
+                                                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
                                                             return updatedTargets; // Set the updated array as the new state
                                                         });
-                                                    }}
-                                                >
-                                                    <option value="" disabled selected>
-                                                        Select Year
-                                                    </option>
-                                                    <option value="2024">2024</option>
-                                                    <option value="2023">2023</option>
-                                                    <option value="2022">2022</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <div className="mb-3">
-                                            <div>
-                                                <select className="form-select"
-                                                    value={obj.month}
-                                                    onChange={(e) => {
-                                                        setTargetObjects(prevState => {
-                                                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                                                            updatedTargets[index] = { ...updatedTargets[index], month: e.target.value }; // Update the specific object at the given index
-                                                            return updatedTargets; // Set the updated array as the new state
-                                                        });
-                                                    }}
-                                                >
-                                                    <option value="" disabled selected>
-                                                        Select Month
-                                                    </option>
-                                                    <option value="January">January</option>
-                                                    <option value="February">February</option>
-                                                    <option value="March">March</option>
-                                                    <option value="April">April</option>
-                                                    <option value="May">May</option>
-                                                    <option value="June">June</option>
-                                                    <option value="July">July</option>
-                                                    <option value="August">August</option>
-                                                    <option value="September">September</option>
-                                                    <option value="October">October</option>
-                                                    <option value="November">November</option>
-                                                    <option value="December">December</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <div className="mb-3">
-                                            <input
-                                                placeholder="ADD Target value"
-                                                type="number"
-                                                className="form-control"
-                                                value={obj.amount}
-                                                onChange={(e) => {
-                                                    setTargetObjects(prevState => {
-                                                        const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                                                        updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
-                                                        return updatedTargets; // Set the updated array as the new state
-                                                    });
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-3">
-                                        <div className="mb-3">
-                                            <input
-                                                placeholder="ADD achieved amount"
-                                                type="number"
-                                                className="form-control"
-                                                value={obj.achievedAmount}
-                                                onChange={(e) => {
-                                                    setTargetObjects(prevState => {
-                                                        const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                                                        updatedTargets[index] = { ...updatedTargets[index], achievedAmount: e.target.value }; // Update the specific object at the given index
-                                                        return updatedTargets; // Set the updated array as the new state
-                                                    });
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-1">
-                                        <div className="mb-3 d-flex">
-                                            <IconButton style={{ float: "right" }} onClick={handleAddTarget}>
-                                                <MdOutlineAddCircle
-                                                    color="primary"
-                                                    style={{
-                                                        float: "right",
-                                                        width: "14px",
-                                                        height: "14px",
-                                                    }}
-
-                                                ></MdOutlineAddCircle>
-                                            </IconButton>
-                                            <IconButton style={{ float: "right" }} onClick={handleRemoveTarget}>
-                                                <MdDelete
-                                                    color="primary"
-                                                    style={{
-                                                        float: "right",
-                                                        width: "14px",
-                                                        height: "14px",
                                                     }}
                                                 />
-                                            </IconButton>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-3">
+                                            <div className="mb-3">
+                                                <input
+                                                    placeholder="ADD achieved amount"
+                                                    type="number"
+                                                    className="form-control"
+                                                    value={obj.achievedAmount}
+                                                    onChange={(e) => {
+                                                        setTargetObjects(prevState => {
+                                                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                                                            updatedTargets[index] = { ...updatedTargets[index], achievedAmount: e.target.value }; // Update the specific object at the given index
+                                                            return updatedTargets; // Set the updated array as the new state
+                                                        });
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-1">
+                                            <div className="mb-3 d-flex">
+                                                <IconButton style={{ float: "right" }} onClick={handleAddTarget}>
+                                                    <MdOutlineAddCircle
+                                                        color="primary"
+                                                        style={{
+                                                            float: "right",
+                                                            width: "14px",
+                                                            height: "14px",
+                                                        }}
+
+                                                    ></MdOutlineAddCircle>
+                                                </IconButton>
+                                                <IconButton style={{ float: "right" }} onClick={handleRemoveTarget}>
+                                                    <MdDelete
+                                                        color="primary"
+                                                        style={{
+                                                            float: "right",
+                                                            width: "14px",
+                                                            height: "14px",
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
                     }
                 </DialogContent>
                 <button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">

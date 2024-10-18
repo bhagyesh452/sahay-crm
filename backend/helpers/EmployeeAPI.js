@@ -917,7 +917,7 @@ router.put("/savedeletedemployee", upload.fields([
       return res.status(400).json({ error: "No employee data to save" });
     }
 
-    // console.log("Deleted data is :", dataToDelete);
+    console.log("Deleted data is :", dataToDelete);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -957,6 +957,7 @@ router.put("/savedeletedemployee", upload.fields([
           empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
         },
         ...(data.dob && { dob: data.dob }),
+        ...(data.bloodGroup && { bloodGroup: data.bloodGroup }),
         ...(data.gender && { gender: data.gender }),
         ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo }),
         ...(data?.personalEmail && { personal_email: data.personalEmail }),
@@ -1257,6 +1258,7 @@ router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
           empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
         },
         ...(data.dob && { dob: data.dob }),
+        ...(data.bloodGroup && { dob: data.bloodGroup }),
         ...(data.gender && { gender: data.gender }),
         ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo }),
         ...(data?.personalEmail && { personal_email: data.personalEmail }),

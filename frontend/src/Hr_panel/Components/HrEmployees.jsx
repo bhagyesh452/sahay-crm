@@ -625,6 +625,7 @@ function HrEmployees() {
                                         className="action-btn action-btn-danger ml-1"
                                         onClick={() => {
                                           const dataToDelete = employee.filter(obj => obj._id === emp._id);
+                                          console.log("object is :", dataToDelete);
                                           setDeletedData(dataToDelete);
                                           const filteredCompanyData = companyData.filter(data => data.ename?.toLowerCase() === emp.ename.toLowerCase());
                                           setCompanyData(filteredCompanyData);
@@ -761,7 +762,7 @@ function HrEmployees() {
                                     <button className="action-btn action-btn-primary">
                                       <Link
                                         style={{ textDecoration: "none", color: 'inherit' }}
-                                        to={`/hr-employee-profile-details/${emp._id}`}
+                                        to={`/hr-deleted-employee-profile-details/${emp._id}`}
                                       >
                                         <FaRegEye />
                                       </Link>
