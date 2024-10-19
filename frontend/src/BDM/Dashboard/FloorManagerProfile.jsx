@@ -36,6 +36,9 @@ import ClipLoader from "react-spinners/ClipLoader.js";
 function FloorManagerProfile() {
 
   const { userId } = useParams();
+  const path = window.location.pathname;
+  // console.log("Full url path is :", path);
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const personalUserId = localStorage.getItem("hrUserId");
 
@@ -71,8 +74,20 @@ function FloorManagerProfile() {
   );
 
   useEffect(() => {
-    document.title = `Floor-Manager-Sahay-CRM`;
-  }, []);
+    if (path === `/floormanager-profile-details/${userId}`) {
+      document.title = `Floor-Manager-Sahay-CRM`;
+    } else if (path === `/relationship-manager-profile-details/${userId}`) {
+      document.title = `Relationship-Manager-Sahay-CRM`;
+    } else if (path === `/graphic-designer-profile-details/${userId}`){
+      document.title = `Graphic-Designer-Sahay-CRM`;
+    } else if (path === `/content-writer-profile-details/${userId}`) {
+      document.title = `Content-Writer-Sahay-CRM`;
+    } else if (path === `/finance-analyst-profile-details/${userId}`) {
+      document.title = `Finance-Analyst-Sahay-CRM`;
+    } else {
+      document.title = `Sahay-CRM`;
+    }
+    }, []);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [open, setOpen] = useState(false);

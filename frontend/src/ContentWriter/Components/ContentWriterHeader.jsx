@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import '../../dist/css/tabler.min.css?1684106062';
 import "../../dist/css/tabler-flags.min.css?1684106062";
 import "../../dist/css/tabler-payments.min.css?1684106062";
@@ -8,11 +8,11 @@ import Avatar from '@mui/material/Avatar';
 import MaleEmployee from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 import myImage from '../../static/mainLogo.png';
-import GraphicDesignerNotification from "./GraphicDesignerNotification";
+import ContentWriterNotification from './ContentWriterNotification';
 import axios from "axios";
 import io from "socket.io-client";
 
-function GraphicDesignerHeader({ name, id, designation, empProfile, gender }) {
+function ContentWriterHeader({ name, id, designation, empProfile, gender }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [socketID, setSocketID] = useState("");
@@ -83,7 +83,7 @@ function GraphicDesignerHeader({ name, id, designation, empProfile, gender }) {
                 <div className="container-xl">
 
                     <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                        <a href={`/graphic-designer/dashboard/${id}`}>
+                        <a href={`/content-writer/dashboard/${id}`}>
                             <img
                                 src={myImage}
                                 width="110"
@@ -135,7 +135,7 @@ function GraphicDesignerHeader({ name, id, designation, empProfile, gender }) {
                             </div>
                         </div>
 
-                        <GraphicDesignerNotification />
+                        <ContentWriterNotification />
 
                     </div>
                 </div>
@@ -144,4 +144,4 @@ function GraphicDesignerHeader({ name, id, designation, empProfile, gender }) {
     );
 }
 
-export default GraphicDesignerHeader;
+export default ContentWriterHeader;

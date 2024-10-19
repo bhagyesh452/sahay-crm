@@ -22,14 +22,14 @@ import PdfImageViewerAdmin from '../../admin/PdfViewerAdmin.jsx';
 
 function BdmBookings() {
 
-  const [data, setData] = useState([])
-  const [searchText, setSearchText] = useState("");
-  const [fetch, setFetch] = useState(false);
   const { userId } = useParams();
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
-
   // console.log(userId);
+
+  const [data, setData] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [fetch, setFetch] = useState(false);
 
   useEffect(() => {
     document.title = `Floor-Manager-Sahay-CRM`;
@@ -38,7 +38,6 @@ function BdmBookings() {
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-
       // Set the retrieved data in the state
       const tempData = response.data;
       //console.log("tempData:", tempData); // Log tempData to check its content
@@ -56,7 +55,7 @@ function BdmBookings() {
     fetchData();
   }, [userId]);
 
-  const [formData, setFormData] = useState([])
+  const [formData, setFormData] = useState([]);
   const [openBooking, setOpenBooking] = useState(false);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
   const [activeIndexBooking, setActiveIndexBooking] = useState(0);
@@ -158,7 +157,6 @@ function BdmBookings() {
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-
 
   // console.log("currentLeadForm", currentLeadform)
 
@@ -670,19 +668,17 @@ function BdmBookings() {
                                 </a>
                               </li>
 
-                              {currentLeadform.moreBookings.map(
-                                (obj, index) => (
-                                  <li key={index} className="nav-item rm_bkng_item_no">
-                                    <a className={index + 2 === activeIndexBooking ? "nav-link active" : "nav-link"}
-                                      data-bs-toggle="tab" href={`#Booking_${index + 2}`} onClick={() => setActiveIndexBooking(index + 2)}>
-                                      Booking {index + 2}
-                                    </a>
-                                  </li>
-                                )
+                              {currentLeadform.moreBookings.map((obj, index) => (
+                                <li key={index} className="nav-item rm_bkng_item_no">
+                                  <a className={index + 2 === activeIndexBooking ? "nav-link active" : "nav-link"}
+                                    data-bs-toggle="tab" href={`#Booking_${index + 2}`} onClick={() => setActiveIndexBooking(index + 2)}>
+                                    Booking {index + 2}
+                                  </a>
+                                </li>
+                              )
                               )}
 
-                              {activeIndexBooking === 1 &&
-                                currentLeadform.bookingPublishDate ? (
+                              {activeIndexBooking === 1 && currentLeadform.bookingPublishDate ? (
                                 <li className="nav-item rm_bkng_item_no ms-auto">
                                   <div className="rm_bkng_item_no nav-link clr-ff8800">
                                     <span style={{ color: "#797373", marginRight: "2px" }}>
@@ -873,8 +869,7 @@ function BdmBookings() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              {currentLeadform &&
-                                                currentLeadform.services.length}
+                                              {currentLeadform && currentLeadform.services.length}
                                             </div>
                                           </div>
                                         </div>
@@ -1109,13 +1104,12 @@ function BdmBookings() {
                                                               if (index === 0) return "Second ";
                                                               else if (index === 1) return "Third ";
                                                               else if (index === 2) return "Fourth ";
-                                                              // Add more conditions as needed
                                                               return ""; // Return default value if none of the conditions match
                                                             })()}
                                                             Remaining Payment
                                                           </div>
                                                           <div>
-                                                            {formatDatePro(paymentObj.paymentDate)}
+                                                            {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDated) + ")"}
                                                           </div>
                                                         </div>
                                                       </div>
@@ -1152,14 +1146,8 @@ function BdmBookings() {
                                                                 if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
                                                                 else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
                                                                 else if (index === 2) return parseInt(currentLeadform.pendingAmount);
-                                                                // Add more conditions as needed
                                                                 return ""; // Return default value if none of the conditions match
                                                               })()}
-                                                              {/* {index === 0
-                                                              ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment)
-                                                              : index === 1
-                                                              ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(currentLeadform.remainingPayments[0].receivedPayment)
-                                                              : parseInt(currentLeadform.pendingAmount)} */}
                                                             </div>
                                                           </div>
                                                         </div>
@@ -1179,7 +1167,9 @@ function BdmBookings() {
                                                           </div>
                                                         </div>
                                                       </div>
+                                                    </div>
 
+                                                    <div className="row m-0 bdr-btm-eee">
                                                       <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
                                                         <div class="row m-0 h-100">
                                                           <div class="col-sm-5 align-self-stretc p-0">
@@ -1209,7 +1199,6 @@ function BdmBookings() {
                                                           </div>
                                                         </div>
                                                       </div>
-
                                                     </div>
                                                   </div>
                                                 </div>
@@ -1235,8 +1224,7 @@ function BdmBookings() {
                                           </div>
                                           <div class="col-sm-10 align-self-stretc p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              {currentLeadform &&
-                                                currentLeadform.caCase}
+                                              {currentLeadform && currentLeadform.caCase}
                                             </div>
                                           </div>
                                         </div>
@@ -1300,85 +1288,8 @@ function BdmBookings() {
                                 </div>
                                 <div className="my-card">
                                   <div className="my-card-body">
-                                    {/* {currentLeadform && currentLeadform.remainingPayments.length!==0 && currentLeadform.remainingPayments.map((payObj , index)=>(
-                              <div className="row m-0 bdr-btm-eee">
-                                <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h h-100 text-center">
-                                        {index+1}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-5 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                        Total Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-7 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                        ₹{" "}
-                                        {currentLeadform &&
-                                          parseInt(
-                                            currentLeadform.totalAmount
-                                          ).toLocaleString()}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-5 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Received Amount
-                                      </div>
-                                    </div>
-                                  {<div class="col-sm-7 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹{" "}
-                                        {(parseInt(currentLeadform.receivedAmount) -
-          currentLeadform.remainingPayments
-            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
-                                      </div>
-                                    </div>}
-                                 
-                                 
-                                  </div>
-                                </div>
-                                <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-6 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Pending Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-6 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹{" "}
-                                        {(parseInt(currentLeadform.pendingAmount) +
-          currentLeadform.remainingPayments
-            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )) } */}
+
                                     <div className="row m-0 bdr-btm-eee">
-                                      {/* <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
-                                <div class="row m-0 h-100">
-                                  <div class="col align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h h-100 text-center">
-                                      {currentLeadform && (currentLeadform.remainingPayments.length + 1) }
-                                    </div>
-                                  </div>
-                                </div>
-                              </div> */}
                                       <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                                         <div class="row m-0 h-100">
                                           <div class="col-sm-5 align-self-stretch p-0">
@@ -1566,7 +1477,6 @@ function BdmBookings() {
                                               </p>
                                             </div>
                                           </div>
-
                                         </div>
                                       ))}
 
@@ -1583,12 +1493,7 @@ function BdmBookings() {
                                         </div>
                                       </div>
 
-                                      <Dialog
-                                        open={openOtherDocs}
-                                        onClose={closeOtherDocsPopup}
-                                        fullWidth
-                                        maxWidth="sm"
-                                      >
+                                      <Dialog fullWidth maxWidth="sm" open={openOtherDocs} onClose={closeOtherDocsPopup}>
                                         <DialogTitle>
                                           Upload Your Attachments
                                           <IconButton onClick={closeOtherDocsPopup} style={{ float: "right" }}>
@@ -1756,15 +1661,12 @@ function BdmBookings() {
                                             </div>
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                {objMain.bookingSource === "Other"
-                                                  ? objMain.otherBookingSource
-                                                  : objMain.bookingSource}
+                                                {objMain.bookingSource === "Other" ? objMain.otherBookingSource : objMain.bookingSource}
                                               </div>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
-
                                     </div>
                                   </div>
 
@@ -1824,8 +1726,7 @@ function BdmBookings() {
                                               </div>
                                               <div class="col-sm-8 align-self-stretch p-0">
                                                 <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                  ₹{" "}
-                                                  {parseInt(obj.totalPaymentWGST).toLocaleString()}{"("}
+                                                  ₹{" "}{parseInt(obj.totalPaymentWGST).toLocaleString()}{"("}
                                                   {obj.totalPaymentWGST !== obj.totalPaymentWOGST ? "With GST" : "Without GST"}{")"}
                                                 </div>
                                               </div>
@@ -1858,8 +1759,7 @@ function BdmBookings() {
                                                 </div>
                                               </div>
                                               <div class="col-sm-8 align-self-stretch p-0">
-                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"
-                                                  title={obj.paymentRemarks ? obj.paymentRemarks : "N/A"}>
+                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks ? obj.paymentRemarks : "N/A"}>
                                                   {obj.paymentRemarks ? obj.paymentRemarks : "N/A"}
                                                 </div>
                                               </div>
@@ -1870,7 +1770,6 @@ function BdmBookings() {
                                         <div className="row m-0 bdr-btm-eee">
                                           {obj.firstPayment !== 0 && (
                                             <div className="col-lg-6 col-sm-6 p-0">
-
                                               <div class="row m-0">
                                                 <div class="col-sm-4 align-self-stretch p-0">
                                                   <div class="booking_inner_dtl_h h-100">
@@ -1888,7 +1787,6 @@ function BdmBookings() {
 
                                           {obj.secondPayment !== 0 && (
                                             <div className="col-lg-6 col-sm-6 p-0">
-
                                               <div class="row m-0">
                                                 <div class="col-sm-4 align-self-stretch p-0">
                                                   <div class="booking_inner_dtl_h h-100 bdr-left-eee">
@@ -1904,7 +1802,6 @@ function BdmBookings() {
                                                   </div>
                                                 </div>
                                               </div>
-
                                             </div>
                                           )}
                                         </div>
@@ -1912,7 +1809,6 @@ function BdmBookings() {
                                         <div className="row m-0 bdr-btm-eee">
                                           {obj.thirdPayment !== 0 && (
                                             <div className="col-lg-6 col-sm-6 p-0">
-
                                               <div class="row m-0">
                                                 <div class="col-sm-4 align-self-stretch p-0">
                                                   <div class="booking_inner_dtl_h h-100">
@@ -1928,7 +1824,6 @@ function BdmBookings() {
                                                   </div>
                                                 </div>
                                               </div>
-
                                             </div>
                                           )}
 
@@ -1991,18 +1886,13 @@ function BdmBookings() {
                                                           <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
 
                                                             <div>
-                                                              {objMain.remainingPayments.length !== 0 &&
-                                                                (() => {
-                                                                  if (index === 0)
-                                                                    return "Second ";
-                                                                  else if (index === 1)
-                                                                    return "Third ";
-                                                                  else if (index === 2)
-                                                                    return "Fourth ";
-                                                                  else if (index > 2)
-                                                                    return "Other ";
-                                                                  return ""; // Return default value if none of the conditions match
-                                                                })()}
+                                                              {objMain.remainingPayments.length !== 0 && (() => {
+                                                                if (index === 0) return "Second ";
+                                                                else if (index === 1) return "Third ";
+                                                                else if (index === 2) return "Fourth ";
+                                                                else if (index > 2) return "Other ";
+                                                                return ""; // Return default value if none of the conditions match
+                                                              })()}
                                                               Remaining Payment
                                                             </div>
 
@@ -2041,18 +1931,14 @@ function BdmBookings() {
                                                             </div>
                                                             <div class="col-sm-7 align-self-stretc p-0">
                                                               <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                ₹{" "}{objMain.remainingPayments.length !== 0 &&
-                                                                  (() => {
-                                                                    const filteredPayments = objMain.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName);
-                                                                    const filteredLength = filteredPayments.length;
-                                                                    if (index === 0)
-                                                                      return (Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment));
-                                                                    else if (index === 1)
-                                                                      return (Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(filteredPayments[0].receivedPayment));
-                                                                    else if (index === 2)
-                                                                      return Math.round(objMain.pendingAmount);
-                                                                    return ""; // Return default value if none of the conditions match
-                                                                  })()}
+                                                                ₹{" "}{objMain.remainingPayments.length !== 0 && (() => {
+                                                                  const filteredPayments = objMain.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName);
+                                                                  const filteredLength = filteredPayments.length;
+                                                                  if (index === 0) return (Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment));
+                                                                  else if (index === 1) return (Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(filteredPayments[0].receivedPayment));
+                                                                  else if (index === 2) return Math.round(objMain.pendingAmount);
+                                                                  return ""; // Return default value if none of the conditions match
+                                                                })()}
                                                               </div>
                                                             </div>
                                                           </div>
@@ -2105,7 +1991,6 @@ function BdmBookings() {
                                                           </div>
                                                         </div>
                                                       </div>
-
                                                     </div>
                                                   </div>
                                                 ) : null // Render null for elements that don't match the condition
@@ -2114,7 +1999,6 @@ function BdmBookings() {
                                           </div>
                                         </div>
                                       )}
-
                                     </div>
                                   ))}
 
@@ -2186,7 +2070,6 @@ function BdmBookings() {
                                             </div>
                                           </div>
                                         </div>
-
                                       )}
                                     </div>
                                   </div>
@@ -2198,103 +2081,24 @@ function BdmBookings() {
 
                                   <div className="my-card">
                                     <div className="my-card-body">
-                                      {currentLeadform && currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.map((payObj, index) => (
-                                        <div className="row m-0 bdr-btm-eee">
-
-                                          <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
-                                            <div class="row m-0 h-100">
-                                              <div class="col align-self-stretch p-0">
-                                                <div class="booking_inner_dtl_h h-100 text-center">
-                                                  {index + 1}
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-
-                                          <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-5 align-self-stretch p-0">
-                                                <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                  Total Amount
-                                                </div>
-                                              </div>
-                                              <div class="col-sm-7 align-self-stretch p-0">
-                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                  ₹{" "}{currentLeadform && parseInt(currentLeadform.totalAmount).toLocaleString()}
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-
-                                          <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-5 align-self-stretch p-0">
-                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                  Received Amount
-                                                </div>
-                                              </div>
-                                              {<div class="col-sm-7 align-self-stretch p-0">
-                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                  ₹{" "}
-                                                  {(parseInt(currentLeadform.receivedAmount) -
-                                                    currentLeadform.remainingPayments
-                                                      .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-                                                      .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
-                                                </div>
-                                              </div>}
-                                            </div>
-                                          </div>
-
-                                          <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-6 align-self-stretch p-0">
-                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                  Pending Amount
-                                                </div>
-                                              </div>
-                                              <div class="col-sm-6 align-self-stretch p-0">
-                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                  ₹{" "}
-                                                  {(parseInt(currentLeadform.pendingAmount) +
-                                                    currentLeadform.remainingPayments
-                                                      .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-                                                      .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-
-                                        </div>
-                                      ))}
-
                                       <div className="row m-0 bdr-btm-eee">
-                                        <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
-                                          <div class="row m-0 h-100">
-                                            <div class="col align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_h h-100 text-center">
-                                                {currentLeadform && (currentLeadform.remainingPayments.length + 1)}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
 
-                                        <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                          <div class="row m-0 h-100">
-                                            <div class="col-sm-5 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                        <div className="col-lg-4 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-5 align-self-stretchh p-0">
+                                              <div class="booking_inner_dtl_h h-100">
                                                 Total Amount
                                               </div>
                                             </div>
-                                            <div class="col-sm-7 align-self-stretch p-0">
+                                            <div class="col-sm-7 align-self-stretchh p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                ₹{" "}{currentLeadform && parseInt(currentLeadform.totalAmount).toLocaleString()}
-                                              </div>
+                                                ₹{" "}{parseInt(objMain.totalAmount).toLocaleString()}</div>
                                             </div>
                                           </div>
                                         </div>
 
-                                        <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                          <div class="row m-0 h-100">
+                                        <div className="col-lg-4 col-sm-6 p-0">
+                                          <div class="row m-0">
                                             <div class="col-sm-5 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                                 Received Amount
@@ -2302,22 +2106,21 @@ function BdmBookings() {
                                             </div>
                                             <div class="col-sm-7 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                ₹{" "}{currentLeadform && parseInt(currentLeadform.receivedAmount).toLocaleString()}
-                                              </div>
+                                                ₹{" "}{parseInt(objMain.receivedAmount).toLocaleString()}</div>
                                             </div>
                                           </div>
                                         </div>
 
-                                        <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
-                                          <div class="row m-0 h-100">
-                                            <div class="col-sm-6 align-self-stretch p-0">
+                                        <div className="col-lg-4 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-5 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                                 Pending Amount
                                               </div>
                                             </div>
-                                            <div class="col-sm-6 align-self-stretch p-0">
+                                            <div class="col-sm-7 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                ₹{" "}{currentLeadform && parseInt(currentLeadform.pendingAmount).toLocaleString()}
+                                                ₹{" "}{parseInt(objMain.pendingAmount).toLocaleString()}
                                               </div>
                                             </div>
                                           </div>
@@ -2325,44 +2128,41 @@ function BdmBookings() {
                                       </div>
 
                                       <div className="row m-0 bdr-btm-eee">
-                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
-                                          <div class="row m-0 h-100">
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
                                             <div class="col-sm-4 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_h h-100">
                                                 Payment Method
                                               </div>
                                             </div>
                                             <div class="col-sm-8 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee  My_Text_Wrap" title={currentLeadform && currentLeadform.paymentMethod}>
-                                                {currentLeadform && currentLeadform.paymentMethod}
+                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={objMain.paymentMethod}>
+                                                {objMain.paymentMethod}
                                               </div>
                                             </div>
                                           </div>
                                         </div>
 
-                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
-                                          <div class="row m-0 h-100">
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
                                             <div class="col-sm-4 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                                 Extra Remarks
                                               </div>
                                             </div>
                                             <div class="col-sm-8 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform && currentLeadform.extraNotes}>
-                                                {currentLeadform && currentLeadform.extraNotes}
+                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title="{objMain.extraNotes}">
+                                                {objMain.extraNotes}
                                               </div>
                                             </div>
                                           </div>
                                         </div>
-
                                       </div>
                                     </div>
                                   </div>
 
                                   <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                    <b>
-                                      Payment Receipt and Additional Documents:
-                                    </b>
+                                    <b>Payment Receipt and Additional Documents:</b>
                                   </div>
 
                                   <div className="row">
@@ -2493,7 +2293,6 @@ function BdmBookings() {
                               </div>
                             </>
                           ))}
-
                         </div>
                       </div>
                     </div>
@@ -2506,35 +2305,31 @@ function BdmBookings() {
       )}
 
       {editMoreOpen && bookingIndex !== -1 && (
-        <>
-          <EditableMoreBooking
-            setFormOpen={setEditMoreOpen}
-            bookingIndex={bookingIndex}
-            //isAdmin={isAdmin}
-            setNowToFetch={setNowToFetch}
-            companysName={currentLeadform["Company Name"]}
-            companysEmail={currentLeadform["Company Email"]}
-            companyNumber={currentLeadform["Company Number"]}
-            companysInco={currentLeadform.incoDate}
-            employeeName={currentLeadform.bdeName}
-            employeeEmail={currentLeadform.bdeEmail}
-          />
-        </>
+        <EditableMoreBooking
+          setFormOpen={setEditMoreOpen}
+          bookingIndex={bookingIndex}
+          //isAdmin={isAdmin}
+          setNowToFetch={setNowToFetch}
+          companysName={currentLeadform["Company Name"]}
+          companysEmail={currentLeadform["Company Email"]}
+          companyNumber={currentLeadform["Company Number"]}
+          companysInco={currentLeadform.incoDate}
+          employeeName={currentLeadform.bdeName}
+          employeeEmail={currentLeadform.bdeEmail}
+        />
       )}
 
       {addFormOpen && (
-        <>
-          <AddLeadForm
-            employeeEmail={currentLeadform.email}
-            employeeName={currentLeadform.bdeName}
-            setFormOpen={setAddFormOpen}
-            companysName={currentLeadform["Company Name"]}
-            setNowToFetch={setNowToFetch}
-            bdmName={currentLeadform.bdmName}
-            bdmEmail={currentLeadform.bdmEmail}
-            isBDM={true}
-          />
-        </>
+        <AddLeadForm
+          employeeEmail={currentLeadform.email}
+          employeeName={currentLeadform.bdeName}
+          setFormOpen={setAddFormOpen}
+          companysName={currentLeadform["Company Name"]}
+          setNowToFetch={setNowToFetch}
+          bdmName={currentLeadform.bdmName}
+          bdmEmail={currentLeadform.bdmEmail}
+          isBDM={true}
+        />
       )}
 
       <Dialog maxWidth="sm" open={openBooking} fullWidth

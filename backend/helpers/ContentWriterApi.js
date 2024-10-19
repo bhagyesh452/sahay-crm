@@ -14,7 +14,7 @@ router.post("/login", async (req, res) => {
 
         // Check if the use exists or not
         if (!user) {
-            return res.status(400).json({ message: "User not found" });
+            return res.status(400).json({ message: "Invaild email or password" });
         }
 
         // Check if email and password are correct

@@ -6,6 +6,8 @@ import ConveertedLeads from "./components/ConveertedLeads";
 
 // Admin Panel Imports
 //import Dashboard from "./admin/Dashboard";
+import AdminLayout from "./admin/AdminLayout.jsx";
+import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
 import Dashboard from "./admin/DashboardReportComponents/Dashboard.js";
 import LoginAdmin from "./admin/LoginAdmin";
 import EmployeeParticular from "./admin/EmployeeParticular";
@@ -28,15 +30,18 @@ import TestLeads from "./admin/TestLeads.jsx";
 import EmployeeInterestedCompanies from "./admin/EmployeeInterestestedCompanies.jsx";
 import EmployeeFolowUpCompanies from "./admin/EmployeeFolowUpCompanies.jsx";
 
-// Employee Panel Imports 
+// Employee/BDE/BDM Panel Imports 
 import EmployeeLayout from "./employeeComp/EmployeeLayout.jsx";
 import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import EmployeePanel from "./employeeComp/EmployeePanel";
+import EmployeePanelCopy from "./employeeComp/EmployeePanelCopy.jsx";
 import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
+import EmployeeTeamLeadsCopy from "./employeeComp/EmployeeTeamLeadsCopy.jsx";
 import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx";
 import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
+import FetchingEmployeeData from "./employeeComp/EmployeeDashboardComponents/FetchingEmployeeData.jsx";
 import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
 
 // Floor Manager Imports
@@ -114,6 +119,16 @@ import GraphicDesignerLayout from "./GraphicDesigner/Components/GraphicDesignerL
 import GraphicDesignerLogin from "./GraphicDesigner/Login/GraphicDesignerLogin.jsx";
 import GraphicDesignerDashboard from "./GraphicDesigner/Dashboard/GraphicDesignerDashboard.jsx";
 
+// Content Writer Imports
+import ContentWriterLayout from "./ContentWriter/Components/ContentWriterLayout.jsx";
+import ContentWriterLogin from "./ContentWriter/Login/ContentWriterLogin.jsx";
+import ContentWriterDashboard from "./ContentWriter/Dashboard/ContentWriterDashboard.jsx";
+
+// Finance Analyst Imports
+import FinanceAnalystLayout from "./FinanceAnalyst/Components/FinanceAnalystLayout.jsx";
+import FinanceAnalystLogin from "./FinanceAnalyst/Login/FinanceAnalystLogin.jsx";
+import FinanceAnalystDashboard from "./FinanceAnalyst/Dashboard/FinanceAnalystDashboard.jsx";
+
 // Customer Panel Imports
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
 import CustomerDashboard from "./Customer-Panel/CustomerDashboard.jsx";
@@ -135,11 +150,6 @@ import MaterialUIPickers from "./components/MaterialUIPickers.js";
 import "../src/assets/v2_style.css"
 import "../src/assets/hover.css"
 import "../src/assets/sales_new_style.css"
-import AdminLayout from "./admin/AdminLayout.jsx";
-import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
-import EmployeePanelCopy from "./employeeComp/EmployeePanelCopy.jsx";
-import FetchingEmployeeData from "./employeeComp/EmployeeDashboardComponents/FetchingEmployeeData.jsx";
-
 
 function App() {
 
@@ -176,6 +186,7 @@ function App() {
             {/* <Route path="/employee-data/:userId" element={<EmployeePanel />} /> */}
             <Route path="/employee-data/:userId" element={<EmployeePanelCopy fordesignation="salesexecutive" />} />
             <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} />
+            {/* <Route path="/employee-team-leads-copy/:userId" element={<EmployeeTeamLeadsCopy />} /> */}
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
             <Route path="/employee-assets/:userId" element={<EmployeeAssets />} />
@@ -324,14 +335,28 @@ function App() {
           <Route path="/relationship-manager/login" element={<RelationshipManagerLogin />} />
           <Route element={<RelationshipManagerLayout />}>
             <Route path="/relationship-manager/dashboard/:userId" element={<RelationshipManagerDashboard />} />
-            <Route path="relationship-manager-profile-details/:userId" element={<FloorManagerProfile />} />
+            <Route path="/relationship-manager-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
           {/**********************************************  graphic designer panel  ********************************************/}
           <Route path="/graphic-designer/login" element={<GraphicDesignerLogin />} />
           <Route element={<GraphicDesignerLayout />}>
             <Route path="/graphic-designer/dashboard/:userId" element={<GraphicDesignerDashboard />} />
-            <Route path="graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
+            <Route path="/graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
+          </Route>
+
+          {/**********************************************  content writer panel  ********************************************/}
+          <Route path="/content-writer/login" element={<ContentWriterLogin />} />
+          <Route element={<ContentWriterLayout />}>
+            <Route path="/content-writer/dashboard/:userId" element={<ContentWriterDashboard />} />
+            <Route path="/content-writer-profile-details/:userId" element={<FloorManagerProfile />} />
+          </Route>
+
+          {/**********************************************  finance analyst panel  ********************************************/}
+          <Route path="/finance-analyst/login" element={<FinanceAnalystLogin />} />
+          <Route element={<FinanceAnalystLayout />}>
+            <Route path="/finance-analyst/dashboard/:userId" element={<FinanceAnalystDashboard />} />
+            <Route path="/finance-analyst-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
         </Routes>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import logo from "../../static/mainLogo.png";
 import { useNavigate } from 'react-router-dom';
@@ -24,13 +24,18 @@ function RelationshipManagerLogin() {
                 setErrorMessage("");
                 // Store the JWT token in local storage or state for authentication
                 localStorage.setItem('relationshipManagerToken', res.data.token);
-                navigate(`/relationship-manager/dashboard/${res.data.data._id}`);
+                // navigate(`/relationship-manager/dashboard/${res.data.data._id}`);
+                navigate(`/relationship-manager-profile-details/${res.data.data._id}`);
             }
         } catch (error) {
             // Display the error message from the backend
             setErrorMessage(error.response.data.message || "An error occurred");
         }
     };
+
+    useEffect(() => {
+        document.title = "Relationship-Manager-Sahay-CRM";
+    }, []);
 
     return (
         <div>
