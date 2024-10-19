@@ -104,40 +104,40 @@ function EmployeeGeneralLeads({
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection
         if (startRowIndex !== null) {
-          const endRowIndex = generalData.findIndex((row) => row._id === id);
-          const selectedRange = [];
-          const startIndex = Math.min(startRowIndex, endRowIndex);
-          const endIndex = Math.max(startRowIndex, endRowIndex);
-    
-          for (let i = startIndex; i <= endIndex; i++) {
-            selectedRange.push(generalData[i]._id);
-          }
-    
-          setSelectedRows(selectedRange);
-    
-          // Scroll the window vertically when dragging beyond the visible viewport
-          const windowHeight = document.documentElement.clientHeight;
-          const mouseY = window.event.clientY;
-          const tableHeight = document.querySelector("table").clientHeight;
-          const maxVisibleRows = Math.floor(
-            windowHeight / (tableHeight / generalData.length)
-          );
-    
-          if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
-            window.scrollTo(0, window.scrollY + 20);
-          }
-        }
-      };
+            const endRowIndex = generalData.findIndex((row) => row._id === id);
+            const selectedRange = [];
+            const startIndex = Math.min(startRowIndex, endRowIndex);
+            const endIndex = Math.max(startRowIndex, endRowIndex);
 
-      const handleMouseDown = (id) => {
+            for (let i = startIndex; i <= endIndex; i++) {
+                selectedRange.push(generalData[i]._id);
+            }
+
+            setSelectedRows(selectedRange);
+
+            // Scroll the window vertically when dragging beyond the visible viewport
+            const windowHeight = document.documentElement.clientHeight;
+            const mouseY = window.event.clientY;
+            const tableHeight = document.querySelector("table").clientHeight;
+            const maxVisibleRows = Math.floor(
+                windowHeight / (tableHeight / generalData.length)
+            );
+
+            if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+                window.scrollTo(0, window.scrollY + 20);
+            }
+        }
+    };
+
+    const handleMouseDown = (id) => {
         // Initiate drag selection
         setStartRowIndex(generalData.findIndex((row) => row._id === id));
-      };
-    
-      const handleMouseUp = () => {
+    };
+
+    const handleMouseUp = () => {
         // End drag selection
         setStartRowIndex(null);
-      };
+    };
 
     return (
         <div className="sales-panels-main">
@@ -148,15 +148,15 @@ function EmployeeGeneralLeads({
                             <thead>
                                 <tr className="tr-sticky">
                                     {fordesignation === "admin" &&
-                                   ( <th>
-                                        <input
-                                            type="checkbox"
-                                            checked={
-                                                selectedRows.length === generalData.length
-                                            }
-                                            onChange={() => handleCheckboxChange("all")}
-                                        />
-                                    </th>)}
+                                        (<th>
+                                            <input
+                                                type="checkbox"
+                                                checked={
+                                                    selectedRows.length === generalData.length
+                                                }
+                                                onChange={() => handleCheckboxChange("all")}
+                                            />
+                                        </th>)}
                                     <th className="rm-sticky-left-1">Sr. No</th>
                                     <th className="rm-sticky-left-2">Compnay Name</th>
                                     <th>Compnay No</th>
@@ -189,12 +189,12 @@ function EmployeeGeneralLeads({
                             ) : (
                                 <tbody>
                                     {generalData.map((company, index) => (
-                                        <tr key={index} 
-                                        className={
-                                            fordesignation === "admin" && selectedRows.includes(company._id)
-                                                ? "selected"
-                                                : ""
-                                        }
+                                        <tr key={index}
+                                            className={
+                                                fordesignation === "admin" && selectedRows.includes(company._id)
+                                                    ? "selected"
+                                                    : ""
+                                            }
                                             style={{ border: "1px solid #ddd" }}>
                                             {fordesignation === "admin" && (<td
                                                 style={{
@@ -251,7 +251,10 @@ function EmployeeGeneralLeads({
                                             </td>
                                             <td>
                                                 {fordesignation === "admin" ? (
-                                                    <div className="ep_untouched_status">
+                                                    <div
+                                                        className={company.Status === "Untouched" ? "ep_untouched_status" :
+                                                            company.Status === "Busy" ? "ep_busy_status" :
+                                                                company.Status === "Not Picked Up" ? "ep_notpickedup_status": null}>
                                                         {company.Status}
                                                     </div>
                                                 ) : (

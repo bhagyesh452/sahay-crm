@@ -357,6 +357,90 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     }
 
+    // -------------------------------------------checkbox change funtions-----------------------
+
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [startRowIndex, setStartRowIndex] = useState(null);
+    const handleCheckboxChange = (id, event) => {
+        // If the id is 'all', toggle all checkboxes
+        if (id === "all") {
+            // If all checkboxes are already selected, clear the selection; otherwise, select all
+            setSelectedRows((prevSelectedRows) =>
+                prevSelectedRows.length === fetchedData.length
+                    ? []
+                    : fetchedData.map((row) => row._id)
+            );
+        } else {
+            // Toggle the selection status of the row with the given id
+            setSelectedRows((prevSelectedRows) => {
+                // If the Ctrl key is pressed
+                if (event.ctrlKey) {
+                    //console.log("pressed");
+                    const selectedIndex = fetchedData.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = fetchedData.findIndex((row) =>
+                        prevSelectedRows.includes(row._id)
+                    );
+
+                    // Select rows between the last selected row and the current row
+                    if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+                        const start = Math.min(selectedIndex, lastSelectedIndex);
+                        const end = Math.max(selectedIndex, lastSelectedIndex);
+                        const idsToSelect = fetchedData
+                            .slice(start, end + 1)
+                            .map((row) => row._id);
+
+                        return prevSelectedRows.includes(id)
+                            ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+                            : [...prevSelectedRows, ...idsToSelect];
+                    }
+                }
+
+                // Toggle the selection status of the row with the given id
+                return prevSelectedRows.includes(id)
+                    ? prevSelectedRows.filter((rowId) => rowId !== id)
+                    : [...prevSelectedRows, id];
+            });
+        }
+    };
+
+    const handleMouseEnter = (id) => {
+        // Update selected rows during drag selection
+        if (startRowIndex !== null) {
+            const endRowIndex = fetchedData.findIndex((row) => row._id === id);
+            const selectedRange = [];
+            const startIndex = Math.min(startRowIndex, endRowIndex);
+            const endIndex = Math.max(startRowIndex, endRowIndex);
+
+            for (let i = startIndex; i <= endIndex; i++) {
+                selectedRange.push(fetchedData[i]._id);
+            }
+
+            setSelectedRows(selectedRange);
+
+            // Scroll the window vertically when dragging beyond the visible viewport
+            const windowHeight = document.documentElement.clientHeight;
+            const mouseY = window.event.clientY;
+            const tableHeight = document.querySelector("table").clientHeight;
+            const maxVisibleRows = Math.floor(
+                windowHeight / (tableHeight / fetchedData.length)
+            );
+
+            if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+                window.scrollTo(0, window.scrollY + 20);
+            }
+        }
+    };
+
+    const handleMouseDown = (id) => {
+        // Initiate drag selection
+        setStartRowIndex(fetchedData.findIndex((row) => row._id === id));
+    };
+
+    const handleMouseUp = () => {
+        // End drag selection
+        setStartRowIndex(null);
+    };
+
 
     console.log("fordesignation", fordesignation)
     console.log("fetcgeheddata", fetchedData)
@@ -372,13 +456,30 @@ function EmployeePanelCopy({ fordesignation }) {
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
                                         <div className="btn-group mr-2">
-                                            <EmployeeAddLeadDialog
-                                                secretKey={secretKey}
-                                                fetchData={fetchData}
-                                                ename={data.ename}
-                                                refetch={refetch}
-                                            //fetchNewData={//fetchNewData}
-                                            />
+                                            {fordesignation === "admin" ? (
+                                                <>
+                                                    <button type="button" className="btn mybtn"
+                                                        //onClick={functionopenpopup}
+                                                    >
+                                                        <MdOutlinePostAdd className='mr-1' /> Leads
+                                                    </button>
+                                                    <button type="button" className="btn mybtn"
+                                                        //onClick={functionopenpopup}
+                                                    >
+                                                        <MdOutlinePostAdd className='mr-1' /> Team Leads
+                                                    </button>
+                                                </>
+
+                                            ) : (
+                                                <EmployeeAddLeadDialog
+                                                    secretKey={secretKey}
+                                                    fetchData={fetchData}
+                                                    ename={data.ename}
+                                                    refetch={refetch}
+
+                                                />
+                                            )}
+
                                         </div>
                                         <div className="btn-group" role="group" aria-label="Basic example">
                                             {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
@@ -534,6 +635,14 @@ function EmployeePanelCopy({ fordesignation }) {
                                             handleShowCallHistory={handleShowCallHistory}
                                             designation={data.designation}
                                             fordesignation={fordesignation}
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
+                                            setStartRowIndex={setStartRowIndex}
+                                            startRowIndex={startRowIndex}
+                                            selectedRows={selectedRows}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
@@ -558,6 +667,14 @@ function EmployeePanelCopy({ fordesignation }) {
                                             handleOpenFormOpen={handleOpenFormOpen}
                                             designation={data.designation}
                                             fordesignation={fordesignation}
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
+                                            setStartRowIndex={setStartRowIndex}
+                                            startRowIndex={startRowIndex}
+                                            selectedRows={selectedRows}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">

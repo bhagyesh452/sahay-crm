@@ -3391,6 +3391,24 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
 }
+.ep_busy_status {
+  background-color: #ee9a9a;
+  border: 1px solid #d81d1d;
+  padding: 4px 8px 4px 8px;
+  border-radius: 100px;
+  font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
+  font-weight: 600;
+}
+.ep_notpickedup_status {
+  background-color: #fffec4;
+  border: 1px solid #cfc022;
+  padding: 4px 8px 4px 8px;
+  border-radius: 100px;
+  font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
+  font-weight: 600;
+}
 
 .rm_sr_no {
   width: 24px;
