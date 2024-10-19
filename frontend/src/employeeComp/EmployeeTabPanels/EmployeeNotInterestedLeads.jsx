@@ -169,7 +169,7 @@ function EmployeeNotInterestedLeads({
                                         <td>
                                             {company.bdmAcceptStatus !== "NotForwarded" ? "Yes" : "No"}
                                         </td>
-                                        <td>{company.bdmName}</td>
+                                        <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.bdmName : "-"}</td>
                                         <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.Status : "-"}</td>
                                         <td>{company.bdmAcceptStatus !== "NotForwarded" ?
                                             <div key={company._id}

@@ -143,7 +143,7 @@ function EmployeePanelCopy() {
     useEffect(() => {
         fetchData();
         fetchProjections();
-    }, [userId]);
+    }, []);
 
     const fetchProjections = async () => {
         try {
@@ -223,7 +223,6 @@ function EmployeePanelCopy() {
                 });
                 return response.data; // Directly return the data
             },
-            enabled: !!data.ename, // Only fetch if data.ename is available
             staleTime:300000, // Cache for 1 minute
             cacheTime: 300000, // Cache for 1 minute
         }
