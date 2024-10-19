@@ -6,6 +6,8 @@ import ConveertedLeads from "./components/ConveertedLeads";
 
 // Admin Panel Imports
 //import Dashboard from "./admin/Dashboard";
+import AdminLayout from "./admin/AdminLayout.jsx";
+import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
 import Dashboard from "./admin/DashboardReportComponents/Dashboard.js";
 import LoginAdmin from "./admin/LoginAdmin";
 import EmployeeParticular from "./admin/EmployeeParticular";
@@ -32,11 +34,14 @@ import EmployeeFolowUpCompanies from "./admin/EmployeeFolowUpCompanies.jsx";
 import EmployeeLayout from "./employeeComp/EmployeeLayout.jsx";
 import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import EmployeePanel from "./employeeComp/EmployeePanel";
+import EmployeePanelCopy from "./employeeComp/EmployeePanelCopy.jsx";
 import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
+import EmployeeTeamLeadsCopy from "./employeeComp/EmployeeTeamLeadsCopy.jsx";
 import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx";
 import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
+import FetchingEmployeeData from "./employeeComp/EmployeeDashboardComponents/FetchingEmployeeData.jsx";
 import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
 
 // Floor Manager Imports
@@ -145,10 +150,6 @@ import MaterialUIPickers from "./components/MaterialUIPickers.js";
 import "../src/assets/v2_style.css"
 import "../src/assets/hover.css"
 import "../src/assets/sales_new_style.css"
-import AdminLayout from "./admin/AdminLayout.jsx";
-import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
-import EmployeePanelCopy from "./employeeComp/EmployeePanelCopy.jsx";
-import FetchingEmployeeData from "./employeeComp/EmployeeDashboardComponents/FetchingEmployeeData.jsx";
 
 function App() {
 
@@ -185,6 +186,7 @@ function App() {
             {/* <Route path="/employee-data/:userId" element={<EmployeePanel />} /> */}
             <Route path="/employee-data/:userId" element={<EmployeePanelCopy />} />
             <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} />
+            {/* <Route path="/employee-team-leads-copy/:userId" element={<EmployeeTeamLeadsCopy />} /> */}
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
             <Route path="/employee-assets/:userId" element={<EmployeeAssets />} />

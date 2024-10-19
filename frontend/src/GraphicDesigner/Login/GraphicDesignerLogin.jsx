@@ -24,7 +24,8 @@ function GraphicDesignerLogin() {
                 setErrorMessage("");
                 // Store the JWT token in local storage or state for authentication
                 localStorage.setItem('graphicDesignerToken', res.data.token);
-                navigate(`/graphic-designer/dashboard/${res.data.data._id}`);
+                // navigate(`/graphic-designer/dashboard/${res.data.data._id}`);
+                navigate(`/graphic-designer-profile-details/${res.data.data._id}`);
             }
         } catch (error) {
             // Display the error message from the backend

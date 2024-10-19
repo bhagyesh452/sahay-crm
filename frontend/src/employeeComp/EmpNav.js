@@ -68,7 +68,7 @@ function EmpNav({ userId, bdmWork }) {
   //   }
   // }, [userId])
 
-  
+
 
 
   return (
@@ -84,7 +84,7 @@ function EmpNav({ userId, bdmWork }) {
 
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      
+
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="icon"
@@ -121,20 +121,35 @@ function EmpNav({ userId, bdmWork }) {
                   {/* </Link> */}
                 </Link>
                 {bdmWork && (
-                  <Link style={{ textDecoration: "none", color: "black" }} className={
-                    location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
-                  }
-                    to={`/employee-team-leads/${userId}`}>
+                  <>
+                    <Link style={{ textDecoration: "none", color: "black" }} className={
+                      location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
+                    }
+                      to={`/employee-team-leads/${userId}`}>
 
-                    <a className="nav-link" href="#">
-                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                      <a className="nav-link" href="#">
+                        <span className="nav-link-icon d-md-none d-lg-inline-block">
 
-                        <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                      </span>
-                      <span className="nav-link-title">Team Leads</span>
-                    </a>
+                          <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                        </span>
+                        <span className="nav-link-title">Team Leads</span>
+                      </a>
+                    </Link>
 
-                  </Link>
+                    {/* <Link style={{ textDecoration: "none", color: "black" }} className={
+                      location.pathname === `/employee-team-leads-copy/${userId}` ? "nav-item active" : "nav-item"
+                    }
+                      to={`/employee-team-leads-copy/${userId}`}>
+
+                      <a className="nav-link" href="#">
+                        <span className="nav-link-icon d-md-none d-lg-inline-block">
+
+                          <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                        </span>
+                        <span className="nav-link-title">Team Leads Copy</span>
+                      </a>
+                    </Link> */}
+                  </>
                 )}
                 <Link style={{ textDecoration: "none", color: "black" }}
                   className={

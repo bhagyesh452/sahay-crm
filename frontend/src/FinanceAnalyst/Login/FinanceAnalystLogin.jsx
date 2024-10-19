@@ -24,7 +24,8 @@ function FinanceAnalystLogin() {
                 setErrorMessage("");
                 // Store the JWT token in local storage or state for authentication
                 localStorage.setItem('financeAnalystToken', res.data.token);
-                navigate(`/finance-analyst/dashboard/${res.data.data._id}`);
+                // navigate(`/finance-analyst/dashboard/${res.data.data._id}`);
+                navigate(`/finance-analyst-profile-details/${res.data.data._id}`);
             }
         } catch (error) {
             // Display the error message from the backend

@@ -24,7 +24,8 @@ function RelationshipManagerLogin() {
                 setErrorMessage("");
                 // Store the JWT token in local storage or state for authentication
                 localStorage.setItem('relationshipManagerToken', res.data.token);
-                navigate(`/relationship-manager/dashboard/${res.data.data._id}`);
+                // navigate(`/relationship-manager/dashboard/${res.data.data._id}`);
+                navigate(`/relationship-manager-profile-details/${res.data.data._id}`);
             }
         } catch (error) {
             // Display the error message from the backend

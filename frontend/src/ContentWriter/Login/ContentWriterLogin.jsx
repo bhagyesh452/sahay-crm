@@ -24,7 +24,8 @@ function ContentWriterLogin() {
                 setErrorMessage("");
                 // Store the JWT token in local storage or state for authentication
                 localStorage.setItem('contentWriterToken', res.data.token);
-                navigate(`/content-writer/dashboard/${res.data.data._id}`);
+                // navigate(`/content-writer/dashboard/${res.data.data._id}`);
+                navigate(`/content-writer-profile-details/${res.data.data._id}`);
             }
         } catch (error) {
             // Display the error message from the backend
