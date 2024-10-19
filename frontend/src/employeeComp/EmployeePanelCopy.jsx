@@ -27,7 +27,7 @@ import EmployeeForwardedLeads from "./EmployeeTabPanels/EmployeeForwardedLeads.j
 import EmployeeNotInterestedLeads from "./EmployeeTabPanels/EmployeeNotInterestedLeads.jsx";
 import { jwtDecode } from "jwt-decode";
 
-function EmployeePanelCopy() {
+function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
     //const [maturedID, setMaturedID] = useState("");
     const [currentForm, setCurrentForm] = useState(null);
@@ -66,6 +66,10 @@ function EmployeePanelCopy() {
     const [companyId, setCompanyId] = useState("");
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
+
+    const { id } = useParams();
+
+    console.log("id", id)
     // Auto logout functionality :
     useEffect(() => {
         // Function to check token expiry and initiate logout if expired
@@ -120,13 +124,25 @@ function EmployeePanelCopy() {
 
 
     useEffect(() => {
-        document.title = `Employee-Sahay-CRM`;
+        if (userId && data.designation === "Sales Executive") {
+            document.title = `Employee-Sahay-CRM`;
+        } else if (userId && data.designation === "Sales Manager") {
+            document.title = `Floor-Manager-Sahay-CRM`;
+        } else {
+            document.title = `Admin-Sahay-CRM`;
+        }
     }, [data.ename]);
-
+    console.log("data", data)
 
     const fetchData = async () => {
+        let fetchingId;
+        if (userId) {
+            fetchingId = userId
+        } else {
+            fetchingId = id
+        }
         try {
-            const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${fetchingId}`);
             // Set the retrieved data in the state
             const userData = response.data.data;
             setEmployeeName(userData.ename)
@@ -138,7 +154,7 @@ function EmployeePanelCopy() {
         }
     };
 
-    console.log("userData" , data)
+    console.log("userData", data)
 
     useEffect(() => {
         fetchData();
@@ -223,7 +239,7 @@ function EmployeePanelCopy() {
                 });
                 return response.data; // Directly return the data
             },
-            staleTime:300000, // Cache for 1 minute
+            staleTime: 300000, // Cache for 1 minute
             cacheTime: 300000, // Cache for 1 minute
         }
     );
@@ -341,8 +357,8 @@ function EmployeePanelCopy() {
         }
     }
 
-    
 
+    console.log("fordesignation", fordesignation)
     console.log("fetcgeheddata", fetchedData)
     console.log("dataStatus", dataStatus)
 
@@ -430,12 +446,12 @@ function EmployeePanelCopy() {
                                                 className={`nav-link  ${dataStatus === "All" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
-                                            
+
                                                 <div>General</div>
                                                 <div className="no_badge">
                                                     {totalCounts.untouched}
                                                 </div>
-                                                
+
                                             </a>
                                         </li>
                                         <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
@@ -466,20 +482,22 @@ function EmployeePanelCopy() {
                                                 </span>
                                             </a>
                                         </li>
-                                        <li class="nav-item sales-nav-item data-heading">
-                                            <a
-                                                href="#Forwarded"
-                                                ref={forwardedTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handleDataStatusChange("Forwarded", forwardedTabRef)}
-                                                className={`nav-link ${dataStatus === "Forwarded" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
-                                                Forwarded
-                                                <span className="no_badge">
-                                                    {totalCounts.forwarded}
-                                                </span>
-                                            </a>
-                                        </li>
+                                        {data.designation !== "Sales Manager" &&
+                                            (<li class="nav-item sales-nav-item data-heading">
+                                                <a
+                                                    href="#Forwarded"
+                                                    ref={forwardedTabRef} // Attach the ref to the anchor tag
+                                                    onClick={() => handleDataStatusChange("Forwarded", forwardedTabRef)}
+                                                    className={`nav-link ${dataStatus === "Forwarded" ? "active item-act" : ""}`}
+                                                    data-bs-toggle="tab"
+                                                >
+                                                    Forwarded
+                                                    <span className="no_badge">
+                                                        {totalCounts.forwarded}
+                                                    </span>
+                                                </a>
+                                            </li>)
+                                        }
                                         <li class="nav-item sales-nav-item data-heading">
                                             <a
                                                 href="#NotInterested"
@@ -515,7 +533,7 @@ function EmployeePanelCopy() {
                                             secretKey={secretKey}
                                             handleShowCallHistory={handleShowCallHistory}
                                             designation={data.designation}
-
+                                            fordesignation={fordesignation}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
@@ -539,7 +557,7 @@ function EmployeePanelCopy() {
                                             projectionData={projectionData}
                                             handleOpenFormOpen={handleOpenFormOpen}
                                             designation={data.designation}
-
+                                            fordesignation={fordesignation}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
@@ -562,7 +580,7 @@ function EmployeePanelCopy() {
                                             fetchProjections={fetchProjections}
                                             projectionData={projectionData}
                                             designation={data.designation}
-
+                                            fordesignation={fordesignation}
 
                                         />)}
                                     </div>
@@ -584,7 +602,7 @@ function EmployeePanelCopy() {
                                             setdataStatus={setdataStatus}
                                             handleShowCallHistory={handleShowCallHistory}
                                             designation={data.designation}
-
+                                            fordesignation={fordesignation}
 
                                         />)}
                                     </div>
@@ -606,7 +624,7 @@ function EmployeePanelCopy() {
                                             setdataStatus={setdataStatus}
                                             handleShowCallHistory={handleShowCallHistory}
                                             designation={data.designation}
-
+                                            fordesignation={fordesignation}
                                         />)}
                                     </div>
                                 </div>

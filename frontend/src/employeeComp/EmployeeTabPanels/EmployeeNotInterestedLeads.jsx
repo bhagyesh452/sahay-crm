@@ -28,6 +28,7 @@ function EmployeeNotInterestedLeads({
     ename,
     email,
     handleShowCallHistory,
+    designation
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -62,7 +63,7 @@ function EmployeeNotInterestedLeads({
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap" style={{width:"2200px"}}>
+                        <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }}>
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="rm-sticky-left-1">Sr. No</th>
@@ -71,10 +72,14 @@ function EmployeeNotInterestedLeads({
                                     <th>Call History</th>
                                     <th>BDE Status</th>
                                     <th>BDE Remarks</th>
-                                    <th>BDM FORWARDED</th>
-                                    <th>BDM Name</th>
-                                    <th>BDM Status</th>
-                                    <th>BDM Remarks</th>
+                                    {designation !== "Sales Manager" && (
+                                        <>
+                                            <th>BDM FORWARDED</th>
+                                            <th>BDM Name</th>
+                                            <th>BDM Status</th>
+                                            <th>BDM Remarks</th>
+                                        </>
+                                    )}
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
@@ -166,45 +171,47 @@ function EmployeeNotInterestedLeads({
                                                 />
                                             </div>
                                         </td>
-                                        <td>
-                                            {company.bdmAcceptStatus !== "NotForwarded" ? "Yes" : "No"}
-                                        </td>
-                                        <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.bdmName : "-"}</td>
-                                        <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.Status : "-"}</td>
-                                        <td>{company.bdmAcceptStatus !== "NotForwarded" ?
-                                            <div key={company._id}
-                                                style={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "space-between",
-                                                    width: "100px",
-                                                }}>
-                                                <p
-                                                    className="rematkText text-wrap m-0"
-                                                    title={company.remarks}
-                                                >
-                                                    {!company.bdmRemarks
-                                                        ? "No Remarks"
-                                                        : company.bdmRemarks}
-                                                </p>
-                                                <RemarksDialog
-                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                    currentCompanyName={company["Company Name"]}
-                                                    //filteredRemarks={filteredRemarks}
-                                                    companyId={company._id}
-                                                    remarksKey="bdmRemarks" // For BDM remarks
-                                                    isEditable={false} // Disable editing
-                                                    secretKey={secretKey}
-                                                    //fetchRemarksHistory={fetchRemarksHistory}
-                                                    bdeName={company.ename}
-                                                    fetchNewData={refetch}
-                                                    bdmName={company.bdmName}
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                    companyStatus={company.Status}
-                                                    mainRemarks={company.Remarks}
-                                                //remarksHistory={remarksHistory} // pass your remarks history data
-                                                />
-                                            </div> : "-"}</td>
+                                        {designation !== "Sales Manager" && (<>
+                                            <td>
+                                                {company.bdmAcceptStatus !== "NotForwarded" ? "Yes" : "No"}
+                                            </td>
+                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.bdmName : "-"}</td>
+                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.Status : "-"}</td>
+                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ?
+                                                <div key={company._id}
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "space-between",
+                                                        width: "100px",
+                                                    }}>
+                                                    <p
+                                                        className="rematkText text-wrap m-0"
+                                                        title={company.remarks}
+                                                    >
+                                                        {!company.bdmRemarks
+                                                            ? "No Remarks"
+                                                            : company.bdmRemarks}
+                                                    </p>
+                                                    <RemarksDialog
+                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                        currentCompanyName={company["Company Name"]}
+                                                        //filteredRemarks={filteredRemarks}
+                                                        companyId={company._id}
+                                                        remarksKey="bdmRemarks" // For BDM remarks
+                                                        isEditable={false} // Disable editing
+                                                        secretKey={secretKey}
+                                                        //fetchRemarksHistory={fetchRemarksHistory}
+                                                        bdeName={company.ename}
+                                                        fetchNewData={refetch}
+                                                        bdmName={company.bdmName}
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                        companyStatus={company.Status}
+                                                        mainRemarks={company.Remarks}
+                                                    //remarksHistory={remarksHistory} // pass your remarks history data
+                                                    />
+                                                </div> : "-"}</td>
+                                        </>)}
                                         <td>
                                             {formatDateNew(
                                                 company["Company Incorporation Date  "]

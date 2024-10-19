@@ -257,7 +257,7 @@ function EmployeeForwardedLeads({
                                                     }}>
                                                     <p
                                                         className="rematkText text-wrap m-0"
-                                                        title={company.remarks}
+                                                        title={company.bdmRemarks}
                                                     >
                                                         {!company.bdmRemarks
                                                             ? "No Remarks"

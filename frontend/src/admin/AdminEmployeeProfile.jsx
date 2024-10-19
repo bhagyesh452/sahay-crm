@@ -275,6 +275,7 @@ function AdminEmployeeProfile() {
             setIsLoading(false);
         }
     };
+    
 
     const fetchPersonalInfo = async () => {
         try {

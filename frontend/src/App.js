@@ -174,7 +174,7 @@ function App() {
           <Route element={newtoken ? <EmployeeLayout /> : <Navigate to="/" />}>
             <Route path="/employee-dashboard/:userId" element={<EmployeeDashboard />} />
             {/* <Route path="/employee-data/:userId" element={<EmployeePanel />} /> */}
-            <Route path="/employee-data/:userId" element={<EmployeePanelCopy />} />
+            <Route path="/employee-data/:userId" element={<EmployeePanelCopy fordesignation="salesexecutive" />} />
             <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} />
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
@@ -197,7 +197,8 @@ function App() {
           <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} /> */}
           <Route element={<FloorManagerLayout />}>
             <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} />
-            <Route path="/floormanager/leads/:userId" element={<BdmLeads />} />
+            {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
+            <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
             <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} />
             <Route path="/floormanager/bookings/:userId" element={<BdmBookings />} />
             <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} />
@@ -274,7 +275,8 @@ function App() {
                 <Route path="/managing-director/dashboard" element={<Dashboard />} />
                 <Route path="/managing-director/employees" element={<Employees />} />
                 <Route path="/managing-director/user" element={<NewEmployee />} />
-                <Route path="/managing-director/employees/:id" element={<EmployeeParticular />} />
+                {/* <Route path="/managing-director/employees/:id" element={<EmployeeParticular />} /> */}
+                <Route path="/managing-director/employees/:id" element={<EmployeePanelCopy fordesignation="admin" />} />
                 <Route path="/managing-director/employeeleads/:id" element={<AdminEmployeeTeamLeads />} />
                 <Route path="/managing-director/employees/:id/login-details" element={<LoginDetails />} />
                 <Route path="/managing-director/leads" element={<TestLeads />} />

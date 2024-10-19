@@ -88,7 +88,7 @@ function EmployeeInterestedLeads({
                                     <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>Add Projection</th>
-                                    <th>Forward To Bdm</th>
+                                    {designation !== "Sales Manager" && (<th>Forward To Bdm</th>)}
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Interested" ? (
@@ -187,6 +187,7 @@ function EmployeeInterestedLeads({
                                                         secretKey={secretKey}
                                                         //fetchRemarksHistory={fetchRemarksHistory}
                                                         bdeName={company.ename}
+                                                        bdmName={company.bdmName}
                                                         refetch={refetch}
                                                         mainRemarks={company.Remarks}
                                                         designation={designation}
@@ -227,7 +228,8 @@ function EmployeeInterestedLeads({
                                                     )}
                                                 />
                                             </td>
-                                            <td>
+                                           { designation !== "Sales Manager" && 
+                                           (<td>
                                                 <BdmMaturedCasesDialogBox
                                                     currentData={interestedData}
                                                     forwardedCompany={company["Company Name"]}
@@ -238,7 +240,8 @@ function EmployeeInterestedLeads({
                                                     bdmNewAcceptStatus={"Pending"}
                                                     fetchNewData={refetch}
                                                 />
-                                            </td>
+                                            </td>)
+                                            }
                                         </tr>
                                     ))}
                                 </tbody>

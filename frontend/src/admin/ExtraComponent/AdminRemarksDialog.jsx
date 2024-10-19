@@ -136,7 +136,7 @@ function AdminRemarksDialog({
                       <div className="card RemarkCard position-relative">
                         <div className="d-flex justify-content-between">
                           <div className="remark-card-innerText">
-                            <pre>
+                            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
                               {historyItem.remarks || historyItem.bdmRemarks}
                             </pre>
                           </div>
@@ -144,7 +144,7 @@ function AdminRemarksDialog({
 
                         <div className="d-flex card-dateTime justify-content-between">
                           <div className="date">
-                          {formatDateTimeForYesterday(historyItem.createdAt)}
+                          {formatDateTimeForYesterday(historyItem.addedOn)}
                             {/* {new Date(
                               historyItem.createdAt
                             ).toLocaleDateString()}{" "}
@@ -154,8 +154,8 @@ function AdminRemarksDialog({
                             ).toLocaleTimeString()} */}
                           </div>
                           <div className="date">
-                            By :`${historyItem.employeeName}($
-                            {historyItem.designation})`
+                            By: {historyItem.employeeName}(
+                            {historyItem.designation})
                           </div>
                         </div>
                       </div>
@@ -174,18 +174,18 @@ function AdminRemarksDialog({
                             <div style={{ fontSize: "9px" }}>
                               Service: {serviceItem.serviceName}
                             </div>
-                            <pre>{serviceItem.remarks}</pre>
+                            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>{serviceItem.remarks}</pre>
                           </div>
                         </div>
 
                         <div className="d-flex card-dateTime justify-content-between">
                           <div className="date">
-                            {formatDateTimeForYesterday(serviceItem.createdAt)}
+                            {formatDateTimeForYesterday(serviceItem.addedOn)}
                             {/* {new Date(serviceItem.createdAt).toLocaleDateString()}{" "}
                             ||{new Date(serviceItem.createdAt).toLocaleTimeString()} */}
                           </div>
                           <div className="date">
-                            By :`${serviceItem.employeeName}(${serviceItem.designation})`
+                            By: {serviceItem.employeeName}({serviceItem.designation})
                           </div>
                         </div>
                       </div>

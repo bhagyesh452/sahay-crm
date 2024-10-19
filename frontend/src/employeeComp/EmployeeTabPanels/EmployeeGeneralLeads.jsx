@@ -26,7 +26,9 @@ function EmployeeGeneralLeads({
     ename,
     email,
     secretKey,
-    handleShowCallHistory
+    handleShowCallHistory,
+    designation,
+    fordesignation
 }) {
     console.log("isLoaidng", isLoading)
     const [companyName, setCompanyName] = useState("");
@@ -54,16 +56,107 @@ function EmployeeGeneralLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
-    console.log("general hua")
+
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [startRowIndex, setStartRowIndex] = useState(null);
+    const handleCheckboxChange = (id, event) => {
+        // If the id is 'all', toggle all checkboxes
+        if (id === "all") {
+            // If all checkboxes are already selected, clear the selection; otherwise, select all
+            setSelectedRows((prevSelectedRows) =>
+                prevSelectedRows.length === generalData.length
+                    ? []
+                    : generalData.map((row) => row._id)
+            );
+        } else {
+            // Toggle the selection status of the row with the given id
+            setSelectedRows((prevSelectedRows) => {
+                // If the Ctrl key is pressed
+                if (event.ctrlKey) {
+                    //console.log("pressed");
+                    const selectedIndex = generalData.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = generalData.findIndex((row) =>
+                        prevSelectedRows.includes(row._id)
+                    );
+
+                    // Select rows between the last selected row and the current row
+                    if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+                        const start = Math.min(selectedIndex, lastSelectedIndex);
+                        const end = Math.max(selectedIndex, lastSelectedIndex);
+                        const idsToSelect = generalData
+                            .slice(start, end + 1)
+                            .map((row) => row._id);
+
+                        return prevSelectedRows.includes(id)
+                            ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+                            : [...prevSelectedRows, ...idsToSelect];
+                    }
+                }
+
+                // Toggle the selection status of the row with the given id
+                return prevSelectedRows.includes(id)
+                    ? prevSelectedRows.filter((rowId) => rowId !== id)
+                    : [...prevSelectedRows, id];
+            });
+        }
+    };
+
+    const handleMouseEnter = (id) => {
+        // Update selected rows during drag selection
+        if (startRowIndex !== null) {
+          const endRowIndex = generalData.findIndex((row) => row._id === id);
+          const selectedRange = [];
+          const startIndex = Math.min(startRowIndex, endRowIndex);
+          const endIndex = Math.max(startRowIndex, endRowIndex);
+    
+          for (let i = startIndex; i <= endIndex; i++) {
+            selectedRange.push(generalData[i]._id);
+          }
+    
+          setSelectedRows(selectedRange);
+    
+          // Scroll the window vertically when dragging beyond the visible viewport
+          const windowHeight = document.documentElement.clientHeight;
+          const mouseY = window.event.clientY;
+          const tableHeight = document.querySelector("table").clientHeight;
+          const maxVisibleRows = Math.floor(
+            windowHeight / (tableHeight / generalData.length)
+          );
+    
+          if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+            window.scrollTo(0, window.scrollY + 20);
+          }
+        }
+      };
+
+      const handleMouseDown = (id) => {
+        // Initiate drag selection
+        setStartRowIndex(generalData.findIndex((row) => row._id === id));
+      };
+    
+      const handleMouseUp = () => {
+        // End drag selection
+        setStartRowIndex(null);
+      };
 
     return (
         <div className="sales-panels-main">
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap" style={{width:"1800px"}}>
+                        <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
                             <thead>
                                 <tr className="tr-sticky">
+                                    {fordesignation === "admin" &&
+                                   ( <th>
+                                        <input
+                                            type="checkbox"
+                                            checked={
+                                                selectedRows.length === generalData.length
+                                            }
+                                            onChange={() => handleCheckboxChange("all")}
+                                        />
+                                    </th>)}
                                     <th className="rm-sticky-left-1">Sr. No</th>
                                     <th className="rm-sticky-left-2">Compnay Name</th>
                                     <th>Compnay No</th>
@@ -96,7 +189,38 @@ function EmployeeGeneralLeads({
                             ) : (
                                 <tbody>
                                     {generalData.map((company, index) => (
-                                        <tr key={index} >
+                                        <tr key={index} 
+                                        className={
+                                            fordesignation === "admin" && selectedRows.includes(company._id)
+                                                ? "selected"
+                                                : ""
+                                        }
+                                            style={{ border: "1px solid #ddd" }}>
+                                            {fordesignation === "admin" && (<td
+                                                style={{
+                                                    position: "sticky",
+                                                    left: 0,
+                                                    zIndex: 1,
+                                                    background: "white",
+                                                }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedRows.includes(
+                                                        company._id
+                                                    )}
+                                                    onChange={(e) =>
+                                                        handleCheckboxChange(company._id, e)
+                                                    }
+                                                    onMouseDown={() =>
+                                                        handleMouseDown(company._id)
+
+                                                    }
+                                                    onMouseEnter={() =>
+                                                        handleMouseEnter(company._id)
+                                                    }
+                                                    onMouseUp={handleMouseUp}
+                                                />
+                                            </td>)}
                                             <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
                                             <td className="rm-sticky-left-2">{company["Company Name"]}</td>
                                             <td>
@@ -126,30 +250,37 @@ function EmployeeGeneralLeads({
                                                 />
                                             </td>
                                             <td>
-                                                <EmployeeStatusChange
-                                                    key={`${company["Company Name"]}-${index}`}
-                                                    companyName={company["Company Name"]}
-                                                    companyStatus={company.Status}
-                                                    id={company._id}
-                                                    refetch={refetch}
-                                                    mainStatus={dataStatus}
-                                                    setCompanyName={setCompanyName}
-                                                    setCompanyEmail={setCompanyEmail}
-                                                    setCompanyInco={setCompanyInco}
-                                                    setCompanyId={setCompanyId}
-                                                    setCompanyNumber={setCompanyNumber}
-                                                    setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                                                    setNewBdeName={setNewBdeName}
-                                                    isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
-                                                    setFormOpen={setFormOpen}
-                                                    setAddFormOpen={setAddFormOpen}
-                                                    cemail={company["Company Email"]}
-                                                    cindate={company["Incorporation Date"]}
-                                                    cnum={company["Company Number"]}
-                                                    ename={company.ename}
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                />
+                                                {fordesignation === "admin" ? (
+                                                    <div className="ep_untouched_status">
+                                                        {company.Status}
+                                                    </div>
+                                                ) : (
+                                                    <EmployeeStatusChange
+                                                        key={`${company["Company Name"]}-${index}`}
+                                                        companyName={company["Company Name"]}
+                                                        companyStatus={company.Status}
+                                                        id={company._id}
+                                                        refetch={refetch}
+                                                        mainStatus={dataStatus}
+                                                        setCompanyName={setCompanyName}
+                                                        setCompanyEmail={setCompanyEmail}
+                                                        setCompanyInco={setCompanyInco}
+                                                        setCompanyId={setCompanyId}
+                                                        setCompanyNumber={setCompanyNumber}
+                                                        setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                                                        setNewBdeName={setNewBdeName}
+                                                        isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
+                                                        setFormOpen={setFormOpen}
+                                                        setAddFormOpen={setAddFormOpen}
+                                                        cemail={company["Company Email"]}
+                                                        cindate={company["Incorporation Date"]}
+                                                        cnum={company["Company Number"]}
+                                                        ename={company.ename}
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                    />
+                                                )}
                                             </td>
+
                                             <td>
                                                 <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                                     <p

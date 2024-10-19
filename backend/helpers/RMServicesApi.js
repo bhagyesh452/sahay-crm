@@ -3489,7 +3489,10 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
       if (!existingCompleteRemarksHistory.serviceWiseRemarks) {
         existingCompleteRemarksHistory.serviceWiseRemarks = [];
       }
-      const saveEntry = await CompleteRemarksHistoryLeads.updateOne({
+      const saveEntry = await CompleteRemarksHistoryLeads.findOneAndUpdate({
+        companyID: findCompany._id
+      },
+      {
         $push: {
           serviceWiseRemarks: [newCompleteRemarks]
 
@@ -3577,7 +3580,10 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
       if (!existingCompleteRemarksHistory.serviceWiseRemarks) {
         existingCompleteRemarksHistory.serviceWiseRemarks = [];
       }
-      const saveEntry = await CompleteRemarksHistoryLeads.updateOne({
+      const saveEntry = await CompleteRemarksHistoryLeads.findOneAndUpdate({
+        companyID: findCompany._id
+      },
+      {
         $push: {
           serviceWiseRemarks: [newCompleteRemarks]
 

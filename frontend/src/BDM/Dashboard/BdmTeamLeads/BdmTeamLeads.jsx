@@ -417,6 +417,8 @@ function BdmTeamLeads() {
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
     //console.log(cid, cstat, changeRemarks, remarksBdmName);
+    const designation = data.designation
+    const bdmWork = data.bdmWork
     const Remarks = changeRemarks;
     if (Remarks === "") {
       Swal.fire({ title: "Empty Remarks!", icon: "warning" });
@@ -474,14 +476,21 @@ function BdmTeamLeads() {
       } else {
         const response = await axios.post(`${secretKey}/remarks/update-remarks-bdm/${cid}`, {
           Remarks,
-        });
-        const response2 = await axios.post(
-          `${secretKey}/remarks/remarks-history-bdm/${cid}`,
-          {
-            Remarks,
             remarksBdmName,
-          }
-        );
+            currentCompanyName,
+            designation,
+            bdmWork
+        });
+        // const response2 = await axios.post(
+        //   `${secretKey}/remarks/remarks-history-bdm/${cid}`,
+        //   {
+        //     Remarks,
+        //     remarksBdmName,
+        //     currentCompanyName,
+        //     designation,
+        //     bdmWork
+        //   }
+        // );
         //console.log("remarks", Remarks)
 
         if (response.status === 200) {

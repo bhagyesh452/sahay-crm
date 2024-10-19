@@ -101,7 +101,7 @@ router.post("/update-remarks/:id", async (req, res) => {
       designation: designation,
       remarks: Remarks,
       bdeName: bdeName,
-      addedOn:new Date()
+      addedOn: new Date()
     };
 
     console.log(designation, newCompleteRemarks)
@@ -116,12 +116,17 @@ router.post("/update-remarks/:id", async (req, res) => {
       if (!existingCompleteRemarksHistory.remarks) {
         existingCompleteRemarksHistory.remarks = [];
       }
-      const saveEntry = await CompleteRemarksHistoryLeads.updateOne({
-        $push: {
-          remarks: [newCompleteRemarks]
+      const saveEntry = await CompleteRemarksHistoryLeads.findOneAndUpdate(
+        {
+          companyID: id
+        },
+        {
+          $push: {
+            remarks: [newCompleteRemarks]
 
+          }
         }
-      })
+      )
     } else {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
@@ -234,7 +239,7 @@ router.post("/update-remarks-bdm/:id", async (req, res) => {
       bdmRemarks: Remarks,
       bdmName: remarksBdmName,
       bdmWork: bdmWork,
-      addedOn:new Date()
+      addedOn: new Date()
     };
 
     console.log(designation, newCompleteRemarks)
@@ -244,17 +249,21 @@ router.post("/update-remarks-bdm/:id", async (req, res) => {
       .select("companyID"); // Only select companyID and remarks
 
     if (existingCompleteRemarksHistory) {
-
+      console.log(existingCompleteRemarksHistory, id)
       // Check if the remarks array exists, and if not, initialize it
       if (!existingCompleteRemarksHistory.remarks) {
         existingCompleteRemarksHistory.remarks = [];
       }
-      const saveEntry = await CompleteRemarksHistoryLeads.updateOne({
-        $push: {
-          remarks: [newCompleteRemarks]
+      const saveEntry = await CompleteRemarksHistoryLeads.findOneAndUpdate({
+        companyID: id
+      },
+        {
+          $push: {
+            remarks: [newCompleteRemarks]
 
-        }
-      })
+          }
+        })
+      console.log(saveEntry)
     } else {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
@@ -423,10 +432,10 @@ router.get("/remarks-history/:id", async (req, res) => {
 });
 router.get("/remarks-history-complete/:id", async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const remarksHistory = await CompleteRemarksHistoryLeads.find({ companyID: id });
-    console.log("id" , id , remarksHistory)
+    console.log("id", id, remarksHistory)
     res.json(remarksHistory);
   } catch (error) {
     console.error("Error fetching remarks history:", error);
