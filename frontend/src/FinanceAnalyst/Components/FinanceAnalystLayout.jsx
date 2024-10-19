@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import axios from "axios";
-import ContentWriterHeader from './ContentWriterHeader';
-import ContentWriterNavbar from './ContentWriterNavbar';
+import FinanceAnalystHeader from "./FinanceAnalystHeader";
+import FinanceAnalystNavbar from "./FinanceAnalystNavbar";
 
-function ContentWriterLayout() {
+function FinanceAnalystLayout() {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
@@ -27,7 +27,7 @@ function ContentWriterLayout() {
 
     return (
         <>
-            <ContentWriterHeader
+            <FinanceAnalystHeader
                 id={data._id}
                 name={data.ename}
                 empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename}
@@ -35,11 +35,11 @@ function ContentWriterLayout() {
                 designation={data.newDesignation}
                 data={data}
             />
-            <ContentWriterNavbar userId={userId} />
+            <FinanceAnalystNavbar userId={userId} />
             {/* This will render the specific page content */}
             <Outlet />
         </>
     );
 }
 
-export default ContentWriterLayout;
+export default FinanceAnalystLayout;

@@ -82,6 +82,8 @@ function FloorManagerProfile() {
       document.title = `Graphic-Designer-Sahay-CRM`;
     } else if (path === `/content-writer-profile-details/${userId}`) {
       document.title = `Content-Writer-Sahay-CRM`;
+    } else if (path === `/finance-analyst-profile-details/${userId}`) {
+      document.title = `Finance-Analyst-Sahay-CRM`;
     } else {
       document.title = `Sahay-CRM`;
     }

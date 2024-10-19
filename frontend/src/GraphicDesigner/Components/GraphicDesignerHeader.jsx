@@ -83,7 +83,7 @@ function GraphicDesignerHeader({ name, id, designation, empProfile, gender }) {
                 <div className="container-xl">
 
                     <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                        <a href=".">
+                        <a href={`/graphic-designer/dashboard/${id}`}>
                             <img
                                 src={myImage}
                                 width="110"

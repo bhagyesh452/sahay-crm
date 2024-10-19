@@ -115,9 +115,14 @@ import GraphicDesignerLogin from "./GraphicDesigner/Login/GraphicDesignerLogin.j
 import GraphicDesignerDashboard from "./GraphicDesigner/Dashboard/GraphicDesignerDashboard.jsx";
 
 // Content Writer Imports
+import ContentWriterLayout from "./ContentWriter/Components/ContentWriterLayout.jsx";
 import ContentWriterLogin from "./ContentWriter/Login/ContentWriterLogin.jsx";
+import ContentWriterDashboard from "./ContentWriter/Dashboard/ContentWriterDashboard.jsx";
 
 // Finance Analyst Imports
+import FinanceAnalystLayout from "./FinanceAnalyst/Components/FinanceAnalystLayout.jsx";
+import FinanceAnalystLogin from "./FinanceAnalyst/Login/FinanceAnalystLogin.jsx";
+import FinanceAnalystDashboard from "./FinanceAnalyst/Dashboard/FinanceAnalystDashboard.jsx";
 
 // Customer Panel Imports
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
@@ -144,7 +149,6 @@ import AdminLayout from "./admin/AdminLayout.jsx";
 import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
 import EmployeePanelCopy from "./employeeComp/EmployeePanelCopy.jsx";
 import FetchingEmployeeData from "./employeeComp/EmployeeDashboardComponents/FetchingEmployeeData.jsx";
-
 
 function App() {
 
@@ -327,22 +331,29 @@ function App() {
           <Route path="/relationship-manager/login" element={<RelationshipManagerLogin />} />
           <Route element={<RelationshipManagerLayout />}>
             <Route path="/relationship-manager/dashboard/:userId" element={<RelationshipManagerDashboard />} />
-            <Route path="relationship-manager-profile-details/:userId" element={<FloorManagerProfile />} />
+            <Route path="/relationship-manager-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
           {/**********************************************  graphic designer panel  ********************************************/}
           <Route path="/graphic-designer/login" element={<GraphicDesignerLogin />} />
           <Route element={<GraphicDesignerLayout />}>
             <Route path="/graphic-designer/dashboard/:userId" element={<GraphicDesignerDashboard />} />
-            <Route path="graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
+            <Route path="/graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
           {/**********************************************  content writer panel  ********************************************/}
           <Route path="/content-writer/login" element={<ContentWriterLogin />} />
-          {/* <Route element={<GraphicDesignerLayout />}>
-            <Route path="/graphic-designer/dashboard/:userId" element={<GraphicDesignerDashboard />} />
-            <Route path="graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
-          </Route> */}
+          <Route element={<ContentWriterLayout />}>
+            <Route path="/content-writer/dashboard/:userId" element={<ContentWriterDashboard />} />
+            <Route path="/content-writer-profile-details/:userId" element={<FloorManagerProfile />} />
+          </Route>
+
+          {/**********************************************  finance analyst panel  ********************************************/}
+          <Route path="/finance-analyst/login" element={<FinanceAnalystLogin />} />
+          <Route element={<FinanceAnalystLayout />}>
+            <Route path="/finance-analyst/dashboard/:userId" element={<FinanceAnalystDashboard />} />
+            <Route path="/finance-analyst-profile-details/:userId" element={<FloorManagerProfile />} />
+          </Route>
 
         </Routes>
       </BrowserRouter>

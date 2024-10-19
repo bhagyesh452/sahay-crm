@@ -11,7 +11,7 @@ import Logout from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function ContentWriterNotification() {
+function FinanceAnalystNotification() {
 
     const { userId } = useParams();
     const navigate = useNavigate();
@@ -28,8 +28,8 @@ function ContentWriterNotification() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("contentWriterToken");
-        navigate('/content-writer/login');
+        localStorage.removeItem("financeAnalystToken");
+        navigate('/finance-analyst/login');
     };
 
     return (
@@ -86,7 +86,7 @@ function ContentWriterNotification() {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
                 <MenuItem onClick={() => {
-                    navigate(`/content-writer-profile-details/${userId}`);
+                    navigate(`/finance-analyst-profile-details/${userId}`);
                     handleClose();
                 }}>
                     <Avatar /> Profile
@@ -111,4 +111,4 @@ function ContentWriterNotification() {
     );
 }
 
-export default ContentWriterNotification;
+export default FinanceAnalystNotification;
