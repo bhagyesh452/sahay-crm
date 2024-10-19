@@ -4375,7 +4375,7 @@ div#table-default td {
 }
 
 .custom-Yes-No .yes-no input[type=radio]:checked+.yes-no-alias {
-  filter: grayscale(0%);
+  filter: grayscale(0%) !important;
   background: #eaeaea;
   border: 1px solid #ccc;
   color: #000;

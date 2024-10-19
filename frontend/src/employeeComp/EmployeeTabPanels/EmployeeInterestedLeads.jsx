@@ -72,7 +72,7 @@ function EmployeeInterestedLeads({
           
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap" style={{width:"2000px"}}>
+                        <table className="table table-vcenter table-nowrap" style={{width:"2200px"}}>
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="rm-sticky-left-1">Sr. No</th>
@@ -88,7 +88,7 @@ function EmployeeInterestedLeads({
                                     <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>Add Projection</th>
-                                    <th >Forward To Bdm</th>
+                                    <th>Forward To Bdm</th>
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Interested" ? (
@@ -227,7 +227,7 @@ function EmployeeInterestedLeads({
                                                     )}
                                                 />
                                             </td>
-                                            <td >
+                                            <td>
                                                 <BdmMaturedCasesDialogBox
                                                     currentData={interestedData}
                                                     forwardedCompany={company["Company Name"]}

@@ -260,7 +260,7 @@ function EmployeeInterestedInformationDialog({
                             {companyName}
                         </div>
                         <div className="accordion" id="accordionQue">
-                            <div className="accordion-item">
+                            <div className="accordion-item int-accordion-item">
                                 <div className="accordion-header p-2" id="accordionQueOne">
                                     <div className="d-flex align-items-center justify-content-between"  >
                                         <div className="int-que mr-2">
@@ -298,8 +298,8 @@ function EmployeeInterestedInformationDialog({
                                         <div
                                             id="collapseOneQue"
                                             className="accordion-collapse collapse show"
-                                            aria-labelledby="headingOne"
-                                            data-bs-parent="#accordionQueOne"
+                                            aria-labelledby="accordionQueOne"
+                                            data-bs-parent="#accordionQue"
                                         >
                                             <div className="accordion-body int-sub-que">
                                                 <div className="row">
@@ -333,7 +333,7 @@ function EmployeeInterestedInformationDialog({
                                     )
                                 }
                             </div>
-                            <div className="accordion-item">
+                            <div className="accordion-item int-accordion-item">
                                 <div className="accordion-header p-2" id="accordionQuetwo">
                                     <div className="d-flex align-items-center justify-content-between"  >
                                         <div className="int-que mr-2">
@@ -370,8 +370,8 @@ function EmployeeInterestedInformationDialog({
                                     (<div
                                         id="collapsetwoQue"
                                         className="accordion-collapse collapse show"
-                                        aria-labelledby="headingOne"
-                                        data-bs-parent="#accordionQuetwo"
+                                        aria-labelledby="accordionQuetwo"
+                                        data-bs-parent="#accordionQue"
                                     >
                                         <div className="accordion-body int-sub-que">
                                             <div className="row">
@@ -403,7 +403,7 @@ function EmployeeInterestedInformationDialog({
                                     </div>
                                     )}
                             </div>
-                            <div className="accordion-item">
+                            <div className="accordion-item int-accordion-item">
                                 <div className="accordion-header p-2" id="accordionQuethree">
                                     <div className="d-flex align-items-center justify-content-between"  >
                                         <div className="int-que mr-2">
@@ -440,8 +440,8 @@ function EmployeeInterestedInformationDialog({
                                     <div
                                         id="collapsethreeQue"
                                         className="accordion-collapse collapse show"
-                                        aria-labelledby="headingOne"
-                                        data-bs-parent="#accordionQuethree">
+                                        aria-labelledby="accordionQuethree"
+                                        data-bs-parent="#accordionQue">
                                         <div className="accordion-body int-sub-que">
                                             <div className="row">
                                                 <div className="col-6">
@@ -512,7 +512,7 @@ function EmployeeInterestedInformationDialog({
                                         </div>
                                     </div>)}
                             </div>
-                            <div className="accordion-item">
+                            <div className="accordion-item int-accordion-item">
                                 <div className="accordion-header p-2" id="accordionQueFour">
                                     <div className="d-flex align-items-center justify-content-between"  >
                                         <div className="int-que mr-2">
@@ -546,8 +546,8 @@ function EmployeeInterestedInformationDialog({
                                     <div
                                         id="collapseFourQue"
                                         className="accordion-collapse collapse show"
-                                        aria-labelledby="headingOne"
-                                        data-bs-parent="#accordionQueFour">
+                                        aria-labelledby="accordionQueFour"
+                                        data-bs-parent="#accordionQue">
                                         <div className="accordion-body int-sub-que">
                                             <div className="row">
                                                 <div className="col-6">
@@ -629,7 +629,7 @@ function EmployeeInterestedInformationDialog({
                             <button
                                 type="button"
                                 class="btn btn-primary w-50 m-0"
-                                style={{ border: "none", borderRadius: "0px" }} onClick={handleSubmitInformation}>Understood</button>
+                                style={{ border: "none", borderRadius: "0px" }} onClick={handleSubmitInformation}>Submit</button>
                         </div>
                     </div>
                 </div>

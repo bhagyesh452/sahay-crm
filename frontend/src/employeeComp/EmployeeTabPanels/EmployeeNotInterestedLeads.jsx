@@ -62,7 +62,7 @@ function EmployeeNotInterestedLeads({
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap">
+                        <table className="table table-vcenter table-nowrap" style={{width:"2200px"}}>
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="rm-sticky-left-1">Sr. No</th>
