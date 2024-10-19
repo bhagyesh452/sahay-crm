@@ -44,8 +44,8 @@ function EmployeePanelCopy() {
     const [employeeData, setEmployeeData] = useState([]);
     const [nowToFetch, setNowToFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 50;
-    const startIndex = currentPage * itemsPerPage;S
+    const itemsPerPage = 500;
+    const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const { userId } = useParams();
     const [searchQuery, setSearchQuery] = useState("")
