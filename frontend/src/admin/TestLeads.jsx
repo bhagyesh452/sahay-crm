@@ -49,6 +49,7 @@ import { RiSendToBack } from 'react-icons/ri';
 import { dateCalendarClasses } from '@mui/x-date-pickers/DateCalendar/dateCalendarClasses';
 import { LiaPagerSolid } from "react-icons/lia";
 import InterestedFollowUpLeads from './InterestedFollowUpLeads';
+import AdminRemarksDialog from './ExtraComponent/AdminRemarksDialog';
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -135,19 +136,20 @@ function TestLeads() {
     }
     //--------------------function to fetch remarks history ------------------------------
 
-    const fetchRemarksHistory = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/remarks/remarks-history`);
-            setRemarksHistory(response.data);
-            setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
+    // const fetchRemarksHistory = async () => {
+    //     try {
+    //         const response = await axios.get(`${secretKey}/remarks/remarks-history`);
+
+    //         setRemarksHistory(response.data);
+    //         setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
 
-        } catch (error) {
-            console.error("Error fetching remarks history:", error);
-        }
-    };
-console.log("remarksHisory" , remarksHistory)
-console.log("filtered" , filteredRemarks)
+    //     } catch (error) {
+    //         console.error("Error fetching remarks history:", error);
+    //     }
+    // };
+    console.log("remarksHisory", remarksHistory)
+    console.log("filtered", filteredRemarks)
 
 
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
@@ -157,7 +159,7 @@ console.log("filtered" , filteredRemarks)
             fetchData(1, latestSortCount)
             fetchTotalLeads()
             fetchEmployeesData()
-            fetchRemarksHistory()
+            //fetchRemarksHistory()
         }
 
     }, [dataStatus, isSearching, sortPattern, isFilter])
@@ -1617,20 +1619,20 @@ console.log("filtered" , filteredRemarks)
 
     //-----------------------function to open popup remarks--------------------------------
 
-    const functionopenpopupremarks = (companyID, companyStatus) => {
-        openchangeRemarks(true);
-        setFilteredRemarks(
-            remarksHistory.filter((obj) => obj.companyID === companyID)
-        );
-        // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+    // const functionopenpopupremarks = (companyID, companyStatus) => {
+    //     openchangeRemarks(true);
+    //     setFilteredRemarks(
+    //         remarksHistory.filter((obj) => obj.companyID === companyID)
+    //     );
+    //     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
 
-        setcid(companyID);
-        setCstat(companyStatus);
-    };
-    const closepopupRemarks = () => {
-        openchangeRemarks(false);
-        setFilteredRemarks([]);
-    };
+    //     setcid(companyID);
+    //     setCstat(companyStatus);
+    // };
+    // const closepopupRemarks = () => {
+    //     openchangeRemarks(false);
+    //     setFilteredRemarks([]);
+    // };
     //------------------filter functions------------------------
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
     const stateList = State.getStatesOfCountry("IN")
@@ -1810,6 +1812,8 @@ console.log("filtered" , filteredRemarks)
             reader.readAsBinaryString(file);
         }
     };
+
+
 
 
     return (
@@ -2154,8 +2158,17 @@ console.log("filtered" , filteredRemarks)
                                                             <td>{company["Company Email"]}</td>
 
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                            {(dataStatus === "Assigned") && <td>
-                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                            {(dataStatus === "Assigned") &&
+                                                                <td>
+                                                                    <AdminRemarksDialog
+                                                                        key={`${"Company Name"}-${index}`}
+                                                                        currentRemarks={company.Remarks}
+                                                                        companyID={company._id}
+                                                                        companyStatus={company.Status}
+                                                                        secretKey={secretKey}
+
+                                                                    />
+                                                                    {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                     <p className="rematkText text-wrap m-0">
                                                                         {company["Remarks"] ? company.Remarks : "No Remarks Added"}
                                                                     </p>
@@ -2175,8 +2188,8 @@ console.log("filtered" , filteredRemarks)
                                                                             }}
                                                                         />
                                                                     </div>
-                                                                </div>
-                                                            </td>}
+                                                                </div> */}
+                                                                </td>}
 
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2251,7 +2264,15 @@ console.log("filtered" , filteredRemarks)
                                                             <td>{company["Company Email"]}</td>
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
                                                             {(dataStatus === "Assigned") && <td>
-                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                <AdminRemarksDialog
+                                                                    key={`${"Company Name"}-${index}`}
+                                                                    currentRemarks={company.Remarks}
+                                                                    companyID={company._id}
+                                                                    companyStatus={company.Status}
+                                                                    secretKey={secretKey}
+
+                                                                />
+                                                                {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                     <p className="rematkText text-wrap m-0">
                                                                         {company["Remarks"] ? company.Remarks : "No Remarks Added"}
                                                                     </p>
@@ -2271,7 +2292,7 @@ console.log("filtered" , filteredRemarks)
                                                                             }}
                                                                         />
                                                                     </div>
-                                                                </div>
+                                                                </div> */}
                                                             </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2348,7 +2369,15 @@ console.log("filtered" , filteredRemarks)
 
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
                                                             {(dataStatus === "Assigned") && <td>
-                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                <AdminRemarksDialog
+                                                                    key={`${"Company Name"}-${index}`}
+                                                                    currentRemarks={company.Remarks}
+                                                                    companyID={company._id}
+                                                                    companyStatus={company.Status}
+                                                                    secretKey={secretKey}
+
+                                                                />
+                                                                {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                     <p className="rematkText text-wrap m-0">
                                                                         {company["Remarks"] ? company.Remarks : "No Remarks Added"}
                                                                     </p>
@@ -2368,7 +2397,7 @@ console.log("filtered" , filteredRemarks)
                                                                             }}
                                                                         />
                                                                     </div>
-                                                                </div>
+                                                                </div> */}
                                                             </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2442,8 +2471,17 @@ console.log("filtered" , filteredRemarks)
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                            {(dataStatus === "Assigned") && <td>
-                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                            {(dataStatus === "Assigned") &&
+                                                                <td>
+                                                                    <AdminRemarksDialog
+                                                                        key={`${"Company Name"}-${index}`}
+                                                                        currentRemarks={company.Remarks}
+                                                                        companyID={company._id}
+                                                                        companyStatus={company.Status}
+                                                                        secretKey={secretKey}
+
+                                                                    />
+                                                                    {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                     <p className="rematkText text-wrap m-0">
                                                                         {company["Remarks"] ? company.Remarks : "No Remarks Added"}
                                                                     </p>
@@ -2463,8 +2501,8 @@ console.log("filtered" , filteredRemarks)
                                                                             }}
                                                                         />
                                                                     </div>
-                                                                </div>
-                                                            </td>}
+                                                                </div> */}
+                                                                </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
                                                             {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
@@ -3797,7 +3835,7 @@ console.log("filtered" , filteredRemarks)
             </Dialog>
 
             {/* ---------------------------dialog to view remarks popup------------------------- */}
-            <Dialog className='My_Mat_Dialog'
+            {/* <Dialog className='My_Mat_Dialog'
                 open={openRemarks}
                 onClose={closepopupRemarks}
                 fullWidth
@@ -3844,7 +3882,7 @@ console.log("filtered" , filteredRemarks)
                         )}
                     </div>
                 </DialogContent>
-            </Dialog>
+            </Dialog> */}
 
             {/* ---------------------------drawer for filter----------------------------- */}
             <Drawer

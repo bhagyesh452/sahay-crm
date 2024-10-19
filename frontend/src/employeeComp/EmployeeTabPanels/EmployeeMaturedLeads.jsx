@@ -67,7 +67,7 @@ function EmployeeMaturedLeads({
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap" style={{width:"2000px"}}>
+                        <table className="table table-vcenter table-nowrap" style={{width:"2200px"}}>
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="rm-sticky-left-1">Sr. No</th>
@@ -132,8 +132,12 @@ function EmployeeMaturedLeads({
                                                     color="grey"
                                                 />
                                             </td>
-                                            <td>
-                                                <EmployeeStatusChange
+                                            <td >
+                                                <div className= "dfault_approved-status">
+                                                {company.Status}
+                                                </div>
+                                                
+                                                {/* <EmployeeStatusChange
                                                     key={`${company["Company Name"]}-${index}`}
                                                     companyName={company["Company Name"]}
                                                     companyStatus={company.Status}
@@ -155,7 +159,7 @@ function EmployeeMaturedLeads({
                                                     cnum={company["Company Number"]}
                                                     ename={company.ename}
                                                     bdmAcceptStatus={company.bdmAcceptStatus}
-                                                />
+                                                /> */}
                                             </td>
                                             <td>
                                                 <div  key={company._id}  className='d-flex align-items-center justify-content-between w-100'>

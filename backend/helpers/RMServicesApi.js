@@ -23,6 +23,7 @@ const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const AdminExecutiveHistoryModel = require('../models/AdminExecutiveHistoryModel.js');
 const { sendMailForRmApproved } = require('../helpers/sendMailForRmApproved');
 const adminModel = require("../models/Admin.js");
+const CompleteRemarksHistoryLeads = require("../models/CompleteRemarksHistoryLeads.js");
 
 
 
@@ -251,7 +252,7 @@ router.get("/redesigned-final-leadData-rm", async (req, res) => {
 router.get("/history-rm", async (req, res) => {
   try {
     const historyData = await RMCertificationHistoryModel.find()
-    res.status(200).json({message:"Data Fecthed" , data:historyData})
+    res.status(200).json({ message: "Data Fecthed", data: historyData })
   } catch (error) {
     console.error("Error creating/updating data:", error);
     res.status(500).send("Error creating/updating data");
@@ -3433,14 +3434,23 @@ router.post(
 );
 
 router.post("/post-remarks-for-rmofcertification", async (req, res) => {
-  const { currentCompanyName, currentServiceName, changeRemarks, updatedOn } =
+  const {
+    companyName,
+    serviceName,
+    changeRemarks,
+    updatedOn,
+    ename,
+    designation,
+    bdeName,
+    bdmName
+  } =
     req.body;
   const socketIO = req.io;
   try {
     const updateDocument = await RMCertificationModel.findOneAndUpdate(
       {
-        ["Company Name"]: currentCompanyName,
-        serviceName: currentServiceName,
+        ["Company Name"]: companyName,
+        serviceName: serviceName,
       },
       {
         $push: {
@@ -3452,6 +3462,49 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
       },
       { new: true } // Return the updated document
     );
+    const findCompany = await CompanyModel.findOne({ "Company Name": companyName }).select("Company Name")
+
+    // New object to be pushed
+    const newCompleteRemarks = {
+      companyID: findCompany._id,
+      "Company Name": companyName,
+      employeeName: ename,
+      designation: designation,
+      bdeName: bdeName,
+      bdmName: bdmName,
+      remarks: changeRemarks,
+      serviceName: serviceName,
+      addedOn:new Date()
+    };
+
+    console.log(designation, newCompleteRemarks)
+
+    // Find existing remarks history for the company
+    const existingCompleteRemarksHistory = await CompleteRemarksHistoryLeads.findOne({ "Company Name": companyName })
+
+
+    if (existingCompleteRemarksHistory) {
+
+      // Check if the remarks array exists, and if not, initialize it
+      if (!existingCompleteRemarksHistory.serviceWiseRemarks) {
+        existingCompleteRemarksHistory.serviceWiseRemarks = [];
+      }
+      const saveEntry = await CompleteRemarksHistoryLeads.updateOne({
+        $push: {
+          serviceWiseRemarks: [newCompleteRemarks]
+
+        }
+      })
+    } else {
+      // If the company doesn't exist, create a new entry with the new object
+      const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
+        companyID: id,
+        "Company Name": currentCompanyName,
+        remarks: [newCompleteRemarks], // Store the general remarks
+      });
+
+      await newCompleteRemarksHistory.save();
+    }
 
     if (!updateDocument) {
       return res.status(404).json({ message: "Document not found" });
@@ -3469,7 +3522,16 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
 });
 
 router.post("/post-remarks-for-adminExecutive", async (req, res) => {
-  const { companyName, serviceName, changeRemarks, updatedOn } = req.body;
+  const {
+    companyName,
+    serviceName,
+    changeRemarks,
+    updatedOn,
+    ename,
+    designation,
+    bdeName,
+    bdmName
+  } = req.body;
 
   try {
     const updateDocument = await AdminExecutiveModel.findOneAndUpdate(
@@ -3487,6 +3549,50 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
       },
       { new: true } // Return the updated document
     );
+
+    const findCompany = await CompanyModel.findOne({ "Company Name": companyName }).select("Company Name")
+
+    // New object to be pushed
+    const newCompleteRemarks = {
+      companyID: findCompany._id,
+      "Company Name": companyName,
+      employeeName: ename,
+      designation: designation,
+      bdeName: bdeName,
+      bdmName: bdmName,
+      remarks: changeRemarks,
+      serviceName: serviceName,
+      addedOn:new Date()
+    };
+
+    console.log(designation, newCompleteRemarks)
+
+    // Find existing remarks history for the company
+    const existingCompleteRemarksHistory = await CompleteRemarksHistoryLeads.findOne({ "Company Name": companyName })
+
+
+    if (existingCompleteRemarksHistory) {
+
+      // Check if the remarks array exists, and if not, initialize it
+      if (!existingCompleteRemarksHistory.serviceWiseRemarks) {
+        existingCompleteRemarksHistory.serviceWiseRemarks = [];
+      }
+      const saveEntry = await CompleteRemarksHistoryLeads.updateOne({
+        $push: {
+          serviceWiseRemarks: [newCompleteRemarks]
+
+        }
+      })
+    } else {
+      // If the company doesn't exist, create a new entry with the new object
+      const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
+        companyID: id,
+        "Company Name": currentCompanyName,
+        remarks: [newCompleteRemarks], // Store the general remarks
+      });
+
+      await newCompleteRemarksHistory.save();
+    }
 
     if (!updateDocument) {
       return res.status(404).json({ message: "Document not found" });

@@ -14,12 +14,6 @@ const Remarks = ({ companyName, serviceName, websiteLink, refreshData }) => {
     const [remarksHistory, setRemarksHistory] = useState([])
 
 
-
-
-
-
-
-
     const handleOpenRemarksPopup = async (companyName, serviceName) => {
         console.log("RemarksPopup")
     }

@@ -19,28 +19,29 @@ const serviceRemarksSchema = new mongoose.Schema({
     remarks: {
         type: String,
     },
-    serviceName:{
-        type:String
-    },
-},{
-    timestamps:true
-})
-
-const remarksHistorySchema = new mongoose.Schema({
-    companyID: {
-        type: String,
-        required: true,
-    },
-    "Company Name": {
+    serviceName: {
         type: String
     },
+    bdeName:{
+        type:String
+    },
+    bdmName:{
+        type:String
+    },
+    addedOn:{
+        type:Date
+    }
+}, {
+    timestamps: true
+})
+
+const remarksSchema = new mongoose.Schema({
     employeeName: {
         type: String
     },
     designation: {
         type: String
     },
-    serviceWiseRemarks: [serviceRemarksSchema],
     remarks: {
         type: String,
     },
@@ -53,7 +54,28 @@ const remarksHistorySchema = new mongoose.Schema({
     bdeName: {
         type: String
     },
+    bdmWork:{
+        type:Boolean,
+        default:false
+    },
+    addedOn:{
+        type:Date
+    }
+}, {
+    timestamps: true
+})
 
+
+const remarksHistorySchema = new mongoose.Schema({
+    companyID: {
+        type: String,
+        required: true,
+    },
+    "Company Name": {
+        type: String
+    },
+    serviceWiseRemarks: [serviceRemarksSchema],
+    remarks: [remarksSchema]
 }, {
     timestamps: true
 })

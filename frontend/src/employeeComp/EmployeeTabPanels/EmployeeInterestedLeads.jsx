@@ -34,7 +34,8 @@ function EmployeeInterestedLeads({
     handleShowCallHistory,
     fetchProjections,
     projectionData,
-    handleOpenFormOpen
+    handleOpenFormOpen,
+    designation
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -71,7 +72,7 @@ function EmployeeInterestedLeads({
           
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap" style={{width:"2000px"}}>
+                        <table className="table table-vcenter table-nowrap" style={{width:"2200px"}}>
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="rm-sticky-left-1">Sr. No</th>
@@ -87,7 +88,7 @@ function EmployeeInterestedLeads({
                                     <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>Add Projection</th>
-                                    <th className="rm-sticky-action">Forward To Bdm</th>
+                                    <th>Forward To Bdm</th>
                                 </tr>
                             </thead>
                             {isLoading && dataStatus !== "Interested" ? (
@@ -174,23 +175,22 @@ function EmployeeInterestedLeads({
                                                             ? "No Remarks"
                                                             : company.Remarks}
                                                     </p>
-                                                    <div>
-                                                        <RemarksDialog
-                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                            currentCompanyName={company["Company Name"]}
-                                                            //remarksHistory={remarksHistory} // pass your remarks history data
-                                                            companyId={company._id}
-                                                            remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                            isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                            bdmAcceptStatus={company.bdmAcceptStatus}
-                                                            companyStatus={company.Status}
-                                                            secretKey={secretKey}
-                                                            //fetchRemarksHistory={fetchRemarksHistory}
-                                                            bdeName={company.ename}
-                                                            refetch={refetch}
-                                                            mainRemarks={company.Remarks}
-                                                        />
-                                                    </div>
+                                                    <RemarksDialog
+                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                        currentCompanyName={company["Company Name"]}
+                                                        //remarksHistory={remarksHistory} // pass your remarks history data
+                                                        companyId={company._id}
+                                                        remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                        isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                        companyStatus={company.Status}
+                                                        secretKey={secretKey}
+                                                        //fetchRemarksHistory={fetchRemarksHistory}
+                                                        bdeName={company.ename}
+                                                        refetch={refetch}
+                                                        mainRemarks={company.Remarks}
+                                                        designation={designation}
+                                                    />
                                                 </div>
                                             </td>
                                             <td>
@@ -200,6 +200,7 @@ function EmployeeInterestedLeads({
                                                     id={company._id}
                                                     nextFollowDate={company.bdeNextFollowUpDate}
                                                     refetch={refetch}
+                                                    status={company.Status}
                                                 />
                                             </td>
                                             <td>
@@ -226,7 +227,7 @@ function EmployeeInterestedLeads({
                                                     )}
                                                 />
                                             </td>
-                                            <td className="rm-sticky-action">
+                                            <td>
                                                 <BdmMaturedCasesDialogBox
                                                     currentData={interestedData}
                                                     forwardedCompany={company["Company Name"]}

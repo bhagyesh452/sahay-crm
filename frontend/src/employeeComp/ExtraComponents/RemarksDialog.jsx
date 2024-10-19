@@ -294,10 +294,9 @@ const RemarksDialog = ({
   companyStatus,
   secretKey,
   bdeName,
-  fetchNewData,
-  bdmName,
   mainRemarks,
-  refetch
+  refetch,
+  designation
 }) => {
   const [open, setOpen] = useState(false);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
@@ -338,12 +337,15 @@ const RemarksDialog = ({
     try {
       const response = await axios.post(`${secretKey}/remarks/update-remarks/${companyId}`, {
         Remarks,
-      });
-      await axios.post(`${secretKey}/remarks/remarks-history/${companyId}`, {
-        Remarks,
         bdeName,
-        currentCompanyName
+        currentCompanyName,
+        designation
       });
+      // await axios.post(`${secretKey}/remarks/remarks-history/${companyId}`, {
+      //   Remarks,
+      //   bdeName,
+      //   currentCompanyName
+      // });
 
       if (response.status === 200) {
         Swal.fire("Remarks updated!");
@@ -382,7 +384,7 @@ const RemarksDialog = ({
     ) {
       return (
         <button
-          onClick={handleOpenModal}
+          onClick={handleOpenModal} 
           style={{ border: "transparent", background: "none" }}
         >
           <MdOutlineEdit
@@ -422,13 +424,13 @@ const RemarksDialog = ({
       {renderButton()}
 
       {/* Bootstrap Modal */}
-      <div className={`modal fade ${open ? 'show' : ''}`} style={{ display: open ? 'block' : 'none' }} tabIndex="-1" role="dialog">
-        <div className="modal-dialog" role="document">
+      <div className={`modal fade ${open ? 'show' : ''}`} style={{ display: open ? 'block' : 'none' }} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="salesRemarks" aria-hidden="true">
+        <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{currentCompanyName}'s Remarks</h5>
-              <button type="button" className="close" onClick={handleCloseModal} aria-label="Close" style={{backgroundColor: "transparent" , border: "none"}}>
-                <IoMdClose color="primary"/>
+              <h5 className="modal-title" id="salesRemarks">{currentCompanyName}'s Remarks</h5>
+              <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close">
+                
               </button>
             </div>
             <div className="modal-body">

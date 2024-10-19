@@ -62,3 +62,15 @@
 {
     width: max-content !important;
 } */
+
+.int-accordion-item
+{
+    margin: 10px 0px;
+    border-radius: 3px !important;
+    border: 1px solid #eee !important;
+    background: #f8f8f8;
+}
+.int-accordion-item .accordion-header
+{
+    padding: 0px 6px 0 8px !important;
+}

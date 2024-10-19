@@ -37,6 +37,7 @@ import NSWSMobileNo from "../Extra-Components/NSWSMobileNo";
 import OtpVerificationStatus from "../Extra-Components/OtpVerificationStatus";
 import { FaFilter } from "react-icons/fa";
 import DscLetterStatusAdHead from "../Extra-Components/DscLetterStatusAdHead";
+import RMRemarksDialog from "../Extra-Components/RMRemarksDialog";
 
 function RmofCertificationProcessPanel({
     searchText,
@@ -350,76 +351,71 @@ function RmofCertificationProcessPanel({
         return `${date}/${month}/${year}`
     }
 
-    //------------------------Remarks Popup Section-----------------------------
-    const handleOpenRemarksPopup = async (companyName, serviceName) => {
-        console.log("RemarksPopup")
-    }
-    const functionCloseRemarksPopup = () => {
-        setChangeRemarks('')
-        setError('')
-        setOpenRemarksPopUp(false)
-    }
-    const debouncedSetChangeRemarks = useCallback(
-        debounce((value) => {
-            setChangeRemarks(value);
-        }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
-        [] // Empty dependency array to ensure the function is memoized
-    );
+    // //------------------------Remarks Popup Section-----------------------------
+    // const handleOpenRemarksPopup = async (companyName, serviceName) => {
+    //     console.log("RemarksPopup")
+    // }
+    // const functionCloseRemarksPopup = () => {
+    //     setChangeRemarks('')
+    //     setError('')
+    //     setOpenRemarksPopUp(false)
+    // }
+    // const debouncedSetChangeRemarks = useCallback(
+    //     debounce((value) => {
+    //         setChangeRemarks(value);
+    //     }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+    //     [] // Empty dependency array to ensure the function is memoized
+    // );
 
-    const handleSubmitRemarks = async () => {
-        //console.log("changeremarks", changeRemarks)
-        try {
-            if (changeRemarks) {
-                const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                    currentCompanyName,
-                    currentServiceName,
-                    changeRemarks,
-                    updatedOn: new Date()
-                });
+    // const handleSubmitRemarks = async () => {
+    //     //console.log("changeremarks", changeRemarks)
+    //     try {
+    //         if (changeRemarks) {
+    //             const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+    //                 currentCompanyName,
+    //                 currentServiceName,
+    //                 changeRemarks,
+    //                 updatedOn: new Date()
+    //             });
 
-                //console.log("response", response.data);
+    //             //console.log("response", response.data);
 
-                if (response.status === 200) {
-                    if (filteredData && filteredData.length > 0) {
-                        fetchData(searchText, page, true);
-                    } else {
-                        fetchData(searchText, page, false);
-                    }
-                    functionCloseRemarksPopup();
-                    // Swal.fire(
-                    //     'Remarks Added!',
-                    //     'The remarks have been successfully added.',
-                    //     'success'
-                    // );
-                }
-            } else {
-                setError('Remarks Cannot Be Empty!')
-            }
+    //             if (response.status === 200) {
+    //                 if (filteredData && filteredData.length > 0) {
+    //                     fetchData(searchText, page, true);
+    //                 } else {
+    //                     fetchData(searchText, page, false);
+    //                 }
+    //                 functionCloseRemarksPopup();
+    //             }
+    //         } else {
+    //             setError('Remarks Cannot Be Empty!')
+    //         }
 
-        } catch (error) {
-            console.log("Error Submitting Remarks", error.message);
-        }
-    };
+    //     } catch (error) {
+    //         console.log("Error Submitting Remarks", error.message);
+    //     }
+    // };
 
-    const handleDeleteRemarks = async (remarks_id) => {
-        try {
-            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-            });
-            if (response.status === 200) {
-                if (filteredData && filteredData.length > 0) {
-                    fetchData(searchText, page, true);
-                } else {
-                    fetchData(searchText, page, false);
-                }
+    // const handleDeleteRemarks = async (remarks_id) => {
+    //     try {
+    //         const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+    //             data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+    //         });
+    //         if (response.status === 200) {
+    //             if (filteredData && filteredData.length > 0) {
+    //                 fetchData(searchText, page, true);
+    //             } else {
+    //                 fetchData(searchText, page, false);
+    //             }
 
-                functionCloseRemarksPopup();
-            }
-            // Refresh the list
-        } catch (error) {
-            console.error("Error deleting remark:", error);
-        }
-    };
+    //             functionCloseRemarksPopup();
+    //         }
+    //         // Refresh the list
+    //     } catch (error) {
+    //         console.error("Error deleting remark:", error);
+    //     }
+    // };
 
 
 
@@ -1599,7 +1595,18 @@ function RmofCertificationProcessPanel({
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="td_of_remarks">
+                                            <RMRemarksDialog
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                historyRemarks={obj.Remarks}
+                                                ename={employeeData.ename}
+                                                designation={employeeData.designation}
+                                                bdeName={obj.bdeName}
+                                                bdmName={obj.bdmName}
+                                            />
+                                            {/* <td className="td_of_remarks">
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div
                                                         className="My_Text_Wrap"
@@ -1637,7 +1644,7 @@ function RmofCertificationProcessPanel({
                                                         <FaPencilAlt />
                                                     </button>
                                                 </div>
-                                            </td>
+                                            </td> */}
                                             <td className="td_of_weblink">
                                                 <WebsiteLink
                                                     key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -1823,50 +1830,50 @@ function RmofCertificationProcessPanel({
                                             </td>
                                             <td>{formatDatePro(obj.bookingDate)}</td>
                                             <td>
-                                            <div className="d-flex align-items-center justify-content-center">
-                                                <div>
-                                                    {obj.bdeName}
-                                                    {
-                                                        completeEmployeeInfo
-                                                            .filter((employee) => employee.ename === obj.bdeName)
-                                                            .map((employee) => (
-                                                                <a
-                                                                    key={employee.number} // Add a unique key for rendering a list
-                                                                    href={`https://wa.me/${employee.number}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
-                                                                >
-                                                                    <FaWhatsapp />
-                                                                </a>
-                                                            ))
-                                                    }
+                                                <div className="d-flex align-items-center justify-content-center">
+                                                    <div>
+                                                        {obj.bdeName}
+                                                        {
+                                                            completeEmployeeInfo
+                                                                .filter((employee) => employee.ename === obj.bdeName)
+                                                                .map((employee) => (
+                                                                    <a
+                                                                        key={employee.number} // Add a unique key for rendering a list
+                                                                        href={`https://wa.me/${employee.number}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                                                    >
+                                                                        <FaWhatsapp />
+                                                                    </a>
+                                                                ))
+                                                        }
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="d-flex align-items-center justify-content-center">
+                                            </td>
+                                            <td>
+                                                <div className="d-flex align-items-center justify-content-center">
 
-                                                <div>
-                                                    {obj.bdmName}
-                                                {
-                                                        completeEmployeeInfo
-                                                            .filter((employee) => employee.ename === obj.bdmName)
-                                                            .map((employee) => (
-                                                                <a
-                                                                    key={employee.number} // Add a unique key for rendering a list
-                                                                    href={`https://wa.me/${employee.number}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
-                                                                >
-                                                                    <FaWhatsapp />
-                                                                </a>
-                                                            ))
-                                                    }
+                                                    <div>
+                                                        {obj.bdmName}
+                                                        {
+                                                            completeEmployeeInfo
+                                                                .filter((employee) => employee.ename === obj.bdmName)
+                                                                .map((employee) => (
+                                                                    <a
+                                                                        key={employee.number} // Add a unique key for rendering a list
+                                                                        href={`https://wa.me/${employee.number}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                                                    >
+                                                                        <FaWhatsapp />
+                                                                    </a>
+                                                                ))
+                                                        }
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
+                                            </td>
                                             <td>
                                                 ₹{" "}
                                                 {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString(
@@ -1926,7 +1933,7 @@ function RmofCertificationProcessPanel({
                     )}
                 </div>
             </div>
-            {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
+            {/* --------------------------------------------------------------dialog to view remarks only on forwarded status----------------------------------
 
             <Dialog
                 className="My_Mat_Dialog"
@@ -2015,25 +2022,7 @@ function RmofCertificationProcessPanel({
                 >
                     Submit
                 </button>
-            </Dialog>
-
-            {/* ---------------------filter component---------------------------
-            {showFilterMenu && (
-                <div
-                    className="filter-menu"
-                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                >
-                    <FilterableTable
-                        data={rmServicesData}
-                        filterField={filterField}
-                        onFilter={handleFilter}
-                        completeData={completeRmData}
-                        
-                        showingMenu={setShowFilterMenu}
-                        dataForFilter={dataToFilter}
-                    />
-                </div>
-            )} */}
+            </Dialog> */}
         </div>
     );
 }
