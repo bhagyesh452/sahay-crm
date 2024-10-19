@@ -1996,6 +1996,278 @@ router.get("/employees-new/:ename", async (req, res) => {
   }
 });
 
+// router.get("/employees-new/:ename", async (req, res) => {
+//   try {
+//     const employeeName = req.params.ename;
+//     const limit = parseInt(req.query.limit) || 500; // Default limit to 500
+//     const skip = parseInt(req.query.skip) || 0; // Default skip to 0
+//     const dataStatus = req.query.dataStatus; // Extract the dataStatus from query parameters
+//     const search = req.query.search ? req.query.search.toLowerCase() : ""; // Extract the search query
+
+//     // Build the base $match query based on employee name and status
+//     let matchQuery = {
+//       $or: [
+//         { ename: employeeName },
+//         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+//         { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+//       ]
+//     };
+
+//     // Apply search query on the company name if provided
+//     if (search) {
+//       matchQuery["Company Name"] = { $regex: search, $options: 'i' };
+//     }
+
+//     // Apply dataStatus filtering
+//     if (dataStatus === "Not Interested") {
+//       matchQuery.Status = { $in: ["Not Interested", "Junk"] };
+//     } else if (dataStatus === "FollowUp") {
+//       matchQuery.Status = "FollowUp";
+//       matchQuery.bdmAcceptStatus = "NotForwarded";
+//     } else if (dataStatus === "Interested") {
+//       matchQuery.Status = { $in: ["Interested", "FollowUp"] };
+//       matchQuery.bdmAcceptStatus = "NotForwarded";
+//     } else if (dataStatus === "Forwarded") {
+//       matchQuery.Status = { $in: ["Interested", "FollowUp"] };
+//       matchQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept"] };
+//     } else if (dataStatus === "All") {
+//       matchQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
+//       matchQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept"] };
+//     } else if (dataStatus === "Matured") {
+//       matchQuery.Status = { $in: ["Matured"] };
+//       matchQuery.bdmAcceptStatus = { $in: ["NotForwarded", "Pending", "Accept"] };
+//     } else {
+//       matchQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
+//       matchQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept"] };
+//     }
+
+//     // Use aggregation pipeline for efficient querying
+//     const pipeline = [
+//       // Step 1: Match the documents based on the filters
+//       { $match: matchQuery },
+
+//       // Step 2: Lookup booking data from RedesignedLeadformModel
+//       {
+//         $lookup: {
+//           from: "redesignedleadforms", // The collection where redesigned lead forms are stored
+//           localField: "_id", // The _id field in the CompanyModel
+//           foreignField: "company", // The company field in RedesignedLeadformModel
+//           as: "bookingData" // The name of the array field to add the joined data
+//         }
+//       },
+
+//       // Step 3: Add booking information to each document
+//       {
+//         $addFields: {
+//           bookingDate: { $arrayElemAt: ["$bookingData.bookingDate", 0] },
+//           bookingPublishDate: { $arrayElemAt: ["$bookingData.bookingPublishDate", 0] }
+//         }
+//       },
+
+//       // Step 4: Sort the results by the appropriate date
+//       {
+//         $sort: {
+//           lastActionDate: -1 // Sorting by lastActionDate in descending order
+//         }
+//       },
+
+//       // Step 5: Pagination - skip and limit
+//       { $skip: skip },
+//       { $limit: limit },
+
+//       // Step 6: Project the fields to return
+//       {
+//         $project: {
+//           _id: 1,
+//           "Company Name": 1,
+//           ename: 1,
+//           Status: 1,
+//           bdmAcceptStatus: 1,
+//           AssignDate: 1,
+//           lastActionDate: 1,
+//           bookingDate: 1,
+//           bookingPublishDate: 1,
+//           RevertBackAcceptedCompanyRequest: 1
+//         }
+//       }
+//     ];
+
+//     // Execute the aggregation pipeline
+//     const data = await CompanyModel.aggregate(pipeline);
+
+//     // Step 7: Fetch counts for each status (e.g., Not Interested, Interested, etc.)
+//     const countPipeline = [
+//       { $match: matchQuery },
+//       {
+//         $facet: {
+//           notInterested: [{ $match: { Status: { $in: ["Not Interested", "Junk"] } } }, { $count: "count" }],
+//           interested: [{ $match: { Status: { $in: ["Interested", "FollowUp"], bdmAcceptStatus: "NotForwarded" } } }, { $count: "count" }],
+//           matured: [{ $match: { Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] } } }, { $count: "count" }],
+//           forwarded: [{ $match: { Status: { $in: ["Interested", "FollowUp"], bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] } } } }, { $count: "count" }],
+//           untouched: [{ $match: { Status: { $in: ["Untouched", "Busy", "Not Picked Up"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Accept", "Pending"] } } }, { $count: "count" }]
+//         }
+//       }
+//     ];
+
+//     const counts = await CompanyModel.aggregate(countPipeline);
+
+//     // Format counts correctly, extracting the count number or defaulting to 0
+//     const totalCounts = {
+//       notInterested: counts[0]?.notInterested?.[0]?.count || 0,
+//       interested: counts[0]?.interested?.[0]?.count || 0,
+//       matured: counts[0]?.matured?.[0]?.count || 0,
+//       forwarded: counts[0]?.forwarded?.[0]?.count || 0,
+//       untouched: counts[0]?.untouched?.[0]?.count || 0
+//     };
+
+//     // Send the response back with data, total counts, and pagination info
+//     res.json({
+//       data,
+//       totalCounts,
+//       totalPages: Math.ceil(data.length / limit)
+//     });
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+// router.get("/employees-new/:ename", async (req, res) => {
+//   try {
+//     const employeeName = req.params.ename;
+//     const limit = parseInt(req.query.limit) || 100; // Default limit to 500
+//     const skip = parseInt(req.query.skip) || 0; // Default skip to 0
+//     const dataStatus = req.query.dataStatus; // Extract the dataStatus from query parameters
+//     const search = req.query.search ? req.query.search.toLowerCase() : ""; // Extract the search query
+
+//     // Build the base $match query based on employee name and status
+//     let matchQuery = {
+//       $or: [
+//         { ename: employeeName },
+//         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+//         { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+//       ]
+//     };
+
+//     // Apply search query on the company name if provided
+//     if (search) {
+//       matchQuery["Company Name"] = { $regex: search, $options: 'i' };
+//     }
+
+//     // Apply dataStatus filtering
+//     if (dataStatus === "Not Interested") {
+//       matchQuery.Status = { $in: ["Not Interested", "Junk"] };
+//     } else if (dataStatus === "FollowUp") {
+//       matchQuery.Status = "FollowUp";
+//       matchQuery.bdmAcceptStatus = "NotForwarded";
+//     } else if (dataStatus === "Interested") {
+//       matchQuery.Status = { $in: ["Interested", "FollowUp"] };
+//       matchQuery.bdmAcceptStatus = "NotForwarded";
+//     } else if (dataStatus === "Forwarded") {
+//       matchQuery.Status = { $in: ["Interested", "FollowUp"] };
+//       matchQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept"] };
+//     } else if (dataStatus === "All") {
+//       matchQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
+//       matchQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept"] };
+//     } else if (dataStatus === "Matured") {
+//       matchQuery.Status = "Matured";
+//       matchQuery.bdmAcceptStatus = { $in: ["NotForwarded", "Pending", "Accept"] };
+//     } else {
+//       matchQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
+//       matchQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept"] };
+//     }
+
+//     // Use aggregation pipeline for efficient querying
+//     const pipeline = [
+//       // Step 1: Match the documents based on the filters
+//       { $match: matchQuery },
+
+//       // Step 2: Lookup booking data from RedesignedLeadformModel
+//       {
+//         $lookup: {
+//           from: "redesignedleadforms", // The collection where redesigned lead forms are stored
+//           localField: "_id", // The _id field in the CompanyModel
+//           foreignField: "company", // The company field in RedesignedLeadformModel
+//           as: "bookingData" // The name of the array field to add the joined data
+//         }
+//       },
+
+//       // Step 3: Add booking information to each document
+//       {
+//         $addFields: {
+//           bookingDate: { $arrayElemAt: ["$bookingData.bookingDate", 0] },
+//           bookingPublishDate: { $arrayElemAt: ["$bookingData.bookingPublishDate", 0] }
+//         }
+//       },
+
+//       // Step 4: Sort the results by the appropriate date
+//       {
+//         $sort: {
+//           lastActionDate: -1 // Sorting by lastActionDate in descending order
+//         }
+//       },
+
+//       // Step 5: Pagination - skip and limit
+//       { $skip: skip },
+//       { $limit: limit },
+
+//       // Step 6: Project the fields to return
+//       {
+//         $project: {
+//           _id: 1,
+//           "Company Name": 1,
+//           ename: 1,
+//           Status: 1,
+//           bdmAcceptStatus: 1,
+//           AssignDate: 1,
+//           lastActionDate: 1,
+//           bookingDate: 1,
+//           bookingPublishDate: 1,
+//           RevertBackAcceptedCompanyRequest: 1
+//         }
+//       }
+//     ];
+
+//     // Execute the aggregation pipeline
+//     const data = await CompanyModel.aggregate(pipeline);
+
+//     // Step 7: Fetch counts for each status (e.g., Not Interested, Interested, etc.)
+//     const countPipeline = [
+//       { $match: matchQuery },
+//       {
+//         $facet: {
+//           notInterested: [{ $match: { Status: { $in: ["Not Interested", "Junk"] } } }, { $count: "count" }],
+//           interested: [{ $match: { Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: "NotForwarded" } }, { $count: "count" }],
+//           matured: [{ $match: { Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] } } }, { $count: "count" }],
+//           forwarded: [{ $match: { Status: { $in: ["Interested", "FollowUp"], bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] } } } }, { $count: "count" }],
+//           untouched: [{ $match: { Status: { $in: ["Untouched", "Busy", "Not Picked Up"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Accept", "Pending"] } } }, { $count: "count" }]
+//         }
+//       }
+//     ];
+
+//     const counts = await CompanyModel.aggregate(countPipeline);
+
+//     // Format counts correctly, extracting the count number or defaulting to 0
+//     const totalCounts = {
+//       notInterested: counts[0]?.notInterested?.[0]?.count || 0,
+//       interested: counts[0]?.interested?.[0]?.count || 0,
+//       matured: counts[0]?.matured?.[0]?.count || 0,
+//       forwarded: counts[0]?.forwarded?.[0]?.count || 0,
+//       untouched: counts[0]?.untouched?.[0]?.count || 0
+//     };
+
+//     // Send the response back with data, total counts, and pagination info
+//     res.json({
+//       data,
+//       totalCounts,
+//       totalPages: Math.ceil(data.length / limit)
+//     });
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 
 router.post("/postData", async (req, res) => {
   const { selectedObjects, employeeSelection } = req.body
