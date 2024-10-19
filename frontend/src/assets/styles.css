@@ -3409,6 +3409,16 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
 }
+.ep_left_button{
+  font-size: 21px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+.ep_right_button{
+  font-size: 21px;
+    margin-right: 5px;
+    margin-top: 5px;
+}
 
 .rm_sr_no {
   width: 24px;

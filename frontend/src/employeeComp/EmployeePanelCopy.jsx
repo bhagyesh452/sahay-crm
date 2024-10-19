@@ -26,6 +26,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import EmployeeForwardedLeads from "./EmployeeTabPanels/EmployeeForwardedLeads.jsx";
 import EmployeeNotInterestedLeads from "./EmployeeTabPanels/EmployeeNotInterestedLeads.jsx";
 import { jwtDecode } from "jwt-decode";
+import { FaCircleChevronRight } from "react-icons/fa6";
+import { FaCircleChevronLeft } from "react-icons/fa6";
+import { IoIosArrowDropleft } from "react-icons/io";
+import { MdOutlinePersonPin } from "react-icons/md";
+import { AiOutlineTeam } from "react-icons/ai";
+import { RiShareForwardFill } from "react-icons/ri";
+
 
 function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -458,16 +465,20 @@ function EmployeePanelCopy({ fordesignation }) {
                                         <div className="btn-group mr-2">
                                             {fordesignation === "admin" ? (
                                                 <>
-                                                    <button type="button" className="btn mybtn"
-                                                        //onClick={functionopenpopup}
-                                                    >
-                                                        <MdOutlinePostAdd className='mr-1' /> Leads
-                                                    </button>
-                                                    <button type="button" className="btn mybtn"
-                                                        //onClick={functionopenpopup}
-                                                    >
-                                                        <MdOutlinePostAdd className='mr-1' /> Team Leads
-                                                    </button>
+                                                    <div className="d-flex">
+
+                                                        <FaCircleChevronLeft className="ep_right_button"
+                                                        //onClick={handleChangeUrlPrev} 
+                                                        />
+
+                                                        <h2 className="page-title">{data.ename}</h2>
+                                                        <div className="nextBtn">
+
+
+                                                            <FaCircleChevronRight className="ep_left_button" />
+
+                                                        </div>
+                                                    </div>
                                                 </>
 
                                             ) : (
@@ -481,30 +492,79 @@ function EmployeePanelCopy({ fordesignation }) {
                                             )}
 
                                         </div>
-                                        <div className="btn-group" role="group" aria-label="Basic example">
-                                            {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
-                                            <button type="button"
-                                                className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                                onClick={() => setOpenFilterDrawer(true)}
-                                            >
-                                                <IoFilterOutline className='mr-1' /> Filter
-                                            </button>
-                                            <button type="button" className="btn mybtn"
-                                                onClick={functionopenpopup}
-                                            >
-                                                <MdOutlinePostAdd className='mr-1' /> Request Data
-                                            </button>
-                                            {open &&
-                                                <EmployeeRequestDataDialog
-                                                    secretKey={secretKey}
-                                                    ename={data.ename}
-                                                    setOpenChange={openchange}
-                                                    open={open}
-                                                />}
+                                        {fordesignation !== "admin" && (
+                                            <div className="btn-group" role="group" aria-label="Basic example">
+                                                {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
+                                                <button type="button"
+                                                    className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                                                    onClick={() => setOpenFilterDrawer(true)}
+                                                >
+                                                    <IoFilterOutline className='mr-1' /> Filter
+                                                </button>
+                                                <button type="button" className="btn mybtn"
+                                                    onClick={functionopenpopup}
+                                                >
+                                                    <MdOutlinePostAdd className='mr-1' /> Request Data
+                                                </button>
+                                                {open &&
+                                                    <EmployeeRequestDataDialog
+                                                        secretKey={secretKey}
+                                                        ename={data.ename}
+                                                        setOpenChange={openchange}
+                                                        open={open}
+                                                    />}
 
-                                        </div>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="d-flex align-items-center">
+                                        {fordesignation === "admin" && (
+                                            <>
+                                            <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                            <button type="button" className="btn mybtn"
+                                                    //onClick={functionopenpopup}
+                                                    >
+                                                        <IoIosArrowDropleft className='mr-1' /> Back
+                                                    </button>
+                                            </div>
+                                                <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                    
+                                                    <button onClick={() => {
+                                                        window.location.pathname = `/managing-director/employees/${id}`
+                                                    }}
+                                                        type="button"
+                                                        className="btn mybtn"
+                                                    //onClick={functionopenpopup}
+                                                    >
+                                                        <MdOutlinePersonPin
+
+                                                            className='mr-1' /> Leads
+                                                    </button>
+                                                    {data.bdmWork && <button type="button" className="btn mybtn"
+                                                        onClick={() => {
+                                                            window.location.pathname = `/managing-director/employeeleads/${id}`
+                                                        }}
+                                                    >
+                                                        <AiOutlineTeam
+                                                            className='mr-1' /> Team Leads
+                                                    </button>}
+                                                </div>
+                                                <div className="btn-group" role="group" aria-label="Basic example">
+                                                    {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
+                                                    
+                                                    <button type="button" className="btn mybtn"
+                                                        onClick={functionopenpopup}
+                                                    >
+                                                        <RiShareForwardFill className='mr-1' /> Forward To BDM
+                                                    </button>
+                                                    <button type="button" className="btn mybtn"
+                                                        onClick={functionopenpopup}
+                                                    >
+                                                        <MdOutlinePostAdd className='mr-1' /> Assign Leads
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )}
                                         <div class="input-icon ml-1">
                                             <span class="input-icon-addon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
