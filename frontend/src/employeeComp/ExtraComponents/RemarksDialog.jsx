@@ -477,14 +477,14 @@ const RemarksDialog = ({
                               <div className="reamrk-card-innerText">
                                 <pre className="remark-text">{historyItem[remarksKey]}</pre>
                               </div>
-                              {isEditable &&  (
+                              {/* {isEditable &&  (
                                 <div className="dlticon">
                                   <MdDelete
                                     style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
                                     onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
                                   />
                                 </div>
-                              )}
+                              )} */}
                             </div>
                             <div className="d-flex card-dateTime justify-content-between">
                               <div className="date">

@@ -3568,7 +3568,7 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
       addedOn:new Date()
     };
 
-    console.log(designation, newCompleteRemarks)
+    // console.log(designation, newCompleteRemarks)
 
     // Find existing remarks history for the company
     const existingCompleteRemarksHistory = await CompleteRemarksHistoryLeads.findOne({ "Company Name": companyName })
