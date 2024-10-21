@@ -312,13 +312,13 @@ const RemarksDialog = ({
   // Fetch remarks history for the specific company
   const fetchRemarksHistory = async () => {
     try {
-      const response1 = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
+      //const response1 = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
       const response = await axios.get(`${secretKey}/remarks/remarks-history-complete/${companyId}`);
-      if (response1.data.length !== 0) {
-        setRemarksHistoryFromResponse1(response1.data);
-      }
+      // if (response1.data.length !== 0) {
+      //   setRemarksHistoryFromResponse1(response1.data);
+      // }
       setFilteredRemarks(response.data);
-      console.log(response1.data)
+      //console.log(response1.data)
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
@@ -368,10 +368,11 @@ const RemarksDialog = ({
     }
   };
 
-  const handleDeleteRemarks = async (remarksId, remarksValue,companyId) => {
+  const handleDeleteRemarks = async (remarksId, remarksValue) => {
     const mainRemarks = remarksValue === changeRemarks;
+    console.log("companyId",companyId)
     try {
-      await axios.delete(`${secretKey}/remarks/remarks-history/${remarksId}`);
+      await axios.delete(`${secretKey}/remarks/remarks-history/${remarksId}?companyId=${companyId}`);
       if (mainRemarks) {
         await axios.delete(`${secretKey}/remarks/remarks-delete/${companyId}`);
       }
@@ -467,7 +468,7 @@ const RemarksDialog = ({
             </div>
             <div className="modal-body">
               <div className="remarks-content">
-                {remarksHistoryFromResponse1.length > 0 && (
+                {/* {remarksHistoryFromResponse1.length > 0 && (
                   remarksHistoryFromResponse1.map((historyItem) => {
                     if (isEditable && historyItem.bdeName === bdeName) {
                       return (
@@ -477,14 +478,14 @@ const RemarksDialog = ({
                               <div className="reamrk-card-innerText">
                                 <pre className="remark-text">{historyItem[remarksKey]}</pre>
                               </div>
-                              {/* {isEditable &&  (
+                              {isEditable &&  (
                                 <div className="dlticon">
                                   <MdDelete
                                     style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
                                     onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
                                   />
                                 </div>
-                              )} */}
+                              )}
                             </div>
                             <div className="d-flex card-dateTime justify-content-between">
                               <div className="date">
@@ -500,7 +501,7 @@ const RemarksDialog = ({
                     }
 
                   })
-                )}
+                )} */}
                 {filteredRemarks[0]?.remarks?.length > 0 ||
                   filteredRemarks[0]?.serviceWiseRemarks?.length > 0 ? (
                   filteredRemarks[0]?.remarks.slice().map((historyItem) => {
@@ -516,7 +517,7 @@ const RemarksDialog = ({
                                 <div className="dlticon">
                                   <MdDelete
                                     style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
-                                    onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey] ,filteredRemarks.companyID)}
+                                    onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
                                   />
                                 </div>
                               )}
