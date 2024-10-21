@@ -34,11 +34,9 @@ function EmployeeGeneralLeads({
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
-    setStartRowIndex,
-    startRowIndex,
     selectedRows,
 }) {
-    console.log("isLoaidng", isLoading)
+   
     const [companyName, setCompanyName] = useState("");
     const [maturedCompanyName, setMaturedCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
@@ -68,7 +66,7 @@ function EmployeeGeneralLeads({
 
 
     return (
-        <div className="sales-panels-main">
+        <div className="sales-panels-main" onMouseUp={handleMouseUp}>
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
@@ -84,7 +82,7 @@ function EmployeeGeneralLeads({
                                                         checked={
                                                             selectedRows.length === generalData.length
                                                         }
-                                                        onChange={() => handleCheckboxChange("all")}
+                                                        onChange={(e) => handleCheckboxChange("all" , e)}
                                                     />
                                                     <span class="table_checkmark"></span>
                                                 </label>
@@ -122,34 +120,26 @@ function EmployeeGeneralLeads({
                             ) : (
                                 <tbody>
                                     {generalData.map((company, index) => (
-                                        <tr key={index}
-                                            data-row-id={company._id} // Assign the data-row-id attribute
-                                            className={
-                                                fordesignation === "admin" && selectedRows.includes(company._id)
-                                                    ? "selected"
-                                                    : ""
-                                            }
-                                            style={{ border: "1px solid #ddd" }}
-                                            >
+                                        <tr  key={company._id}
+                                            // data-row-id={company._id} // Assign the data-row-id attribute
+                                            // className={
+                                            //     fordesignation === "admin" && selectedRows.includes(company._id)
+                                            //         ? "selected"
+                                            //         : ""
+                                            // }
+                                            // style={{ border: "1px solid #ddd" }}
+                                            onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                            onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                            onMouseUp={handleMouseUp} // End drag selection
+                                            className={selectedRows.includes(company._id) ? 'selected' : ''} // Highlight selected rows
+                                        >
                                             {fordesignation === "admin" && (
                                                 <td>
                                                     <label className='table-check'>
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedRows.includes(
-                                                                company._id
-                                                            )}
-                                                            onChange={(e) =>
-                                                                handleCheckboxChange(company._id, e)
-                                                            }
-                                                            onMouseDown={() =>
-                                                                handleMouseDown(company._id)
-
-                                                            }
-                                                            onMouseEnter={() =>
-                                                                handleMouseEnter(company._id)
-                                                            }
-                                                            onMouseUp={handleMouseUp}
+                                                            checked={selectedRows.includes(company._id)}
+                                                            onChange={(e) => handleCheckboxChange(company._id , e)}
                                                         />
                                                         <span class="table_checkmark"></span>
                                                     </label>

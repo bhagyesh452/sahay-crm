@@ -414,33 +414,28 @@ function EmployeePanelCopy({ fordesignation }) {
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        setStartRowIndex(employeeData.findIndex((row) => row._id === id));
+        setStartRowIndex(fetchedData.findIndex((row) => row._id === id));
     };
 
     const handleMouseEnter = (id) => {
-        // Update selected rows during drag selection
         if (startRowIndex !== null) {
-            const endRowIndex = employeeData.findIndex((row) => row._id === id);
-            const selectedRange = [];
-            const startIndex = Math.min(startRowIndex, endRowIndex);
-            const endIndex = Math.max(startRowIndex, endRowIndex);
+            const endRowIndex = fetchedData.findIndex(row => row._id === id);
 
-            for (let i = startIndex; i <= endIndex; i++) {
-                selectedRange.push(employeeData[i]._id);
-            }
+            // Ensure startRowIndex and endRowIndex are valid and within array bounds
+            const validStartIndex = Math.min(startRowIndex, endRowIndex);
+            const validEndIndex = Math.max(startRowIndex, endRowIndex);
 
-            setSelectedRows(selectedRange);
+            // Only proceed if valid indices
+            if (validStartIndex >= 0 && validEndIndex < fetchedData.length) {
+                const selectedRange = [];
+                for (let i = validStartIndex; i <= validEndIndex; i++) {
+                    if (fetchedData[i] && fetchedData[i]._id) {
+                        // Ensure that fetchedData[i] is not undefined and has an _id
+                        selectedRange.push(fetchedData[i]._id);
+                    }
+                }
 
-            // Scroll the window vertically when dragging beyond the visible viewport
-            const windowHeight = document.documentElement.clientHeight;
-            const mouseY = window.event.clientY;
-            const tableHeight = document.querySelector("table").clientHeight;
-            const maxVisibleRows = Math.floor(
-                windowHeight / (tableHeight / employeeData.length)
-            );
-
-            if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
-                window.scrollTo(0, window.scrollY + 20);
+                setSelectedRows(selectedRange); // Update selected rows
             }
         }
     };
@@ -450,9 +445,11 @@ function EmployeePanelCopy({ fordesignation }) {
         setStartRowIndex(null);
     };
 
-    console.log("fordesignation", fordesignation)
-    console.log("fetcgeheddata", fetchedData)
-    console.log("dataStatus", dataStatus)
+    // console.log("fordesignation", fordesignation)
+    // console.log("fetcgeheddata", fetchedData)
+    // console.log("dataStatus", dataStatus)
+
+    console.log("selectedRows", selectedRows)
 
     return (
         <div>
@@ -703,40 +700,38 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseEnter={handleMouseEnter}
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
-                                            //setSelectedRows={setSelectedRows}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
-                                        {activeTabId === "Interested" && dataStatus === "Interested" && (<EmployeeInterestedLeads
-                                            interestedData={fetchedData}
-                                            isLoading={isLoading}
-                                            refetch={refetch}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            secretKey={secretKey}
-                                            dataStatus={dataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            setdataStatus={setdataStatus}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            fetchProjections={fetchProjections}
-                                            projectionData={projectionData}
-                                            handleOpenFormOpen={handleOpenFormOpen}
-                                            designation={data.designation}
-                                            fordesignation={fordesignation}
-                                            setSelectedRows={setSelectedRows}
-                                            handleCheckboxChange={handleCheckboxChange}
-                                            handleMouseDown={handleMouseDown}
-                                            handleMouseEnter={handleMouseEnter}
-                                            handleMouseUp={handleMouseUp}
-                                            setStartRowIndex={setStartRowIndex}
-                                            startRowIndex={startRowIndex}
-                                            selectedRows={selectedRows}
-                                        />)}
+                                        {activeTabId === "Interested" && dataStatus === "Interested" && (
+                                            <EmployeeInterestedLeads
+                                                interestedData={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                fetchProjections={fetchProjections}
+                                                projectionData={projectionData}
+                                                handleOpenFormOpen={handleOpenFormOpen}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                            />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
                                         {activeTabId === "Matured" && (<EmployeeMaturedLeads
@@ -759,34 +754,45 @@ function EmployeePanelCopy({ fordesignation }) {
                                             projectionData={projectionData}
                                             designation={data.designation}
                                             fordesignation={fordesignation}
-
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
+                                            selectedRows={selectedRows}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
                                         {activeTabId === "Forwarded" && (
                                             <EmployeeForwardedLeads
-                                            forwardedLeads={fetchedData}
-                                            isLoading={isLoading}
-                                            refetch={refetch}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            secretKey={secretKey}
-                                            dataStatus={dataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            setdataStatus={setdataStatus}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            designation={data.designation}
-                                            fordesignation={fordesignation}
-
-                                        />)}
+                                                forwardedLeads={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                            />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
-                                        {activeTabId === "Not Interested" && (<EmployeeNotInterestedLeads
+                                        {activeTabId === "Not Interested" && (
+                                            <EmployeeNotInterestedLeads
                                             notInterestedLeads={fetchedData}
                                             isLoading={isLoading}
                                             refetch={refetch}
@@ -804,6 +810,12 @@ function EmployeePanelCopy({ fordesignation }) {
                                             handleShowCallHistory={handleShowCallHistory}
                                             designation={data.designation}
                                             fordesignation={fordesignation}
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
+                                            selectedRows={selectedRows}
                                         />)}
                                     </div>
                                 </div>

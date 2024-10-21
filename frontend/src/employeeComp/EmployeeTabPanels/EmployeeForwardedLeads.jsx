@@ -33,7 +33,13 @@ function EmployeeForwardedLeads({
     ename,
     email,
     handleShowCallHistory,
-    fordesignation
+    fordesignation,
+    setSelectedRows,
+    handleCheckboxChange,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp,
+    selectedRows,
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -142,23 +148,8 @@ function EmployeeForwardedLeads({
     const [startDragIndex, setStartDragIndex] = useState(null);
     const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
 
-    // const nextPage = () => {
-    //     if (currentPage < totalPages - 1) {
-    //         setCurrentPage((prevPage) => prevPage + 1);
-    //         refetch(); // Trigger a refetch when the page changes
-    //     }
-    // };
-
-    // const prevPage = () => {
-    //     if (currentPage > 0) {
-    //         setCurrentPage((prevPage) => prevPage - 1);
-    //         refetch(); // Trigger a refetch when the page changes
-    //     }
-    // };
-
-
-     // Function to toggle individual checkbox selection
-     const handleCheckboxToggle = (index) => {
+    // Function to toggle individual checkbox selection
+    const handleCheckboxToggle = (index) => {
         setSelectedCompanies((prevSelected) => {
             if (prevSelected.includes(index)) {
                 return prevSelected.filter((i) => i !== index); // Deselect if already selected
@@ -169,38 +160,38 @@ function EmployeeForwardedLeads({
     };
 
     // Function to start dragging selection
-    const handleMouseDown = (index) => {
-        setIsDragging(true);
-        setStartDragIndex(index);
-        setLastSelectedIndex(index);
-        setSelectedCompanies([index]); // Start by selecting the initial company
-    };
+    // const handleMouseDown = (index) => {
+    //     setIsDragging(true);
+    //     setStartDragIndex(index);
+    //     setLastSelectedIndex(index);
+    //     setSelectedCompanies([index]); // Start by selecting the initial company
+    // };
 
-    // Function to handle selection during dragging
-    const handleMouseOver = (index) => {
-        if (isDragging) {
-            const range = getRange(startDragIndex, index);
-            setSelectedCompanies(range); // Select the companies in the drag range
-            setLastSelectedIndex(index);
-        }
-    };
+    // // Function to handle selection during dragging
+    // const handleMouseOver = (index) => {
+    //     if (isDragging) {
+    //         const range = getRange(startDragIndex, index);
+    //         setSelectedCompanies(range); // Select the companies in the drag range
+    //         setLastSelectedIndex(index);
+    //     }
+    // };
 
-    // Function to stop dragging selection
-    const handleMouseUp = () => {
-        setIsDragging(false);
-        setStartDragIndex(null);
-    };
+    // // Function to stop dragging selection
+    // const handleMouseUp = () => {
+    //     setIsDragging(false);
+    //     setStartDragIndex(null);
+    // };
 
-    // Helper function to get the range of selected indices
-    const getRange = (start, end) => {
-        const range = [];
-        for (let i = Math.min(start, end); i <= Math.max(start, end); i++) {
-            range.push(i);
-        }
-        return range;
-    };
+    // // Helper function to get the range of selected indices
+    // const getRange = (start, end) => {
+    //     const range = [];
+    //     for (let i = Math.min(start, end); i <= Math.max(start, end); i++) {
+    //         range.push(i);
+    //     }
+    //     return range;
+    // };
 
-    console.log("selectedCompanies", selectedCompanies);
+    // console.log("selectedCompanies", selectedCompanies);
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -216,17 +207,10 @@ function EmployeeForwardedLeads({
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
-                                                        onChange={() => {
-                                                            if (selectedCompanies.length === forwardedLeads.length) {
-                                                                setSelectedCompanies([]); // Deselect all
-                                                            } else {
-                                                                setSelectedCompanies(forwardedLeads.map((_, i) => i)); // Select all
-                                                            }
-                                                        }}
                                                         checked={
-                                                            selectedCompanies.length ===
-                                                            forwardedLeads.length
+                                                            selectedRows.length === forwardedLeads.length
                                                         }
+                                                        onChange={(e) => handleCheckboxChange("all", e)}
 
                                                     />
                                                     <span class="table_checkmark"></span>
@@ -255,22 +239,25 @@ function EmployeeForwardedLeads({
 
                             <tbody>
                                 {forwardedLeads.map((company, index) => (
-                                    <tr key={index}
-                                    onMouseDown={() => handleMouseDown(index)}
-                                        onMouseOver={() => handleMouseOver(index)}
-                                        onMouseUp={handleMouseUp}
+                                    <tr key={company._id}
                                         style={{ border: "1px solid #ddd" }}
-                                        className={
-                                            selectedCompanies.includes(index) ? 'selected-row' : ''
-                                        }
+                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                        onMouseUp={handleMouseUp} // End drag selection
+                                        className={selectedRows.includes(company._id) ? 'selected' : ''} // Highlight selected rows
                                     >
                                         {fordesignation === "admin" && (
                                             <td>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
-                                                        checked={selectedCompanies.includes(index)}
-                                                        onChange={() => handleCheckboxToggle(index)}
+                                                        checked={selectedRows.includes(
+                                                            company._id
+                                                        )}
+                                                        onChange={(e) =>
+                                                            handleCheckboxChange(company._id, e)
+                                                        }
+                                                        onMouseUp={handleMouseUp}
                                                     />
                                                     <span class="table_checkmark"></span>
                                                 </label>

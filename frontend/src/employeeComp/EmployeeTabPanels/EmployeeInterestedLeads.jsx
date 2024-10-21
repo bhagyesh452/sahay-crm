@@ -42,8 +42,6 @@ function EmployeeInterestedLeads({
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
-    setStartRowIndex,
-    startRowIndex,
     selectedRows,
 }) {
 
@@ -77,7 +75,7 @@ function EmployeeInterestedLeads({
 
 
     return (
-        <div className="sales-panels-main">
+        <div className="sales-panels-main" onMouseUp={handleMouseUp}>
             <>
                 <div className="table table-responsive table-style-3 m-0">
                     <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }}>
@@ -86,13 +84,16 @@ function EmployeeInterestedLeads({
                                 {fordesignation === "admin" &&
                                     (
                                         <th>
-                                            <input
-                                                type="checkbox"
-                                                checked={
-                                                    selectedRows.length === interestedData.length
-                                                }
-                                                onChange={() => handleCheckboxChange("all")}
-                                            />
+                                            <label className='table-check'>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={
+                                                        selectedRows.length === interestedData.length
+                                                    }
+                                                    onChange={(e) => handleCheckboxChange("all" , e)}
+                                                />
+                                                <span class="table_checkmark"></span>
+                                            </label>
                                         </th>
                                     )}
                                 <th className="rm-sticky-left-1">Sr. No</th>
@@ -111,32 +112,21 @@ function EmployeeInterestedLeads({
                                 {designation !== "Sales Manager" && (<th>Forward To Bdm</th>)}
                             </tr>
                         </thead>
-                        {isLoading && dataStatus !== "Interested" ? (
-                            <tbody>
-                                <tr>
-                                    <td colSpan="14" >
-                                        <div className="LoaderTDSatyle w-100" >
-                                            <ClipLoader
-                                                color="lightgrey"
-                                                loading
-                                                size={30}
-                                                aria-label="Loading Spinner"
-                                                data-testid="loader"
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        ) : (
+                        
                             <tbody>
                                 {interestedData.map((company, index) => (
-                                    <tr key={index}
-                                        className={
-                                            fordesignation === "admin" && selectedRows && selectedRows.includes(company._id)
-                                                ? "selected"
-                                                : ""
-                                        }
-                                        style={{ border: "1px solid #ddd" }}>
+                                    <tr key={company._id}
+                                        // className={
+                                        //     fordesignation === "admin" && selectedRows && selectedRows.includes(company._id)
+                                        //         ? "selected"
+                                        //         : ""
+                                        // }
+                                        style={{ border: "1px solid #ddd" }}
+                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                        onMouseUp={handleMouseUp} // End drag selection
+                                        className={selectedRows.includes(company._id) ? 'selected' : ''} // Highlight selected rows
+                                    >
                                         {fordesignation === "admin" && (
                                             <td
                                                 style={{
@@ -145,23 +135,19 @@ function EmployeeInterestedLeads({
                                                     zIndex: 1,
                                                     background: "white",
                                                 }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedRows.includes(
-                                                        company._id
-                                                    )}
-                                                    onChange={(e) =>
-                                                        handleCheckboxChange(company._id, e)
-                                                    }
-                                                    onMouseDown={() =>
-                                                        handleMouseDown(company._id)
-
-                                                    }
-                                                    onMouseEnter={() =>
-                                                        handleMouseEnter(company._id)
-                                                    }
-                                                    onMouseUp={handleMouseUp}
-                                                />
+                                                <label className='table-check'>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRows.includes(
+                                                            company._id
+                                                        )}
+                                                        onChange={(e) =>
+                                                            handleCheckboxChange(company._id, e)
+                                                        }
+                                                        onMouseUp={handleMouseUp}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
                                             </td>
                                         )}
                                         <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
@@ -298,7 +284,7 @@ function EmployeeInterestedLeads({
                                     </tr>
                                 ))}
                             </tbody>
-                        )}
+                
                         {interestedData && interestedData.length === 0 && !isLoading && (
                             <tbody>
                                 <tr>

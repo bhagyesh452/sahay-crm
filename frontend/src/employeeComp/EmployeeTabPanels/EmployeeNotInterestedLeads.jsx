@@ -28,7 +28,14 @@ function EmployeeNotInterestedLeads({
     ename,
     email,
     handleShowCallHistory,
-    designation
+    designation,
+    fordesignation,
+    setSelectedRows,
+    handleCheckboxChange,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp,
+    selectedRows,
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -59,13 +66,28 @@ function EmployeeNotInterestedLeads({
     };
 
     return (
-        <div className="sales-panels-main">
+        <div className="sales-panels-main" onMouseUp={handleMouseUp}>
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
                         <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }}>
                             <thead>
                                 <tr className="tr-sticky">
+                                    {fordesignation === "admin" &&
+                                        (
+                                            <th>
+                                                <label className='table-check'>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            selectedRows.length === notInterestedLeads.length
+                                                        }
+                                                        onChange={(e) => handleCheckboxChange("all", e)}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+                                            </th>
+                                        )}
                                     <th className="rm-sticky-left-1">Sr. No</th>
                                     <th className="rm-sticky-left-2">Compnay Name</th>
                                     <th>Compnay No</th>
@@ -91,7 +113,41 @@ function EmployeeNotInterestedLeads({
 
                             <tbody>
                                 {notInterestedLeads.map((company, index) => (
-                                    <tr key={index}  >
+                                    <tr key={company._id}
+                                        // className={
+                                        //     fordesignation === "admin" && selectedRows && selectedRows.includes(company._id)
+                                        //         ? "selected"
+                                        //         : ""
+                                        // }
+                                        style={{ border: "1px solid #ddd" }}
+                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                        onMouseUp={handleMouseUp} // End drag selection
+                                        className={selectedRows.includes(company._id) ? 'selected' : ''} // Highlight selected rows
+                                    >
+                                         {fordesignation === "admin" && (
+                                            <td
+                                                style={{
+                                                    position: "sticky",
+                                                    left: 0,
+                                                    zIndex: 1,
+                                                    background: "white",
+                                                }}>
+                                                <label className='table-check'>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRows.includes(
+                                                            company._id
+                                                        )}
+                                                        onChange={(e) =>
+                                                            handleCheckboxChange(company._id, e)
+                                                        }
+                                                        onMouseUp={handleMouseUp}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+                                            </td>
+                                        )}
                                         <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
                                         <td className="rm-sticky-left-2">{company["Company Name"]}</td>
                                         <td>
