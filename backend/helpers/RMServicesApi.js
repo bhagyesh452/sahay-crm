@@ -3501,7 +3501,7 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
     } else {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
-        companyID: id,
+        companyID: findCompany._id,
         "Company Name": currentCompanyName,
         remarks: [newCompleteRemarks], // Store the general remarks
       });
@@ -3554,7 +3554,7 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
     );
 
     const findCompany = await CompanyModel.findOne({ "Company Name": companyName }).select("Company Name")
-
+    console.log("findCompany", findCompany)
     // New object to be pushed
     const newCompleteRemarks = {
       companyID: findCompany._id,
@@ -3568,7 +3568,7 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
       addedOn:new Date()
     };
 
-    console.log(designation, newCompleteRemarks)
+    // console.log(designation, newCompleteRemarks)
 
     // Find existing remarks history for the company
     const existingCompleteRemarksHistory = await CompleteRemarksHistoryLeads.findOne({ "Company Name": companyName })
@@ -3592,8 +3592,8 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
     } else {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
-        companyID: id,
-        "Company Name": currentCompanyName,
+        companyID: findCompany._id,
+        "Company Name": companyName,
         remarks: [newCompleteRemarks], // Store the general remarks
       });
 

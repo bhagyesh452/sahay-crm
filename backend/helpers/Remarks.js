@@ -298,7 +298,20 @@ router.delete("/delete-remarks-history/:id", async (req, res) => {
       companyId: id,
     });
 
-    res.status(200).json({ updatedCompany, remarksHistory });
+   
+    // // Now, find the corresponding document in CompleteRemarksHistoryLeads and remove the remark from the `remarks` array
+    // const updatedLeadHistory = await CompleteRemarksHistoryLeads.findOneAndUpdate(
+    //   { companyID: id },
+    //   { $pull: { remarks: { _id: id } } }, // Remove the remark from the remarks array
+    //   { new: true } // Return the updated document
+    // );
+
+    // // Check if the `remarks` array is empty after the deletion, and if so, optionally delete the document
+    // if (updatedLeadHistory.remarks.length === 0 && updatedLeadHistory.serviceWiseRemarks.length === 0) {
+    //   await CompleteRemarksHistoryLeads.findOneAndDelete({ companyID: companyId });
+    // }
+
+    res.status(200).json({ updatedCompany, remarksHistory ,updatedLeadHistory });
   } catch (error) {
     console.error("Error updating remarks:", error);
     res.status(500).json({ error: "Internal Server Error" });
