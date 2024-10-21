@@ -302,6 +302,7 @@ const RemarksDialog = ({
   const [open, setOpen] = useState(false);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
   const [changeRemarks, setChangeRemarks] = useState(mainRemarks);
+  const [remarksHistoryFromResponse1, setRemarksHistoryFromResponse1] = useState([]); // Holds data from response1
 
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => setChangeRemarks(value), 300),
@@ -311,11 +312,17 @@ const RemarksDialog = ({
   // Fetch remarks history for the specific company
   const fetchRemarksHistory = async () => {
     try {
+      const response1 = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
       const response = await axios.get(`${secretKey}/remarks/remarks-history-complete/${companyId}`);
+      if (response1.data.length !== 0) {
+        setRemarksHistoryFromResponse1(response1.data);
+      }
       setFilteredRemarks(response.data);
+      console.log(response1.data)
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
+
   };
 
   // Function to open the modal and fetch remarks
@@ -460,6 +467,40 @@ const RemarksDialog = ({
             </div>
             <div className="modal-body">
               <div className="remarks-content">
+                {remarksHistoryFromResponse1.length > 0 && (
+                  remarksHistoryFromResponse1.map((historyItem) => {
+                    if (isEditable && historyItem.bdeName === bdeName) {
+                      return (
+                        <div className="col-sm-12" key={historyItem._id}>
+                          <div className="card RemarkCard position-relative">
+                            <div className="d-flex justify-content-between">
+                              <div className="reamrk-card-innerText">
+                                <pre className="remark-text">{historyItem[remarksKey]}</pre>
+                              </div>
+                              {isEditable &&  (
+                                <div className="dlticon">
+                                  <MdDelete
+                                    style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
+                                    onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                            <div className="d-flex card-dateTime justify-content-between">
+                              <div className="date">
+                                {historyItem.date}
+                              </div>
+                              <div className="date">
+                                By: {historyItem.bdeName}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    }
+
+                  })
+                )}
                 {filteredRemarks[0]?.remarks?.length > 0 ||
                   filteredRemarks[0]?.serviceWiseRemarks?.length > 0 ? (
                   filteredRemarks[0]?.remarks.slice().map((historyItem) => {
@@ -513,7 +554,7 @@ const RemarksDialog = ({
                           </div>
                         </div>
                       );
-                    } 
+                    }
                   })
                 ) : (
                   <div className="text-center overflow-hidden">No Remarks History</div>

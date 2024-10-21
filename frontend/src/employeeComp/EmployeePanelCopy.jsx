@@ -53,7 +53,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const [employeeData, setEmployeeData] = useState([]);
     const [nowToFetch, setNowToFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 500;
+    const itemsPerPage = 50;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const { userId } = useParams();
@@ -78,7 +78,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const [newEmpData, setNewEmpData] = useState([])
     const { id } = useParams();
 
-    console.log("id", id)
+
     // Auto logout functionality :
     useEffect(() => {
         // Function to check token expiry and initiate logout if expired
@@ -165,7 +165,7 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     };
 
-    console.log("userData", data)
+
 
     useEffect(() => {
         fetchData();
