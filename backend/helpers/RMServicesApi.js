@@ -3554,7 +3554,7 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
     );
 
     const findCompany = await CompanyModel.findOne({ "Company Name": companyName }).select("Company Name")
-
+    console.log("findCompany", findCompany)
     // New object to be pushed
     const newCompleteRemarks = {
       companyID: findCompany._id,
@@ -3593,7 +3593,7 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
         companyID: findCompany._id,
-        "Company Name": currentCompanyName,
+        "Company Name": companyName,
         remarks: [newCompleteRemarks], // Store the general remarks
       });
 

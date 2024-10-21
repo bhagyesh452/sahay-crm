@@ -297,6 +297,9 @@ router.delete("/delete-remarks-history/:id", async (req, res) => {
     const remarksHistory = await RemarksHistory.findByIdAndDelete({
       companyId: id,
     });
+    const  CompleteRemarksHistoryLeads = await CompleteRemarksHistoryLeads.findOneAndDelete({
+      companyId: id,
+    })
 
     res.status(200).json({ updatedCompany, remarksHistory });
   } catch (error) {
