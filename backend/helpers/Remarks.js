@@ -290,6 +290,7 @@ router.post("/update-remarks-bdm/:id", async (req, res) => {
 
 router.delete("/delete-remarks-history/:id", async (req, res) => {
   const { id } = req.params;
+  const { companyId } = req.body;
   try {
     // Update remarks and fetch updated data in a single operation
 
@@ -299,17 +300,17 @@ router.delete("/delete-remarks-history/:id", async (req, res) => {
     });
 
    
-    // // Now, find the corresponding document in CompleteRemarksHistoryLeads and remove the remark from the `remarks` array
-    // const updatedLeadHistory = await CompleteRemarksHistoryLeads.findOneAndUpdate(
-    //   { companyID: id },
-    //   { $pull: { remarks: { _id: id } } }, // Remove the remark from the remarks array
-    //   { new: true } // Return the updated document
-    // );
+    // Now, find the corresponding document in CompleteRemarksHistoryLeads and remove the remark from the `remarks` array
+    const updatedLeadHistory = await CompleteRemarksHistoryLeads.findOneAndUpdate(
+      { companyID: companyId },
+      { $pull: { remarks: { _id: id } } }, // Remove the remark from the remarks array
+      { new: true } // Return the updated document
+    );
 
-    // // Check if the `remarks` array is empty after the deletion, and if so, optionally delete the document
-    // if (updatedLeadHistory.remarks.length === 0 && updatedLeadHistory.serviceWiseRemarks.length === 0) {
-    //   await CompleteRemarksHistoryLeads.findOneAndDelete({ companyID: companyId });
-    // }
+    // Check if the `remarks` array is empty after the deletion, and if so, optionally delete the document
+    if (updatedLeadHistory.remarks.length === 0 && updatedLeadHistory.serviceWiseRemarks.length === 0) {
+      await CompleteRemarksHistoryLeads.findOneAndDelete({ companyID: companyId });
+    }
 
     res.status(200).json({ updatedCompany, remarksHistory ,updatedLeadHistory });
   } catch (error) {

@@ -368,7 +368,7 @@ const RemarksDialog = ({
     }
   };
 
-  const handleDeleteRemarks = async (remarksId, remarksValue) => {
+  const handleDeleteRemarks = async (remarksId, remarksValue,companyId) => {
     const mainRemarks = remarksValue === changeRemarks;
     try {
       await axios.delete(`${secretKey}/remarks/remarks-history/${remarksId}`);
@@ -516,7 +516,7 @@ const RemarksDialog = ({
                                 <div className="dlticon">
                                   <MdDelete
                                     style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
-                                    onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
+                                    onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey] ,filteredRemarks.companyID)}
                                   />
                                 </div>
                               )}
