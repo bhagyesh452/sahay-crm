@@ -579,23 +579,15 @@ function EmployeePanelCopy({ fordesignation }) {
                             <div className="container-xl">
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
-                                        <div className="btn-group mr-2">
+                                        <div className="btn-group mr-2"  role="group" aria-label="Basic example">
                                             {fordesignation === "admin" ? (
                                                 <>
-                                                    <div className="d-flex">
-
-                                                        <FaCircleChevronLeft className="ep_right_button"
-                                                        //onClick={handleChangeUrlPrev} 
+                                                    <button className="btn mybtn">
+                                                        <FaCircleChevronLeft className="ep_right_button" //onClick={handleChangeUrlPrev}  
                                                         />
-
-                                                        <h2 className="page-title">{data.ename}</h2>
-                                                        <div className="nextBtn">
-
-
-                                                            <FaCircleChevronRight className="ep_left_button" />
-
-                                                        </div>
-                                                    </div>
+                                                    </button>
+                                                    <button className="btn mybtn"><b>{data.ename}</b></button>
+                                                    <button className="btn mybtn"><FaCircleChevronRight className="ep_left_button" />  </button>
                                                 </>
 
                                             ) : (
@@ -608,6 +600,28 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 />
                                             )}
 
+                                        </div>
+                                        <div className="btn-group mr-1" role="group" aria-label="Basic example">
+
+                                            <button onClick={() => {
+                                                window.location.pathname = `/managing-director/employees/${id}`
+                                            }}
+                                                type="button"
+                                                className="btn mybtn"
+                                            //onClick={functionopenpopup}
+                                            >
+                                                <MdOutlinePersonPin
+
+                                                    className='mr-1' /> Leads
+                                            </button>
+                                            {data.bdmWork && <button type="button" className="btn mybtn"
+                                                onClick={() => {
+                                                    window.location.pathname = `/managing-director/employeeleads/${id}`
+                                                }}
+                                            >
+                                                <AiOutlineTeam
+                                                    className='mr-1' /> Team Leads
+                                            </button>}
                                         </div>
                                         {fordesignation !== "admin" && (
                                             <div className="btn-group" role="group" aria-label="Basic example">
@@ -638,7 +652,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                         {fordesignation === "admin" && (
                                             <>
                                                 {selectedRows.length !== 0 && (
-                                                    <div className="selection-data" >
+                                                    <div className="selection-data mr-1" >
                                                         Total Data Selected : <b>{selectedRows.length}</b>
                                                     </div>
                                                 )}
@@ -649,28 +663,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                         <IoIosArrowDropleft className='mr-1' /> Back
                                                     </button>
                                                 </div>
-                                                <div className="btn-group mr-1" role="group" aria-label="Basic example">
-
-                                                    <button onClick={() => {
-                                                        window.location.pathname = `/managing-director/employees/${id}`
-                                                    }}
-                                                        type="button"
-                                                        className="btn mybtn"
-                                                    //onClick={functionopenpopup}
-                                                    >
-                                                        <MdOutlinePersonPin
-
-                                                            className='mr-1' /> Leads
-                                                    </button>
-                                                    {data.bdmWork && <button type="button" className="btn mybtn"
-                                                        onClick={() => {
-                                                            window.location.pathname = `/managing-director/employeeleads/${id}`
-                                                        }}
-                                                    >
-                                                        <AiOutlineTeam
-                                                            className='mr-1' /> Team Leads
-                                                    </button>}
-                                                </div>
+                                                
                                                 <div className="btn-group" role="group" aria-label="Basic example">
                                                     {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
 

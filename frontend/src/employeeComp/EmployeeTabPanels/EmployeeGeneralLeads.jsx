@@ -104,14 +104,14 @@ function EmployeeGeneralLeads({
                             
                                 <tbody>
                                     {generalData.map((company, index) => (
-                                        <tr  key={company._id}
+                                        <tr key={company._id}
                                             onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
                                             onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
                                             onMouseUp={handleMouseUp} // End drag selection
                                             id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
                                         >
                                             {fordesignation === "admin" && (
-                                                <td>
+                                                <td className='AEP-sticky-left-1'>
                                                     <label className='table-check'>
                                                         <input
                                                             type="checkbox"
@@ -123,8 +123,8 @@ function EmployeeGeneralLeads({
 
                                                 </td>
                                             )}
-                                            <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
-                                            <td className="rm-sticky-left-2">{company["Company Name"]}</td>
+                                            <td className="rm-sticky-left-1 AEP-sticky-left-2">{startIndex + index + 1}</td>
+                                            <td className="rm-sticky-left-2 AEP-sticky-left-3">{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
