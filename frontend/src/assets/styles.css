@@ -3142,6 +3142,27 @@ td input {
   width: 3800px !important;
 }
 
+.AEP-sticky-left-1 {
+  position: sticky;
+  left: 0;
+  width:  42px;
+  z-index: 1;
+}
+
+.AEP-sticky-left-2 {
+  position: sticky;
+  left: 42px;
+  width: 66px;
+  box-shadow: 3px 0px 4px -4px #cccccc !important;
+  z-index: 1;
+}
+.AEP-sticky-left-3 {
+  position: sticky;
+  left: 108px;
+  box-shadow: 3px 0px 4px -4px #cccccc !important;
+  z-index: 1;
+}
+
 .rm-sticky-left-1 {
   position: sticky;
   left: 0;
@@ -3413,14 +3434,10 @@ td input {
   font-weight: 600;
 }
 .ep_left_button{
-  font-size: 21px;
-    margin-left: 5px;
-    margin-top: 5px;
+  font-size: 16px;
 }
 .ep_right_button{
-  font-size: 21px;
-    margin-right: 5px;
-    margin-top: 5px;
+  font-size: 16px;
 }
 
 .rm_sr_no {
