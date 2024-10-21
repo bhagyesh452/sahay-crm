@@ -125,7 +125,7 @@ function EmployeeInterestedLeads({
                                         onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
                                         onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
                                         onMouseUp={handleMouseUp} // End drag selection
-                                        className={selectedRows.includes(company._id) ? 'selected' : ''} // Highlight selected rows
+                                        id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
                                     >
                                         {fordesignation === "admin" && (
                                             <td

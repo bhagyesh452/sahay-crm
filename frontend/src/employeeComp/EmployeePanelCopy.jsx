@@ -32,7 +32,9 @@ import { IoIosArrowDropleft } from "react-icons/io";
 import { MdOutlinePersonPin } from "react-icons/md";
 import { AiOutlineTeam } from "react-icons/ai";
 import { RiShareForwardFill } from "react-icons/ri";
-
+import Swal from "sweetalert2";
+import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
+import ForwardToBdmDialog from "../admin/ExtraComponent/ForwardToBdmDialog.jsx";
 
 function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -73,7 +75,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const [companyId, setCompanyId] = useState("");
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
-
+    const [newEmpData, setNewEmpData] = useState([])
     const { id } = useParams();
 
     console.log("id", id)
@@ -139,7 +141,7 @@ function EmployeePanelCopy({ fordesignation }) {
             document.title = `Admin-Sahay-CRM`;
         }
     }, [data.ename]);
-    console.log("data", data)
+
 
     const fetchData = async () => {
         let fetchingId;
@@ -149,6 +151,7 @@ function EmployeePanelCopy({ fordesignation }) {
             fetchingId = id
         }
         try {
+            const completeEmployess = await axios.get(`${secretKey}/employee/einfo`);
             const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${fetchingId}`);
             // Set the retrieved data in the state
             const userData = response.data.data;
@@ -156,6 +159,7 @@ function EmployeePanelCopy({ fordesignation }) {
             //console.log(userData);
             setData(userData);
             setmoreFilteredData(userData);
+            setNewEmpData(completeEmployess.data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
@@ -449,7 +453,122 @@ function EmployeePanelCopy({ fordesignation }) {
     // console.log("fetcgeheddata", fetchedData)
     // console.log("dataStatus", dataStatus)
 
-    console.log("selectedRows", selectedRows)
+    // -----------------------------assign leads functions---------------------------
+    const [openAssign, openchangeAssign] = useState(false);
+    const [selectedOption, setSelectedOption] = useState("direct");
+    const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
+
+    const functionOpenAssign = () => {
+        openchangeAssign(true);
+    };
+    const closepopupAssign = () => {
+        openchangeAssign(false);
+    };
+    const handleOptionChange = (event) => {
+        setSelectedOption(event.target.value);
+    };
+
+    const handleUploadData = async (e) => {
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+
+        const csvdata = employeeData
+            .filter((employee) => selectedRows.includes(employee._id))
+            .map((employee) => ({
+                ...employee,
+                //Status: "Untouched",
+                Remarks: "No Remarks Added",
+            }));
+        console.log(csvdata)
+
+        try {
+            Swal.fire({
+                title: 'Assigning...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            const response = await axios.post(`${secretKey}/company-data/assign-new`, {
+                ename: selectedOption === "extractedData" ? "Extracted" : newemployeeSelection,
+                data: csvdata,
+            });
+
+            Swal.close();
+            Swal.fire({
+                title: "Data Sent!",
+                text: "Data sent successfully!",
+                icon: "success",
+            });
+
+
+            setnewEmployeeSelection("Not Alloted");
+            closepopupAssign();
+            setSelectedRows([])
+            refetch()
+            //   setIsFilter(false)
+            //   setIsSearch(false)
+        } catch (error) {
+            console.error("Error updating employee data:", error);
+            Swal.close();
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to update employee data. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
+
+    // ----------------forward to bdm popup------------------
+    const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
+    const [bdmName, setBdmName] = useState("Not Alloted");
+    const handleCloseForwardBdmPopup = () => {
+        setOpenAssignToBdm(false);
+    };
+    const handleForwardDataToBDM = async (bdmName) => {
+        const data = employeeData.filter((employee) => selectedRows.includes(employee._id));
+        // console.log("data is:", data);
+        if (selectedRows.length === 0) {
+            Swal.fire("Please Select the Company to Forward", "", "Error");
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            return;
+        }
+        try {
+            Swal.fire({
+                title: 'Assigning...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+                data: data,
+                name: bdmName
+            });
+            Swal.close();
+            Swal.fire({
+                title: "Data Sent!",
+                text: "Data sent successfully!",
+                icon: "success",
+            });
+            refetch()
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            setSelectedRows([]);
+            //setdataStatus("All");
+           
+        } catch (error) {
+            console.log("error fetching data", error.message);
+            Swal.close();
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to update employee data. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
+    // console.log("selectedRows", selectedRows)
 
     return (
         <div>
@@ -518,6 +637,11 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className="d-flex align-items-center">
                                         {fordesignation === "admin" && (
                                             <>
+                                                {selectedRows.length !== 0 && (
+                                                    <div className="selection-data" >
+                                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                                    </div>
+                                                )}
                                                 <div className="btn-group mr-1" role="group" aria-label="Basic example">
                                                     <button type="button" className="btn mybtn"
                                                     //onClick={functionopenpopup}
@@ -551,15 +675,44 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
 
                                                     <button type="button" className="btn mybtn"
-                                                        onClick={functionopenpopup}
+                                                        onClick={() => { setOpenAssignToBdm(true) }}
                                                     >
                                                         <RiShareForwardFill className='mr-1' /> Forward To BDM
                                                     </button>
+                                                    {
+                                                        openAssignToBdm && (
+                                                            <ForwardToBdmDialog
+                                                                openAssignToBdm={openAssignToBdm}
+                                                                handleCloseForwardBdmPopup={handleCloseForwardBdmPopup}
+                                                                handleForwardDataToBDM={handleForwardDataToBDM}
+                                                                setBdmName={setBdmName}
+                                                                bdmName={bdmName}
+                                                                newempData={newEmpData}
+                                                                id={fordesignation === "admin" ? id : userId}
+                                                                branchName={data.branchOffice}
+                                                            />
+                                                        )
+                                                    }
                                                     <button type="button" className="btn mybtn"
-                                                        onClick={functionopenpopup}
+                                                        onClick={functionOpenAssign}
                                                     >
                                                         <MdOutlinePostAdd className='mr-1' /> Assign Leads
                                                     </button>
+                                                    {
+                                                        openAssign && (
+                                                            <AssignLeads
+                                                                openAssign={openAssign}
+                                                                closepopupAssign={closepopupAssign}
+                                                                selectedOption={selectedOption}
+                                                                setSelectedOption={setSelectedOption}
+                                                                newemployeeSelection={newemployeeSelection}
+                                                                setnewEmployeeSelection={setnewEmployeeSelection}
+                                                                handleOptionChange={handleOptionChange}
+                                                                handleUploadData={handleUploadData}
+                                                                newempData={newEmpData}
+                                                            />
+                                                        )
+                                                    }
                                                 </div>
                                             </>
                                         )}
@@ -793,30 +946,30 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
                                         {activeTabId === "Not Interested" && (
                                             <EmployeeNotInterestedLeads
-                                            notInterestedLeads={fetchedData}
-                                            isLoading={isLoading}
-                                            refetch={refetch}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            secretKey={secretKey}
-                                            dataStatus={dataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            setdataStatus={setdataStatus}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            designation={data.designation}
-                                            fordesignation={fordesignation}
-                                            setSelectedRows={setSelectedRows}
-                                            handleCheckboxChange={handleCheckboxChange}
-                                            handleMouseDown={handleMouseDown}
-                                            handleMouseEnter={handleMouseEnter}
-                                            handleMouseUp={handleMouseUp}
-                                            selectedRows={selectedRows}
-                                        />)}
+                                                notInterestedLeads={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                            />)}
                                     </div>
                                 </div>
                             </div>

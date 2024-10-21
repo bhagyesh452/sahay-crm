@@ -101,37 +101,14 @@ function EmployeeGeneralLeads({
                                     <th>Assign Date</th>
                                 </tr>
                             </thead>
-                            {isLoading && dataStatus !== "All" ? (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="11" >
-                                            <div className="LoaderTDSatyle w-100" >
-                                                <ClipLoader
-                                                    color="lightgrey"
-                                                    loading
-                                                    size={30}
-                                                    aria-label="Loading Spinner"
-                                                    data-testid="loader"
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            ) : (
+                            
                                 <tbody>
                                     {generalData.map((company, index) => (
                                         <tr  key={company._id}
-                                            // data-row-id={company._id} // Assign the data-row-id attribute
-                                            // className={
-                                            //     fordesignation === "admin" && selectedRows.includes(company._id)
-                                            //         ? "selected"
-                                            //         : ""
-                                            // }
-                                            // style={{ border: "1px solid #ddd" }}
                                             onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
                                             onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
                                             onMouseUp={handleMouseUp} // End drag selection
-                                            className={selectedRows.includes(company._id) ? 'selected' : ''} // Highlight selected rows
+                                            id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
                                         >
                                             {fordesignation === "admin" && (
                                                 <td>
@@ -248,7 +225,7 @@ function EmployeeGeneralLeads({
                                         </tr>
                                     ))}
                                 </tbody>
-                            )}
+                        
                             {generalData && generalData.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
