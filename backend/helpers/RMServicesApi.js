@@ -3501,7 +3501,7 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
     } else {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
-        companyID: id,
+        companyID: findCompany._id,
         "Company Name": currentCompanyName,
         remarks: [newCompleteRemarks], // Store the general remarks
       });
@@ -3592,7 +3592,7 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
     } else {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
-        companyID: id,
+        companyID: findCompany._id,
         "Company Name": currentCompanyName,
         remarks: [newCompleteRemarks], // Store the general remarks
       });
