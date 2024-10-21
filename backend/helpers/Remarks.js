@@ -64,7 +64,7 @@ const CompleteRemarksHistoryLeads = require('../models/CompleteRemarksHistoryLea
 //   }
 // });
 
-// ------------------------------------------update-remarks-bdm-------------------------
+
 
 router.post("/update-remarks/:id", async (req, res) => {
   const { id } = req.params;

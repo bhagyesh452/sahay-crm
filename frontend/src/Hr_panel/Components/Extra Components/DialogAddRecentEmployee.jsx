@@ -322,6 +322,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
             // Add your form submission logic here
             // const referenceId = uuidv4();
             const AddedOn = new Date().toLocaleDateString();
+            console.log("added on", AddedOn)
             let designation;
             if (newDesignation === "Business Development Executive" || newDesignation === "Business Development Manager") {
                 designation = "Sales Executive";

@@ -219,6 +219,63 @@ function EmployeeParticular() {
   useEffect(() => {
     document.title = `Admin-Sahay-CRM`;
   }, []);
+  // Function to fetch employee details by id
+  // const fetchEmployeeDetails = async () => {
+  //   try {
+  //     const response = await axios.get(`${secretKey}/employee/einfo`)
+  //     const response2 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`)
+
+  //     // Filter the response data to find _id values where designation is "Sales Executive"
+
+
+  //     const salesExecutivesIds = response.data.filter((employee) => employee.designation === "Sales Executive" || "Sales Manager").map((employee) => employee._id);
+  //     const salesExecutivesIds2 = response2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager").map((employee) => employee._id);
+  //     console.log(salesExecutivesIds2)
+  //     // Set eData to the array of _id values
+  //     seteData(salesExecutivesIds);
+
+  //     // Find the employee by id and set the name
+  //     const selectedEmployee = response.data.find(
+  //       (employee) => employee._id === id
+  //     );
+
+  //     console.log(selectedEmployee)
+
+  //     const selectedEmployee2 = response2.data.find(
+  //       (employee) => employee._id === id
+  //     );
+
+  //     console.log(selectedEmployee2._id)
+
+  //     // if (salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) {
+  //     //   // If it's at 0th position, set the visibility of the back button to false
+  //     //   setBackButton(false); // assuming backButton is your back button element
+  //     // } else if(salesExecutivesIds2.length > 0 && salesExecutivesIds2[0] === selectedEmployee2._id){
+  //     //   console.log("kyu nahi chl rha")
+  //     //   setBackButton(false)
+  //     // }else {
+  //     //   console.log("yahan chal na")
+  //     //   // Otherwise, set the visibility to true
+  //     //   setBackButton(true); // or any other appropriate display style
+  //     // }
+
+  //     if (selectedEmployee._id !== '') {
+  //       console.log("yahan nahi")
+  //       setEmployeeName(selectedEmployee.ename);
+  //       setBdmWorkOn(selectedEmployee.bdmWork);
+  //     } else if (selectedEmployee2._id !== '') {
+  //       console.log("yahan chala")
+  //       setEmployeeName(selectedEmployee2.ename);
+  //       setBdmWorkOn(selectedEmployee2.bdmWork);
+  //     } else {
+  //       console.log("yahan bhi")
+  //       // Handle the case where no employee is found with the given id
+  //       setEmployeeName("Employee not found");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching employee details:", error.message);
+  //   }
+  // };
 
 
 

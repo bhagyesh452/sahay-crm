@@ -65,7 +65,7 @@ function EmployeeGeneralLeads({
         }
     };
 
-    
+
 
     return (
         <div className="sales-panels-main">
@@ -123,12 +123,14 @@ function EmployeeGeneralLeads({
                                 <tbody>
                                     {generalData.map((company, index) => (
                                         <tr key={index}
+                                            data-row-id={company._id} // Assign the data-row-id attribute
                                             className={
                                                 fordesignation === "admin" && selectedRows.includes(company._id)
                                                     ? "selected"
                                                     : ""
                                             }
-                                            style={{ border: "1px solid #ddd" }}>
+                                            style={{ border: "1px solid #ddd" }}
+                                            >
                                             {fordesignation === "admin" && (
                                                 <td>
                                                     <label className='table-check'>

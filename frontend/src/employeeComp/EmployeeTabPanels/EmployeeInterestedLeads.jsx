@@ -86,16 +86,13 @@ function EmployeeInterestedLeads({
                                 {fordesignation === "admin" &&
                                     (
                                         <th>
-                                            <label className='table-check'>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={
-                                                        selectedRows.length === interestedData.length
-                                                    }
-                                                    onChange={() => handleCheckboxChange("all")}
-                                                />
-                                                <span class="table_checkmark"></span>
-                                            </label>
+                                            <input
+                                                type="checkbox"
+                                                checked={
+                                                    selectedRows.length === interestedData.length
+                                                }
+                                                onChange={() => handleCheckboxChange("all")}
+                                            />
                                         </th>
                                     )}
                                 <th className="rm-sticky-left-1">Sr. No</th>
@@ -135,34 +132,36 @@ function EmployeeInterestedLeads({
                                 {interestedData.map((company, index) => (
                                     <tr key={index}
                                         className={
-                                            fordesignation === "admin" && selectedRows.includes(company._id)
+                                            fordesignation === "admin" && selectedRows && selectedRows.includes(company._id)
                                                 ? "selected"
                                                 : ""
                                         }
                                         style={{ border: "1px solid #ddd" }}>
                                         {fordesignation === "admin" && (
-                                            <td>
-                                                <label className='table-check'>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedRows.includes(
-                                                            company._id
-                                                        )}
-                                                        onChange={(e) =>
-                                                            handleCheckboxChange(company._id, e)
-                                                        }
-                                                        onMouseDown={() =>
-                                                            handleMouseDown(company._id)
+                                            <td
+                                                style={{
+                                                    position: "sticky",
+                                                    left: 0,
+                                                    zIndex: 1,
+                                                    background: "white",
+                                                }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedRows.includes(
+                                                        company._id
+                                                    )}
+                                                    onChange={(e) =>
+                                                        handleCheckboxChange(company._id, e)
+                                                    }
+                                                    onMouseDown={() =>
+                                                        handleMouseDown(company._id)
 
-                                                        }
-                                                        onMouseEnter={() =>
-                                                            handleMouseEnter(company._id)
-                                                        }
-                                                        onMouseUp={handleMouseUp}
-                                                    />
-                                                    <span class="table_checkmark"></span>
-                                                </label>
-
+                                                    }
+                                                    onMouseEnter={() =>
+                                                        handleMouseEnter(company._id)
+                                                    }
+                                                    onMouseUp={handleMouseUp}
+                                                />
                                             </td>
                                         )}
                                         <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
