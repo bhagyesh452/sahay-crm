@@ -105,9 +105,8 @@ function EmployeeNotInterestedLeads({
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
-                                    <th>Compnay Email</th>
+                                    <th>Company Email</th>
                                     <th>Assign Date</th>
-
                                 </tr>
                             </thead>
 

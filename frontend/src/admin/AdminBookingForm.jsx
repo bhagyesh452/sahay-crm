@@ -3603,7 +3603,7 @@ export default function AdminBookingForm({
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
-                                        <b>Compnay name</b>
+                                        <b>Company name</b>
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">

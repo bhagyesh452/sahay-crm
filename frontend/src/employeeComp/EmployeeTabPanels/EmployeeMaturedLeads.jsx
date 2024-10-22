@@ -101,7 +101,7 @@ function EmployeeMaturedLeads({
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
-                                    <th>Compnay Email</th>
+                                    <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>Booking Date</th>
                                     <th>Booking Publish Date</th>
