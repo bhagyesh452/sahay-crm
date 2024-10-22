@@ -137,6 +137,8 @@ const EmployeeStatusChange = ({
             return "ready_to_submit";
           case "FollowUp":
             return "clnt_no_repond_status";
+            case "Not Interested":
+              return "inprogress-status";
           default:
             return "";
         }
@@ -161,12 +163,7 @@ const EmployeeStatusChange = ({
             return "clnt_no_repond_status";
           case "Interested":
             return "ready_to_submit";
-          // case "Defaulter":
-          //   return "dfaulter-status";
-          // case "Hold":
-          //   return "created-status";
-          // case "Approved":
-          //   return "approved-status";
+          
           default:
             return "";
         }
@@ -195,13 +192,16 @@ const EmployeeStatusChange = ({
   // ----------------------------------functions for modal--------------------------------
 
   const [selectedValues, setSelectedValues] = useState([]);
- 
+
 
   const modalId = `modal-${companyName.replace(/\s+/g, '')}`; // Generate a unique modal ID
 
 
   return (<>
-    <section className="rm_status_dropdown">
+    <section className="rm_status_dropdown" 
+    style={{
+      width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
+    }}>
       <div className={
         mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :
           `dropdown custom-dropdown status_dropdown ${statusClass}`}>
@@ -223,6 +223,15 @@ const EmployeeStatusChange = ({
                 href="#"
               >
                 Untouched
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Not Interested", "inprogress-status")}
+                href="#"
+              >
+                Not Interested
               </a>
             </li>
             <li>

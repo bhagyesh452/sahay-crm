@@ -237,7 +237,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
-            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage, searchQuery], // Add searchQuery to the queryKey
+            queryKey: ['newData', cleanString(data.ename), currentPage, searchQuery], // Add searchQuery to the queryKey
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees-new/${cleanString(data.ename)}`, {
@@ -250,8 +250,10 @@ function EmployeePanelCopy({ fordesignation }) {
                 });
                 return response.data; // Directly return the data
             },
-            staleTime: 300000, // Cache for 1 minute
-            cacheTime: 300000, // Cache for 1 minute
+            // staleTime: 300000, // Cache for 1 minute
+            // cacheTime: 300000, // Cache for 1 minute
+            refetchOnWindowFocus: false,
+            keepPreviousData: true
         }
     );
 
@@ -422,7 +424,7 @@ function EmployeePanelCopy({ fordesignation }) {
     };
 
     const handleMouseEnter = (id) => {
-        if (startRowIndex !== null) {
+        if (startRowIndex !== null && fordesignation === "admin") {
             const endRowIndex = fetchedData.findIndex(row => row._id === id);
 
             // Ensure startRowIndex and endRowIndex are valid and within array bounds
@@ -623,7 +625,7 @@ function EmployeePanelCopy({ fordesignation }) {
             console.log("Current ID not found in newEmpData array.");
         }
     };
-    // console.log("selectedRows", selectedRows)
+    console.log("selectedRows", selectedRows)
 
     return (
         <div>
