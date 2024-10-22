@@ -3502,7 +3502,7 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
         companyID: findCompany._id,
-        "Company Name": currentCompanyName,
+        "Company Name": companyName,
         remarks: [newCompleteRemarks], // Store the general remarks
       });
 

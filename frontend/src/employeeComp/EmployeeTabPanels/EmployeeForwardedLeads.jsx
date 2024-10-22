@@ -218,8 +218,8 @@ function EmployeeForwardedLeads({
                                             </th>
                                         )}
                                     <th className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Compnay Name</th>
-                                    <th>Compnay No</th>
+                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Company Name</th>
+                                    <th>Company No</th>
                                     <th>Call History</th>
                                     <th>BDE Status</th>
                                     <th>BDE Remarks</th>

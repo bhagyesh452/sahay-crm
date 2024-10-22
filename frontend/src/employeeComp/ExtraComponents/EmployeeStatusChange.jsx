@@ -26,8 +26,11 @@ const EmployeeStatusChange = ({
   bdmName,
   bdmAcceptStatus,
   handleFormOpen,
+<<<<<<< HEAD
   teamData,
   isBdmStatusChange
+=======
+>>>>>>> 2d9c5a45bebc9bdf50b0e9806d9fa930a6ae9955
 }) => {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -191,6 +194,8 @@ const EmployeeStatusChange = ({
             return "ready_to_submit";
           case "FollowUp":
             return "clnt_no_repond_status";
+            case "Not Interested":
+              return "inprogress-status";
           default:
             return "";
         }
@@ -215,12 +220,7 @@ const EmployeeStatusChange = ({
             return "clnt_no_repond_status";
           case "Interested":
             return "ready_to_submit";
-          // case "Defaulter":
-          //   return "dfaulter-status";
-          // case "Hold":
-          //   return "created-status";
-          // case "Approved":
-          //   return "approved-status";
+          
           default:
             return "";
         }
@@ -255,7 +255,10 @@ const EmployeeStatusChange = ({
 
 
   return (<>
-    <section className="rm_status_dropdown">
+    <section className="rm_status_dropdown" 
+    style={{
+      width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
+    }}>
       <div className={
         mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :
           `dropdown custom-dropdown status_dropdown ${statusClass}`}>
@@ -277,6 +280,15 @@ const EmployeeStatusChange = ({
                 href="#"
               >
                 Untouched
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Not Interested", "inprogress-status")}
+                href="#"
+              >
+                Not Interested
               </a>
             </li>
             <li>
@@ -451,14 +463,6 @@ const EmployeeStatusChange = ({
       modalId={modalId}
       companyName={companyName}
       secretKey={secretKey}
-      // formData={formData}
-      // handleInputChange={handleInputChange}
-      // handleMultiSelectChange={handleMultiSelectChange}
-      // handleSubmitInformation={handleSubmitInformation}
-      // handleClearInterestedInformation={handleClearInterestedInformation}
-      // visibleQuestions={visibleQuestions}
-      // handleYesClick={handleYesClick}
-      // handleNoClick={handleNoClick}
       refetch={refetch}
       ename={ename}
       status={status}
@@ -466,10 +470,13 @@ const EmployeeStatusChange = ({
       setStatusClass={setStatusClass}
       companyStatus={companyStatus}
     />
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> 2d9c5a45bebc9bdf50b0e9806d9fa930a6ae9955
   </>);
 };
 

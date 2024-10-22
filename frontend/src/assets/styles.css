@@ -4475,6 +4475,11 @@ div#table-default td {
   line-height: 10px;
 }
 
+.yes-alias-i-active {
+  color: #009402;
+  line-height: 10px;
+}
+
 .no-alias-i {
   color: #be1e1e;
   line-height: 10px;
@@ -4488,10 +4493,30 @@ div#table-default td {
   font-weight: 600;
 }
 
+.intersted-history-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 19px;
+  text-align: center;
+  border-radius: 100px;
+  background: #f3e2bd;
+  border: 1px solid #c5a255;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
 .int-sub-que {
   background: #eee;
   font-size: 12px;
   padding: 2px 8px;
+}
+
+.disclamer {
+  color: red !important;
+  text-wrap: wrap !important;
+  font-weight: 400 !important;
+  padding: 6px 6px !important;
+  margin: 0 !important;
 }
 
 .table-check {

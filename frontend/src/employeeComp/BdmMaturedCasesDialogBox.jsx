@@ -136,6 +136,7 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                             width: "17px",
                             height: "17px",
                         }}
+                        title="Forward To BDM"
                         color="grey"
                     />
                 </a>
