@@ -26,9 +26,17 @@ function EmployeeGeneralLeads({
     ename,
     email,
     secretKey,
-    handleShowCallHistory
+    handleShowCallHistory,
+    designation,
+    fordesignation,
+    setSelectedRows,
+    handleCheckboxChange,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp,
+    selectedRows,
 }) {
-    console.log("isLoaidng", isLoading)
+   
     const [companyName, setCompanyName] = useState("");
     const [maturedCompanyName, setMaturedCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
@@ -54,51 +62,69 @@ function EmployeeGeneralLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
-    console.log("general hua")
+
+
 
     return (
-        <div className="sales-panels-main">
+        <div className="sales-panels-main" onMouseUp={handleMouseUp}>
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap" style={{width:"1800px"}}>
+                        <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
                             <thead>
                                 <tr className="tr-sticky">
+                                    {fordesignation === "admin" &&
+                                        (
+                                            <th>
+                                                <label className='table-check'>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            selectedRows.length === generalData.length
+                                                        }
+                                                        onChange={(e) => handleCheckboxChange("all" , e)}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+                                            </th>
+                                        )}
                                     <th className="rm-sticky-left-1">Sr. No</th>
-                                    <th className="rm-sticky-left-2">Compnay Name</th>
-                                    <th>Compnay No</th>
+                                    <th className="rm-sticky-left-2">Company Name</th>
+                                    <th>Company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
-                                    <th>Compnay Email</th>
+                                    <th>Company Email</th>
                                     <th>Assign Date</th>
                                 </tr>
                             </thead>
-                            {isLoading && dataStatus !== "All" ? (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="11" >
-                                            <div className="LoaderTDSatyle w-100" >
-                                                <ClipLoader
-                                                    color="lightgrey"
-                                                    loading
-                                                    size={30}
-                                                    aria-label="Loading Spinner"
-                                                    data-testid="loader"
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            ) : (
+                            
                                 <tbody>
                                     {generalData.map((company, index) => (
-                                        <tr key={index} >
-                                            <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
-                                            <td className="rm-sticky-left-2">{company["Company Name"]}</td>
+                                        <tr key={company._id}
+                                            onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                            onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                            onMouseUp={handleMouseUp} // End drag selection
+                                            id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
+                                        >
+                                            {fordesignation === "admin" && (
+                                                <td className='AEP-sticky-left-1'>
+                                                    <label className='table-check'>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedRows.includes(company._id)}
+                                                            onChange={(e) => handleCheckboxChange(company._id , e)}
+                                                        />
+                                                        <span class="table_checkmark"></span>
+                                                    </label>
+
+                                                </td>
+                                            )}
+                                            <td className="rm-sticky-left-1 AEP-sticky-left-2">{startIndex + index + 1}</td>
+                                            <td className="rm-sticky-left-2 AEP-sticky-left-3">{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
@@ -126,30 +152,40 @@ function EmployeeGeneralLeads({
                                                 />
                                             </td>
                                             <td>
-                                                <EmployeeStatusChange
-                                                    key={`${company["Company Name"]}-${index}`}
-                                                    companyName={company["Company Name"]}
-                                                    companyStatus={company.Status}
-                                                    id={company._id}
-                                                    refetch={refetch}
-                                                    mainStatus={dataStatus}
-                                                    setCompanyName={setCompanyName}
-                                                    setCompanyEmail={setCompanyEmail}
-                                                    setCompanyInco={setCompanyInco}
-                                                    setCompanyId={setCompanyId}
-                                                    setCompanyNumber={setCompanyNumber}
-                                                    setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                                                    setNewBdeName={setNewBdeName}
-                                                    isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
-                                                    setFormOpen={setFormOpen}
-                                                    setAddFormOpen={setAddFormOpen}
-                                                    cemail={company["Company Email"]}
-                                                    cindate={company["Incorporation Date"]}
-                                                    cnum={company["Company Number"]}
-                                                    ename={company.ename}
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                />
+                                                {fordesignation === "admin" ? (
+                                                    <div
+                                                        className={company.Status === "Untouched" ? "ep_untouched_status" :
+                                                            company.Status === "Busy" ? "ep_busy_status" :
+                                                                company.Status === "Not Picked Up" ? "ep_notpickedup_status" : null}>
+                                                        {company.Status}
+                                                    </div>
+                                                ) : (
+                                                    <EmployeeStatusChange
+                                                        key={`${company["Company Name"]}-${index}`}
+                                                        companyName={company["Company Name"]}
+                                                        companyStatus={company.Status}
+                                                        id={company._id}
+                                                        refetch={refetch}
+                                                        mainStatus={dataStatus}
+                                                        setCompanyName={setCompanyName}
+                                                        setCompanyEmail={setCompanyEmail}
+                                                        setCompanyInco={setCompanyInco}
+                                                        setCompanyId={setCompanyId}
+                                                        setCompanyNumber={setCompanyNumber}
+                                                        setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                                                        setNewBdeName={setNewBdeName}
+                                                        isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
+                                                        setFormOpen={setFormOpen}
+                                                        setAddFormOpen={setAddFormOpen}
+                                                        cemail={company["Company Email"]}
+                                                        cindate={company["Incorporation Date"]}
+                                                        cnum={company["Company Number"]}
+                                                        ename={company.ename}
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                    />
+                                                )}
                                             </td>
+
                                             <td>
                                                 <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                                     <p
@@ -189,7 +225,7 @@ function EmployeeGeneralLeads({
                                         </tr>
                                     ))}
                                 </tbody>
-                            )}
+                        
                             {generalData && generalData.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>

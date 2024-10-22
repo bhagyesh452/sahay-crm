@@ -26,8 +26,17 @@ import CircularProgress from '@mui/material/CircularProgress';
 import EmployeeForwardedLeads from "./EmployeeTabPanels/EmployeeForwardedLeads.jsx";
 import EmployeeNotInterestedLeads from "./EmployeeTabPanels/EmployeeNotInterestedLeads.jsx";
 import { jwtDecode } from "jwt-decode";
+import { FaCircleChevronRight } from "react-icons/fa6";
+import { FaCircleChevronLeft } from "react-icons/fa6";
+import { IoIosArrowDropleft } from "react-icons/io";
+import { MdOutlinePersonPin } from "react-icons/md";
+import { AiOutlineTeam } from "react-icons/ai";
+import { RiShareForwardFill } from "react-icons/ri";
+import Swal from "sweetalert2";
+import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
+import ForwardToBdmDialog from "../admin/ExtraComponent/ForwardToBdmDialog.jsx";
 
-function EmployeePanelCopy() {
+function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
     //const [maturedID, setMaturedID] = useState("");
     const [currentForm, setCurrentForm] = useState(null);
@@ -44,7 +53,7 @@ function EmployeePanelCopy() {
     const [employeeData, setEmployeeData] = useState([]);
     const [nowToFetch, setNowToFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 500;
+    const itemsPerPage = 50;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const { userId } = useParams();
@@ -66,6 +75,10 @@ function EmployeePanelCopy() {
     const [companyId, setCompanyId] = useState("");
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
+    const [newEmpData, setNewEmpData] = useState([])
+    const { id } = useParams();
+
+
     // Auto logout functionality :
     useEffect(() => {
         // Function to check token expiry and initiate logout if expired
@@ -120,25 +133,39 @@ function EmployeePanelCopy() {
 
 
     useEffect(() => {
-        document.title = `Employee-Sahay-CRM`;
+        if (userId && data.designation === "Sales Executive") {
+            document.title = `Employee-Sahay-CRM`;
+        } else if (userId && data.designation === "Sales Manager") {
+            document.title = `Floor-Manager-Sahay-CRM`;
+        } else {
+            document.title = `Admin-Sahay-CRM`;
+        }
     }, [data.ename]);
 
 
     const fetchData = async () => {
+        let fetchingId;
+        if (userId) {
+            fetchingId = userId
+        } else {
+            fetchingId = id
+        }
         try {
-            const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            const completeEmployess = await axios.get(`${secretKey}/employee/einfo`);
+            const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${fetchingId}`);
             // Set the retrieved data in the state
             const userData = response.data.data;
             setEmployeeName(userData.ename)
             //console.log(userData);
             setData(userData);
             setmoreFilteredData(userData);
+            setNewEmpData(completeEmployess.data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
 
-    console.log("userData" , data)
+
 
     useEffect(() => {
         fetchData();
@@ -223,7 +250,7 @@ function EmployeePanelCopy() {
                 });
                 return response.data; // Directly return the data
             },
-            staleTime:300000, // Cache for 1 minute
+            staleTime: 300000, // Cache for 1 minute
             cacheTime: 300000, // Cache for 1 minute
         }
     );
@@ -341,10 +368,207 @@ function EmployeePanelCopy() {
         }
     }
 
-    
+    // -------------------------------------------checkbox change funtions-----------------------
 
-    console.log("fetcgeheddata", fetchedData)
-    console.log("dataStatus", dataStatus)
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [startRowIndex, setStartRowIndex] = useState(null);
+    const [isSelecting, setIsSelecting] = useState(false);
+    const handleCheckboxChange = (id, event) => {
+        // If the id is 'all', toggle all checkboxes
+        if (id === "all") {
+            // If all checkboxes are already selected, clear the selection; otherwise, select all
+            setSelectedRows((prevSelectedRows) =>
+                prevSelectedRows.length === fetchedData.length
+                    ? []
+                    : fetchedData.map((row) => row._id)
+            );
+        } else {
+            // Toggle the selection status of the row with the given id
+            setSelectedRows((prevSelectedRows) => {
+                // If the Ctrl key is pressed
+                if (event.ctrlKey) {
+                    //console.log("pressed");
+                    const selectedIndex = fetchedData.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = fetchedData.findIndex((row) =>
+                        prevSelectedRows.includes(row._id)
+                    );
+
+                    // Select rows between the last selected row and the current row
+                    if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+                        const start = Math.min(selectedIndex, lastSelectedIndex);
+                        const end = Math.max(selectedIndex, lastSelectedIndex);
+                        const idsToSelect = fetchedData
+                            .slice(start, end + 1)
+                            .map((row) => row._id);
+
+                        return prevSelectedRows.includes(id)
+                            ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+                            : [...prevSelectedRows, ...idsToSelect];
+                    }
+                }
+
+                // Toggle the selection status of the row with the given id
+                return prevSelectedRows.includes(id)
+                    ? prevSelectedRows.filter((rowId) => rowId !== id)
+                    : [...prevSelectedRows, id];
+            });
+        }
+    };
+
+
+    const handleMouseDown = (id) => {
+        // Initiate drag selection
+        setStartRowIndex(fetchedData.findIndex((row) => row._id === id));
+    };
+
+    const handleMouseEnter = (id) => {
+        if (startRowIndex !== null) {
+            const endRowIndex = fetchedData.findIndex(row => row._id === id);
+
+            // Ensure startRowIndex and endRowIndex are valid and within array bounds
+            const validStartIndex = Math.min(startRowIndex, endRowIndex);
+            const validEndIndex = Math.max(startRowIndex, endRowIndex);
+
+            // Only proceed if valid indices
+            if (validStartIndex >= 0 && validEndIndex < fetchedData.length) {
+                const selectedRange = [];
+                for (let i = validStartIndex; i <= validEndIndex; i++) {
+                    if (fetchedData[i] && fetchedData[i]._id) {
+                        // Ensure that fetchedData[i] is not undefined and has an _id
+                        selectedRange.push(fetchedData[i]._id);
+                    }
+                }
+
+                setSelectedRows(selectedRange); // Update selected rows
+            }
+        }
+    };
+
+    const handleMouseUp = () => {
+        // End drag selection
+        setStartRowIndex(null);
+    };
+
+    // console.log("fordesignation", fordesignation)
+    // console.log("fetcgeheddata", fetchedData)
+    // console.log("dataStatus", dataStatus)
+
+    // -----------------------------assign leads functions---------------------------
+    const [openAssign, openchangeAssign] = useState(false);
+    const [selectedOption, setSelectedOption] = useState("direct");
+    const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
+
+    const functionOpenAssign = () => {
+        openchangeAssign(true);
+    };
+    const closepopupAssign = () => {
+        openchangeAssign(false);
+    };
+    const handleOptionChange = (event) => {
+        setSelectedOption(event.target.value);
+    };
+
+    const handleUploadData = async (e) => {
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+
+        const csvdata = employeeData
+            .filter((employee) => selectedRows.includes(employee._id))
+            .map((employee) => ({
+                ...employee,
+                //Status: "Untouched",
+                Remarks: "No Remarks Added",
+            }));
+        console.log(csvdata)
+
+        try {
+            Swal.fire({
+                title: 'Assigning...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            const response = await axios.post(`${secretKey}/company-data/assign-new`, {
+                ename: selectedOption === "extractedData" ? "Extracted" : newemployeeSelection,
+                data: csvdata,
+            });
+
+            Swal.close();
+            Swal.fire({
+                title: "Data Sent!",
+                text: "Data sent successfully!",
+                icon: "success",
+            });
+
+
+            setnewEmployeeSelection("Not Alloted");
+            closepopupAssign();
+            setSelectedRows([])
+            refetch()
+            //   setIsFilter(false)
+            //   setIsSearch(false)
+        } catch (error) {
+            console.error("Error updating employee data:", error);
+            Swal.close();
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to update employee data. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
+
+    // ----------------forward to bdm popup------------------
+    const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
+    const [bdmName, setBdmName] = useState("Not Alloted");
+    const handleCloseForwardBdmPopup = () => {
+        setOpenAssignToBdm(false);
+    };
+    const handleForwardDataToBDM = async (bdmName) => {
+        const data = employeeData.filter((employee) => selectedRows.includes(employee._id));
+        // console.log("data is:", data);
+        if (selectedRows.length === 0) {
+            Swal.fire("Please Select the Company to Forward", "", "Error");
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            return;
+        }
+        try {
+            Swal.fire({
+                title: 'Assigning...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+                data: data,
+                name: bdmName
+            });
+            Swal.close();
+            Swal.fire({
+                title: "Data Sent!",
+                text: "Data sent successfully!",
+                icon: "success",
+            });
+            refetch()
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            setSelectedRows([]);
+            //setdataStatus("All");
+           
+        } catch (error) {
+            console.log("error fetching data", error.message);
+            Swal.close();
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to update employee data. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
+    // console.log("selectedRows", selectedRows)
 
     return (
         <div>
@@ -355,39 +579,136 @@ function EmployeePanelCopy() {
                             <div className="container-xl">
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
-                                        <div className="btn-group mr-2">
-                                            <EmployeeAddLeadDialog
-                                                secretKey={secretKey}
-                                                fetchData={fetchData}
-                                                ename={data.ename}
-                                                refetch={refetch}
-                                            //fetchNewData={//fetchNewData}
-                                            />
-                                        </div>
-                                        <div className="btn-group" role="group" aria-label="Basic example">
-                                            {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
-                                            <button type="button"
-                                                className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                                onClick={() => setOpenFilterDrawer(true)}
-                                            >
-                                                <IoFilterOutline className='mr-1' /> Filter
-                                            </button>
-                                            <button type="button" className="btn mybtn"
-                                                onClick={functionopenpopup}
-                                            >
-                                                <MdOutlinePostAdd className='mr-1' /> Request Data
-                                            </button>
-                                            {open &&
-                                                <EmployeeRequestDataDialog
+                                        <div className="btn-group mr-2"  role="group" aria-label="Basic example">
+                                            {fordesignation === "admin" ? (
+                                                <>
+                                                    <button className="btn mybtn">
+                                                        <FaCircleChevronLeft className="ep_right_button" //onClick={handleChangeUrlPrev}  
+                                                        />
+                                                    </button>
+                                                    <button className="btn mybtn"><b>{data.ename}</b></button>
+                                                    <button className="btn mybtn"><FaCircleChevronRight className="ep_left_button" />  </button>
+                                                </>
+
+                                            ) : (
+                                                <EmployeeAddLeadDialog
                                                     secretKey={secretKey}
+                                                    fetchData={fetchData}
                                                     ename={data.ename}
-                                                    setOpenChange={openchange}
-                                                    open={open}
-                                                />}
+                                                    refetch={refetch}
+
+                                                />
+                                            )}
 
                                         </div>
+                                        <div className="btn-group mr-1" role="group" aria-label="Basic example">
+
+                                            <button onClick={() => {
+                                                window.location.pathname = `/managing-director/employees/${id}`
+                                            }}
+                                                type="button"
+                                                className="btn mybtn"
+                                            //onClick={functionopenpopup}
+                                            >
+                                                <MdOutlinePersonPin
+
+                                                    className='mr-1' /> Leads
+                                            </button>
+                                            {data.bdmWork && <button type="button" className="btn mybtn"
+                                                onClick={() => {
+                                                    window.location.pathname = `/managing-director/employeeleads/${id}`
+                                                }}
+                                            >
+                                                <AiOutlineTeam
+                                                    className='mr-1' /> Team Leads
+                                            </button>}
+                                        </div>
+                                        {fordesignation !== "admin" && (
+                                            <div className="btn-group" role="group" aria-label="Basic example">
+                                                {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
+                                                <button type="button"
+                                                    className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                                                    onClick={() => setOpenFilterDrawer(true)}
+                                                >
+                                                    <IoFilterOutline className='mr-1' /> Filter
+                                                </button>
+                                                <button type="button" className="btn mybtn"
+                                                    onClick={functionopenpopup}
+                                                >
+                                                    <MdOutlinePostAdd className='mr-1' /> Request Data
+                                                </button>
+                                                {open &&
+                                                    <EmployeeRequestDataDialog
+                                                        secretKey={secretKey}
+                                                        ename={data.ename}
+                                                        setOpenChange={openchange}
+                                                        open={open}
+                                                    />}
+
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="d-flex align-items-center">
+                                        {fordesignation === "admin" && (
+                                            <>
+                                                {selectedRows.length !== 0 && (
+                                                    <div className="selection-data mr-1" >
+                                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                                    </div>
+                                                )}
+                                                <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                    <button type="button" className="btn mybtn"
+                                                    //onClick={functionopenpopup}
+                                                    >
+                                                        <IoIosArrowDropleft className='mr-1' /> Back
+                                                    </button>
+                                                </div>
+                                                
+                                                <div className="btn-group" role="group" aria-label="Basic example">
+                                                    {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
+
+                                                    <button type="button" className="btn mybtn"
+                                                        onClick={() => { setOpenAssignToBdm(true) }}
+                                                    >
+                                                        <RiShareForwardFill className='mr-1' /> Forward To BDM
+                                                    </button>
+                                                    {
+                                                        openAssignToBdm && (
+                                                            <ForwardToBdmDialog
+                                                                openAssignToBdm={openAssignToBdm}
+                                                                handleCloseForwardBdmPopup={handleCloseForwardBdmPopup}
+                                                                handleForwardDataToBDM={handleForwardDataToBDM}
+                                                                setBdmName={setBdmName}
+                                                                bdmName={bdmName}
+                                                                newempData={newEmpData}
+                                                                id={fordesignation === "admin" ? id : userId}
+                                                                branchName={data.branchOffice}
+                                                            />
+                                                        )
+                                                    }
+                                                    <button type="button" className="btn mybtn"
+                                                        onClick={functionOpenAssign}
+                                                    >
+                                                        <MdOutlinePostAdd className='mr-1' /> Assign Leads
+                                                    </button>
+                                                    {
+                                                        openAssign && (
+                                                            <AssignLeads
+                                                                openAssign={openAssign}
+                                                                closepopupAssign={closepopupAssign}
+                                                                selectedOption={selectedOption}
+                                                                setSelectedOption={setSelectedOption}
+                                                                newemployeeSelection={newemployeeSelection}
+                                                                setnewEmployeeSelection={setnewEmployeeSelection}
+                                                                handleOptionChange={handleOptionChange}
+                                                                handleUploadData={handleUploadData}
+                                                                newempData={newEmpData}
+                                                            />
+                                                        )
+                                                    }
+                                                </div>
+                                            </>
+                                        )}
                                         <div class="input-icon ml-1">
                                             <span class="input-icon-addon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -430,12 +751,12 @@ function EmployeePanelCopy() {
                                                 className={`nav-link  ${dataStatus === "All" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
-                                            
+
                                                 <div>General</div>
                                                 <div className="no_badge">
                                                     {totalCounts.untouched}
                                                 </div>
-                                                
+
                                             </a>
                                         </li>
                                         <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
@@ -466,20 +787,22 @@ function EmployeePanelCopy() {
                                                 </span>
                                             </a>
                                         </li>
-                                        <li class="nav-item sales-nav-item data-heading">
-                                            <a
-                                                href="#Forwarded"
-                                                ref={forwardedTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handleDataStatusChange("Forwarded", forwardedTabRef)}
-                                                className={`nav-link ${dataStatus === "Forwarded" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
-                                                Forwarded
-                                                <span className="no_badge">
-                                                    {totalCounts.forwarded}
-                                                </span>
-                                            </a>
-                                        </li>
+                                        {data.designation !== "Sales Manager" &&
+                                            (<li class="nav-item sales-nav-item data-heading">
+                                                <a
+                                                    href="#Forwarded"
+                                                    ref={forwardedTabRef} // Attach the ref to the anchor tag
+                                                    onClick={() => handleDataStatusChange("Forwarded", forwardedTabRef)}
+                                                    className={`nav-link ${dataStatus === "Forwarded" ? "active item-act" : ""}`}
+                                                    data-bs-toggle="tab"
+                                                >
+                                                    Forwarded
+                                                    <span className="no_badge">
+                                                        {totalCounts.forwarded}
+                                                    </span>
+                                                </a>
+                                            </li>)
+                                        }
                                         <li class="nav-item sales-nav-item data-heading">
                                             <a
                                                 href="#NotInterested"
@@ -498,49 +821,63 @@ function EmployeePanelCopy() {
                                 </div>
                                 <div className="tab-content card-body">
                                     <div className={`tab-pane ${dataStatus === "All" ? "active" : ""}`} id="general">
-                                        {activeTabId === "All" && dataStatus === "All" && (<EmployeeGeneralLeads
-                                            generalData={fetchedData}
-                                            isLoading={isLoading}
-                                            refetch={refetch}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            dataStatus={dataStatus}
-                                            setdataStatus={setdataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            secretKey={secretKey}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            designation={data.designation}
-
-                                        />)}
+                                        {activeTabId === "All" && dataStatus === "All" && (
+                                            <EmployeeGeneralLeads
+                                                generalData={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setdataStatus={setdataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                secretKey={secretKey}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                            />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
-                                        {activeTabId === "Interested" && dataStatus === "Interested" && (<EmployeeInterestedLeads
-                                            interestedData={fetchedData}
-                                            isLoading={isLoading}
-                                            refetch={refetch}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            secretKey={secretKey}
-                                            dataStatus={dataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            setdataStatus={setdataStatus}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            fetchProjections={fetchProjections}
-                                            projectionData={projectionData}
-                                            handleOpenFormOpen={handleOpenFormOpen}
-                                            designation={data.designation}
-
-                                        />)}
+                                        {activeTabId === "Interested" && dataStatus === "Interested" && (
+                                            <EmployeeInterestedLeads
+                                                interestedData={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                fetchProjections={fetchProjections}
+                                                projectionData={projectionData}
+                                                handleOpenFormOpen={handleOpenFormOpen}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                            />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
                                         {activeTabId === "Matured" && (<EmployeeMaturedLeads
@@ -562,52 +899,70 @@ function EmployeePanelCopy() {
                                             fetchProjections={fetchProjections}
                                             projectionData={projectionData}
                                             designation={data.designation}
-
-
+                                            fordesignation={fordesignation}
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
+                                            selectedRows={selectedRows}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
-                                        {activeTabId === "Forwarded" && (<EmployeeForwardedLeads
-                                            forwardedLeads={fetchedData}
-                                            isLoading={isLoading}
-                                            refetch={refetch}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            secretKey={secretKey}
-                                            dataStatus={dataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            setdataStatus={setdataStatus}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            designation={data.designation}
-
-
-                                        />)}
+                                        {activeTabId === "Forwarded" && (
+                                            <EmployeeForwardedLeads
+                                                forwardedLeads={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                            />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
-                                        {activeTabId === "Not Interested" && (<EmployeeNotInterestedLeads
-                                            notInterestedLeads={fetchedData}
-                                            isLoading={isLoading}
-                                            refetch={refetch}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            secretKey={secretKey}
-                                            dataStatus={dataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            setdataStatus={setdataStatus}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            designation={data.designation}
-
-                                        />)}
+                                        {activeTabId === "Not Interested" && (
+                                            <EmployeeNotInterestedLeads
+                                                notInterestedLeads={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                            />)}
                                     </div>
                                 </div>
                             </div>

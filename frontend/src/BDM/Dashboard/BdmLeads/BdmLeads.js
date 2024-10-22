@@ -1203,12 +1203,12 @@ function BdmLeads() {
       const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
         Remarks,
       });
-      const response2 = await axios.post(
-        `${secretKey}/remarks/remarks-history/${cid}`,
-        {
-          Remarks,
-        }
-      );
+      // const response2 = await axios.post(
+      //   `${secretKey}/remarks/remarks-history/${cid}`,
+      //   {
+      //     Remarks,
+      //   }
+      // );
 
       // Check if the API call was successful
       if (response.status === 200) {

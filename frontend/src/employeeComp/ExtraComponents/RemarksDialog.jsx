@@ -296,11 +296,13 @@ const RemarksDialog = ({
   bdeName,
   mainRemarks,
   refetch,
-  designation
+  designation,
+  bdmName
 }) => {
   const [open, setOpen] = useState(false);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
   const [changeRemarks, setChangeRemarks] = useState(mainRemarks);
+  const [remarksHistoryFromResponse1, setRemarksHistoryFromResponse1] = useState([]); // Holds data from response1
 
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => setChangeRemarks(value), 300),
@@ -310,11 +312,17 @@ const RemarksDialog = ({
   // Fetch remarks history for the specific company
   const fetchRemarksHistory = async () => {
     try {
-      const response = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
-      setFilteredRemarks(response.data.reverse());
+      //const response1 = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
+      const response = await axios.get(`${secretKey}/remarks/remarks-history-complete/${companyId}`);
+      // if (response1.data.length !== 0) {
+      //   setRemarksHistoryFromResponse1(response1.data);
+      // }
+      setFilteredRemarks(response.data);
+      //console.log(response1.data)
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
+
   };
 
   // Function to open the modal and fetch remarks
@@ -362,8 +370,9 @@ const RemarksDialog = ({
 
   const handleDeleteRemarks = async (remarksId, remarksValue) => {
     const mainRemarks = remarksValue === changeRemarks;
+    console.log("companyId",companyId)
     try {
-      await axios.delete(`${secretKey}/remarks/remarks-history/${remarksId}`);
+      await axios.delete(`${secretKey}/remarks/remarks-history/${remarksId}?companyId=${companyId}`);
       if (mainRemarks) {
         await axios.delete(`${secretKey}/remarks/remarks-delete/${companyId}`);
       }
@@ -379,12 +388,12 @@ const RemarksDialog = ({
   // Render button based on bdmAcceptStatus and company status
   const renderButton = () => {
     if (
-     (remarksKey !== "bdmRemarks") && (bdmAcceptStatus !== "Accept" || 
-      ["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
+      (remarksKey !== "bdmRemarks") && (bdmAcceptStatus !== "Accept" ||
+        ["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
     ) {
       return (
         <button
-          onClick={handleOpenModal} 
+          onClick={handleOpenModal}
           style={{ border: "transparent", background: "none" }}
         >
           <MdOutlineEdit
@@ -395,8 +404,8 @@ const RemarksDialog = ({
     }
 
     if (
-      (remarksKey === "bdmRemarks")||(bdmAcceptStatus === "Accept" &&
-      !["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
+      (remarksKey === "bdmRemarks") || (bdmAcceptStatus === "Accept" &&
+        !["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
     ) {
       return (
         <button
@@ -418,47 +427,136 @@ const RemarksDialog = ({
     return null;
   };
 
+  function formatDateTimeForYesterday(dateInput) {
+    const createdAt = new Date(dateInput);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    // Check if the date is today
+    if (createdAt.toDateString() === today.toDateString()) {
+      return createdAt.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      }); // Time in 12-hour format
+    }
+    // Check if the date is yesterday
+    else if (createdAt.toDateString() === yesterday.toDateString()) {
+      return "Yesterday";
+    }
+    // If it's older than yesterday, return the date
+    else {
+      return createdAt.toLocaleDateString();
+    }
+  }
+
   return (
     <div>
       {/* Conditionally rendered button based on the status */}
       {renderButton()}
 
       {/* Bootstrap Modal */}
-      <div className={`modal fade ${open ? 'show' : ''}`} style={{ display: open ? 'block' : 'none' }} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="salesRemarks" aria-hidden="true">
-        <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered" role="document">
+      <div className={`modal fade ${open ? 'show' : ''}`} style={{ display: open ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="salesRemarks">{currentCompanyName}'s Remarks</h5>
-              <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close">
-                
+              <h5 className="modal-title text-truncate" title={currentCompanyName}>{currentCompanyName}'s Remarks</h5>
+              <button type="button" className="close" onClick={handleCloseModal} aria-label="Close" style={{ backgroundColor: "transparent", border: "none" }}>
+                <IoMdClose color="primary" />
               </button>
             </div>
             <div className="modal-body">
               <div className="remarks-content">
-                {filteredRemarks.length !== 0 ? (
-                  filteredRemarks.map((historyItem) => (
-                    <div className="col-sm-12" key={historyItem._id}>
-                      <div className="card RemarkCard position-relative">
-                        <div className="d-flex justify-content-between">
-                          <div className="reamrk-card-innerText">
-                            <pre className="remark-text">{historyItem[remarksKey]}</pre>
-                          </div>
-                          {isEditable && (
-                            <div className="dlticon">
-                              <MdDelete
-                                style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
-                                onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
-                              />
+                {/* {remarksHistoryFromResponse1.length > 0 && (
+                  remarksHistoryFromResponse1.map((historyItem) => {
+                    if (isEditable && historyItem.bdeName === bdeName) {
+                      return (
+                        <div className="col-sm-12" key={historyItem._id}>
+                          <div className="card RemarkCard position-relative">
+                            <div className="d-flex justify-content-between">
+                              <div className="reamrk-card-innerText">
+                                <pre className="remark-text">{historyItem[remarksKey]}</pre>
+                              </div>
+                              {isEditable &&  (
+                                <div className="dlticon">
+                                  <MdDelete
+                                    style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
+                                    onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
+                                  />
+                                </div>
+                              )}
                             </div>
-                          )}
+                            <div className="d-flex card-dateTime justify-content-between">
+                              <div className="date">
+                                {historyItem.date}
+                              </div>
+                              <div className="date">
+                                By: {historyItem.bdeName}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="d-flex card-dateTime justify-content-between">
-                          <div className="date">{historyItem.date}</div>
-                          <div className="time">{historyItem.time}</div>
+                      )
+                    }
+
+                  })
+                )} */}
+                {filteredRemarks[0]?.remarks?.length > 0 ||
+                  filteredRemarks[0]?.serviceWiseRemarks?.length > 0 ? (
+                  filteredRemarks[0]?.remarks.slice().map((historyItem) => {
+                    if (isEditable && historyItem.bdeName === bdeName) {
+                      return (
+                        <div className="col-sm-12" key={historyItem._id}>
+                          <div className="card RemarkCard position-relative">
+                            <div className="d-flex justify-content-between">
+                              <div className="reamrk-card-innerText">
+                                <pre className="remark-text">{historyItem[remarksKey]}</pre>
+                              </div>
+                              {isEditable && (
+                                <div className="dlticon">
+                                  <MdDelete
+                                    style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
+                                    onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                            <div className="d-flex card-dateTime justify-content-between">
+                              <div className="date">
+                                {formatDateTimeForYesterday(historyItem.addedOn)}
+                              </div>
+                              <div className="date">
+                                By: {historyItem.employeeName} ({historyItem.designation})
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))
+                      );
+                    }
+                    // Condition for non-Editable mode: bdmName should match
+                    if (!isEditable && historyItem.bdmName === bdmName) {
+                      return (
+                        <div className="col-sm-12" key={historyItem._id}>
+                          <div className="card RemarkCard position-relative">
+                            <div className="d-flex justify-content-between">
+                              <div className="reamrk-card-innerText">
+                                <pre className="remark-text">{historyItem[remarksKey]}</pre>
+                              </div>
+                            </div>
+                            <div className="d-flex card-dateTime justify-content-between">
+                              <div className="date">
+                                {formatDateTimeForYesterday(historyItem.addedOn)}
+                              </div>
+                              <div className="date">
+                                By: {historyItem.employeeName} ({historyItem.designation})
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                  })
                 ) : (
                   <div className="text-center overflow-hidden">No Remarks History</div>
                 )}

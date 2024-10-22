@@ -29,7 +29,14 @@ function EmployeeMaturedLeads({
     secretKey,
     handleShowCallHistory,
     fetchProjections,
-    projectionData
+    projectionData,
+    fordesignation,
+    setSelectedRows,
+    handleCheckboxChange,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp,
+    selectedRows,
 
 }) {
 
@@ -63,23 +70,38 @@ function EmployeeMaturedLeads({
 
 
     return (
-        <div className="sales-panels-main">
+        <div className="sales-panels-main" onMouseUp={handleMouseUp}>
             {!formOpen && !addFormOpen && (
                 <>
-                    <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap" style={{width:"2200px"}}>
+                    <div className="table table-responsive table-style-3 m-0" onMouseUp={handleMouseUp}>
+                        <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }}>
                             <thead>
                                 <tr className="tr-sticky">
+                                    {fordesignation === "admin" &&
+                                        (
+                                            <th>
+                                                <label className='table-check'>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            selectedRows.length === maturedLeads.length
+                                                        }
+                                                        onChange={(e) => handleCheckboxChange("all", e)}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+                                            </th>
+                                        )}
                                     <th className="rm-sticky-left-1">Sr. No</th>
-                                    <th className="rm-sticky-left-2">Compnay Name</th>
-                                    <th>Compnay No</th>
+                                    <th className="rm-sticky-left-2">Company Name</th>
+                                    <th>Company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
-                                    <th>Compnay Email</th>
+                                    <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>Booking Date</th>
                                     <th>Booking Publish Date</th>
@@ -105,7 +127,36 @@ function EmployeeMaturedLeads({
                             ) : (
                                 <tbody>
                                     {maturedLeads.map((company, index) => (
-                                        <tr   key={index} >
+                                        <tr key={company._id}
+                                            style={{ border: "1px solid #ddd" }}
+                                            onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                            onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                            onMouseUp={handleMouseUp} // End drag selection
+                                            id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows 
+                                            >
+                                            {fordesignation === "admin" && (
+                                                <td
+                                                    style={{
+                                                        position: "sticky",
+                                                        left: 0,
+                                                        zIndex: 1,
+                                                        background: "white",
+                                                    }}>
+                                                    <label className='table-check'>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedRows.includes(
+                                                                company._id
+                                                            )}
+                                                            onChange={(e) =>
+                                                                handleCheckboxChange(company._id, e)
+                                                            }
+                                                            onMouseUp={handleMouseUp}
+                                                        />
+                                                        <span class="table_checkmark"></span>
+                                                    </label>
+                                                </td>
+                                            )}
                                             <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
                                             <td className="rm-sticky-left-2">{company["Company Name"]}</td>
                                             <td>
@@ -133,10 +184,10 @@ function EmployeeMaturedLeads({
                                                 />
                                             </td>
                                             <td >
-                                                <div className= "dfault_approved-status">
-                                                {company.Status}
+                                                <div className="dfault_approved-status">
+                                                    {company.Status}
                                                 </div>
-                                                
+
                                                 {/* <EmployeeStatusChange
                                                     key={`${company["Company Name"]}-${index}`}
                                                     companyName={company["Company Name"]}
@@ -162,7 +213,7 @@ function EmployeeMaturedLeads({
                                                 /> */}
                                             </td>
                                             <td>
-                                                <div  key={company._id}  className='d-flex align-items-center justify-content-between w-100'>
+                                                <div key={company._id} className='d-flex align-items-center justify-content-between w-100'>
                                                     <p
                                                         className="rematkText text-wrap m-0"
                                                         title={company.Remarks}
@@ -250,40 +301,45 @@ function EmployeeMaturedLeads({
                             </div>
                         </div>
                     )}
-                </>)}
-            {formOpen && (
-                <>
-                    <RedesignedForm
-                        // matured={true}
-                        // companysId={companyId}
-                        setDataStatus={setdataStatus}
-                        setFormOpen={setFormOpen}
-                        companysName={companyName}
-                        companysEmail={companyEmail}
-                        companyNumber={companyNumber}
-                        setNowToFetch={setNowToFetch}
-                        companysInco={companyInco}
-                        employeeName={ename}
-                        employeeEmail={email}
-                    />
-                </>
-            )}
-            {addFormOpen && (
-                <>
-                    {" "}
-                    <AddLeadForm
-                        employeeEmail={email}
-                        newBdeName={newBdeName}
-                        isDeletedEmployeeCompany={deletedEmployeeStatus}
-                        setFormOpen={setAddFormOpen}
-                        companysName={companyName}
-                        setNowToFetch={setNowToFetch}
-                        setDataStatus={setdataStatus}
-                        employeeName={ename}
-                    />
-                </>
-            )}
-        </div>
+                </>)
+            }
+            {
+                formOpen && (
+                    <>
+                        <RedesignedForm
+                            // matured={true}
+                            // companysId={companyId}
+                            setDataStatus={setdataStatus}
+                            setFormOpen={setFormOpen}
+                            companysName={companyName}
+                            companysEmail={companyEmail}
+                            companyNumber={companyNumber}
+                            setNowToFetch={setNowToFetch}
+                            companysInco={companyInco}
+                            employeeName={ename}
+                            employeeEmail={email}
+                        />
+                    </>
+                )
+            }
+            {
+                addFormOpen && (
+                    <>
+                        {" "}
+                        <AddLeadForm
+                            employeeEmail={email}
+                            newBdeName={newBdeName}
+                            isDeletedEmployeeCompany={deletedEmployeeStatus}
+                            setFormOpen={setAddFormOpen}
+                            companysName={companyName}
+                            setNowToFetch={setNowToFetch}
+                            setDataStatus={setdataStatus}
+                            employeeName={ename}
+                        />
+                    </>
+                )
+            }
+        </div >
     );
 }
 

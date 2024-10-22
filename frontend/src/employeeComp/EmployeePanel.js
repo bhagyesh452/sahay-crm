@@ -569,6 +569,7 @@ function EmployeePanel() {
       console.error("Error fetching remarks history:", error);
     }
   };
+  console.log("filteredRemarks" , filteredRemarks)
 
   //console.log(projectionData)
 
@@ -1192,15 +1193,17 @@ function EmployeePanel() {
       // Make an API call to update the employee status in the database
       const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
         Remarks,
+        currentCompanyName,
+        bdeName
       });
-      const response2 = await axios.post(
-        `${secretKey}/remarks/remarks-history/${cid}`,
-        {
-          Remarks,
-          bdeName,
-          currentCompanyName
-        }
-      );
+      // const response2 = await axios.post(
+      //   `${secretKey}/remarks/remarks-history/${cid}`,
+      //   {
+      //     Remarks,
+      //     bdeName,
+      //     currentCompanyName
+      //   }
+      // );
 
       // Check if the API call was successful
       if (response.status === 200) {

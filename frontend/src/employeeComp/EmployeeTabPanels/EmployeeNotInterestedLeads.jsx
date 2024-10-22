@@ -28,6 +28,14 @@ function EmployeeNotInterestedLeads({
     ename,
     email,
     handleShowCallHistory,
+    designation,
+    fordesignation,
+    setSelectedRows,
+    handleCheckboxChange,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp,
+    selectedRows,
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -58,35 +66,87 @@ function EmployeeNotInterestedLeads({
     };
 
     return (
-        <div className="sales-panels-main">
+        <div className="sales-panels-main" onMouseUp={handleMouseUp}>
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive table-style-3 m-0">
-                        <table className="table table-vcenter table-nowrap" style={{width:"2200px"}}>
+                        <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }}>
                             <thead>
                                 <tr className="tr-sticky">
+                                    {fordesignation === "admin" &&
+                                        (
+                                            <th>
+                                                <label className='table-check'>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            selectedRows.length === notInterestedLeads.length
+                                                        }
+                                                        onChange={(e) => handleCheckboxChange("all", e)}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+                                            </th>
+                                        )}
                                     <th className="rm-sticky-left-1">Sr. No</th>
-                                    <th className="rm-sticky-left-2">Compnay Name</th>
-                                    <th>Compnay No</th>
+                                    <th className="rm-sticky-left-2">Company Name</th>
+                                    <th>Company No</th>
                                     <th>Call History</th>
                                     <th>BDE Status</th>
                                     <th>BDE Remarks</th>
-                                    <th>BDM FORWARDED</th>
-                                    <th>BDM Name</th>
-                                    <th>BDM Status</th>
-                                    <th>BDM Remarks</th>
+                                    {designation !== "Sales Manager" && (
+                                        <>
+                                            <th>BDM FORWARDED</th>
+                                            <th>BDM Name</th>
+                                            <th>BDM Status</th>
+                                            <th>BDM Remarks</th>
+                                        </>
+                                    )}
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
-                                    <th>Compnay Email</th>
+                                    <th>Company Email</th>
                                     <th>Assign Date</th>
-
                                 </tr>
                             </thead>
 
                             <tbody>
                                 {notInterestedLeads.map((company, index) => (
-                                    <tr key={index}  >
+                                    <tr key={company._id}
+                                        // className={
+                                        //     fordesignation === "admin" && selectedRows && selectedRows.includes(company._id)
+                                        //         ? "selected"
+                                        //         : ""
+                                        // }
+                                        style={{ border: "1px solid #ddd" }}
+                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                        onMouseUp={handleMouseUp} // End drag selection
+                                        id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
+                                    >
+                                         {fordesignation === "admin" && (
+                                            <td
+                                                style={{
+                                                    position: "sticky",
+                                                    left: 0,
+                                                    zIndex: 1,
+                                                    background: "white",
+                                                }}>
+                                                <label className='table-check'>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRows.includes(
+                                                            company._id
+                                                        )}
+                                                        onChange={(e) =>
+                                                            handleCheckboxChange(company._id, e)
+                                                        }
+                                                        onMouseUp={handleMouseUp}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+                                            </td>
+                                        )}
                                         <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
                                         <td className="rm-sticky-left-2">{company["Company Name"]}</td>
                                         <td>
@@ -166,45 +226,47 @@ function EmployeeNotInterestedLeads({
                                                 />
                                             </div>
                                         </td>
-                                        <td>
-                                            {company.bdmAcceptStatus !== "NotForwarded" ? "Yes" : "No"}
-                                        </td>
-                                        <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.bdmName : "-"}</td>
-                                        <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.Status : "-"}</td>
-                                        <td>{company.bdmAcceptStatus !== "NotForwarded" ?
-                                            <div key={company._id}
-                                                style={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "space-between",
-                                                    width: "100px",
-                                                }}>
-                                                <p
-                                                    className="rematkText text-wrap m-0"
-                                                    title={company.remarks}
-                                                >
-                                                    {!company.bdmRemarks
-                                                        ? "No Remarks"
-                                                        : company.bdmRemarks}
-                                                </p>
-                                                <RemarksDialog
-                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                    currentCompanyName={company["Company Name"]}
-                                                    //filteredRemarks={filteredRemarks}
-                                                    companyId={company._id}
-                                                    remarksKey="bdmRemarks" // For BDM remarks
-                                                    isEditable={false} // Disable editing
-                                                    secretKey={secretKey}
-                                                    //fetchRemarksHistory={fetchRemarksHistory}
-                                                    bdeName={company.ename}
-                                                    fetchNewData={refetch}
-                                                    bdmName={company.bdmName}
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                    companyStatus={company.Status}
-                                                    mainRemarks={company.Remarks}
-                                                //remarksHistory={remarksHistory} // pass your remarks history data
-                                                />
-                                            </div> : "-"}</td>
+                                        {designation !== "Sales Manager" && (<>
+                                            <td>
+                                                {company.bdmAcceptStatus !== "NotForwarded" ? "Yes" : "No"}
+                                            </td>
+                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.bdmName : "-"}</td>
+                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.Status : "-"}</td>
+                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ?
+                                                <div key={company._id}
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "space-between",
+                                                        width: "100px",
+                                                    }}>
+                                                    <p
+                                                        className="rematkText text-wrap m-0"
+                                                        title={company.remarks}
+                                                    >
+                                                        {!company.bdmRemarks
+                                                            ? "No Remarks"
+                                                            : company.bdmRemarks}
+                                                    </p>
+                                                    <RemarksDialog
+                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                        currentCompanyName={company["Company Name"]}
+                                                        //filteredRemarks={filteredRemarks}
+                                                        companyId={company._id}
+                                                        remarksKey="bdmRemarks" // For BDM remarks
+                                                        isEditable={false} // Disable editing
+                                                        secretKey={secretKey}
+                                                        //fetchRemarksHistory={fetchRemarksHistory}
+                                                        bdeName={company.ename}
+                                                        fetchNewData={refetch}
+                                                        bdmName={company.bdmName}
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                        companyStatus={company.Status}
+                                                        mainRemarks={company.Remarks}
+                                                    //remarksHistory={remarksHistory} // pass your remarks history data
+                                                    />
+                                                </div> : "-"}</td>
+                                        </>)}
                                         <td>
                                             {formatDateNew(
                                                 company["Company Incorporation Date  "]

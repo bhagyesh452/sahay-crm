@@ -333,6 +333,8 @@ router.post('/addemployee/hrside', async (req, res) => {
       gender,
       bdmWork
     } = req.body;
+    console.log("adddedOn" , AddedOn)
+    const newAddedOn = new Date(AddedOn);
     console.log("Received request for adding employee:", req.body);
     // Step 1: Find the record of the last generated employee ID
     let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
@@ -380,12 +382,14 @@ router.post('/addemployee/hrside', async (req, res) => {
       reportingManager,
       password,
       jdate,
-      AddedOn,
+      AddedOn: newAddedOn,
       targetDetails,
       bdmWork,
       salary,
       gender
     });
+
+  console.log("newemployee" , newEmployee);
 
     // Step 5: Save the new employee to the database
     const result = await newEmployee.save();
