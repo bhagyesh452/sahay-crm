@@ -26,11 +26,8 @@ const EmployeeStatusChange = ({
   bdmName,
   bdmAcceptStatus,
   handleFormOpen,
-<<<<<<< HEAD
   teamData,
   isBdmStatusChange
-=======
->>>>>>> 2d9c5a45bebc9bdf50b0e9806d9fa930a6ae9955
 }) => {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -194,8 +191,8 @@ const EmployeeStatusChange = ({
             return "ready_to_submit";
           case "FollowUp":
             return "clnt_no_repond_status";
-            case "Not Interested":
-              return "inprogress-status";
+          case "Not Interested":
+            return "inprogress-status";
           default:
             return "";
         }
@@ -220,7 +217,7 @@ const EmployeeStatusChange = ({
             return "clnt_no_repond_status";
           case "Interested":
             return "ready_to_submit";
-          
+
           default:
             return "";
         }
@@ -255,10 +252,10 @@ const EmployeeStatusChange = ({
 
 
   return (<>
-    <section className="rm_status_dropdown" 
-    style={{
-      width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
-    }}>
+    <section className="rm_status_dropdown"
+      style={{
+        width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
+      }}>
       <div className={
         mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :
           `dropdown custom-dropdown status_dropdown ${statusClass}`}>
@@ -470,13 +467,6 @@ const EmployeeStatusChange = ({
       setStatusClass={setStatusClass}
       companyStatus={companyStatus}
     />
-<<<<<<< HEAD
-
-
-
-
-=======
->>>>>>> 2d9c5a45bebc9bdf50b0e9806d9fa930a6ae9955
   </>);
 };
 
