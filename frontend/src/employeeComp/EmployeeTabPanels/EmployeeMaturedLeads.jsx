@@ -93,8 +93,8 @@ function EmployeeMaturedLeads({
                                             </th>
                                         )}
                                     <th className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Compnay Name</th>
-                                    <th>Compnay No</th>
+                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>company Name</th>
+                                    <th>company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
