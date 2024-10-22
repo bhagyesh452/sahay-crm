@@ -57,6 +57,7 @@ function EmployeeTeamLeadsCopy() {
     const [companyId, setCompanyId] = useState("");
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false);
     const [newBdeName, setNewBdeName] = useState("");
+    const [teamData, setTeamData] = useState([]);
 
     const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
@@ -94,6 +95,44 @@ function EmployeeTeamLeadsCopy() {
         }
     };
 
+    const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename) => {
+        setCompanyName(cname);
+        setCompanyEmail(cemail);
+        setCompanyInco(cindate);
+        setCompanyId(employeeId);
+        setCompanyNumber(cnum);
+        setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+        setNewBdeName(ename)
+        if (!isDeletedEmployeeCompany) {
+            console.log("formchal")
+            setFormOpen(true);
+        } else {
+            console.log("addleadfromchal")
+            setAddFormOpen(true)
+        }
+    };
+
+    const handleCloseFormOpen = () => {
+        setFormOpen(false);
+        setAddFormOpen(false);
+        setCompanyName("");
+        setCompanyEmail("");
+        setCompanyInco("");
+        setCompanyId("");
+        setCompanyNumber("");
+        setDeletedEmployeeStatus("")
+        setNewBdeName("")
+        if (activeTabId === "Interested" && interestedTabRef.current) {
+            interestedTabRef.current.click(); // Trigger the Interested tab click
+        } else if (activeTabId === "Matured" && maturedTabRef.current) {
+            maturedTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "General" && allTabRef.current) {
+            allTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
+            notInterestedTabRef.current.click(); // Trigger the Matured tab click
+        }
+    };
+
     const fetchData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
@@ -107,6 +146,21 @@ function EmployeeTeamLeadsCopy() {
             console.error("Error fetching data:", error.message);
         }
     };
+
+    const fetchTeamLeadsData = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${employeeName}`);
+            setTeamData(response.data);
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
+    useEffect(()=>{
+        if (employeeName) {
+            fetchTeamLeadsData();
+        }
+    }, [employeeName]);
 
     const fetchProjections = async () => {
         try {
@@ -125,7 +179,7 @@ function EmployeeTeamLeadsCopy() {
                     status: dataStatus,
                     companyName: searchQuery, // Send the search query as a parameter
                     page: currentPage + 1, // Send current page for pagination
-                    limit: 500, // Set the limit of records per page
+                    limit: itemsPerPage, // Set the limit of records per page
                 }
             });
             return res;
@@ -239,10 +293,7 @@ function EmployeeTeamLeadsCopy() {
                                             </span>
                                             <input
                                                 value={searchQuery}
-                                                onChange={(e) => {
-                                                    setSearchQuery(e.target.value);
-                                                    // handleSearch(e.target.value);
-                                                }}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
                                                 className="form-control search-cantrol mybtn"
                                                 placeholder="Search…"
                                                 type="text"
@@ -381,7 +432,8 @@ function EmployeeTeamLeadsCopy() {
                                             handleShowCallHistory={handleShowCallHistory}
                                             fetchProjections={fetchProjections}
                                             projectionData={projectionData}
-                                        // handleOpenFormOpen={handleOpenFormOpen}
+                                            teamData={teamData}
+                                            handleOpenFormOpen={handleOpenFormOpen}
                                         />)}
                                     </div>
 
@@ -417,7 +469,7 @@ function EmployeeTeamLeadsCopy() {
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
                                             endIndex={endIndex}
-                                            totalPages={totalPages}
+                                            totalPages={teamLeadsData?.data?.totalPages}
                                             setCurrentPage={setCurrentPage}
                                             currentPage={currentPage}
                                             dataStatus={dataStatus}
@@ -441,15 +493,15 @@ function EmployeeTeamLeadsCopy() {
                 />
             ) : formOpen ? (
                 <RedesignedForm
-                // isEmployee={true}
-                // companysName={companyName}
-                // companysEmail={companyEmail}
-                // companyNumber={companyNumber}
-                // setNowToFetch={refetch}
-                // companysInco={companyInco}
-                // employeeName={data.ename}
-                // employeeEmail={data.email}
-                // handleCloseFormOpen={handleCloseFormOpen}
+                    isEmployee={true}
+                    companysName={companyName}
+                    companysEmail={companyEmail}
+                    companyNumber={companyNumber}
+                    setNowToFetch={refetchTeamLeads}
+                    companysInco={companyInco}
+                    employeeName={data.ename}
+                    employeeEmail={data.email}
+                    handleCloseFormOpen={handleCloseFormOpen}
                 />
             ) : null
             }

@@ -10,6 +10,12 @@ import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import RemarksDialog from '../ExtraComponents/RemarksDialog';
 import ProjectionDialog from '../ExtraComponents/ProjectionDialog';
+import LeadFormPreview from '../../admin/LeadFormPreview';
+import { Drawer } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { IconEye } from "@tabler/icons-react";
+import { IconButton } from "@mui/material";
+import axios from "axios";
 
 function TeamLeadsMatured({
     secretKey,
@@ -30,6 +36,28 @@ function TeamLeadsMatured({
     fetchProjections,
     projectionData
 }) {
+
+    const [formOpen, setFormOpen] = useState(false);
+    const [companyData, setCompanyData] = useState(null);
+    const [companyId, setCompanyId] = useState("");
+
+    const fetchRedesignedFormData = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+            const data = response.data.find((obj) => obj.company === companyId);
+            console.log("Company Data :", data);
+            setCompanyData(data);
+        } catch (error) {
+            console.error("Error fetching data:", error.message);
+        }
+    };
+
+    useEffect(() => {
+        //console.log("Matured ID Changed", maturedID);
+        if (companyId) {
+            fetchRedesignedFormData();
+        }
+    }, [companyId]);
 
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -197,10 +225,7 @@ function TeamLeadsMatured({
                                     <td>
                                         <div className="d-flex align-items-center justify-content-between wApp">
                                             <div>{company["Company Number"]}</div>
-                                            <a
-                                                target="_blank"
-                                                href={`https://wa.me/91${company["Company Number"]}`}
-                                            >
+                                            <a target="_blank" href={`https://wa.me/91${company["Company Number"]}`}>
                                                 <FaWhatsapp />
                                             </a>
                                         </div>
@@ -216,7 +241,11 @@ function TeamLeadsMatured({
                                             color="grey"
                                         />
                                     </td>
-                                    <td>{company.Status}</td>
+                                    <td>
+                                        <div className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                            {company.bdeOldStatus}
+                                        </div>
+                                    </td>
                                     <td>
                                         <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                             <p className="rematkText text-wrap mb-0 mr-1" title={company.Remarks}>
@@ -227,7 +256,7 @@ function TeamLeadsMatured({
                                                 currentCompanyName={company["Company Name"]}
                                                 //remarksHistory={remarksHistory} // pass your remarks history data
                                                 companyId={company._id}
-                                                remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                remarksKey="bdmRemarks" // Adjust this based on the type of remarks (general or bdm)
                                                 isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
                                                 bdmAcceptStatus={company.bdmAcceptStatus}
                                                 companyStatus={company.Status}
@@ -239,14 +268,57 @@ function TeamLeadsMatured({
                                             />
                                         </div>
                                     </td>
-                                    <td>{company.Status}</td>
-                                    <td>{company.bdmRemarks}</td>
+                                    <td>
+                                        <div className='dfault_approved-status'>
+                                            {company.Status}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
+                                            <p className="rematkText text-wrap mb-0 mr-1" title={company.bdmRemarks}>
+                                                {!company["bdmRemarks"] ? "No Remarks" : company.bdmRemarks}
+                                            </p>
+                                            <RemarksDialog
+                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                currentCompanyName={company["Company Name"]}
+                                                //remarksHistory={remarksHistory} // pass your remarks history data
+                                                companyId={company._id}
+                                                remarksKey="bdmRemarks" // Adjust this based on the type of remarks (general or bdm)
+                                                isEditable={company.bdmAcceptStatus === "Accept"} // Allow editing if status is not "Accept"
+                                                bdmAcceptStatus={company.bdmAcceptStatus}
+                                                companyStatus={company.Status}
+                                                secretKey={secretKey}
+                                                //fetchRemarksHistory={fetchRemarksHistory}
+                                                bdeName={company.ename}
+                                                refetch={refetchTeamLeads}
+                                                mainRemarks={company.Remarks}
+                                            />
+                                        </div>
+                                    </td>
                                     <td>{formatDateNew(company["Company Incorporation Date  "])}</td>
                                     <td>{company["City"]}</td>
                                     <td>{company["State"]}</td>
                                     <td>{company["Company Email"]}</td>
                                     <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                    <td>-</td>
+                                    <td>
+                                        <IconButton style={{ marginRight: "5px" }}
+                                            onClick={() => {
+                                                setCompanyId(company._id);
+                                                setTimeout(() => {
+                                                    setFormOpen(true);
+                                                }, 1000);
+                                            }}
+                                        >
+                                            <IconEye
+                                                style={{
+                                                    width: "14px",
+                                                    height: "14px",
+                                                    color: "#d6a10c",
+                                                    cursor: "pointer",
+                                                }}
+                                            />
+                                        </IconButton>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -302,6 +374,32 @@ function TeamLeadsMatured({
                     employeeName={ename}
                 />
             )} */}
+
+            {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
+            <Drawer anchor="right" open={formOpen}>
+                <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
+                    <div className="LeadFormPreviewDrawar-header">
+                        <div className="Container">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h2 className="title m-0 ml-1">
+                                        {companyData ? companyData["Company Name"] : "Company Name"}
+                                    </h2>
+                                </div>
+                                <div>
+                                    <IconButton onClick={() => setFormOpen(false)}>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <LeadFormPreview setOpenAnchor={setFormOpen} currentLeadForm={companyData} />
+                    </div>
+                </div>
+            </Drawer>
+
         </div>
     )
 }

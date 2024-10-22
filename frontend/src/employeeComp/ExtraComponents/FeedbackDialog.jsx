@@ -8,7 +8,7 @@ import { styled } from "@mui/material/styles";
 import Slider, { SliderThumb } from "@mui/material/Slider";
 
 
-function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoints }) {
+function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoints, refetchTeamLeads }) {
     const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false);
 
     const handleViewFeedback = () => {

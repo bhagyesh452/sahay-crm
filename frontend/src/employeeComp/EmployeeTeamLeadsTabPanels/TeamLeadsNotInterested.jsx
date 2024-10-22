@@ -27,6 +27,24 @@ function TeamLeadsNotInterested({
     designation,
     handleShowCallHistory
 }) {
+
+    const nextPage = () => {
+        if (currentPage < totalPages - 1) {
+            setCurrentPage((prevPage) => prevPage + 1);
+            refetchTeamLeads(); // Trigger a refetch when the page changes
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage((prevPage) => prevPage - 1);
+            refetchTeamLeads(); // Trigger a refetch when the page changes
+        }
+    };
+
+    // console.log("Current page is :", currentPage);
+    // console.log("Total pages are :", totalPages);
+
     return (
         <div className="sales-panels-main">
             {/* {!formOpen && !addFormOpen && ( */}
@@ -42,6 +60,8 @@ function TeamLeadsNotInterested({
                                 <th>Call History</th>
                                 <th>BDE Status</th>
                                 <th>BDE Remarks</th>
+                                <th>BDM Status</th>
+                                <th>BDM Remarks</th>
                                 <th>Incorporation Date</th>
                                 <th>City</th>
                                 <th>State</th>
@@ -176,10 +196,7 @@ function TeamLeadsNotInterested({
                                     <td>
                                         <div className="d-flex align-items-center justify-content-between wApp">
                                             <div>{company["Company Number"]}</div>
-                                            <a
-                                                target="_blank"
-                                                href={`https://wa.me/91${company["Company Number"]}`}
-                                            >
+                                            <a target="_blank" href={`https://wa.me/91${company["Company Number"]}`}>
                                                 <FaWhatsapp />
                                             </a>
                                         </div>
@@ -195,7 +212,11 @@ function TeamLeadsNotInterested({
                                             color="grey"
                                         />
                                     </td>
-                                    <td>{company.Status}</td>
+                                    <td>
+                                        <div className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                            {company.bdeOldStatus}
+                                        </div>
+                                    </td>
                                     <td>
                                         <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                             <p className="rematkText text-wrap mb-0 mr-1" title={company.Remarks}>
@@ -206,7 +227,34 @@ function TeamLeadsNotInterested({
                                                 currentCompanyName={company["Company Name"]}
                                                 //remarksHistory={remarksHistory} // pass your remarks history data
                                                 companyId={company._id}
-                                                remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                remarksKey="bdmRemarks" // Adjust this based on the type of remarks (general or bdm)
+                                                isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                bdmAcceptStatus={company.bdmAcceptStatus}
+                                                companyStatus={company.Status}
+                                                secretKey={secretKey}
+                                                //fetchRemarksHistory={fetchRemarksHistory}
+                                                bdeName={company.ename}
+                                                refetch={refetchTeamLeads}
+                                                mainRemarks={company.Remarks}
+                                            />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className='dfault_notinterested-status'>
+                                            {company.Status}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
+                                            <p className="rematkText text-wrap mb-0 mr-1" title={company.bdmRemarks}>
+                                                {!company["bdmRemarks"] ? "No Remarks" : company.bdmRemarks}
+                                            </p>
+                                            <RemarksDialog
+                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                currentCompanyName={company["Company Name"]}
+                                                //remarksHistory={remarksHistory} // pass your remarks history data
+                                                companyId={company._id}
+                                                remarksKey="bdmRemarks" // Adjust this based on the type of remarks (general or bdm)
                                                 isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
                                                 bdmAcceptStatus={company.bdmAcceptStatus}
                                                 companyStatus={company.Status}
@@ -230,23 +278,23 @@ function TeamLeadsNotInterested({
                     </table>
                 </div>
 
-                {/* {generalData && generalData.length !== 0 && (
-                        <div className="pagination d-flex align-items-center justify-content-center w-100">
-                            <div>
-                                <button className='btn-pagination' onClick={prevPage} disabled={currentPage === 0}>
-                                    <GoArrowLeft />
-                                </button>
-                            </div>
-                            <div className='ml-3 mr-3'>
-                                Page {currentPage + 1} of {totalPages}
-                            </div>
-                            <div>
-                                <button className='btn-pagination' onClick={nextPage} disabled={currentPage >= totalPages - 1}>
-                                    <GoArrowRight />
-                                </button>
-                            </div>
+                {notInterestedData && notInterestedData.length !== 0 && (
+                    <div className="pagination d-flex align-items-center justify-content-center w-100">
+                        <div>
+                            <button className='btn-pagination' onClick={prevPage} disabled={currentPage === 0}>
+                                <GoArrowLeft />
+                            </button>
                         </div>
-                    )} */}
+                        <div className='ml-3 mr-3'>
+                            Page {currentPage + 1} of {totalPages}
+                        </div>
+                        <div>
+                            <button className='btn-pagination' onClick={nextPage} disabled={currentPage >= totalPages - 1}>
+                                <GoArrowRight />
+                            </button>
+                        </div>
+                    </div>
+                )}
             </>
             {/* )} */}
 

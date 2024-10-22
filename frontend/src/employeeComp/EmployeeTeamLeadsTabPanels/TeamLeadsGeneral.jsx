@@ -69,7 +69,7 @@ function TeamLeadsGeneral({
                     caseType: "Recieved"
                 });
             }
-            
+
             if (response.status === 200) {
                 Swal.fire("Accepted");
                 refetchTeamLeads();
@@ -225,7 +225,12 @@ function TeamLeadsGeneral({
                                     <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
                                     <td className="rm-sticky-left-2">{company["Company Name"]}</td>
                                     <td>{company.ename}</td>
-                                    <td>{company.Status}</td>
+                                    <td>
+                                        <div className={`${company.Status === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                            {company.Status}
+                                        </div>
+                                    </td>
+
                                     <td>
                                         <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                             <p className="rematkText text-wrap mb-0 mr-1" title={company.Remarks}>
@@ -236,8 +241,8 @@ function TeamLeadsGeneral({
                                                 currentCompanyName={company["Company Name"]}
                                                 //remarksHistory={remarksHistory} // pass your remarks history data
                                                 companyId={company._id}
-                                                remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                remarksKey="bdmRemarks" // Adjust this based on the type of remarks (general or bdm)
+                                                // isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
                                                 bdmAcceptStatus={company.bdmAcceptStatus}
                                                 companyStatus={company.Status}
                                                 secretKey={secretKey}

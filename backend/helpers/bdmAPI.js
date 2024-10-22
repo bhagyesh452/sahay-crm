@@ -378,25 +378,25 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Count total for each status category
     const totalGeneral = await CompanyModel.countDocuments({
-      bdmName: bdmName,
-      bdmAcceptStatus: "Pending",
-      Status: { $nin: ["Busy"] }
+      ...query,
+      Status: { $nin: ["Busy"] },
+      bdmAcceptStatus: "Pending"
     });
 
     const totalInterested = await CompanyModel.countDocuments({
-      bdmName: bdmName,
+      ...query,
       Status: { $in: ["Interested", "FollowUp"] },
       bdmAcceptStatus: "Accept"
     });
 
     const totalMatured = await CompanyModel.countDocuments({
-      bdmName: bdmName,
+      ...query,
       Status: "Matured",
       bdmAcceptStatus: "Accept"
     });
 
     const totalNotInterested = await CompanyModel.countDocuments({
-      bdmName: bdmName,
+      ...query,
       Status: "Not Interested",
       bdmAcceptStatus: "Accept"
     });

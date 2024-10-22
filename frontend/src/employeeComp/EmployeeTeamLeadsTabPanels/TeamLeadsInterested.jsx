@@ -13,6 +13,7 @@ import EmployeeNextFollowDate from '../ExtraComponents/EmployeeNextFollowUpDate'
 import CallHistory from '../CallHistory';
 import ProjectionDialog from '../ExtraComponents/ProjectionDialog';
 import BdmMaturedCasesDialogBox from '../BdmMaturedCasesDialogBox';
+import FeedbackDialog from '../ExtraComponents/FeedbackDialog';
 
 function TeamLeadsInterested({
     secretKey,
@@ -32,6 +33,7 @@ function TeamLeadsInterested({
     handleShowCallHistory,
     fetchProjections,
     projectionData,
+    teamData,
     handleOpenFormOpen
 }) {
 
@@ -205,10 +207,7 @@ function TeamLeadsInterested({
                                     <td>
                                         <div className="d-flex align-items-center justify-content-between wApp">
                                             <div>{company["Company Number"]}</div>
-                                            <a
-                                                target="_blank"
-                                                href={`https://wa.me/91${company["Company Number"]}`}
-                                            >
+                                            <a target="_blank" href={`https://wa.me/91${company["Company Number"]}`}>
                                                 <FaWhatsapp />
                                             </a>
                                         </div>
@@ -224,7 +223,11 @@ function TeamLeadsInterested({
                                             color="grey"
                                         />
                                     </td>
-                                    <td>{company.Status}</td>
+                                    <td>
+                                        <div className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                            {company.bdeOldStatus}
+                                        </div>
+                                    </td>
                                     <td>
                                         <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                             <p className="rematkText text-wrap mb-0 mr-1" title={company.Remarks}>
@@ -244,11 +247,52 @@ function TeamLeadsInterested({
                                                 bdeName={company.ename}
                                                 refetch={refetchTeamLeads}
                                                 mainRemarks={company.Remarks}
+                                                isBdmStatusChange={true}
                                             />
                                         </div>
                                     </td>
-                                    <td>{company.Status}</td>
-                                    <td>{company.bdmRemarks}</td>
+                                    <td>
+                                        <EmployeeStatusChange
+                                            key={`${company["Company Name"]}-${index}`}
+                                            companyName={company["Company Name"]}
+                                            id={company._id}
+                                            refetch={refetchTeamLeads}
+                                            companyStatus={company.Status}
+                                            mainStatus={dataStatus}
+                                            isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
+                                            cemail={company["Company Email"]}
+                                            cindate={company["Incorporation Date"]}
+                                            cnum={company["Company Number"]}
+                                            ename={company.ename}
+                                            bdmName={company.bdmName}
+                                            bdmAcceptStatus={company.bdmAcceptStatus}
+                                            teamData={teamData}
+                                            handleFormOpen={handleOpenFormOpen}
+                                            isBdmStatusChange={true}
+                                        />
+                                    </td>
+                                    <td>
+                                        <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
+                                            <p className="rematkText text-wrap mb-0 mr-1" title={company.bdmRemarks}>
+                                                {!company["bdmRemarks"] ? "No Remarks" : company.bdmRemarks}
+                                            </p>
+                                            <RemarksDialog
+                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                currentCompanyName={company["Company Name"]}
+                                                //remarksHistory={remarksHistory} // pass your remarks history data
+                                                companyId={company._id}
+                                                remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                isEditable={company.bdmAcceptStatus === "Accept"} // Allow editing if status is not "Accept"
+                                                bdmAcceptStatus={company.bdmAcceptStatus}
+                                                companyStatus={company.Status}
+                                                secretKey={secretKey}
+                                                //fetchRemarksHistory={fet  chRemarksHistory}
+                                                bdeName={company.ename}
+                                                refetch={refetchTeamLeads}
+                                                mainRemarks={company.Remarks}
+                                            />
+                                        </div>
+                                    </td>
                                     <td>{formatDateNew(company["Company Incorporation Date  "])}</td>
                                     <td>{company["City"]}</td>
                                     <td>{company["State"]}</td>
@@ -268,7 +312,15 @@ function TeamLeadsInterested({
                                                 (item) => item.companyName === company["Company Name"]
                                             )}
                                         /></td>
-                                    <td>-</td>
+                                    <td>
+                                        <FeedbackDialog
+                                            companyId={company._id}
+                                            companyName={company["Company Name"]}
+                                            feedbackRemarks={company.feedbackRemarks}
+                                            feedbackPoints={company.feedbackPoints}
+                                            refetchTeamLeads={refetchTeamLeads}
+                                        />
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
