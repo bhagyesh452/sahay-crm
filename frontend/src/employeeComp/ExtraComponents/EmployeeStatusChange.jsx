@@ -23,7 +23,7 @@ const EmployeeStatusChange = ({
   cindate,
   cnum, ename,
   bdmAcceptStatus,
-  handleFormOpen
+  handleFormOpen,
 }) => {
   const [status, setStatus] = useState(companyStatus);
   const [statusClass, setStatusClass] = useState("");

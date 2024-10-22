@@ -14,6 +14,7 @@ import CallHistory from "../CallHistory";
 import ProjectionDialog from "../ExtraComponents/ProjectionDialog";
 import BdmMaturedCasesDialogBox from "../BdmMaturedCasesDialogBox";
 import { MdOutlineWorkHistory } from "react-icons/md";
+import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 
 function EmployeeInterestedLeads({
   interestedData,
@@ -132,7 +133,7 @@ function EmployeeInterestedLeads({
               {interestedData.map((company, index) => (
                 <tr
                   key={company._id}
-                 
+
                   style={{ border: "1px solid #ddd" }}
                   onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
                   onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
@@ -227,8 +228,6 @@ function EmployeeInterestedLeads({
                       isDeletedEmployeeCompany={
                         company.isDeletedEmployeeCompany
                       }
-                      // setFormOpen={setFormOpen}
-                      // setAddFormOpen={setAddFormOpen}
                       cemail={company["Company Email"]}
                       cindate={company["Incorporation Date"]}
                       cnum={company["Company Number"]}
@@ -312,19 +311,33 @@ function EmployeeInterestedLeads({
                             fetchNewData={refetch}
                           />
                         )}
-                        <button
+                      <button
+                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                         style={{ border: "transparent", background: "none" }}
                         data-bs-toggle="modal"
-                        data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}`}
-                        >
+                        data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                        title="Interested Information"
+                      >
                         <MdOutlineWorkHistory
-                        style={{ width: "19px", height: "18px", color: "rgb(139, 139, 139)" }} />
-                        </button>
-                        
+                          style={{ width: "19px", height: "18px", color: "rgb(139, 139, 139)" }} />
+                      </button>
+                      <EmployeeInterestedInformationDialog
+                        key={`${company["Company Name"]}-${index}`}
+                        modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                        companyName={company["Company Name"]}
+                        interestedInformation={company.interestedInformation} // Pass the interested information here
+                        refetch={refetch}
+                        ename={company.ename}
+                        secretKey={secretKey}
+                        status={company.Status}
+                        companyStatus={company.Status}
+                        forView={true}
+                      />
                     </div>
                   </td>
                 </tr>
               ))}
+
             </tbody>
 
             {interestedData && interestedData.length === 0 && !isLoading && (
@@ -364,6 +377,7 @@ function EmployeeInterestedLeads({
           </div>
         )}
       </>
+
     </div>
   );
 }

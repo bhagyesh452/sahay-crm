@@ -81,17 +81,17 @@ router.post("/update-remarks/:id", async (req, res) => {
     await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
     // // Create a new RemarksHistory instance
-    const newRemarksHistory = new RemarksHistory({
-      time,
-      date,
-      companyID: id,
-      remarks: Remarks,
-      bdeName: bdeName,
-      companyName: currentCompanyName,
-    });
+    // const newRemarksHistory = new RemarksHistory({
+    //   time,
+    //   date,
+    //   companyID: id,
+    //   remarks: Remarks,
+    //   bdeName: bdeName,
+    //   companyName: currentCompanyName,
+    // });
 
-    // Save the new remarks history entry to MongoDB
-    await newRemarksHistory.save();
+    // // Save the new remarks history entry to MongoDB
+    // await newRemarksHistory.save();
 
     // New object to be pushed
     const newCompleteRemarks = {
@@ -219,17 +219,17 @@ router.post("/update-remarks-bdm/:id", async (req, res) => {
     await TeamLeadsModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
 
     // // Create a new RemarksHistory instance
-    const newRemarksHistory = new RemarksHistory({
-      time,
-      date,
-      companyID: id,
-      bdmRemarks: Remarks,
-      bdmName: remarksBdmName,
-      companyName: currentCompanyName,
-    });
+    // const newRemarksHistory = new RemarksHistory({
+    //   time,
+    //   date,
+    //   companyID: id,
+    //   bdmRemarks: Remarks,
+    //   bdmName: remarksBdmName,
+    //   companyName: currentCompanyName,
+    // });
 
-    // Save the new entry to RemarksHistory collection
-    await newRemarksHistory.save();
+    // // Save the new entry to RemarksHistory collection
+    // await newRemarksHistory.save();
     // New object to be pushed
     const newCompleteRemarks = {
       companyID: id,
@@ -451,16 +451,16 @@ router.delete("/remarks-history/:id", async (req, res) => {
   try {
     await RemarksHistory.findByIdAndDelete(id);
     // Now, find the corresponding document in CompleteRemarksHistoryLeads and remove the remark from the `remarks` array
-    // const updatedLeadHistory = await CompleteRemarksHistoryLeads.findOneAndUpdate(
-    //   { companyID: companyId },
-    //   { $pull: { remarks: { _id: id } } }, // Remove the remark from the remarks array
-    //   { new: true } // Return the updated document
-    // );
+    const updatedLeadHistory = await CompleteRemarksHistoryLeads.findOneAndUpdate(
+      { companyID: companyId },
+      { $pull: { remarks: { _id: id } } }, // Remove the remark from the remarks array
+      { new: true } // Return the updated document
+    );
 
-    // // // Check if the `remarks` array is empty after the deletion, and if so, optionally delete the document
-    // if (updatedLeadHistory.remarks.length === 0 && updatedLeadHistory.serviceWiseRemarks.length === 0) {
-    //   await CompleteRemarksHistoryLeads.findOneAndDelete({ companyID: companyId });
-    // }
+    // // Check if the `remarks` array is empty after the deletion, and if so, optionally delete the document
+    if (updatedLeadHistory.remarks.length === 0 && updatedLeadHistory.serviceWiseRemarks.length === 0) {
+      await CompleteRemarksHistoryLeads.findOneAndDelete({ companyID: companyId });
+    }
     res.json({ success: true, message: "Remarks deleted successfully" });
   } catch (error) {
     console.error("Error deleting remark:", error);

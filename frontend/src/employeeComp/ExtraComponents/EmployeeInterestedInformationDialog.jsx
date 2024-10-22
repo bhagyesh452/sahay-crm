@@ -9,26 +9,41 @@ import Swal from "sweetalert2";
 function EmployeeInterestedInformationDialog({
     modalId,
     companyName,
-    // formData,
-    // handleInputChange,
-    // handleMultiSelectChange,
-    // handleSubmitInformation,
-    // handleClearInterestedInformation,
-    // visibleQuestions,
-    // handleYesClick,
-    // handleNoClick,
     refetch,
     ename,
     secretKey,
     status,
     setStatus,
     setStatusClass,
-    companyStatus
+    companyStatus,
+    interestedInformation = [], // Existing interested information
+    forView,
 }) {
 
+    console.log("inetsredtedInform", interestedInformation)
     const [visibleQuestions, setVisibleQuestions] = useState({}); // Track which question's options are visible
-
+    const [isSubmitted, setIsSubmitted] = useState(false); // To disable submit button
     // Function to handle Yes click (show options)
+    // Pre-fill form data with existing interested information
+    const prefilledData = interestedInformation.length > 0 ? interestedInformation[0] : {};
+
+
+
+    useEffect(() => {
+        // Highlight "Yes" buttons based on pre-filled data
+        if (formData.clientWhatsAppRequest.nextFollowUpDate || formData.clientWhatsAppRequest.remarks) {
+            setVisibleQuestions((prev) => ({ ...prev, q1: true }));
+        }
+        if (formData.clientEmailRequest.nextFollowUpDate || formData.clientEmailRequest.remarks) {
+            setVisibleQuestions((prev) => ({ ...prev, q2: true }));
+        }
+        if (formData.interestedInServices.servicesPitched.length > 0 || formData.interestedInServices.servicesInterestedIn.length > 0) {
+            setVisibleQuestions((prev) => ({ ...prev, q3: true }));
+        }
+        if (formData.interestedButNotNow.servicesPitched.length > 0 || formData.interestedButNotNow.servicesInterestedIn.length > 0) {
+            setVisibleQuestions((prev) => ({ ...prev, q4: true }));
+        }
+    }, []);
     const handleYesClick = (questionId) => {
         setVisibleQuestions({
             [questionId]: true, // Show the options for the clicked question
@@ -43,31 +58,45 @@ function EmployeeInterestedInformationDialog({
             [questionId]: false // Hide the options for this question
         }));
     };
+    const mapServicesToSelectOptions = (servicesArray) => {
+        return servicesArray?.map(service => ({
+            label: service,
+            value: service
+        })) || [];
+    };
 
     const [formData, setFormData] = useState({
         clientWhatsAppRequest: {
-            nextFollowUpDate: '',
-            remarks: ''
+            nextFollowUpDate: prefilledData?.clientWhatsAppRequest?.nextFollowUpDate
+                ? new Date(prefilledData.clientWhatsAppRequest.nextFollowUpDate).toISOString().split('T')[0]
+                : '',
+            remarks: prefilledData?.clientWhatsAppRequest?.remarks || ''
         },
         clientEmailRequest: {
-            nextFollowUpDate: '',
-            remarks: ''
+            nextFollowUpDate: prefilledData?.clientEmailRequest?.nextFollowUpDate
+                ? new Date(prefilledData.clientEmailRequest.nextFollowUpDate).toISOString().split('T')[0]
+                : '',
+            remarks: prefilledData?.clientEmailRequest?.remarks || ''
         },
         interestedInServices: {
-            servicesPitched: [],
-            servicesInterestedIn: [],
-            offeredPrice: '',
-            nextFollowUpDate: '',
-            remarks: ''
+            servicesPitched: mapServicesToSelectOptions(prefilledData?.interestedInServices?.servicesPitched || []),
+            servicesInterestedIn: mapServicesToSelectOptions(prefilledData?.interestedInServices?.servicesInterestedIn || []),
+            offeredPrice: prefilledData?.interestedInServices?.offeredPrice || '',
+            nextFollowUpDate: prefilledData?.interestedInServices?.nextFollowUpDate
+                ? new Date(prefilledData.interestedInServices.nextFollowUpDate).toISOString().split('T')[0]
+                : '',
+            remarks: prefilledData?.interestedInServices?.remarks || ''
         },
         interestedButNotNow: {
-            servicesPitched: [],
-            servicesInterestedIn: [],
-            offeredPrice: '',
-            nextFollowUpDate: '',
-            remarks: ''
+            servicesPitched: mapServicesToSelectOptions(prefilledData?.interestedButNotNow?.servicesPitched || []),
+            servicesInterestedIn: mapServicesToSelectOptions(prefilledData?.interestedButNotNow?.servicesInterestedIn || []),
+            offeredPrice: prefilledData?.interestedButNotNow?.offeredPrice || '',
+            nextFollowUpDate: prefilledData?.interestedButNotNow?.nextFollowUpDate
+                ? new Date(prefilledData.interestedButNotNow.nextFollowUpDate).toISOString().split('T')[0]
+                : '',
+            remarks: prefilledData?.interestedButNotNow?.remarks || ''
         },
-        mainQuestion: [],// To track the "Yes" responses
+        mainQuestion: [], // This tracks the Yes/No responses
         ename: ename,
         "Company Name": companyName
     });
@@ -160,10 +189,15 @@ function EmployeeInterestedInformationDialog({
             ename: ename,
             "Company Name": companyName
         });
-        setStatus(companyStatus)
-        setStatusClass("untouched_status")
+        // if(!isSubmitted){
+        //     setStatus(companyStatus)
+        //     setStatusClass("untouched_status")
+        // }
+
         //refetch()
         // Manually hide the modal
+        setVisibleQuestions({});
+        setIsSubmitted(false);
         const modalElement = document.getElementById(modalId);
         modalElement.classList.remove("show");
         modalElement.setAttribute("aria-hidden", "true");
@@ -231,19 +265,6 @@ function EmployeeInterestedInformationDialog({
         }
     };
     return (<>
-        {/* <button
-            className="dropdown-item"
-            data-bs-toggle="modal"
-            data-bs-target={`#${modalId}`} // Use dynamic modal ID
-            value={companyStatus}
-            onClick={(e) => {
-                setStatus("Interested")
-                setStatusClass("need_to_call")
-            }}
-            href="#"
-        >
-            Interested
-        </button> */}
         <div className="modal fade" id={modalId} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                 <div className="modal-content">
@@ -312,6 +333,8 @@ function EmployeeInterestedInformationDialog({
                                                                 id="date"
                                                                 value={formData.clientWhatsAppRequest.nextFollowUpDate}
                                                                 onChange={(e) => handleInputChange('clientWhatsAppRequest', 'nextFollowUpDate', e.target.value)}
+                                                                disabled={forView}
+
                                                             />
                                                         </div>
                                                     </div>
@@ -324,6 +347,8 @@ function EmployeeInterestedInformationDialog({
                                                                 id="text"
                                                                 value={formData.clientWhatsAppRequest.remarks}
                                                                 onChange={(e) => handleInputChange('clientWhatsAppRequest', 'remarks', e.target.value)}
+                                                                disabled={forView}
+
                                                             />
                                                         </div>
                                                     </div>
@@ -383,6 +408,8 @@ function EmployeeInterestedInformationDialog({
                                                             id="date"
                                                             value={formData.clientEmailRequest.nextFollowUpDate}
                                                             onChange={(e) => handleInputChange('clientEmailRequest', 'nextFollowUpDate', e.target.value)}
+                                                            disabled={forView}
+
                                                         />
                                                     </div>
                                                 </div>
@@ -395,6 +422,8 @@ function EmployeeInterestedInformationDialog({
                                                             id="text"
                                                             value={formData.clientEmailRequest.remarks}
                                                             onChange={(e) => handleInputChange('clientEmailRequest', 'remarks', e.target.value)}
+                                                            disabled={forView}
+
                                                         />
                                                     </div>
                                                 </div>
@@ -450,8 +479,10 @@ function EmployeeInterestedInformationDialog({
                                                         <Select
                                                             isMulti
                                                             options={options}
+                                                            value={formData.interestedInServices.servicesPitched}
                                                             onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesPitched', selectedOptions)}
                                                             placeholder="Select Services..."
+                                                            isDisabled={forView}  // This will disable the select input
                                                         />
                                                     </div>
                                                 </div>
@@ -461,8 +492,11 @@ function EmployeeInterestedInformationDialog({
                                                         <Select
                                                             isMulti
                                                             options={options}
+                                                            value={formData.interestedInServices.servicesInterestedIn}
                                                             onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesInterestedIn', selectedOptions)}
                                                             placeholder="Select Services..."
+                                                            isDisabled={forView}  // This will disable the select input
+
                                                         />
                                                     </div>
                                                 </div>
@@ -478,6 +512,7 @@ function EmployeeInterestedInformationDialog({
                                                             id="text"
                                                             value={formData.interestedInServices.offeredPrice}
                                                             onChange={(e) => handleInputChange('interestedInServices', 'offeredPrice', e.target.value)}
+                                                            disabled={forView}
                                                         />
                                                     </div>
                                                 </div>
@@ -490,6 +525,7 @@ function EmployeeInterestedInformationDialog({
                                                             id="date"
                                                             value={formData.interestedInServices.nextFollowUpDate}
                                                             onChange={(e) => handleInputChange('interestedInServices', 'nextFollowUpDate', e.target.value)}
+                                                            disabled={forView}
                                                         />
                                                     </div>
                                                 </div>
@@ -505,6 +541,7 @@ function EmployeeInterestedInformationDialog({
                                                             id="text"
                                                             value={formData.interestedInServices.remarks}
                                                             onChange={(e) => handleInputChange('interestedInServices', 'remarks', e.target.value)}
+                                                            disabled={forView}
                                                         />
                                                     </div>
                                                 </div>
@@ -556,8 +593,11 @@ function EmployeeInterestedInformationDialog({
                                                         <Select
                                                             isMulti
                                                             options={options}
+                                                            value={formData.interestedButNotNow.servicesPitched}
                                                             onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesPitched', selectedOptions)}
                                                             placeholder="Select Services..."
+                                                            isDisabled={forView}  // This will disable the select input
+
                                                         />
                                                     </div>
                                                 </div>
@@ -567,8 +607,11 @@ function EmployeeInterestedInformationDialog({
                                                         <Select
                                                             isMulti
                                                             options={options}
+                                                            value={formData.interestedButNotNow.servicesInterestedIn}
                                                             onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesInterestedIn', selectedOptions)}
                                                             placeholder="Select Services..."
+                                                            isDisabled={forView}  // This will disable the select input
+
                                                         />
                                                     </div>
                                                 </div>
@@ -584,6 +627,7 @@ function EmployeeInterestedInformationDialog({
                                                             id="text"
                                                             value={formData.interestedButNotNow.offeredPrice}
                                                             onChange={(e) => handleInputChange('interestedButNotNow', 'offeredPrice', e.target.value)}
+                                                            disabled={forView}
                                                         />
                                                     </div>
                                                 </div>
@@ -596,6 +640,7 @@ function EmployeeInterestedInformationDialog({
                                                             id="date"
                                                             value={formData.interestedButNotNow.nextFollowUpDate}
                                                             onChange={(e) => handleInputChange('interestedButNotNow', 'nextFollowUpDate', e.target.value)}
+                                                            disabled={forView}
                                                         />
                                                     </div>
                                                 </div>
@@ -611,6 +656,7 @@ function EmployeeInterestedInformationDialog({
                                                             id="text"
                                                             value={formData.interestedButNotNow.remarks}
                                                             onChange={(e) => handleInputChange('interestedButNotNow', 'remarks', e.target.value)}
+                                                            disabled={forView}
                                                         />
                                                     </div>
                                                 </div>
@@ -629,7 +675,7 @@ function EmployeeInterestedInformationDialog({
                             <button
                                 type="button"
                                 class="btn btn-primary w-50 m-0"
-                                style={{ border: "none", borderRadius: "0px" }} onClick={handleSubmitInformation}>Submit</button>
+                                style={{ border: "none", borderRadius: "0px" }} onClick={handleSubmitInformation} disabled={forView}>Submit</button>
                         </div>
                     </div>
                 </div>

@@ -4427,7 +4427,8 @@ div#table-default td {
   cursor: pointer;
 }
 
-.yes-alias-i {
+
+.yes-alias-i-active {
   color: #009402;
   line-height: 10px;
 }
