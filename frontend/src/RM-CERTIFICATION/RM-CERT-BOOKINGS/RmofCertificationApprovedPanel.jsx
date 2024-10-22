@@ -38,6 +38,7 @@ import NSWSMobileNo from "../Extra-Components/NSWSMobileNo.jsx";
 import OtpVerificationStatus from "../Extra-Components/OtpVerificationStatus.jsx";
 import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
+import RMRemarksDialog from "../Extra-Components/RMRemarksDialog.jsx";
 
 
 function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab, completeEmployeeInfo }) {
@@ -226,7 +227,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
     //     );
 
     //     if (existingIndex >= 0) {
-          
+
     //       // If the company exists, update its status
     //       const updatedStatuses = [...prevStatuses];
     //       updatedStatuses[existingIndex].status = res.status;
@@ -246,8 +247,8 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
     //     }
     //   });
     // });
-    
-    
+
+
     socket.on("test-script-email-output", (res) => {
       //console.log("res" , res)
       if (res.updatedDocument) {
@@ -1713,7 +1714,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                         {/* //{companyEmailStatuses.find((newObj) => newObj._id === obj._id)?.message || 'No message'} */}
                         {obj.emailSent ? obj.emailSent : "No message"}
                       </td>
-                      <td className="td_of_remarks">
+                      {/* <td className="td_of_remarks">
                         <div className="d-flex align-items-center justify-content-between wApp">
                           <div
                             className="My_Text_Wrap"
@@ -1747,7 +1748,18 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             <FaPencilAlt />
                           </button>
                         </div>
-                      </td>
+                      </td> */}
+                      <RMRemarksDialog
+                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                        companyName={obj["Company Name"]}
+                        serviceName={obj.serviceName}
+                        refreshData={refreshData}
+                        historyRemarks={obj.Remarks}
+                        ename={employeeData.ename}
+                        designation={employeeData.designation}
+                        bdeName={obj.bdeName}
+                        bdmName={obj.bdmName}
+                      />
                       <td className="td_of_weblink">
                         <WebsiteLink
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key

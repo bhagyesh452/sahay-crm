@@ -13,6 +13,7 @@ import EmployeeNextFollowDate from "../ExtraComponents/EmployeeNextFollowUpDate"
 import CallHistory from "../CallHistory";
 import ProjectionDialog from "../ExtraComponents/ProjectionDialog";
 import BdmMaturedCasesDialogBox from "../BdmMaturedCasesDialogBox";
+import { MdOutlineWorkHistory } from "react-icons/md";
 
 function EmployeeInterestedLeads({
   interestedData,
@@ -69,7 +70,8 @@ function EmployeeInterestedLeads({
     }
   };
 
- console.log("designation" , designation)
+  const modalId = `modal-${companyName.replace(/\s+/g, '')}`; // Generate a unique modal ID
+
 
   return (
     <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -126,7 +128,6 @@ function EmployeeInterestedLeads({
                                 {designation !== "Sales Manager" || fordesignation !== "admin" && (<th>Forward To Bdm</th>)} */}
               </tr>
             </thead>
-
             <tbody>
               {interestedData.map((company, index) => (
                 <tr
@@ -311,11 +312,17 @@ function EmployeeInterestedLeads({
                             fetchNewData={refetch}
                           />
                         )}
+                        <button
+                        style={{ border: "transparent", background: "none" }}
+                        data-bs-toggle="modal"
+                        data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}`}
+                        >
+                        <MdOutlineWorkHistory
+                        style={{ width: "19px", height: "18px", color: "rgb(139, 139, 139)" }} />
+                        </button>
+                        
                     </div>
                   </td>
-                  {/* <td></td>
-                  {designation !== "Sales Manager" ||
-                    (fordesignation !== "admin" && <td></td>)} */}
                 </tr>
               ))}
             </tbody>

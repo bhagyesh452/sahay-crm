@@ -1459,6 +1459,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter, totalFilteredData,
                           )}
                         </div>
                       </td>
+                      <td>
                       <RMRemarksDialog
                         key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                         companyName={obj["Company Name"]}
@@ -1470,6 +1471,8 @@ function RmofCertificationHoldPanel({ searchText, showFilter, totalFilteredData,
                         bdeName={obj.bdeName}
                         bdmName={obj.bdmName}
                       />
+                      </td>
+                      
                       {/* <td className="td_of_remarks">
                         <div className="d-flex align-items-center justify-content-between wApp">
                           <div

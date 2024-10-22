@@ -397,14 +397,6 @@ const EmployeeStatusChange = ({
       modalId={modalId}
       companyName={companyName}
       secretKey={secretKey}
-      // formData={formData}
-      // handleInputChange={handleInputChange}
-      // handleMultiSelectChange={handleMultiSelectChange}
-      // handleSubmitInformation={handleSubmitInformation}
-      // handleClearInterestedInformation={handleClearInterestedInformation}
-      // visibleQuestions={visibleQuestions}
-      // handleYesClick={handleYesClick}
-      // handleNoClick={handleNoClick}
       refetch={refetch}
       ename={ename}
       status={status}
@@ -412,10 +404,6 @@ const EmployeeStatusChange = ({
       setStatusClass={setStatusClass}
       companyStatus={companyStatus}
     />
-
-
-   
-
   </>);
 };
 
