@@ -312,10 +312,122 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
   }
 });
 
+router.get("/teamLeadsData/:bdmName", async (req, res) => {
+  try {
+    const { bdmName } = req.params;
+    const status = req.query.status;
+    const state = req.query.state;
+    const city = req.query.city;
+    const companyName = req.query.companyName;
+    const bdeForwardDate = req.query.bdeForwardDate;
+    const incorporationDate = req.query.incorporationDate;
+    const page = parseInt(req.query.page) || 1; // Page number
+    const limit = parseInt(req.query.limit) || 500; // Default limit to 500
 
+    // Calculate skip for pagination
+    const skip = (page - 1) * limit;
 
+    // Initialize query object with bdmName and bdmAcceptStatus as "Pending"
+    let query = {
+      bdmName: bdmName,
+      Status: { $nin: ["Busy"] }
+    };
 
+    // Filter by company name (case-insensitive search)
+    if (companyName) {
+      query["Company Name"] = { $regex: new RegExp(companyName, 'i') };
+    }
 
+    // Filter by status
+    if (status) {
+      if (status === "Interested") {
+        query["Status"] = { $in: ["Interested", "FollowUp"] };
+        query["bdmAcceptStatus"] = "Accept";
+      } else if (status === "Matured") {
+        query["Status"] = "Matured";
+        query["bdmAcceptStatus"] = "Accept";
+      } else if (status === "Not Interested") {
+        query["Status"] = "Not Interested";
+        query["bdmAcceptStatus"] = "Accept";
+      } else if (status === "General") {
+        query["bdmAcceptStatus"] = "Pending";
+      }
+    }
+
+    // Filter by state
+    if (state) {
+      query["State"] = state;
+    }
+
+    // Filter by city
+    if (city) {
+      query["City"] = city;
+    }
+
+    // Filter by bdeForwardDate (converting to ISO format if necessary)
+    if (bdeForwardDate) {
+      const date = new Date(bdeForwardDate);
+      query["bdeForwardDate"] = { $gte: date.toISOString() };
+    }
+
+    // Filter by incorporation date (using date range if required)
+    if (incorporationDate) {
+      const incDate = new Date(incorporationDate);
+      query["Company Incorporation Date"] = { $gte: incDate.toISOString() };
+    }
+
+    // Count total for each status category
+    const totalGeneral = await CompanyModel.countDocuments({
+      bdmName: bdmName,
+      bdmAcceptStatus: "Pending",
+      Status: { $nin: ["Busy"] }
+    });
+
+    const totalInterested = await CompanyModel.countDocuments({
+      bdmName: bdmName,
+      Status: { $in: ["Interested", "FollowUp"] },
+      bdmAcceptStatus: "Accept"
+    });
+
+    const totalMatured = await CompanyModel.countDocuments({
+      bdmName: bdmName,
+      Status: "Matured",
+      bdmAcceptStatus: "Accept"
+    });
+
+    const totalNotInterested = await CompanyModel.countDocuments({
+      bdmName: bdmName,
+      Status: "Not Interested",
+      bdmAcceptStatus: "Accept"
+    });
+
+    // Fetch data based on query and pagination
+    const data = await CompanyModel.find(query)
+      .sort({ bdeForwardDate: 1 }) // Sorting in ascending order
+      .skip(skip)
+      .limit(limit);
+
+    const totalCounts = await CompanyModel.countDocuments(query);
+
+    const totalPages = Math.ceil(totalCounts / limit);
+
+    // Return paginated data
+    return res.status(200).json({
+      currentPage: page,
+      perPage: limit,
+      totalCounts: totalCounts,
+      totalPages: totalPages,
+      totalGeneral: totalGeneral,
+      totalInterested: totalInterested,
+      totalMatured: totalMatured,
+      totalNotInterested: totalNotInterested,
+      data: data
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
   const bdmName = req.params.bdmName;
@@ -603,7 +715,7 @@ router.delete(`/post-deletecompany-interested/:companyId`, async (req, res) => {
 
   try {
     const existingData = await TeamLeadsModel.findById(companyId);
-    console.log("EXISITING DATA",existingData);
+    console.log("EXISITING DATA", existingData);
 
     if (existingData) {
       await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
