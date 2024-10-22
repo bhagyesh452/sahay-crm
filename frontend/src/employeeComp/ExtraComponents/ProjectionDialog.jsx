@@ -215,6 +215,7 @@ function ProjectionDialog({
                         width: "17px",
                         height: "17px",
                     }}
+                    title="View Projection"
                     color={getIconColor()} // Set the color based on conditions
                 />
             </button>
