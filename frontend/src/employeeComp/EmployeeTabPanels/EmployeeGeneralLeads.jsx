@@ -75,7 +75,7 @@ function EmployeeGeneralLeads({
                                 <tr className="tr-sticky">
                                     {fordesignation === "admin" &&
                                         (
-                                            <th>
+                                            <th className='AEP-sticky-left-1'>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
@@ -88,8 +88,8 @@ function EmployeeGeneralLeads({
                                                 </label>
                                             </th>
                                         )}
-                                    <th className="rm-sticky-left-1">Sr. No</th>
-                                    <th className="rm-sticky-left-2">Compnay Name</th>
+                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Compnay Name</th>
                                     <th>Compnay No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
@@ -123,8 +123,8 @@ function EmployeeGeneralLeads({
 
                                                 </td>
                                             )}
-                                            <td className="rm-sticky-left-1 AEP-sticky-left-2">{startIndex + index + 1}</td>
-                                            <td className="rm-sticky-left-2 AEP-sticky-left-3">{company["Company Name"]}</td>
+                                            <td className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                            <td className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>

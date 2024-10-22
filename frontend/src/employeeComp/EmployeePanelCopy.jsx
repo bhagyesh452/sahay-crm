@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams , Link } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
 import axios from "axios";
 
@@ -50,7 +50,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const [employeeName, setEmployeeName] = useState("");
     const [showCallHistory, setShowCallHistory] = useState(false);
     const [clientNumber, setClientNumber] = useState("");
-    const [employeeData, setEmployeeData] = useState([]);
+    const [employenewEmpData, setEmployenewEmpData] = useState([]);
     const [nowToFetch, setNowToFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 50;
@@ -274,7 +274,7 @@ function EmployeePanelCopy({ fordesignation }) {
             setFetchedData(queryData.data); // Update the fetched data
             setRevertedData(queryData.revertedData); // Set revertedData based on response
             setmoreEmpData(queryData.data);
-            setEmployeeData(queryData.data);
+            setEmployenewEmpData(queryData.data);
             setTotalCounts(queryData.totalCounts);
             setTotalPages(Math.ceil(queryData.totalPages)); // Calculate total pages
         }
@@ -285,7 +285,7 @@ function EmployeePanelCopy({ fordesignation }) {
         refetch();
     }, 300), [refetch]);
 
-    const handleDataStatusChange = useCallback((status, tabRef) => {
+    const handlnewEmpDataStatusChange = useCallback((status, tabRef) => {
         setdataStatus(status);
         setCurrentPage(0); // Reset to the first page
         debouncedRefetch(); // Call the debounced refetch function
@@ -472,7 +472,7 @@ function EmployeePanelCopy({ fordesignation }) {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
 
-        const csvdata = employeeData
+        const csvdata = employenewEmpData
             .filter((employee) => selectedRows.includes(employee._id))
             .map((employee) => ({
                 ...employee,
@@ -526,7 +526,7 @@ function EmployeePanelCopy({ fordesignation }) {
         setOpenAssignToBdm(false);
     };
     const handleForwardDataToBDM = async (bdmName) => {
-        const data = employeeData.filter((employee) => selectedRows.includes(employee._id));
+        const data = employenewEmpData.filter((employee) => selectedRows.includes(employee._id));
         // console.log("data is:", data);
         if (selectedRows.length === 0) {
             Swal.fire("Please Select the Company to Forward", "", "Error");
@@ -557,7 +557,7 @@ function EmployeePanelCopy({ fordesignation }) {
             handleCloseForwardBdmPopup();
             setSelectedRows([]);
             //setdataStatus("All");
-           
+
         } catch (error) {
             console.log("error fetching data", error.message);
             Swal.close();
@@ -566,6 +566,61 @@ function EmployeePanelCopy({ fordesignation }) {
                 text: "Failed to update employee data. Please try again later.",
                 icon: "error",
             });
+        }
+    };
+
+    // -----------------------functions to change url--------------------------
+    const handleChangeUrlPrev = () => {
+        const currId = id;
+        const salesExecutivesIds = newEmpData
+      .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+      .map((employee) => employee._id);
+        //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+        // Find the index of the currentId in the newEmpData array
+        const currentIndex = salesExecutivesIds.findIndex((itemId) => itemId === currId);
+
+        if (currentIndex !== -1) {
+            // Calculate the previous index in a circular manner
+            const prevIndex = (currentIndex - 1 + salesExecutivesIds.length) % salesExecutivesIds.length;
+
+            if (currentIndex === 0) {
+                // If it's the first page, navigate to the employees page
+                window.location.replace(`/managing-director/user`);
+                //setBackButton(false)
+            } else {
+                // Get the previousId from the salesExecutivesIds array
+                const prevId = salesExecutivesIds[prevIndex];
+                window.location.replace(`/managing-director/employees/${prevId}`);
+            }
+            //setBackButton(prevIndex !== 0);
+        } else {
+            console.log("Current ID not found in newEmpData array.");
+        }
+    };
+
+    const handleChangeUrl = () => {
+        const currId = id;
+        // Filter the response data to find _id values where designation is "Sales Executive" or "Sales Manager"
+      const salesExecutivesIds = newEmpData
+      .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+      .map((employee) => employee._id);
+      
+        //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+        // Find the index of the currentId in the newEmpData array
+        const currentIndex = salesExecutivesIds.findIndex((itemId) => itemId === currId);
+
+        if (currentIndex !== -1) {
+            // Calculate the next index in a circular manner
+            const nextIndex = (currentIndex + 1) % salesExecutivesIds.length;
+
+            // Get the nextId from the salesExecutivesIds array
+            const nextId = salesExecutivesIds[nextIndex];
+            window.location.replace(`/managing-director/employees/${nextId}`);
+            //setBackButton(nextId !== 0);
+        } else {
+            console.log("Current ID not found in newEmpData array.");
         }
     };
     // console.log("selectedRows", selectedRows)
@@ -579,15 +634,49 @@ function EmployeePanelCopy({ fordesignation }) {
                             <div className="container-xl">
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
-                                        <div className="btn-group mr-2"  role="group" aria-label="Basic example">
+                                        <div >
                                             {fordesignation === "admin" ? (
                                                 <>
-                                                    <button className="btn mybtn">
-                                                        <FaCircleChevronLeft className="ep_right_button" //onClick={handleChangeUrlPrev}  
-                                                        />
-                                                    </button>
-                                                    <button className="btn mybtn"><b>{data.ename}</b></button>
-                                                    <button className="btn mybtn"><FaCircleChevronRight className="ep_left_button" />  </button>
+                                                    <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                        <button className="btn mybtn">
+                                                            <FaCircleChevronLeft 
+                                                            className="ep_right_button" 
+                                                            onClick={handleChangeUrlPrev}  
+                                                            />
+                                                        </button>
+                                                        <button className="btn mybtn"><b>{data.ename}</b></button>
+                                                        <button className="btn mybtn">
+                                                            <FaCircleChevronRight 
+                                                            className="ep_left_button"
+                                                            onClick={handleChangeUrl} 
+                                                            />
+                                                            </button>
+                                                    </div>
+                                                    <div className="btn-group" role="group" aria-label="Basic example">
+
+                                                        <button onClick={() => {
+                                                            window.location.pathname = `/managing-director/employees/${id}`
+                                                        }}
+                                                            type="button"
+                                                            className={window.location.pathname === `/managing-director/employees/${id}` && data.bdmWork ? "btn mybtn active" : "btn mybtn"}
+
+                                                        >
+                                                            <MdOutlinePersonPin
+
+                                                                className='mr-1' /> Leads
+                                                        </button>
+                                                        {data.bdmWork &&
+                                                            <button type="button"
+                                                                className={window.location.pathname === `/managing-director/employeeleads/${id}` ? "btn mybtn active" : "btn mybtn"}
+
+                                                                onClick={() => {
+                                                                    window.location.pathname = `/managing-director/employeeleads/${id}`
+                                                                }}
+                                                            >
+                                                                <AiOutlineTeam
+                                                                    className='mr-1' /> Team Leads
+                                                            </button>}
+                                                    </div>
                                                 </>
 
                                             ) : (
@@ -601,28 +690,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             )}
 
                                         </div>
-                                        <div className="btn-group mr-1" role="group" aria-label="Basic example">
 
-                                            <button onClick={() => {
-                                                window.location.pathname = `/managing-director/employees/${id}`
-                                            }}
-                                                type="button"
-                                                className="btn mybtn"
-                                            //onClick={functionopenpopup}
-                                            >
-                                                <MdOutlinePersonPin
-
-                                                    className='mr-1' /> Leads
-                                            </button>
-                                            {data.bdmWork && <button type="button" className="btn mybtn"
-                                                onClick={() => {
-                                                    window.location.pathname = `/managing-director/employeeleads/${id}`
-                                                }}
-                                            >
-                                                <AiOutlineTeam
-                                                    className='mr-1' /> Team Leads
-                                            </button>}
-                                        </div>
                                         {fordesignation !== "admin" && (
                                             <div className="btn-group" role="group" aria-label="Basic example">
                                                 {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
@@ -657,13 +725,19 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     </div>
                                                 )}
                                                 <div className="btn-group mr-1" role="group" aria-label="Basic example">
-                                                    <button type="button" className="btn mybtn"
-                                                    //onClick={functionopenpopup}
+                                                    <Link
+
+                                                        to={`/managing-director/user`}
+                                                        style={{ marginLeft: "10px" }}
                                                     >
-                                                        <IoIosArrowDropleft className='mr-1' /> Back
-                                                    </button>
+                                                        <button type="button" className="btn mybtn"
+
+                                                        >
+                                                            <IoIosArrowDropleft className='mr-1' /> Back
+                                                        </button>
+                                                        </Link>
                                                 </div>
-                                                
+
                                                 <div className="btn-group" role="group" aria-label="Basic example">
                                                     {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
 
@@ -747,7 +821,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             <a
                                                 href="#general"
                                                 ref={allTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handleDataStatusChange("All", allTabRef)}
+                                                onClick={() => handlnewEmpDataStatusChange("All", allTabRef)}
                                                 className={`nav-link  ${dataStatus === "All" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
@@ -763,7 +837,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             <a
                                                 href="#Interested"
                                                 ref={interestedTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handleDataStatusChange("Interested", interestedTabRef)}
+                                                onClick={() => handlnewEmpDataStatusChange("Interested", interestedTabRef)}
                                                 className={`nav-link ${dataStatus === "Interested" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
@@ -777,7 +851,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             <a
                                                 href="#Matured"
                                                 ref={maturedTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handleDataStatusChange("Matured", maturedTabRef)}
+                                                onClick={() => handlnewEmpDataStatusChange("Matured", maturedTabRef)}
                                                 className={`nav-link ${dataStatus === "Matured" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
@@ -792,7 +866,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 <a
                                                     href="#Forwarded"
                                                     ref={forwardedTabRef} // Attach the ref to the anchor tag
-                                                    onClick={() => handleDataStatusChange("Forwarded", forwardedTabRef)}
+                                                    onClick={() => handlnewEmpDataStatusChange("Forwarded", forwardedTabRef)}
                                                     className={`nav-link ${dataStatus === "Forwarded" ? "active item-act" : ""}`}
                                                     data-bs-toggle="tab"
                                                 >
@@ -807,7 +881,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             <a
                                                 href="#NotInterested"
                                                 ref={notInterestedTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handleDataStatusChange("Not Interested", notInterestedTabRef)}
+                                                onClick={() => handlnewEmpDataStatusChange("Not Interested", notInterestedTabRef)}
                                                 className={`nav-link ${dataStatus === "Not Interested" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >

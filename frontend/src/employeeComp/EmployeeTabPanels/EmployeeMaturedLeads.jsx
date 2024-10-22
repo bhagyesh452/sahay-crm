@@ -79,7 +79,7 @@ function EmployeeMaturedLeads({
                                 <tr className="tr-sticky">
                                     {fordesignation === "admin" &&
                                         (
-                                            <th>
+                                            <th className='AEP-sticky-left-1'>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
@@ -92,8 +92,8 @@ function EmployeeMaturedLeads({
                                                 </label>
                                             </th>
                                         )}
-                                    <th className="rm-sticky-left-1">Sr. No</th>
-                                    <th className="rm-sticky-left-2">Compnay Name</th>
+                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Compnay Name</th>
                                     <th>Compnay No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
@@ -108,23 +108,7 @@ function EmployeeMaturedLeads({
                                     <th className="rm-sticky-action">Add Projections</th>
                                 </tr>
                             </thead>
-                            {isLoading && dataStatus !== "Matured" ? (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="14" >
-                                            <div className="LoaderTDSatyle w-100" >
-                                                <ClipLoader
-                                                    color="lightgrey"
-                                                    loading
-                                                    size={30}
-                                                    aria-label="Loading Spinner"
-                                                    data-testid="loader"
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            ) : (
+                           
                                 <tbody>
                                     {maturedLeads.map((company, index) => (
                                         <tr key={company._id}
@@ -136,6 +120,7 @@ function EmployeeMaturedLeads({
                                             >
                                             {fordesignation === "admin" && (
                                                 <td
+                                                className='AEP-sticky-left-1'
                                                     style={{
                                                         position: "sticky",
                                                         left: 0,
@@ -157,8 +142,8 @@ function EmployeeMaturedLeads({
                                                     </label>
                                                 </td>
                                             )}
-                                            <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
-                                            <td className="rm-sticky-left-2">{company["Company Name"]}</td>
+                                          <td className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                          <td className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
@@ -271,7 +256,7 @@ function EmployeeMaturedLeads({
                                         </tr>
                                     ))}
                                 </tbody>
-                            )}
+                    
                             {maturedLeads && maturedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
