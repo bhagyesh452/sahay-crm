@@ -93,15 +93,15 @@ function EmployeeMaturedLeads({
                                             </th>
                                         )}
                                     <th className="rm-sticky-left-1">Sr. No</th>
-                                    <th className="rm-sticky-left-2">Compnay Name</th>
-                                    <th>Compnay No</th>
+                                    <th className="rm-sticky-left-2">Company Name</th>
+                                    <th>Company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
-                                    <th>Compnay Email</th>
+                                    <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>Booking Date</th>
                                     <th>Booking Publish Date</th>

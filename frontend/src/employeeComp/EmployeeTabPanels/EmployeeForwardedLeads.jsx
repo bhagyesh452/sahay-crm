@@ -218,8 +218,8 @@ function EmployeeForwardedLeads({
                                             </th>
                                         )}
                                     <th className="rm-sticky-left-1">Sr. No</th>
-                                    <th className="rm-sticky-left-2">Compnay Name</th>
-                                    <th>Compnay No</th>
+                                    <th className="rm-sticky-left-2">Company Name</th>
+                                    <th>Company No</th>
                                     <th>Call History</th>
                                     <th>BDE Status</th>
                                     <th>BDE Remarks</th>
@@ -228,7 +228,7 @@ function EmployeeForwardedLeads({
                                     <th>Incorporation Date</th>
                                     <th>City</th>
                                     <th>State</th>
-                                    <th>Compnay Email</th>
+                                    <th>Company Email</th>
                                     <th>Assign Date</th>
                                     <th>BDM Name</th>
                                     <th>Forwarded Date</th>
