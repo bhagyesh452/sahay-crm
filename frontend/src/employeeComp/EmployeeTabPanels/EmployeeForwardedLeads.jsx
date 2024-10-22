@@ -203,7 +203,7 @@ function EmployeeForwardedLeads({
                                 <tr className="tr-sticky">
                                     {fordesignation === "admin" &&
                                         (
-                                            <th>
+                                            <th className='AEP-sticky-left-1'>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
@@ -217,9 +217,9 @@ function EmployeeForwardedLeads({
                                                 </label>
                                             </th>
                                         )}
-                                    <th className="rm-sticky-left-1">Sr. No</th>
-                                    <th className="rm-sticky-left-2">Company Name</th>
-                                    <th>Company No</th>
+                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Compnay Name</th>
+                                    <th>Compnay No</th>
                                     <th>Call History</th>
                                     <th>BDE Status</th>
                                     <th>BDE Remarks</th>
@@ -232,7 +232,7 @@ function EmployeeForwardedLeads({
                                     <th>Assign Date</th>
                                     <th>BDM Name</th>
                                     <th>Forwarded Date</th>
-                                    <th>Forward To BDM</th>
+                                    {fordesignation !== "admin" && <th>Forward To BDM</th>}
                                     <th className="rm-sticky-action">Feedback</th>
                                 </tr>
                             </thead>
@@ -247,7 +247,7 @@ function EmployeeForwardedLeads({
                                         id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
                                     >
                                         {fordesignation === "admin" && (
-                                            <td>
+                                            <td className='AEP-sticky-left-1'>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
@@ -264,8 +264,8 @@ function EmployeeForwardedLeads({
 
                                             </td>
                                         )}
-                                        <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
-                                        <td className="rm-sticky-left-2">{company["Company Name"]}</td>
+                                        <td className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                        <td className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-between wApp">
                                                 <div>{company["Company Number"]}</div>
@@ -368,7 +368,7 @@ function EmployeeForwardedLeads({
                                         <td>{formatDateNew(company["AssignDate"])}</td>
                                         <td>{company.bdmName}</td>
                                         <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                        <td>
+                                        {fordesignation !== "admin" && (<td>
                                             {company.bdmAcceptStatus === "NotForwarded" ? (<>
                                                 <TiArrowForward
                                                     // onClick={() => {
@@ -443,7 +443,7 @@ function EmployeeForwardedLeads({
                                                                 color="grey"
                                                             />
                                                         </>)}
-                                        </td>
+                                        </td>)}
                                         <td className="rm-sticky-action">
                                             <FeedbackDialog
                                                 key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
