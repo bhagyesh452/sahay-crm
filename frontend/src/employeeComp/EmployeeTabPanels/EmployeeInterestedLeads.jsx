@@ -213,34 +213,42 @@ function EmployeeInterestedLeads({
                     />
                   </td>
                   <td>
-                    <div className="d-flex align-items-center">
-                      <EmployeeStatusChange
-                        key={`${company["Company Name"]}-${index}`}
-                        companyName={company["Company Name"]}
-                        companyStatus={company.Status}
-                        id={company._id}
-                        refetch={refetch}
-                        mainStatus={dataStatus}
-                        setCompanyName={setCompanyName}
-                        setCompanyEmail={setCompanyEmail}
-                        setCompanyInco={setCompanyInco}
-                        setCompanyId={setCompanyId}
-                        setCompanyNumber={setCompanyNumber}
-                        setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                        setNewBdeName={setNewBdeName}
-                        isDeletedEmployeeCompany={
-                          company.isDeletedEmployeeCompany
-                        }
-                        cemail={company["Company Email"]}
-                        cindate={company["Incorporation Date"]}
-                        cnum={company["Company Number"]}
-                        ename={company.ename}
-                        bdmAcceptStatus={company.bdmAcceptStatus}
-                        handleFormOpen={handleOpenFormOpen}
-                      />
-                      <div className={company.interestedInformation ? "intersted-history-btn" : "intersted-history-btn disabled"}>
 
-                        <FaEye 
+                    <div className="d-flex align-items-center">
+                      {fordesignation === "admin" ? (
+                        <div
+                          className={company.Status === "Interested" ? "dfault_interested-status" :
+                            company.Status === "FollowUp" ? "dfault_followup-status" :
+                              null}>
+                          {company.Status}
+                        </div>) : (
+                        <EmployeeStatusChange
+                          key={`${company["Company Name"]}-${index}`}
+                          companyName={company["Company Name"]}
+                          companyStatus={company.Status}
+                          id={company._id}
+                          refetch={refetch}
+                          mainStatus={dataStatus}
+                          setCompanyName={setCompanyName}
+                          setCompanyEmail={setCompanyEmail}
+                          setCompanyInco={setCompanyInco}
+                          setCompanyId={setCompanyId}
+                          setCompanyNumber={setCompanyNumber}
+                          setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                          setNewBdeName={setNewBdeName}
+                          isDeletedEmployeeCompany={
+                            company.isDeletedEmployeeCompany
+                          }
+                          cemail={company["Company Email"]}
+                          cindate={company["Incorporation Date"]}
+                          cnum={company["Company Number"]}
+                          ename={company.ename}
+                          bdmAcceptStatus={company.bdmAcceptStatus}
+                          handleFormOpen={handleOpenFormOpen}
+                        />
+                      )}
+                      <div className={company.interestedInformation ? "intersted-history-btn" : "intersted-history-btn disabled"}>
+                        <FaEye
                           key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                           style={{ border: "transparent", background: "none" }}
                           data-bs-toggle="modal"

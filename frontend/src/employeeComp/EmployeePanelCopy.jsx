@@ -53,7 +53,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const [employenewEmpData, setEmployenewEmpData] = useState([]);
     const [nowToFetch, setNowToFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 50;
+    const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const { userId } = useParams();

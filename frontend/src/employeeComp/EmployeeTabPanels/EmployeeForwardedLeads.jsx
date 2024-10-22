@@ -217,8 +217,8 @@ function EmployeeForwardedLeads({
                                                 </label>
                                             </th>
                                         )}
-                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Company Name</th>
+                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>Company Name</th>
                                     <th>Company No</th>
                                     <th>Call History</th>
                                     <th>BDE Status</th>
@@ -264,8 +264,8 @@ function EmployeeForwardedLeads({
 
                                             </td>
                                         )}
-                                        <td className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>{startIndex + index + 1}</td>
-                                        <td className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>{company["Company Name"]}</td>
+                                        <td className={fordesignation === "admin" ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                        <td className={fordesignation === "admin" ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-between wApp">
                                                 <div>{company["Company Number"]}</div>
@@ -291,7 +291,12 @@ function EmployeeForwardedLeads({
                                             />
                                         </td>
                                         <td>
-                                            {company.bdeOldStatus}
+                                            <div
+                                                className={company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
+                                                    company.bdeOldStatus === "FollowUp" ? "dfault_followup-status" :
+                                                        null}>
+                                                {company.bdeOldStatus}
+                                            </div>
                                         </td>
                                         <td>
                                             <div
@@ -321,7 +326,14 @@ function EmployeeForwardedLeads({
                                                 />
                                             </div>
                                         </td>
-                                        <td>{company.Status}</td>
+                                        <td>
+                                            <div
+                                                className={company.Status === "Interested" ? "dfault_interested-status" :
+                                                    company.Status === "FollowUp" ? "dfault_followup-status" :
+                                                        null}>
+                                                {company.Status}
+                                            </div>
+                                        </td>
                                         <td>
                                             <div key={company._id}
                                                 style={{
