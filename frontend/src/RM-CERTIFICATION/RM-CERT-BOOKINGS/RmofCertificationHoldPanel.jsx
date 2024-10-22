@@ -1460,19 +1460,19 @@ function RmofCertificationHoldPanel({ searchText, showFilter, totalFilteredData,
                         </div>
                       </td>
                       <td>
-                      <RMRemarksDialog
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        historyRemarks={obj.Remarks}
-                        ename={employeeData.ename}
-                        designation={employeeData.designation}
-                        bdeName={obj.bdeName}
-                        bdmName={obj.bdmName}
-                      />
+                        <RMRemarksDialog
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          historyRemarks={obj.Remarks}
+                          ename={employeeData.ename}
+                          designation={employeeData.designation}
+                          bdeName={obj.bdeName}
+                          bdmName={obj.bdmName}
+                        />
                       </td>
-                      
+
                       {/* <td className="td_of_remarks">
                         <div className="d-flex align-items-center justify-content-between wApp">
                           <div
