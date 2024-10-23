@@ -656,8 +656,8 @@ span.input-group-text {
   background: #fff9e8;
   color: #000;
 }
-#selected_admin {
-  background: #d9d9d9 !important;
+#selected_admin td{
+  background: #fff7b4  !important;
   color: #000;
 }
 .mr-2 {
