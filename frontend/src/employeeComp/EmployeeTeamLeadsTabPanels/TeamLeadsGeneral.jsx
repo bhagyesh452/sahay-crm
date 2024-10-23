@@ -10,7 +10,7 @@ import Nodata from '../../components/Nodata';
 import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
-import RemarksDialog from '../ExtraComponents/RemarksDialog';
+import TeamLeadsRemarksDialog from '../ExtraComponents/TeamLeadsRemarksDialog';
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -236,20 +236,18 @@ function TeamLeadsGeneral({
                                             <p className="rematkText text-wrap mb-0 mr-1" title={company.Remarks}>
                                                 {!company["Remarks"] ? "No Remarks" : company.Remarks}
                                             </p>
-                                            <RemarksDialog
-                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                currentCompanyName={company["Company Name"]}
-                                                //remarksHistory={remarksHistory} // pass your remarks history data
+                                            <TeamLeadsRemarksDialog
+                                                companyName={company["Company Name"]}
                                                 companyId={company._id}
-                                                remarksKey="bdmRemarks" // Adjust this based on the type of remarks (general or bdm)
-                                                // isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                remarksKey="remarks"
+                                                isEditable={false}
                                                 bdmAcceptStatus={company.bdmAcceptStatus}
                                                 companyStatus={company.Status}
-                                                secretKey={secretKey}
-                                                //fetchRemarksHistory={fetchRemarksHistory}
-                                                bdeName={company.ename}
-                                                refetch={refetchTeamLeads}
+                                                name={company.ename}
                                                 mainRemarks={company.Remarks}
+                                                designation={designation}
+                                                refetch={refetchTeamLeads}
+                                                isBdmRemarks={true}
                                             />
                                         </div>
                                     </td>
@@ -316,7 +314,7 @@ function TeamLeadsGeneral({
             )} */}
 
             {/* {addFormOpen && (
-                <AddLeadForm
+                // <AddLeadForm
                     employeeEmail={email}
                     newBdeName={newBdeName}
                     isDeletedEmployeeCompany={deletedEmployeeStatus}

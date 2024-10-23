@@ -287,6 +287,67 @@ router.post("/update-remarks-bdm/:id", async (req, res) => {
   }
 });
 
+router.delete("/delete-bdm-remarks/:companyId", async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    const { remarksId } = req.query;
+
+    console.log("Company ID is:", companyId);
+    console.log("Remarks ID is:", remarksId);
+
+    // Find the document by companyId
+    const data = await CompleteRemarksHistoryLeads.findOne({ companyID: companyId });
+
+    // Check if the company and remarks exist
+    if (!data || !data.remarks || data.remarks.length === 0) {
+      return res.status(404).json({ message: "Company or remarks not found." });
+    }
+
+    // Find the index of the remark to be deleted
+    const remarkIndex = data.remarks.findIndex(remark => remark._id.toString() === remarksId);
+
+    // If the remark is not found
+    if (remarkIndex === -1) {
+      return res.status(404).json({ message: "Remark not found." });
+    }
+
+    // Remove the remark from the array
+    data.remarks.splice(remarkIndex, 1);
+
+    // Save the updated document after removing the remark
+    await data.save();
+
+    // Check if the remarks array is empty after deletion
+    let updatedBdmRemarks;
+    if (data.remarks.length === 0) {
+      // If no remarks left, set 'No Remarks Added' in the company collection
+      updatedBdmRemarks = "No Remarks Added";
+    } else {
+      // If there are remarks left, use the bdmRemarks from the last remaining remark
+      updatedBdmRemarks = data.remarks[data.remarks.length - 1].bdmRemarks;
+    }
+
+    // Update the company collection's bdmRemarks field
+    await CompanyModel.findOneAndUpdate(
+      { _id: companyId },
+      { bdmRemarks: updatedBdmRemarks },
+      { new: true }
+    );
+
+    console.log("Updated data after deletion:", data);
+
+    // Return success response
+    return res.status(200).json({
+      message: "Remark deleted successfully.",
+      updatedRemarks: data.remarks,
+      updatedBdmRemarks
+    });
+  } catch (error) {
+    console.error("Error deleting remark:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 
 router.delete("/delete-remarks-history/:id", async (req, res) => {
   const { id } = req.params;
@@ -447,7 +508,7 @@ router.get("/remarks-history-complete/:id", async (req, res) => {
 router.delete("/remarks-history/:id", async (req, res) => {
   const { id } = req.params;
   const { companyId } = req.query;
-  console.log("companyId", companyId , id)
+  console.log("companyId", companyId, id)
   try {
     await RemarksHistory.findByIdAndDelete(id);
     // Now, find the corresponding document in CompleteRemarksHistoryLeads and remove the remark from the `remarks` array

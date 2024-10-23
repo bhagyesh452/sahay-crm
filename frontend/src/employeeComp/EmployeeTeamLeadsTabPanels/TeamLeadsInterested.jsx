@@ -5,7 +5,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { GoArrowLeft } from "react-icons/go";
 import { GoArrowRight } from "react-icons/go";
 import Nodata from '../../components/Nodata';
-import RemarksDialog from '../ExtraComponents/RemarksDialog';
+import TeamLeadsRemarksDialog from '../ExtraComponents/TeamLeadsRemarksDialog';
 import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
@@ -233,21 +233,18 @@ function TeamLeadsInterested({
                                             <p className="rematkText text-wrap mb-0 mr-1" title={company.Remarks}>
                                                 {!company["Remarks"] ? "No Remarks" : company.Remarks}
                                             </p>
-                                            <RemarksDialog
-                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                currentCompanyName={company["Company Name"]}
-                                                //remarksHistory={remarksHistory} // pass your remarks history data
+                                            <TeamLeadsRemarksDialog
+                                                companyName={company["Company Name"]}
                                                 companyId={company._id}
-                                                remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                remarksKey="remarks"
+                                                isEditable={false}
                                                 bdmAcceptStatus={company.bdmAcceptStatus}
                                                 companyStatus={company.Status}
-                                                secretKey={secretKey}
-                                                //fetchRemarksHistory={fetchRemarksHistory}
-                                                bdeName={company.ename}
-                                                refetch={refetchTeamLeads}
+                                                name={company.ename}
                                                 mainRemarks={company.Remarks}
-                                                isBdmStatusChange={true}
+                                                designation={designation}
+                                                refetch={refetchTeamLeads}
+                                                isBdmRemarks={true}
                                             />
                                         </div>
                                     </td>
@@ -276,20 +273,18 @@ function TeamLeadsInterested({
                                             <p className="rematkText text-wrap mb-0 mr-1" title={company.bdmRemarks}>
                                                 {!company["bdmRemarks"] ? "No Remarks" : company.bdmRemarks}
                                             </p>
-                                            <RemarksDialog
-                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                currentCompanyName={company["Company Name"]}
-                                                //remarksHistory={remarksHistory} // pass your remarks history data
+                                            <TeamLeadsRemarksDialog
+                                                companyName={company["Company Name"]}
                                                 companyId={company._id}
-                                                remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                isEditable={company.bdmAcceptStatus === "Accept"} // Allow editing if status is not "Accept"
+                                                remarksKey="bdmRemarks"
+                                                isEditable={true}
                                                 bdmAcceptStatus={company.bdmAcceptStatus}
                                                 companyStatus={company.Status}
-                                                secretKey={secretKey}
-                                                //fetchRemarksHistory={fet  chRemarksHistory}
-                                                bdeName={company.ename}
-                                                refetch={refetchTeamLeads}
+                                                name={company.bdmName}
                                                 mainRemarks={company.Remarks}
+                                                designation={designation}
+                                                refetch={refetchTeamLeads}
+                                                isBdmRemarks={true}
                                             />
                                         </div>
                                     </td>
