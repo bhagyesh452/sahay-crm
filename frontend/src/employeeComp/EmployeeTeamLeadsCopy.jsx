@@ -103,13 +103,13 @@ function EmployeeTeamLeadsCopy() {
         setCompanyNumber(cnum);
         setDeletedEmployeeStatus(isDeletedEmployeeCompany)
         setNewBdeName(ename)
-        if (!isDeletedEmployeeCompany) {
-            console.log("formchal")
-            setFormOpen(true);
-        } else {
-            console.log("addleadfromchal")
-            setAddFormOpen(true)
-        }
+        // if (!isDeletedEmployeeCompany) {
+        console.log("formchal")
+        setFormOpen(true);
+        // } else {
+        //     console.log("addleadfromchal")
+        //     setAddFormOpen(true)
+        // }
     };
 
     const handleCloseFormOpen = () => {
@@ -156,7 +156,7 @@ function EmployeeTeamLeadsCopy() {
         }
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         if (employeeName) {
             fetchTeamLeadsData();
         }
@@ -189,7 +189,7 @@ function EmployeeTeamLeadsCopy() {
         keepPreviousData: true, // This helps prevent a loading state when moving between pages
     });
 
-    console.log("Team leads data is :", teamLeadsData?.data);
+    // console.log("Team leads data is :", teamLeadsData?.data);
 
     useEffect(() => {
         fetchData();

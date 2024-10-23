@@ -185,8 +185,8 @@ function App() {
             <Route path="/employee-dashboard/:userId" element={<EmployeeDashboard />} />
             {/* <Route path="/employee-data/:userId" element={<EmployeePanel />} /> */}
             <Route path="/employee-data/:userId" element={<EmployeePanelCopy fordesignation="salesexecutive" />} />
-            <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} />
-            <Route path="/employee-team-leads-copy/:userId" element={<EmployeeTeamLeadsCopy />} />
+            {/* <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} /> */}
+            <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeadsCopy />} />
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
             <Route path="/employee-assets/:userId" element={<EmployeeAssets />} />
