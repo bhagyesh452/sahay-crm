@@ -173,7 +173,8 @@ function EmployeeInterestedInformationDialog({
 
     // Reset form data to initial state
     const handleClearInterestedInformation = () => {
-        setFormData({
+      {fordesignation !== "admin" && fordesignation !== "datamanager" &&
+          setFormData({
             clientWhatsAppRequest: {
                 nextFollowUpDate: '',
                 remarks: ''
@@ -199,8 +200,9 @@ function EmployeeInterestedInformationDialog({
             mainQuestion: [], // Reset the main questions tracking
             ename: ename,
             "Company Name": companyName
-        });
-        if(fordesignation !== "admin" || fordesignation !== "datamanager") {
+        })
+    }
+        if(fordesignation !== "admin" && fordesignation !== "datamanager") {
             setStatus(companyStatus)
             setStatusClass("untouched_status")
         }
