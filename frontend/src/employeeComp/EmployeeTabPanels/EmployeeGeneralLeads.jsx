@@ -103,19 +103,21 @@ function EmployeeGeneralLeads({
                             </thead>
                             
                                 <tbody>
-                                    {generalData.map((company, index) => (
+                                    {generalData && generalData.map((company, index) => (
                                         <tr key={company._id}
-                                            onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
-                                            onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
-                                            onMouseUp={handleMouseUp} // End drag selection
-                                            id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
+                                            // onMouseDown={() => 
+                                            //     handleMouseDown(company._id)
+                                            // } // Start drag selection
+                                            // onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                            // onMouseUp={handleMouseUp} // End drag selection
+                                            id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
                                         >
                                             {fordesignation === "admin" && (
                                                 <td className='AEP-sticky-left-1'>
                                                     <label className='table-check'>
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedRows.includes(company._id)}
+                                                            checked={selectedRows && selectedRows.includes(company._id)}
                                                             onChange={(e) => handleCheckboxChange(company._id , e)}
                                                         />
                                                         <span class="table_checkmark"></span>

@@ -237,7 +237,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
-            queryKey: ['newData', cleanString(data.ename), currentPage, searchQuery], // Add searchQuery to the queryKey
+            queryKey: ['newData', currentPage, dataStatus,searchQuery], // Add searchQuery to the queryKey
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees-new/${cleanString(data.ename)}`, {
@@ -264,53 +264,53 @@ function EmployeePanelCopy({ fordesignation }) {
         refetch(); // Refetch the data
     };
 
-    useEffect(() => {
-        if (isLoading) {
-            setOpenBacdrop(true); // Set openBackDrop to true when loading
-        } else {
-            setOpenBacdrop(false); // Set openBackDrop to false when not loading
-        }
+    // useEffect(() => {
+    //     if (isLoading) {
+    //         setOpenBacdrop(true); // Set openBackDrop to true when loading
+    //     } else {
+    //         setOpenBacdrop(false); // Set openBackDrop to false when not loading
+    //     }
 
-        if (queryData) {
-            // Assuming queryData now contains both data and revertedData
-            setFetchedData(queryData.data); // Update the fetched data
-            setRevertedData(queryData.revertedData); // Set revertedData based on response
-            setmoreEmpData(queryData.data);
-            setEmployenewEmpData(queryData.data);
-            setTotalCounts(queryData.totalCounts);
-            setTotalPages(Math.ceil(queryData.totalPages)); // Calculate total pages
-        }
-    }, [isLoading, queryData, dataStatus, currentPage]);
+    //     if (queryData) {
+    //         // Assuming queryData now contains both data and revertedData
+    //         setFetchedData(queryData.data); // Update the fetched data
+    //         setRevertedData(queryData.revertedData); // Set revertedData based on response
+    //         setmoreEmpData(queryData.data);
+    //         setEmployenewEmpData(queryData.data);
+    //         setTotalCounts(queryData.totalCounts);
+    //         setTotalPages(Math.ceil(queryData.totalPages)); // Calculate total pages
+    //     }
+    // }, [isLoading, queryData, dataStatus, currentPage]);
 
-    // Create a debounced version of refetch
-    const debouncedRefetch = useCallback(debounce(() => {
-        refetch();
-    }, 300), [refetch]);
+    // // Create a debounced version of refetch
+    // const debouncedRefetch = useCallback(debounce(() => {
+    //     refetch();
+    // }, 300), [refetch]);
 
-    const handlnewEmpDataStatusChange = useCallback((status, tabRef) => {
-        setdataStatus(status);
-        setCurrentPage(0); // Reset to the first page
-        debouncedRefetch(); // Call the debounced refetch function
-        setActiveTabId(status)
-        if (tabRef && tabRef.current) {
-            tabRef.current.click(); // Programmatically click the anchor tag to trigger Bootstrap tab switch
-        }
-    }, [debouncedRefetch]);
+    // const handlnewEmpDataStatusChange = useCallback((status, tabRef) => {
+    //     setdataStatus(status);
+    //     setCurrentPage(0); // Reset to the first page
+    //     //debouncedRefetch(); // Call the debounced refetch function
+    //     setActiveTabId(status)
+    //     if (tabRef && tabRef.current) {
+    //         tabRef.current.click(); // Programmatically click the anchor tag to trigger Bootstrap tab switch
+    //     }
+    // }, [refetch]);
 
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
 
-    // -------------------------call history functions-------------------------------------
+    // // -------------------------call history functions-------------------------------------
     const interestedTabRef = useRef(null); // Ref for the Interested tab
     const maturedTabRef = useRef(null); // Ref for the Matured tab
     const allTabRef = useRef(null); // Ref for the Matured tab
     const notInterestedTabRef = useRef(null); // Ref for the Matured tab
     const forwardedTabRef = useRef(null); // Ref for the Matured tab
-    const handleShowCallHistory = (companyName, clientNumber) => {
-        setShowCallHistory(true)
-        setClientNumber(clientNumber)
-    }
+    // const handleShowCallHistory = (companyName, clientNumber) => {
+    //     setShowCallHistory(true)
+    //     setClientNumber(clientNumber)
+    // }
 
     const hanleCloseCallHistory = () => {
         setShowCallHistory(false);
@@ -327,24 +327,24 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     };
 
-    // -----------------matured leads--------------------------
+    // // -----------------matured leads--------------------------
 
-    const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename) => {
-        setCompanyName(cname);
-        setCompanyEmail(cemail);
-        setCompanyInco(cindate);
-        setCompanyId(employeeId);
-        setCompanyNumber(cnum);
-        setDeletedEmployeeStatus(isDeletedEmployeeCompany)
-        setNewBdeName(ename)
-        if (!isDeletedEmployeeCompany) {
-            console.log("formchal")
-            setFormOpen(true);
-        } else {
-            console.log("addleadfromchal")
-            setAddFormOpen(true)
-        }
-    }
+    // const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename) => {
+    //     setCompanyName(cname);
+    //     setCompanyEmail(cemail);
+    //     setCompanyInco(cindate);
+    //     setCompanyId(employeeId);
+    //     setCompanyNumber(cnum);
+    //     setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+    //     setNewBdeName(ename)
+    //     if (!isDeletedEmployeeCompany) {
+    //         console.log("formchal")
+    //         setFormOpen(true);
+    //     } else {
+    //         console.log("addleadfromchal")
+    //         setAddFormOpen(true)
+    //     }
+    // }
 
     const handleCloseFormOpen = () => {
         setFormOpen(false);
@@ -356,7 +356,7 @@ function EmployeePanelCopy({ fordesignation }) {
         setCompanyNumber("");
         setDeletedEmployeeStatus("")
         setNewBdeName("")
-        debouncedRefetch();
+        //debouncedRefetch();
         if (activeTabId === "Interested" && interestedTabRef.current) {
             interestedTabRef.current.click(); // Trigger the Interested tab click
         } else if (activeTabId === "Matured" && maturedTabRef.current) {
@@ -370,269 +370,271 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     }
 
-    // -------------------------------------------checkbox change funtions-----------------------
+    // // -------------------------------------------checkbox change funtions-----------------------
 
-    const [selectedRows, setSelectedRows] = useState([]);
-    const [startRowIndex, setStartRowIndex] = useState(null);
-    const [isSelecting, setIsSelecting] = useState(false);
-    const handleCheckboxChange = (id, event) => {
-        // If the id is 'all', toggle all checkboxes
-        if (id === "all") {
-            // If all checkboxes are already selected, clear the selection; otherwise, select all
-            setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === fetchedData.length
-                    ? []
-                    : fetchedData.map((row) => row._id)
-            );
-        } else {
-            // Toggle the selection status of the row with the given id
-            setSelectedRows((prevSelectedRows) => {
-                // If the Ctrl key is pressed
-                if (event.ctrlKey) {
-                    //console.log("pressed");
-                    const selectedIndex = fetchedData.findIndex((row) => row._id === id);
-                    const lastSelectedIndex = fetchedData.findIndex((row) =>
-                        prevSelectedRows.includes(row._id)
-                    );
+    // const [selectedRows, setSelectedRows] = useState([]);
+    // const [startRowIndex, setStartRowIndex] = useState(null);
+    // const [isSelecting, setIsSelecting] = useState(false);
+    // const handleCheckboxChange = (id, event) => {
+    //     // If the id is 'all', toggle all checkboxes
+    //     if (id === "all") {
+    //         // If all checkboxes are already selected, clear the selection; otherwise, select all
+    //         setSelectedRows((prevSelectedRows) =>
+    //             prevSelectedRows.length === fetchedData.length
+    //                 ? []
+    //                 : fetchedData.map((row) => row._id)
+    //         );
+    //     } else {
+    //         // Toggle the selection status of the row with the given id
+    //         setSelectedRows((prevSelectedRows) => {
+    //             // If the Ctrl key is pressed
+    //             if (event.ctrlKey) {
+    //                 //console.log("pressed");
+    //                 const selectedIndex = fetchedData.findIndex((row) => row._id === id);
+    //                 const lastSelectedIndex = fetchedData.findIndex((row) =>
+    //                     prevSelectedRows.includes(row._id)
+    //                 );
 
-                    // Select rows between the last selected row and the current row
-                    if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
-                        const start = Math.min(selectedIndex, lastSelectedIndex);
-                        const end = Math.max(selectedIndex, lastSelectedIndex);
-                        const idsToSelect = fetchedData
-                            .slice(start, end + 1)
-                            .map((row) => row._id);
+    //                 // Select rows between the last selected row and the current row
+    //                 if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+    //                     const start = Math.min(selectedIndex, lastSelectedIndex);
+    //                     const end = Math.max(selectedIndex, lastSelectedIndex);
+    //                     const idsToSelect = fetchedData
+    //                         .slice(start, end + 1)
+    //                         .map((row) => row._id);
 
-                        return prevSelectedRows.includes(id)
-                            ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
-                            : [...prevSelectedRows, ...idsToSelect];
-                    }
-                }
+    //                     return prevSelectedRows.includes(id)
+    //                         ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+    //                         : [...prevSelectedRows, ...idsToSelect];
+    //                 }
+    //             }
 
-                // Toggle the selection status of the row with the given id
-                return prevSelectedRows.includes(id)
-                    ? prevSelectedRows.filter((rowId) => rowId !== id)
-                    : [...prevSelectedRows, id];
-            });
-        }
-    };
-
-
-    const handleMouseDown = (id) => {
-        // Initiate drag selection
-        setStartRowIndex(fetchedData.findIndex((row) => row._id === id));
-    };
-
-    const handleMouseEnter = (id) => {
-        if (startRowIndex !== null && fordesignation === "admin") {
-            const endRowIndex = fetchedData.findIndex(row => row._id === id);
-
-            // Ensure startRowIndex and endRowIndex are valid and within array bounds
-            const validStartIndex = Math.min(startRowIndex, endRowIndex);
-            const validEndIndex = Math.max(startRowIndex, endRowIndex);
-
-            // Only proceed if valid indices
-            if (validStartIndex >= 0 && validEndIndex < fetchedData.length) {
-                const selectedRange = [];
-                for (let i = validStartIndex; i <= validEndIndex; i++) {
-                    if (fetchedData[i] && fetchedData[i]._id) {
-                        // Ensure that fetchedData[i] is not undefined and has an _id
-                        selectedRange.push(fetchedData[i]._id);
-                    }
-                }
-
-                setSelectedRows(selectedRange); // Update selected rows
-            }
-        }
-    };
-
-    const handleMouseUp = () => {
-        // End drag selection
-        setStartRowIndex(null);
-    };
-
-    // console.log("fordesignation", fordesignation)
-    // console.log("fetcgeheddata", fetchedData)
-    // console.log("dataStatus", dataStatus)
-
-    // -----------------------------assign leads functions---------------------------
-    const [openAssign, openchangeAssign] = useState(false);
-    const [selectedOption, setSelectedOption] = useState("direct");
-    const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
-
-    const functionOpenAssign = () => {
-        openchangeAssign(true);
-    };
-    const closepopupAssign = () => {
-        openchangeAssign(false);
-    };
-    const handleOptionChange = (event) => {
-        setSelectedOption(event.target.value);
-    };
-
-    const handleUploadData = async (e) => {
-        const currentDate = new Date().toLocaleDateString();
-        const currentTime = new Date().toLocaleTimeString();
-
-        const csvdata = employenewEmpData
-            .filter((employee) => selectedRows.includes(employee._id))
-            .map((employee) => ({
-                ...employee,
-                //Status: "Untouched",
-                Remarks: "No Remarks Added",
-            }));
-        console.log(csvdata)
-
-        try {
-            Swal.fire({
-                title: 'Assigning...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            const response = await axios.post(`${secretKey}/company-data/assign-new`, {
-                ename: selectedOption === "extractedData" ? "Extracted" : newemployeeSelection,
-                data: csvdata,
-            });
-
-            Swal.close();
-            Swal.fire({
-                title: "Data Sent!",
-                text: "Data sent successfully!",
-                icon: "success",
-            });
+    //             // Toggle the selection status of the row with the given id
+    //             return prevSelectedRows.includes(id)
+    //                 ? prevSelectedRows.filter((rowId) => rowId !== id)
+    //                 : [...prevSelectedRows, id];
+    //         });
+    //     }
+    // };
 
 
-            setnewEmployeeSelection("Not Alloted");
-            closepopupAssign();
-            setSelectedRows([])
-            refetch()
-            //   setIsFilter(false)
-            //   setIsSearch(false)
-        } catch (error) {
-            console.error("Error updating employee data:", error);
-            Swal.close();
-            Swal.fire({
-                title: "Error!",
-                text: "Failed to update employee data. Please try again later.",
-                icon: "error",
-            });
-        }
-    };
+    // const handleMouseDown = (id) => {
+    //     // Initiate drag selection
+    //     setStartRowIndex(fetchedData.findIndex((row) => row._id === id));
+    // };
 
-    // ----------------forward to bdm popup------------------
-    const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
-    const [bdmName, setBdmName] = useState("Not Alloted");
-    const handleCloseForwardBdmPopup = () => {
-        setOpenAssignToBdm(false);
-    };
-    const handleForwardDataToBDM = async (bdmName) => {
-        const data = employenewEmpData.filter((employee) => selectedRows.includes(employee._id));
-        // console.log("data is:", data);
-        if (selectedRows.length === 0) {
-            Swal.fire("Please Select the Company to Forward", "", "Error");
-            setBdmName("Not Alloted");
-            handleCloseForwardBdmPopup();
-            return;
-        }
-        try {
-            Swal.fire({
-                title: 'Assigning...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
-                data: data,
-                name: bdmName
-            });
-            Swal.close();
-            Swal.fire({
-                title: "Data Sent!",
-                text: "Data sent successfully!",
-                icon: "success",
-            });
-            refetch()
-            setBdmName("Not Alloted");
-            handleCloseForwardBdmPopup();
-            setSelectedRows([]);
-            //setdataStatus("All");
+    // const handleMouseEnter = (id) => {
+    //     if (startRowIndex !== null && fordesignation === "admin") {
+    //         const endRowIndex = fetchedData.findIndex(row => row._id === id);
 
-        } catch (error) {
-            console.log("error fetching data", error.message);
-            Swal.close();
-            Swal.fire({
-                title: "Error!",
-                text: "Failed to update employee data. Please try again later.",
-                icon: "error",
-            });
-        }
-    };
+    //         // Ensure startRowIndex and endRowIndex are valid and within array bounds
+    //         const validStartIndex = Math.min(startRowIndex, endRowIndex);
+    //         const validEndIndex = Math.max(startRowIndex, endRowIndex);
 
-    // -----------------------functions to change url--------------------------
-    const handleChangeUrlPrev = () => {
-        const currId = id;
-        const salesExecutivesIds = newEmpData
-      .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
-      .map((employee) => employee._id);
-        //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+    //         // Only proceed if valid indices
+    //         if (validStartIndex >= 0 && validEndIndex < fetchedData.length) {
+    //             const selectedRange = [];
+    //             for (let i = validStartIndex; i <= validEndIndex; i++) {
+    //                 if (fetchedData[i] && fetchedData[i]._id) {
+    //                     // Ensure that fetchedData[i] is not undefined and has an _id
+    //                     selectedRange.push(fetchedData[i]._id);
+    //                 }
+    //             }
 
-        // Find the index of the currentId in the newEmpData array
-        const currentIndex = salesExecutivesIds.findIndex((itemId) => itemId === currId);
+    //             setSelectedRows(selectedRange); // Update selected rows
+    //         }
+    //     }
+    // };
 
-        if (currentIndex !== -1) {
-            // Calculate the previous index in a circular manner
-            const prevIndex = (currentIndex - 1 + salesExecutivesIds.length) % salesExecutivesIds.length;
+    // const handleMouseUp = () => {
+    //     // End drag selection
+    //     setStartRowIndex(null);
+    // };
 
-            if (currentIndex === 0) {
-                // If it's the first page, navigate to the employees page
-                window.location.replace(`/managing-director/user`);
-                //setBackButton(false)
-            } else {
-                // Get the previousId from the salesExecutivesIds array
-                const prevId = salesExecutivesIds[prevIndex];
-                window.location.replace(`/managing-director/employees/${prevId}`);
-            }
-            //setBackButton(prevIndex !== 0);
-        } else {
-            console.log("Current ID not found in newEmpData array.");
-        }
-    };
+    // // console.log("fordesignation", fordesignation)
+    // // console.log("fetcgeheddata", fetchedData)
+    // // console.log("dataStatus", dataStatus)
 
-    const handleChangeUrl = () => {
-        const currId = id;
-        // Filter the response data to find _id values where designation is "Sales Executive" or "Sales Manager"
-      const salesExecutivesIds = newEmpData
-      .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
-      .map((employee) => employee._id);
+    // // -----------------------------assign leads functions---------------------------
+    // const [openAssign, openchangeAssign] = useState(false);
+    // const [selectedOption, setSelectedOption] = useState("direct");
+    // const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
+
+    // const functionOpenAssign = () => {
+    //     openchangeAssign(true);
+    // };
+    // const closepopupAssign = () => {
+    //     openchangeAssign(false);
+    // };
+    // const handleOptionChange = (event) => {
+    //     setSelectedOption(event.target.value);
+    // };
+
+    // const handleUploadData = async (e) => {
+    //     const currentDate = new Date().toLocaleDateString();
+    //     const currentTime = new Date().toLocaleTimeString();
+
+    //     const csvdata = employenewEmpData
+    //         .filter((employee) => selectedRows.includes(employee._id))
+    //         .map((employee) => ({
+    //             ...employee,
+    //             //Status: "Untouched",
+    //             Remarks: "No Remarks Added",
+    //         }));
+    //     console.log(csvdata)
+
+    //     try {
+    //         Swal.fire({
+    //             title: 'Assigning...',
+    //             allowOutsideClick: false,
+    //             didOpen: () => {
+    //                 Swal.showLoading();
+    //             }
+    //         });
+    //         const response = await axios.post(`${secretKey}/company-data/assign-new`, {
+    //             ename: selectedOption === "extractedData" ? "Extracted" : newemployeeSelection,
+    //             data: csvdata,
+    //         });
+
+    //         Swal.close();
+    //         Swal.fire({
+    //             title: "Data Sent!",
+    //             text: "Data sent successfully!",
+    //             icon: "success",
+    //         });
+
+
+    //         setnewEmployeeSelection("Not Alloted");
+    //         closepopupAssign();
+    //         setSelectedRows([])
+    //         refetch()
+    //         //   setIsFilter(false)
+    //         //   setIsSearch(false)
+    //     } catch (error) {
+    //         console.error("Error updating employee data:", error);
+    //         Swal.close();
+    //         Swal.fire({
+    //             title: "Error!",
+    //             text: "Failed to update employee data. Please try again later.",
+    //             icon: "error",
+    //         });
+    //     }
+    // };
+
+    // // ----------------forward to bdm popup------------------
+    // const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
+    // const [bdmName, setBdmName] = useState("Not Alloted");
+    // const handleCloseForwardBdmPopup = () => {
+    //     setOpenAssignToBdm(false);
+    // };
+    // const handleForwardDataToBDM = async (bdmName) => {
+    //     const data = employenewEmpData.filter((employee) => selectedRows.includes(employee._id));
+    //     // console.log("data is:", data);
+    //     if (selectedRows.length === 0) {
+    //         Swal.fire("Please Select the Company to Forward", "", "Error");
+    //         setBdmName("Not Alloted");
+    //         handleCloseForwardBdmPopup();
+    //         return;
+    //     }
+    //     try {
+    //         Swal.fire({
+    //             title: 'Assigning...',
+    //             allowOutsideClick: false,
+    //             didOpen: () => {
+    //                 Swal.showLoading();
+    //             }
+    //         });
+    //         const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+    //             data: data,
+    //             name: bdmName
+    //         });
+    //         Swal.close();
+    //         Swal.fire({
+    //             title: "Data Sent!",
+    //             text: "Data sent successfully!",
+    //             icon: "success",
+    //         });
+    //         refetch()
+    //         setBdmName("Not Alloted");
+    //         handleCloseForwardBdmPopup();
+    //         setSelectedRows([]);
+    //         //setdataStatus("All");
+
+    //     } catch (error) {
+    //         console.log("error fetching data", error.message);
+    //         Swal.close();
+    //         Swal.fire({
+    //             title: "Error!",
+    //             text: "Failed to update employee data. Please try again later.",
+    //             icon: "error",
+    //         });
+    //     }
+    // };
+
+    // // -----------------------functions to change url--------------------------
+    // const handleChangeUrlPrev = () => {
+    //     const currId = id;
+    //     const salesExecutivesIds = newEmpData
+    //   .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+    //   .map((employee) => employee._id);
+    //     //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+    //     // Find the index of the currentId in the newEmpData array
+    //     const currentIndex = salesExecutivesIds.findIndex((itemId) => itemId === currId);
+
+    //     if (currentIndex !== -1) {
+    //         // Calculate the previous index in a circular manner
+    //         const prevIndex = (currentIndex - 1 + salesExecutivesIds.length) % salesExecutivesIds.length;
+
+    //         if (currentIndex === 0) {
+    //             // If it's the first page, navigate to the employees page
+    //             window.location.replace(`/managing-director/user`);
+    //             //setBackButton(false)
+    //         } else {
+    //             // Get the previousId from the salesExecutivesIds array
+    //             const prevId = salesExecutivesIds[prevIndex];
+    //             window.location.replace(`/managing-director/employees/${prevId}`);
+    //         }
+    //         //setBackButton(prevIndex !== 0);
+    //     } else {
+    //         console.log("Current ID not found in newEmpData array.");
+    //     }
+    // };
+
+    // const handleChangeUrl = () => {
+    //     const currId = id;
+    //     // Filter the response data to find _id values where designation is "Sales Executive" or "Sales Manager"
+    //   const salesExecutivesIds = newEmpData
+    //   .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+    //   .map((employee) => employee._id);
       
-        //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+    //     //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
 
-        // Find the index of the currentId in the newEmpData array
-        const currentIndex = salesExecutivesIds.findIndex((itemId) => itemId === currId);
+    //     // Find the index of the currentId in the newEmpData array
+    //     const currentIndex = salesExecutivesIds.findIndex((itemId) => itemId === currId);
 
-        if (currentIndex !== -1) {
-            // Calculate the next index in a circular manner
-            const nextIndex = (currentIndex + 1) % salesExecutivesIds.length;
+    //     if (currentIndex !== -1) {
+    //         // Calculate the next index in a circular manner
+    //         const nextIndex = (currentIndex + 1) % salesExecutivesIds.length;
 
-            // Get the nextId from the salesExecutivesIds array
-            const nextId = salesExecutivesIds[nextIndex];
-            window.location.replace(`/managing-director/employees/${nextId}`);
-            //setBackButton(nextId !== 0);
-        } else {
-            console.log("Current ID not found in newEmpData array.");
-        }
-    };
-    console.log("selectedRows", selectedRows)
+    //         // Get the nextId from the salesExecutivesIds array
+    //         const nextId = salesExecutivesIds[nextIndex];
+    //         window.location.replace(`/managing-director/employees/${nextId}`);
+    //         //setBackButton(nextId !== 0);
+    //     } else {
+    //         console.log("Current ID not found in newEmpData array.");
+    //     }
+    // };
+    // console.log("selectedRows", selectedRows)
+
+    console.log("fetchedData" , queryData?.data)
 
     return (
         <div>
             {!showCallHistory && !formOpen && !addFormOpen ?
                 (<div className="page-wrapper">
                     <div className="page-wrapper">
-                        <div className="page-header mt-3">
+                        {/* <div className="page-header mt-3">
                             <div className="container-xl">
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
@@ -695,7 +697,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
                                         {fordesignation !== "admin" && (
                                             <div className="btn-group" role="group" aria-label="Basic example">
-                                                {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
+                                                
                                                 <button type="button"
                                                     className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
                                                     onClick={() => setOpenFilterDrawer(true)}
@@ -741,7 +743,6 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 </div>
 
                                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                                    {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
 
                                                     <button type="button" className="btn mybtn"
                                                         onClick={() => { setOpenAssignToBdm(true) }}
@@ -810,7 +811,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <div onCopy={(e) => {
                             e.preventDefault();
                         }}
@@ -823,15 +824,18 @@ function EmployeePanelCopy({ fordesignation }) {
                                             <a
                                                 href="#general"
                                                 ref={allTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handlnewEmpDataStatusChange("All", allTabRef)}
+                                                onClick={() => 
+                                                setdataStatus("All")
+                                                //handlnewEmpDataStatusChange("All", allTabRef)
+                                                }
                                                 className={`nav-link  ${dataStatus === "All" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
 
                                                 <div>General</div>
-                                                <div className="no_badge">
+                                                {/* <div className="no_badge">
                                                     {totalCounts.untouched}
-                                                </div>
+                                                </div> */}
 
                                             </a>
                                         </li>
@@ -839,31 +843,37 @@ function EmployeePanelCopy({ fordesignation }) {
                                             <a
                                                 href="#Interested"
                                                 ref={interestedTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handlnewEmpDataStatusChange("Interested", interestedTabRef)}
+                                                onClick={() => 
+                                                setdataStatus("Interested")
+                                                //handlnewEmpDataStatusChange("Interested", interestedTabRef)
+                                                }
                                                 className={`nav-link ${dataStatus === "Interested" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
                                                 Interested
-                                                <span className="no_badge">
+                                                {/* <span className="no_badge">
                                                     {totalCounts.interested}
-                                                </span>
+                                                </span> */}
                                             </a>
                                         </li>
-                                        <li class="nav-item sales-nav-item data-heading" ref={maturedTabRef}>
+                                         <li class="nav-item sales-nav-item data-heading" ref={maturedTabRef}>
                                             <a
                                                 href="#Matured"
                                                 ref={maturedTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handlnewEmpDataStatusChange("Matured", maturedTabRef)}
+                                                onClick={() => 
+                                                    setdataStatus("Matured")
+                                                    //handlnewEmpDataStatusChange("Matured", maturedTabRef)
+                                                }
                                                 className={`nav-link ${dataStatus === "Matured" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
                                                 Matured
-                                                <span className="no_badge">
+                                                {/* <span className="no_badge">
                                                     {totalCounts.matured}
-                                                </span>
+                                                </span> */}
                                             </a>
                                         </li>
-                                        {data.designation !== "Sales Manager" &&
+                                      {/*  {data.designation !== "Sales Manager" &&
                                             (<li class="nav-item sales-nav-item data-heading">
                                                 <a
                                                     href="#Forwarded"
@@ -892,14 +902,14 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     {totalCounts.notInterested}
                                                 </span>
                                             </a>
-                                        </li>
+                                        </li> */}
                                     </ul>
                                 </div>
                                 <div className="tab-content card-body">
                                     <div className={`tab-pane ${dataStatus === "All" ? "active" : ""}`} id="general">
                                         {activeTabId === "All" && dataStatus === "All" && (
                                             <EmployeeGeneralLeads
-                                                generalData={fetchedData}
+                                                generalData={queryData?.data}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
@@ -913,21 +923,21 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 ename={data.ename}
                                                 email={data.email}
                                                 secretKey={secretKey}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                designation={data.designation}
-                                                fordesignation={fordesignation}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                                selectedRows={selectedRows}
+                                                // handleShowCallHistory={handleShowCallHistory}
+                                                // designation={data.designation}
+                                                // fordesignation={fordesignation}
+                                                // setSelectedRows={setSelectedRows}
+                                                // handleCheckboxChange={handleCheckboxChange}
+                                                // handleMouseDown={handleMouseDown}
+                                                // handleMouseEnter={handleMouseEnter}
+                                                // handleMouseUp={handleMouseUp}
+                                                // selectedRows={selectedRows}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
-                                        {activeTabId === "Interested" && dataStatus === "Interested" && (
+                                        {dataStatus === "Interested" && (
                                             <EmployeeInterestedLeads
-                                                interestedData={fetchedData}
+                                                interestedData={queryData?.data}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
@@ -941,23 +951,23 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 ename={data.ename}
                                                 email={data.email}
                                                 setdataStatus={setdataStatus}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                fetchProjections={fetchProjections}
-                                                projectionData={projectionData}
-                                                handleOpenFormOpen={handleOpenFormOpen}
-                                                designation={data.designation}
-                                                fordesignation={fordesignation}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                                selectedRows={selectedRows}
+                                                // handleShowCallHistory={handleShowCallHistory}
+                                                // fetchProjections={fetchProjections}
+                                                // projectionData={projectionData}
+                                                // handleOpenFormOpen={handleOpenFormOpen}
+                                                // designation={data.designation}
+                                                // fordesignation={fordesignation}
+                                                // setSelectedRows={setSelectedRows}
+                                                // handleCheckboxChange={handleCheckboxChange}
+                                                // handleMouseDown={handleMouseDown}
+                                                // handleMouseEnter={handleMouseEnter}
+                                                // handleMouseUp={handleMouseUp}
+                                                // selectedRows={selectedRows}
                                             />)}
                                     </div>
-                                    <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
-                                        {activeTabId === "Matured" && (<EmployeeMaturedLeads
-                                            maturedLeads={fetchedData}
+                                      <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
+                                        {(<EmployeeMaturedLeads
+                                            maturedLeads={queryData?.data}
                                             isLoading={isLoading}
                                             refetch={refetch}
                                             formatDateNew={formatDateNew}
@@ -971,20 +981,20 @@ function EmployeePanelCopy({ fordesignation }) {
                                             ename={data.ename}
                                             email={data.email}
                                             setdataStatus={setdataStatus}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            fetchProjections={fetchProjections}
-                                            projectionData={projectionData}
-                                            designation={data.designation}
-                                            fordesignation={fordesignation}
-                                            setSelectedRows={setSelectedRows}
-                                            handleCheckboxChange={handleCheckboxChange}
-                                            handleMouseDown={handleMouseDown}
-                                            handleMouseEnter={handleMouseEnter}
-                                            handleMouseUp={handleMouseUp}
-                                            selectedRows={selectedRows}
+                                            // handleShowCallHistory={handleShowCallHistory}
+                                            // fetchProjections={fetchProjections}
+                                            // projectionData={projectionData}
+                                            // designation={data.designation}
+                                            // fordesignation={fordesignation}
+                                            // setSelectedRows={setSelectedRows}
+                                            // handleCheckboxChange={handleCheckboxChange}
+                                            // handleMouseDown={handleMouseDown}
+                                            // handleMouseEnter={handleMouseEnter}
+                                            // handleMouseUp={handleMouseUp}
+                                            // selectedRows={selectedRows}
                                         />)}
                                     </div>
-                                    <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
+                                      {/* <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
                                         {activeTabId === "Forwarded" && (
                                             <EmployeeForwardedLeads
                                                 forwardedLeads={fetchedData}
@@ -1039,7 +1049,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
                                             />)}
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>

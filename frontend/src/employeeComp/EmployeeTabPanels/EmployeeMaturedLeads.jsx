@@ -110,13 +110,13 @@ function EmployeeMaturedLeads({
                             </thead>
                            
                                 <tbody>
-                                    {maturedLeads.map((company, index) => (
+                                    {maturedLeads && maturedLeads.map((company, index) => (
                                         <tr key={company._id}
                                             style={{ border: "1px solid #ddd" }}
-                                            onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
-                                            onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
-                                            onMouseUp={handleMouseUp} // End drag selection
-                                            id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows 
+                                            // onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                            // onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                            // onMouseUp={handleMouseUp} // End drag selection
+                                            id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows 
                                             >
                                             {fordesignation === "admin" && (
                                                 <td
@@ -130,7 +130,7 @@ function EmployeeMaturedLeads({
                                                     <label className='table-check'>
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedRows.includes(
+                                                            checked={selectedRows &&selectedRows.includes(
                                                                 company._id
                                                             )}
                                                             onChange={(e) =>

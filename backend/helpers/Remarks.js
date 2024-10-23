@@ -450,7 +450,7 @@ router.delete("/remarks-history/:id", async (req, res) => {
   console.log("companyId", companyId , id)
   try {
     await RemarksHistory.findByIdAndDelete(id);
-    // Now, find the corresponding document in CompleteRemarksHistoryLeads and remove the remark from the `remarks` array
+    //Now, find the corresponding document in CompleteRemarksHistoryLeads and remove the remark from the `remarks` array
     // const updatedLeadHistory = await CompleteRemarksHistoryLeads.findOneAndUpdate(
     //   { companyID: companyId },
     //   { $pull: { remarks: { _id: id } } }, // Remove the remark from the remarks array

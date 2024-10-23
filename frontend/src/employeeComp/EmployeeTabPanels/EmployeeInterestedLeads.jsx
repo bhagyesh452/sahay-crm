@@ -132,16 +132,16 @@ function EmployeeInterestedLeads({
               </tr>
             </thead>
             <tbody>
-              {interestedData.map((company, index) => (
+              {interestedData && interestedData.map((company, index) => (
                 <tr
                   key={company._id}
 
                   style={{ border: "1px solid #ddd" }}
-                  onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
-                  onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
-                  onMouseUp={handleMouseUp} // End drag selection
+                  // onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                  // onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                  // onMouseUp={handleMouseUp} // End drag selection
                   id={
-                    selectedRows.includes(company._id) ? "selected_admin" : ""
+                    selectedRows && selectedRows.includes(company._id) ? "selected_admin" : ""
                   } // Highlight selected rows
                 >
                   {fordesignation === "admin" && (
@@ -157,7 +157,7 @@ function EmployeeInterestedLeads({
                       <label className="table-check">
                         <input
                           type="checkbox"
-                          checked={selectedRows.includes(company._id)}
+                          checked={selectedRows && selectedRows.includes(company._id)}
                           onChange={(e) => handleCheckboxChange(company._id, e)}
                           onMouseUp={handleMouseUp}
                         />
@@ -223,7 +223,7 @@ function EmployeeInterestedLeads({
                           {company.Status}
                         </div>) : (
                         <EmployeeStatusChange
-                          key={`${company["Company Name"]}-${index}`}
+                          key={`${company["Company Name"]}-${company._id}${index}`}
                           companyName={company["Company Name"]}
                           companyStatus={company.Status}
                           id={company._id}
@@ -284,7 +284,7 @@ function EmployeeInterestedLeads({
                         {!company["Remarks"] ? "No Remarks" : company.Remarks}
                       </p>
                       <RemarksDialog
-                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                        key={`${company["Company Name"]}-${company._id}${index}`}
                         currentCompanyName={company["Company Name"]}
                         //remarksHistory={remarksHistory} // pass your remarks history data
                         companyId={company._id}
@@ -304,8 +304,7 @@ function EmployeeInterestedLeads({
                   </td>
                   <td>
                     <EmployeeNextFollowDate
-                      key={`${company["Company Name"]}-${index}`}
-                      companyName={company["Company Name"]}
+                      key={`${company["Company Name"]}-${company._id}${index}`} companyName={company["Company Name"]}
                       id={company._id}
                       nextFollowDate={company.bdeNextFollowUpDate}
                       refetch={refetch}
@@ -322,7 +321,7 @@ function EmployeeInterestedLeads({
                   <td>
                     <div className="d-flex align-items-center justify-content-between">
                       <ProjectionDialog
-                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                        key={`${company["Company Name"]}-${company._id}${index}`}
                         projectionCompanyName={company["Company Name"]}
                         projectionData={projectionData}
                         secretKey={secretKey}
