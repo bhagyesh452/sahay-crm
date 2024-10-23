@@ -553,48 +553,48 @@ function EmployeeInterestedInformationDialog({
                                                             <label for="date">Services Pitched:</label>
                                                             {forView ? (
                                                                 <Select
-                                                                isMulti
-                                                                options={options}
-                                                                value={formData.interestedInServices.servicesPitched}
-                                                                onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesPitched', selectedOptions)}
-                                                                placeholder="Select Services..."
-                                                                isDisabled={forView}  // This will disable the select input
-                                                            /> ) : (
+                                                                    isMulti
+                                                                    options={options}
+                                                                    value={formData.interestedInServices.servicesPitched}
+                                                                    onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesPitched', selectedOptions)}
+                                                                    placeholder="Select Services..."
+                                                                    isDisabled={forView}  // This will disable the select input
+                                                                />) : (
                                                                 <Select
-                                                                isMulti
-                                                                options={options}
-                                                                //value={formData.interestedInServices.servicesPitched}
-                                                                onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesPitched', selectedOptions)}
-                                                                placeholder="Select Services..."
-                                                                isDisabled={forView}  // This will disable the select input
-                                                            />
+                                                                    isMulti
+                                                                    options={options}
+                                                                    //value={formData.interestedInServices.servicesPitched}
+                                                                    onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesPitched', selectedOptions)}
+                                                                    placeholder="Select Services..."
+                                                                    isDisabled={forView}  // This will disable the select input
+                                                                />
                                                             )}
                                                         </div>
                                                     </div>
                                                     <div className="col-6">
                                                         <div class="form-group mt-2 mb-2">
                                                             <label for="date">Services Interested In :</label>
-                                                           {forView ? (
-                                                            <Select
-                                                            isMulti
-                                                            options={options}
-                                                            value={formData.interestedInServices.servicesInterestedIn}
-                                                            onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesInterestedIn', selectedOptions)}
-                                                            placeholder="Select Services..."
-                                                            isDisabled={forView}  // This will disable the select input
+                                                            {forView ? (
+                                                                <Select
+                                                                    isMulti
+                                                                    options={options}
+                                                                    value={formData.interestedInServices.servicesInterestedIn}
+                                                                    onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesInterestedIn', selectedOptions)}
+                                                                    placeholder="Select Services..."
+                                                                    isDisabled={forView}  // This will disable the select input
 
-                                                        />
-                                                           ) : (
-                                                            <Select
-                                                            isMulti
-                                                            options={options}
-                                                            //value={formData.interestedInServices.servicesInterestedIn}
-                                                            onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesInterestedIn', selectedOptions)}
-                                                            placeholder="Select Services..."
-                                                            isDisabled={forView}  // This will disable the select input
+                                                                />
+                                                            ) : (
+                                                                <Select
+                                                                    isMulti
+                                                                    options={options}
+                                                                    //value={formData.interestedInServices.servicesInterestedIn}
+                                                                    onChange={(selectedOptions) => handleMultiSelectChange('interestedInServices', 'servicesInterestedIn', selectedOptions)}
+                                                                    placeholder="Select Services..."
+                                                                    isDisabled={forView}  // This will disable the select input
 
-                                                        />
-                                                           )}
+                                                                />
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>

@@ -3445,6 +3445,16 @@ td input {
   font-weight: 600;
 }
 
+.dfault_junk-status {
+  background-color: #ffe49d;
+  border: 1px solid #ffba00;
+  padding: 4px 8px 4px 8px;
+  border-radius: 100px;
+  font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
+  font-weight: 600;
+}
+
 .ep_untouched_status {
   background-color: #cfcfcf;
   border: 1px solid #9b9b9b;
