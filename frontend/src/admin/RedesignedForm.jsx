@@ -1025,7 +1025,8 @@ export default function RedesignedForm({
         const newaudio = new Audio(Dhanyavad);
         newaudio.play()
         if(isEmployee){
-          handleCloseFormOpen()
+          handleCloseFormOpen();
+          setNowToFetch();
         }else{
           setFormOpen(false);
           setDataStatus("Matured");

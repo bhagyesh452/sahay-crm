@@ -21,22 +21,85 @@ const EmployeeStatusChange = ({
   isDeletedEmployeeCompany,
   cemail,
   cindate,
-  cnum, ename,
+  cnum,
+  ename,
+  bdmName,
   bdmAcceptStatus,
   handleFormOpen,
+  teamData,
+  isBdmStatusChange
 }) => {
+
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+
   const [status, setStatus] = useState(companyStatus);
   const [statusClass, setStatusClass] = useState("");
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [showDialog, setShowDialog] = useState(false); // State to control popup visibility
   const [selectedStatus, setSelectedStatus] = useState(""); // Store the selected status for the popup confirmation
 
+  const handlebdmStatusChange = async (newStatus, statusClass) => {
 
-  const handleStatusChange = async (
-    newStatus,
-    statusClass,
+    setStatus(newStatus);
+    setStatusClass(statusClass);
 
-  ) => {
+    const title = `${ename} changed ${companyName} status from ${companyStatus} to ${newStatus}`;
+    const DT = new Date();
+    const date = DT.toLocaleDateString();
+    const time = DT.toLocaleTimeString();
+    const bdmStatusChangeDate = new Date();
+    // console.log("isDeletd", isDeletedEmployeeCompany);
+    try {
+
+      if (newStatus === "Matured") {
+        handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename);
+        return true;
+      }
+
+      if (newStatus !== "Matured") {
+        const response = await axios.post(`${secretKey}/bdm-data/bdm-status-change/${id}`, {
+          bdeStatus: companyStatus,
+          bdmnewstatus: newStatus,
+          title: title,
+          date: date,
+          time: time,
+          bdmStatusChangeDate: bdmStatusChangeDate,
+        });
+
+        const response2 = await axios.post(`${secretKey}/company-data/update-status/${id}`, {
+          newStatus,
+          title,
+          date,
+          time,
+        });
+
+        // Check if the API call was successful
+        if (response.status === 200) {
+          refetch();
+        } else {
+          // Handle the case where the API call was not successful
+          console.error("Failed to update status:", response.data.message);
+        }
+
+      } else {
+        const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
+        // setMaturedBooking(currentObject);
+        console.log("currentObject", currentObject);
+        // setDeletedEmployeeStatus(isDeletedEmployeeCompany);
+        if (!isDeletedEmployeeCompany) {
+          console.log("formchal");
+          // setFormOpen(true);
+        } else {
+          console.log("addleadfromchal");
+          // setAddFormOpen(true);
+        }
+      }
+    } catch (error) {
+      // Handle any errors that occur during the API call
+      console.error("Error updating status:", error.message);
+    }
+  };
+
+  const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
     //setNewSubStatus(newStatus);
@@ -57,53 +120,44 @@ const EmployeeStatusChange = ({
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
           response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${id}`);
-          const response2 = await axios.post(
-            `${secretKey}/company-data/update-status/${id}`,
-            {
-              newStatus,
-              title,
-              date,
-              time,
+          const response2 = await axios.post(`${secretKey}/company-data/update-status/${id}`, {
+            newStatus,
+            title,
+            date,
+            time,
+          });
 
-            })
           const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${id}`, {
             bdmAcceptStatus: "NotForwarded"
-          })
+          });
 
           const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
             caseType: "NotForwarded"
-          }
-          )
+          });
 
         } else if (newStatus === "Junk") {
           response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${id}`, {
             newStatus
           });
-          const response2 = await axios.post(
-            `${secretKey}/company-data/update-status/${id}`,
-            {
-              newStatus,
-              title,
-              date,
-              time,
-              companyStatus,
-            }
-          );
-
-        }
-      }
-      // If response is not already defined, make the default API call
-      if (!response) {
-        response = await axios.post(
-          `${secretKey}/company-data/update-status/${id}`,
-          {
+          const response2 = await axios.post(`${secretKey}/company-data/update-status/${id}`, {
             newStatus,
             title,
             date,
             time,
             companyStatus,
-          }
-        );
+          });
+        }
+      }
+
+      // If response is not already defined, make the default API call
+      if (!response) {
+        response = await axios.post(`${secretKey}/company-data/update-status/${id}`, {
+          newStatus,
+          title,
+          date,
+          time,
+          companyStatus,
+        });
       }
 
       // Check if the API call was successful
@@ -137,8 +191,8 @@ const EmployeeStatusChange = ({
             return "ready_to_submit";
           case "FollowUp":
             return "clnt_no_repond_status";
-            case "Not Interested":
-              return "inprogress-status";
+          case "Not Interested":
+            return "inprogress-status";
           default:
             return "";
         }
@@ -163,7 +217,7 @@ const EmployeeStatusChange = ({
             return "clnt_no_repond_status";
           case "Interested":
             return "ready_to_submit";
-          
+
           default:
             return "";
         }
@@ -194,10 +248,10 @@ const EmployeeStatusChange = ({
 
 
   return (<>
-    <section className="rm_status_dropdown" 
-    style={{
-      width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
-    }}>
+    <section className="rm_status_dropdown"
+      style={{
+        width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
+      }}>
       <div className={
         mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :
           `dropdown custom-dropdown status_dropdown ${statusClass}`}>
@@ -292,7 +346,7 @@ const EmployeeStatusChange = ({
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("FollowUp", "clnt_no_repond_status")}
+                onClick={() => isBdmStatusChange ? handlebdmStatusChange("FollowUp", "clnt_no_repond_status") : handleStatusChange("FollowUp", "clnt_no_repond_status")}
                 href="#"
               >
                 Follow Up
@@ -301,7 +355,7 @@ const EmployeeStatusChange = ({
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Interested", "ready_to_submit")}
+                onClick={() => isBdmStatusChange ? handlebdmStatusChange("Interested", "ready_to_submit") : handleStatusChange("Interested", "ready_to_submit")}
                 href="#"
               >
                 Interested
@@ -310,7 +364,7 @@ const EmployeeStatusChange = ({
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Matured", "approved-status")}
+                onClick={() => isBdmStatusChange ? handlebdmStatusChange("Matured", "approved-status") : handleStatusChange("Matured", "approved-status")}
                 href="#"
               >
                 Matured
@@ -319,7 +373,7 @@ const EmployeeStatusChange = ({
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Not Interested", "inprogress-status")}
+                onClick={() => isBdmStatusChange ? handlebdmStatusChange("Not Interested", "inprogress-status") : handleStatusChange("Not Interested", "inprogress-status")}
                 href="#"
               >
                 Not Interested

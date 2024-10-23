@@ -1122,7 +1122,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                             ? "06/02/2024"
                             : formattedDate(item.AddedOn)}
                         </td>
-                        {/* {item.designation === "Sales Executive" ? ( */}
+                        {item.Active ? (
                           <td>
                             {(item.Active && item.Active.includes("GMT")) ? (
                               <div>
@@ -1138,9 +1138,9 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                               </div>
                             )}
                           </td>
-                        {/* ) : (
+                        ) : (
                           <td>N/A</td>
-                        )} */}
+                        )}
                         <td>
                           <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                             <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
