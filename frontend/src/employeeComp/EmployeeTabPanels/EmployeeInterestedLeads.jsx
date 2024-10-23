@@ -13,6 +13,10 @@ import EmployeeNextFollowDate from "../ExtraComponents/EmployeeNextFollowUpDate"
 import CallHistory from "../CallHistory";
 import ProjectionDialog from "../ExtraComponents/ProjectionDialog";
 import BdmMaturedCasesDialogBox from "../BdmMaturedCasesDialogBox";
+import { MdOutlineWorkHistory } from "react-icons/md";
+import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
+import { FaEye } from "react-icons/fa";
+
 
 function EmployeeInterestedLeads({
   interestedData,
@@ -69,7 +73,8 @@ function EmployeeInterestedLeads({
     }
   };
 
- console.log("designation" , designation)
+  const modalId = `modal-${companyName.replace(/\s+/g, '')}`; // Generate a unique modal ID
+
 
   return (
     <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -126,12 +131,11 @@ function EmployeeInterestedLeads({
                                 {designation !== "Sales Manager" || fordesignation !== "admin" && (<th>Forward To Bdm</th>)} */}
               </tr>
             </thead>
-
             <tbody>
               {interestedData.map((company, index) => (
                 <tr
                   key={company._id}
-                 
+
                   style={{ border: "1px solid #ddd" }}
                   onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
                   onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
@@ -209,32 +213,64 @@ function EmployeeInterestedLeads({
                     />
                   </td>
                   <td>
-                    <EmployeeStatusChange
-                      key={`${company["Company Name"]}-${index}`}
-                      companyName={company["Company Name"]}
-                      companyStatus={company.Status}
-                      id={company._id}
-                      refetch={refetch}
-                      mainStatus={dataStatus}
-                      setCompanyName={setCompanyName}
-                      setCompanyEmail={setCompanyEmail}
-                      setCompanyInco={setCompanyInco}
-                      setCompanyId={setCompanyId}
-                      setCompanyNumber={setCompanyNumber}
-                      setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                      setNewBdeName={setNewBdeName}
-                      isDeletedEmployeeCompany={
-                        company.isDeletedEmployeeCompany
-                      }
-                      // setFormOpen={setFormOpen}
-                      // setAddFormOpen={setAddFormOpen}
-                      cemail={company["Company Email"]}
-                      cindate={company["Incorporation Date"]}
-                      cnum={company["Company Number"]}
-                      ename={company.ename}
-                      bdmAcceptStatus={company.bdmAcceptStatus}
-                      handleFormOpen={handleOpenFormOpen}
-                    />
+
+                    <div className="d-flex align-items-center">
+                      {fordesignation === "admin" ? (
+                        <div
+                          className={company.Status === "Interested" ? "dfault_interested-status" :
+                            company.Status === "FollowUp" ? "dfault_followup-status" :
+                              null}>
+                          {company.Status}
+                        </div>) : (
+                        <EmployeeStatusChange
+                          key={`${company["Company Name"]}-${index}`}
+                          companyName={company["Company Name"]}
+                          companyStatus={company.Status}
+                          id={company._id}
+                          refetch={refetch}
+                          mainStatus={dataStatus}
+                          setCompanyName={setCompanyName}
+                          setCompanyEmail={setCompanyEmail}
+                          setCompanyInco={setCompanyInco}
+                          setCompanyId={setCompanyId}
+                          setCompanyNumber={setCompanyNumber}
+                          setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                          setNewBdeName={setNewBdeName}
+                          isDeletedEmployeeCompany={
+                            company.isDeletedEmployeeCompany
+                          }
+                          cemail={company["Company Email"]}
+                          cindate={company["Incorporation Date"]}
+                          cnum={company["Company Number"]}
+                          ename={company.ename}
+                          bdmAcceptStatus={company.bdmAcceptStatus}
+                          handleFormOpen={handleOpenFormOpen}
+                        />
+                      )}
+                      <div className={company.interestedInformation ? "intersted-history-btn" : "intersted-history-btn disabled"}>
+                        <FaEye
+                          key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                          style={{ border: "transparent", background: "none" }}
+                          data-bs-toggle="modal"
+                          data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                          title="Interested Information"
+                          disabled={!company.interestedInformation}
+                        />
+
+                        <EmployeeInterestedInformationDialog
+                          key={`${company["Company Name"]}-${index}`}
+                          modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                          companyName={company["Company Name"]}
+                          interestedInformation={company.interestedInformation} // Pass the interested information here
+                          refetch={refetch}
+                          ename={company.ename}
+                          secretKey={secretKey}
+                          status={company.Status}
+                          companyStatus={company.Status}
+                          forView={true}
+                        />
+                      </div>
+                    </div>
                   </td>
                   <td>
                     <div
@@ -311,13 +347,12 @@ function EmployeeInterestedLeads({
                             fetchNewData={refetch}
                           />
                         )}
+
                     </div>
                   </td>
-                  {/* <td></td>
-                  {designation !== "Sales Manager" ||
-                    (fordesignation !== "admin" && <td></td>)} */}
                 </tr>
               ))}
+
             </tbody>
 
             {interestedData && interestedData.length === 0 && !isLoading && (
@@ -357,6 +392,7 @@ function EmployeeInterestedLeads({
           </div>
         )}
       </>
+
     </div>
   );
 }

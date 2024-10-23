@@ -386,11 +386,16 @@ textarea:focus {
   border-radius: 9px;
   background: #fffde9;
 }
+
 .text-truncate {
-  white-space: nowrap;        /* Prevents the text from wrapping to the next line */
-  overflow: hidden;           /* Ensures content that overflows is not shown */
-  text-overflow: ellipsis;    /* Adds "..." when the text exceeds the available space */
-  max-width: 500px;           /* Set a maximum width as per your design */
+  white-space: nowrap;
+  /* Prevents the text from wrapping to the next line */
+  overflow: hidden;
+  /* Ensures content that overflows is not shown */
+  text-overflow: ellipsis;
+  /* Adds "..." when the text exceeds the available space */
+  max-width: 500px;
+  /* Set a maximum width as per your design */
 }
 
 .reamrk-card-innerText {
@@ -656,10 +661,17 @@ span.input-group-text {
   background: #fff9e8;
   color: #000;
 }
+<<<<<<< HEAD
 #selected_admin td{
   background: #fff7b4  !important;
+=======
+
+#selected_admin {
+  background: #d9d9d9 !important;
+>>>>>>> 489230243e532569ad7d64bcaad52bce9c5c1be2
   color: #000;
 }
+
 .mr-2 {
   margin-right: 20px;
 }
@@ -3145,7 +3157,7 @@ td input {
 .AEP-sticky-left-1 {
   position: sticky;
   left: 0;
-  width:  42px;
+  width: 42px;
   z-index: 1;
 }
 
@@ -3156,6 +3168,7 @@ td input {
   box-shadow: 3px 0px 4px -4px #cccccc !important;
   z-index: 1;
 }
+
 .AEP-sticky-left-3 {
   position: sticky;
   left: 108px;
@@ -3406,6 +3419,44 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
 }
+.dfault_interested-status {
+  background-color: #a3ffd8;
+  border: 1px solid #35c286;
+  padding: 4px 8px 4px 8px;
+  border-radius: 100px;
+  font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
+  font-weight: 600;
+}
+
+.dfault_followup-status {
+  background-color: #ffe1ed;
+  border: 1px solid #f393ba;
+  padding: 4px 8px 4px 8px;
+  border-radius: 100px;
+  font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
+  font-weight: 600;
+}
+
+.dfault_notinterested-status {
+  background-color: #FFD0A7;
+  border: 1px solid #FF7909;
+  padding: 4px 8px 4px 8px;
+  border-radius: 100px;
+  font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
+  font-weight: 600;
+}
+.dfault_junk-status {
+  background-color: #ffe49d;
+  border: 1px solid #ffba00;
+  padding: 4px 8px 4px 8px;
+  border-radius: 100px;
+  font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
+  font-weight: 600;
+}
 .ep_untouched_status {
   background-color: #cfcfcf;
   border: 1px solid #9b9b9b;
@@ -3415,6 +3466,7 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
 }
+
 .ep_busy_status {
   background-color: #ee9a9a;
   border: 1px solid #d81d1d;
@@ -3424,6 +3476,7 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
 }
+
 .ep_notpickedup_status {
   background-color: #fffec4;
   border: 1px solid #cfc022;
@@ -3433,10 +3486,12 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
 }
-.ep_left_button{
+
+.ep_left_button {
   font-size: 16px;
 }
-.ep_right_button{
+
+.ep_right_button {
   font-size: 16px;
 }
 
@@ -4432,6 +4487,11 @@ div#table-default td {
   line-height: 10px;
 }
 
+.yes-alias-i-active {
+  color: #009402;
+  line-height: 10px;
+}
+
 .no-alias-i {
   color: #be1e1e;
   line-height: 10px;
@@ -4445,14 +4505,33 @@ div#table-default td {
   font-weight: 600;
 }
 
+.intersted-history-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 19px;
+  text-align: center;
+  border-radius: 100px;
+  background: #f3e2bd;
+  border: 1px solid #c5a255;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
 .int-sub-que {
   background: #eee;
   font-size: 12px;
   padding: 2px 8px;
 }
 
-.table-check
-{
+.disclamer {
+  color: red !important;
+  text-wrap: wrap !important;
+  font-weight: 400 !important;
+  padding: 6px 6px !important;
+  margin: 0 !important;
+}
+
+.table-check {
   display: block;
   position: relative;
   cursor: pointer;
@@ -4464,14 +4543,15 @@ div#table-default td {
   width: 22px;
   height: 22px;
 }
+
 .table-check input {
   opacity: 0;
   cursor: pointer;
   height: 0;
   width: 0;
 }
-.table_checkmark
-{
+
+.table_checkmark {
   position: absolute;
   top: 0;
   left: 0;
@@ -4480,9 +4560,11 @@ div#table-default td {
   background-color: #d5d5d5;
   border-radius: 4px;
 }
-.table-check input:checked ~ .table_checkmark {
+
+.table-check input:checked~.table_checkmark {
   background-color: #2196F3;
 }
+
 /* Create the checkmark/indicator (hidden when not checked) */
 .table_checkmark:after {
   content: "";
@@ -4491,7 +4573,7 @@ div#table-default td {
 }
 
 /* Show the checkmark when checked */
-.table-check input:checked ~ .table_checkmark:after {
+.table-check input:checked~.table_checkmark:after {
   display: block;
 }
 
