@@ -18,7 +18,8 @@ function ProjectionDialog({
     fetchProjections,
     ename,
     hasMaturedStatus,
-    hasExistingProjection
+    hasExistingProjection,
+    userId
 }) {
     const [open, setOpen] = useState(false);
     const [currentProjection, setCurrentProjection] = useState({
@@ -106,6 +107,10 @@ function ProjectionDialog({
     };
     // console.log("currentProjection", currentProjection)
     // Handle form submission
+    const dialogDismissedData = JSON.parse(localStorage.getItem('dialogDismissedData')) || {};
+
+     // Get the current date in YYYY-MM-DD format
+     const currentDate = new Date().toISOString().split('T')[0];
     const handleProjectionSubmit = async () => {
         try {
             // Create a new object with only the relevant data fields
@@ -155,6 +160,14 @@ function ProjectionDialog({
                     finalData
                 );
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
+                // Dismiss the dialog for today for this specific employee
+                dialogDismissedData[userId] = {
+                    dismissedDate: currentDate, // Set the dismissed date to today
+                    dialogCount: 3 // Set dialogCount to 3 to prevent further dialogs
+                };
+
+                // Save the updated data back to localStorage
+                localStorage.setItem('dialogDismissedData', JSON.stringify(dialogDismissedData));
                 closeProjection(); // Close projection after submitting
                 fetchProjections(); // Refresh data
             }
@@ -185,7 +198,7 @@ function ProjectionDialog({
             // Show a success message after successful deletion
 
             setCurrentProjection({
-                companyName:projectionCompanyName,
+                companyName: projectionCompanyName,
                 ename: "",
                 offeredPrize: 0,
                 offeredServices: [],

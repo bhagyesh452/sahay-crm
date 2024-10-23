@@ -79,6 +79,7 @@ import CallHistory from "./CallHistory.jsx";
 import { LuHistory } from "react-icons/lu";
 import BdmMaturedCasesDialogBox from "./BdmMaturedCasesDialogBox.jsx";
 import { IoMdClose } from "react-icons/io";
+import ProjectionInformationDialog from "./ExtraComponents/ProjectionInformationDialog.jsx";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -236,7 +237,10 @@ function EmployeePanel() {
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([]);
   const [revertedData, setRevertedData] = useState([]);
-  const [bdmNames, setBdmNames] = useState([])
+  const [bdmNames, setBdmNames] = useState([]);
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogCount, setDialogCount] = useState(0);
+  const [showDialogStatus, setShowDialogStatus] = useState(false);
   //console.log(userId);
 
   useEffect(() => {
@@ -499,42 +503,80 @@ function EmployeePanel() {
     openchangeRemarks(false);
     setFilteredRemarks([]);
   };
-
-
-
-  //console.log(userId)
-
+  const currentDate = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
+  const dialogDismissedData = JSON.parse(localStorage.getItem('dialogDismissedData')) || {}; // Fetch all dismissed data from localStorage
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
 
-
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
+      // Get employee-specific data from localStorage
+      const employeeDismissedDate = dialogDismissedData[userId]?.dismissedDate || null;
+      const employeeDialogCount = dialogDismissedData[userId]?.dialogCount || 0;
+      if (
+        employeeDismissedDate !== currentDate && // Only if the dialog hasn't been dismissed today
+        employeeDialogCount < 3 // Show the dialog if the count is less than 3
+      ) {
+        setShowDialog(true);
+      }
       setEmployeeName(userData.ename)
       //console.log(userData);
       setData(userData);
       setmoreFilteredData(userData);
 
-      //console.log(userData.bdmName)
-
-      // if (userData.bdmWork) {
-      //   const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork && !userData.ename.includes(employee.ename))
-      //   //console.log(bdmNames)
-      //   setBdmNames(bdmNames.map((obj) => obj.ename))
-      // } else {
-      //   const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork)
-      //   setBdmNames(bdmNames.map((obj) => obj.ename))
-      //   //console.log(bdmNames)
-      // }
-
-      //console.log("data" , userData)
-
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
+  const updateDialogCount = async (currentCount) => {
+    try {
+      await axios.post(`${secretKey}/update-dialog-count`, { userId });
+      const updatedDialogCount = (dialogDismissedData[userId]?.dialogCount || 0) + 1;
+
+      // If the dialog is shown 3 times, set it as dismissed for the day
+      if (updatedDialogCount >= 3) {
+        dialogDismissedData[userId] = {
+          dismissedDate: currentDate,
+          dialogCount: 3 // Set count to 3, so it doesn't show again today
+        };
+      } else {
+        // Otherwise, just update the dialog count
+        dialogDismissedData[userId] = {
+          dismissedDate: dialogDismissedData[userId]?.dismissedDate || currentDate, // Keep the previous dismissed date
+          dialogCount: updatedDialogCount
+        };
+      }
+
+      // Update localStorage
+      localStorage.setItem('dialogDismissedData', JSON.stringify(dialogDismissedData));
+
+      // Update state
+      setDialogCount(updatedDialogCount);
+      setShowDialog(false);
+
+    } catch (error) {
+      console.error("Error updating dialog count:", error);
+    }
+  };
+
+  console.log("Dialog count:", dialogCount, showDialog);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const employeeDismissedDate = dialogDismissedData[userId]?.dismissedDate || null;
+      const employeeDialogCount = dialogDismissedData[userId]?.dialogCount || 0;
+
+      if (employeeDismissedDate !== currentDate && employeeDialogCount < 3) {
+        setShowDialog(true);
+        updateDialogCount(); // Increment the dialog count
+      }
+    }, 15 * 60 * 1000); // Every 15 minutes
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [dialogCount]);
+
 
   useEffect(() => {
     //fecthTeamData();
@@ -569,7 +611,7 @@ function EmployeePanel() {
       console.error("Error fetching remarks history:", error);
     }
   };
-  console.log("filteredRemarks" , filteredRemarks)
+
 
   //console.log(projectionData)
 
@@ -983,7 +1025,7 @@ function EmployeePanel() {
   const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
   const [newBdeName, setNewBdeName] = useState("")
 
-  console.log("employeeData" , employeeData)
+  console.log("employeeData", employeeData)
 
   const handleStatusChange = async (
     company,
@@ -1800,6 +1842,14 @@ function EmployeePanel() {
           finalData
         );
         Swal.fire({ title: "Projection Submitted!", icon: "success" });
+        // Dismiss the dialog for today for this specific employee
+        dialogDismissedData[userId] = {
+          dismissedDate: currentDate, // Set the dismissed date to today
+          dialogCount: 3 // Set dialogCount to 3 to prevent further dialogs
+        };
+
+        // Save the updated data back to localStorage
+        localStorage.setItem('dialogDismissedData', JSON.stringify(dialogDismissedData));
         setOpenProjection(false);
         setCurrentProjection({
           companyName: "",
@@ -2715,16 +2765,16 @@ function EmployeePanel() {
 
   // Shows today's projection pop-up :
   const [shouldShowCollection, setShouldShowCollection] = useState(false);
-  const [currentDate, setCurrentDate] = useState(getCurrentDate());
+  // const [currentDate, setCurrentDate] = useState(getCurrentDate());
 
-  // Function to get current date in YYYY-MM-DD format
-  function getCurrentDate() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  }
+  // // Function to get current date in YYYY-MM-DD format
+  // function getCurrentDate() {
+  //   const now = new Date();
+  //   const year = now.getFullYear();
+  //   const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  //   const day = now.getDate().toString().padStart(2, "0");
+  //   return `${year}-${month}-${day}`;
+  // }
 
   // Shows today's projection pop-up when button is clicked :
   const [noOfCompany, setNoOfCompany] = useState("");
@@ -6025,6 +6075,13 @@ function EmployeePanel() {
           </button>
         </Dialog>
       </div>
+      <ProjectionInformationDialog
+        showDialog={showDialog}    // Pass the state to the dialog component
+        setShowDialog={setShowDialog}  // Pass setState function to close it
+        updateDialogCount={updateDialogCount}
+        userId={userId}
+        setdataStatus={setdataStatus}
+      />
     </div>
   );
 }

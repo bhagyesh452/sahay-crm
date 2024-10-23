@@ -37,7 +37,7 @@ function EmployeeMaturedLeads({
     handleMouseEnter,
     handleMouseUp,
     selectedRows,
-
+userId
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -226,6 +226,7 @@ function EmployeeMaturedLeads({
                                                     hasExistingProjection={projectionData?.some(
                                                         (item) => item.companyName === company["Company Name"]
                                                     )}
+                                                    userId={userId}
 
                                                 />
                                             </td>

@@ -36,6 +36,7 @@ import { RiShareForwardFill } from "react-icons/ri";
 import Swal from "sweetalert2";
 import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
 import ForwardToBdmDialog from "../admin/ExtraComponent/ForwardToBdmDialog.jsx";
+import ProjectionInformationDialog from "./ExtraComponents/ProjectionInformationDialog.jsx";
 
 function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -73,8 +74,9 @@ function EmployeePanelCopy({ fordesignation }) {
     const [newBdeName, setNewBdeName] = useState("")
     const [newEmpData, setNewEmpData] = useState([])
     const { id } = useParams();
-
-
+    const [showDialog, setShowDialog] = useState(false);
+    const [dialogCount, setDialogCount] = useState(0);
+    const [showDialogStatus, setShowDialogStatus] = useState(false);
     // Auto logout functionality :
     useEffect(() => {
         // Function to check token expiry and initiate logout if expired
@@ -140,7 +142,8 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     }, [data.ename]);
 
-
+    const currentDate = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
+    const dialogDismissedData = JSON.parse(localStorage.getItem('dialogDismissedData')) || {}; // Fetch all dismissed data from localStorage
     const fetchData = async () => {
         let fetchingId;
         if (userId) {
@@ -148,12 +151,20 @@ function EmployeePanelCopy({ fordesignation }) {
         } else {
             fetchingId = id
         }
-        console.log("fetchingId", fetchingId)
         try {
             const completeEmployess = await axios.get(`${secretKey}/employee/einfo`);
             const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${fetchingId}`);
             // Set the retrieved data in the state
             const userData = response.data.data;
+            // Get employee-specific data from localStorage
+            const employeeDismissedDate = dialogDismissedData[userId]?.dismissedDate || null;
+            const employeeDialogCount = dialogDismissedData[userId]?.dialogCount || 0;
+            if ((fordesignation !== "admin" || fordesignation !== "datamanager") &&
+                employeeDismissedDate !== currentDate && // Only if the dialog hasn't been dismissed today
+                employeeDialogCount < 3 // Show the dialog if the count is less than 3
+            ) {
+                setShowDialog(true);
+            }
             setEmployeeName(userData.ename)
             //console.log(userData);
             setData(userData);
@@ -163,7 +174,52 @@ function EmployeePanelCopy({ fordesignation }) {
             console.error("Error fetching data:", error.message);
         }
     };
+    const updateDialogCount = async (currentCount) => {
+        try {
+            await axios.post(`${secretKey}/update-dialog-count`, { userId });
+            const updatedDialogCount = (dialogDismissedData[userId]?.dialogCount || 0) + 1;
 
+            // If the dialog is shown 3 times, set it as dismissed for the day
+            if (updatedDialogCount >= 3) {
+                dialogDismissedData[userId] = {
+                    dismissedDate: currentDate,
+                    dialogCount: 3 // Set count to 3, so it doesn't show again today
+                };
+            } else {
+                // Otherwise, just update the dialog count
+                dialogDismissedData[userId] = {
+                    dismissedDate: dialogDismissedData[userId]?.dismissedDate || currentDate, // Keep the previous dismissed date
+                    dialogCount: updatedDialogCount
+                };
+            }
+
+            // Update localStorage
+            localStorage.setItem('dialogDismissedData', JSON.stringify(dialogDismissedData));
+
+            // Update state
+            setDialogCount(updatedDialogCount);
+            setShowDialog(false);
+
+        } catch (error) {
+            console.error("Error updating dialog count:", error);
+        }
+    };
+
+    console.log("Dialog count:", dialogCount, showDialog);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const employeeDismissedDate = dialogDismissedData[userId]?.dismissedDate || null;
+            const employeeDialogCount = dialogDismissedData[userId]?.dialogCount || 0;
+
+            if (employeeDismissedDate !== currentDate && employeeDialogCount < 3) {
+                setShowDialog(true);
+                updateDialogCount(); // Increment the dialog count
+            }
+        }, 15 * 60 * 1000); // Every 15 minutes
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [dialogCount]);
 
 
     useEffect(() => {
@@ -242,6 +298,8 @@ function EmployeePanelCopy({ fordesignation }) {
             keepPreviousData: true
         }
     );
+
+
 
     // Handle search
     const handleSearch = (query) => {
@@ -569,23 +627,23 @@ function EmployeePanelCopy({ fordesignation }) {
 
             if (currentIndex === 0) {
                 // If it's the first page, navigate to the employees page
-                if (fordesignation === "admin"){
+                if (fordesignation === "admin") {
                     window.location.replace(`/managing-director/user`);
-                }else{
+                } else {
                     window.location.replace(`dataanalyst/newEmployees`);
                 }
-                
+
                 //setBackButton(false)
             } else {
                 // Get the previousId from the salesExecutivesIds array
                 const prevId = salesExecutivesIds[prevIndex];
-                if(fordesignation === "admin"){
+                if (fordesignation === "admin") {
                     window.location.replace(`/managing-director/employees/${prevId}`);
-                }else{
+                } else {
                     window.location.replace(`/dataanalyst/employeeLeads/${prevId}`);
 
                 }
-               
+
             }
             //setBackButton(prevIndex !== 0);
         } else {
@@ -611,9 +669,9 @@ function EmployeePanelCopy({ fordesignation }) {
 
             // Get the nextId from the salesExecutivesIds array
             const nextId = salesExecutivesIds[nextIndex];
-            if(fordesignation === "admin"){
+            if (fordesignation === "admin") {
                 window.location.replace(`/managing-director/employees/${nextId}`);
-            }else{
+            } else {
                 window.location.replace(`/dataanalyst/employeeLeads/${nextId}`);
 
             }
@@ -625,6 +683,7 @@ function EmployeePanelCopy({ fordesignation }) {
     // console.log("selectedRows", selectedRows)
 
     console.log("fetchedData", queryData)
+    console.log("dialogcount", dialogCount)
 
     return (
         <div>
@@ -679,21 +738,21 @@ function EmployeePanelCopy({ fordesignation }) {
                                                         </button>
                                                         {data.bdmWork &&
                                                             <button
-                                                            type="button"
-                                                            className={
-                                                              (fordesignation === "admin" && window.location.pathname === `/managing-director/employeeleads/${id}`) ||
-                                                              (fordesignation === "datamanager" && window.location.pathname === `/datamanager/datamanagerside-employeeteamleads/${id}`)
-                                                                ? "btn mybtn active"
-                                                                : "btn mybtn"
-                                                            }
-                                                            onClick={() => {
-                                                              if (fordesignation === "admin") {
-                                                                window.location.pathname = `/managing-director/employeeleads/${id}`;
-                                                              } else if (fordesignation === "datamanager") {
-                                                                window.location.pathname = `/datamanager/datamanagerside-employeeteamleads/${id}`;
-                                                              }
-                                                            }}
-                                                          >
+                                                                type="button"
+                                                                className={
+                                                                    (fordesignation === "admin" && window.location.pathname === `/managing-director/employeeleads/${id}`) ||
+                                                                        (fordesignation === "datamanager" && window.location.pathname === `/datamanager/datamanagerside-employeeteamleads/${id}`)
+                                                                        ? "btn mybtn active"
+                                                                        : "btn mybtn"
+                                                                }
+                                                                onClick={() => {
+                                                                    if (fordesignation === "admin") {
+                                                                        window.location.pathname = `/managing-director/employeeleads/${id}`;
+                                                                    } else if (fordesignation === "datamanager") {
+                                                                        window.location.pathname = `/datamanager/datamanagerside-employeeteamleads/${id}`;
+                                                                    }
+                                                                }}
+                                                            >
                                                                 <AiOutlineTeam
                                                                     className='mr-1' /> Team Leads
                                                             </button>}
@@ -972,6 +1031,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseEnter={handleMouseEnter}
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
+                                                userId={userId}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
@@ -1001,6 +1061,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             handleMouseEnter={handleMouseEnter}
                                             handleMouseUp={handleMouseUp}
                                             selectedRows={selectedRows}
+                                            userId={userId}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
@@ -1029,6 +1090,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseEnter={handleMouseEnter}
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
+                                                userId={userId}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
@@ -1103,6 +1165,14 @@ function EmployeePanelCopy({ fordesignation }) {
                 onClick={handleCloseBackdrop}>
                 <CircularProgress color="inherit" />
             </Backdrop>)}
+
+            <ProjectionInformationDialog
+                showDialog={showDialog}    // Pass the state to the dialog component
+                setShowDialog={setShowDialog}  // Pass setState function to close it
+                updateDialogCount={updateDialogCount}
+                userId={userId}
+                setdataStatus={setdataStatus}
+            />
         </div>
     );
 }

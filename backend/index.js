@@ -141,7 +141,7 @@ app.use('/api/relationshipManager', RalationshipManagerAPI);
 app.use('/api/graphicDesigner', GraphicDesignerAPI);
 app.use('/api/financeAnalyst', FinanceAnalystAPI);
 app.use('/api/contentWriter', ContentWriterAPI);
-app.use('/api/recruiter',(req,res,next)=>{
+app.use('/api/recruiter', (req, res, next) => {
   req.io = socketIO;
   next();
 }, RecruiterAPI);
@@ -261,31 +261,6 @@ app.post("/api/admin/login-admin", async (req, res) => {
   }
 });
 
-// app.post("/api/employeelogin", async (req, res) => {
-//   const { email, password } = req.body;
-//   //console.log(email , password)
-//   // Replace this with your actual Employee authentication logic
-//   const user = await adminModel.findOne({
-//     email: email,
-//     password: password,
-//     //designation: "Sales Executive",
-//   });
-
-//   if (!user) {
-//     // If user is not found
-//     return res.status(401).json({ message: "Invalid email or password" });
-//   } else if (user.designation !== "Sales Executive") {
-//     // If designation is incorrect
-//     return res.status(401).json({ message: "Designation is incorrect" });
-//   } else {
-//     // If credentials are correct
-//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-//       expiresIn: "3h",
-//     });
-//     res.json({ newtoken });
-//     socketIO.emit("Employee-login");
-//   }
-// });
 
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
@@ -301,15 +276,43 @@ app.post("/api/employeelogin", async (req, res) => {
       // If designation is incorrect
       return res.status(401).json({ message: "Designation is incorrect" });
     } else {
-      // If credentials are correct
+      await adminModel.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            lastLoginTime: new Date(),
+            dialogCount: 0,
+            showDialog: true
+          }
+        }
+      );
       const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
         expiresIn: "3h",
       });
-      res.json({ newtoken });
+      res.status(200).json({ newtoken });
       // socketIO.emit("Employee-login");
     }
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
+
+app.post('/api/update-dialog-count', async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const user = await adminModel.findById({_id : userId});
+
+    if (user.dialogCount >= 3) {
+      user.showDialog = false; // Stop showing dialogs after 3 times
+    } else {
+      user.dialogCount += 1;
+    }
+
+    await user.save();
+    res.json({ message: 'Dialog count updated', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating dialog count', error });
   }
 });
 

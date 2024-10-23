@@ -45,6 +45,7 @@ function EmployeeInterestedLeads({
   handleMouseEnter,
   handleMouseUp,
   selectedRows,
+  userId
 }) {
   const [companyName, setCompanyName] = useState("");
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
@@ -269,6 +270,7 @@ function EmployeeInterestedLeads({
                           status={company.Status}
                           companyStatus={company.Status}
                           forView={true}
+                          fordesignation={fordesignation}
                         />
                       </div>
                     </div>
@@ -333,6 +335,7 @@ function EmployeeInterestedLeads({
                         hasExistingProjection={projectionData?.some(
                           (item) => item.companyName === company["Company Name"]
                         )}
+                        userId={userId}
                       />
                       {
                         ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (

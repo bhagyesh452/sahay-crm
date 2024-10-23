@@ -20,6 +20,7 @@ function EmployeeInterestedInformationDialog({
     companyStatus,
     interestedInformation = [], // Existing interested information
     forView,
+    fordesignation
 }) {
 
     // console.log("inetsredtedInform", interestedInformation)
@@ -199,12 +200,12 @@ function EmployeeInterestedInformationDialog({
             ename: ename,
             "Company Name": companyName
         });
-        // if(!isSubmitted){
-        //     setStatus(companyStatus)
-        //     setStatusClass("untouched_status")
-        // }
+        if(fordesignation !== "admin" || fordesignation !== "datamanager") {
+            setStatus(companyStatus)
+            setStatusClass("untouched_status")
+        }
 
-        //refetch()
+        refetch()
         // Manually hide the modal
         setVisibleQuestions({});
         setIsSubmitted(false);
