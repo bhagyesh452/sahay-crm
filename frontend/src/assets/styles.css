@@ -661,14 +661,9 @@ span.input-group-text {
   background: #fff9e8;
   color: #000;
 }
-<<<<<<< HEAD
-#selected_admin td{
-  background: #fff7b4  !important;
-=======
 
 #selected_admin {
   background: #d9d9d9 !important;
->>>>>>> 489230243e532569ad7d64bcaad52bce9c5c1be2
   color: #000;
 }
 
