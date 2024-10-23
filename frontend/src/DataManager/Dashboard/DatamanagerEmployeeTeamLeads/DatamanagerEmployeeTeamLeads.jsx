@@ -1803,8 +1803,7 @@ function DatamanagerEmployeeTeamLeads() {
 
     return (
         <div>
-            <Header />
-            <Navbar />
+            
             {!formOpen && <div className="page-wrapper">
 
                 <div style={{
@@ -1867,7 +1866,7 @@ function DatamanagerEmployeeTeamLeads() {
                                 href="#tabs-home-5"
                                 onClick={() => {
                                     setCurrentTab("Leads")
-                                    window.location.pathname = `/datamanager/employeeLeads/${id}`
+                                    window.location.pathname = `/dataanalyst/employeeLeads/${id}`
                                 }}
                                 className={
                                     currentTab === "Leads"

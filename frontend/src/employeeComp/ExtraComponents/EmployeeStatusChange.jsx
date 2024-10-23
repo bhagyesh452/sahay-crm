@@ -190,10 +190,6 @@ const EmployeeStatusChange = ({
   }, [mainStatus, companyStatus]);
 
   // ----------------------------------functions for modal--------------------------------
-
-  const [selectedValues, setSelectedValues] = useState([]);
-
-
   const modalId = `modal-${companyName.replace(/\s+/g, '')}`; // Generate a unique modal ID
 
 

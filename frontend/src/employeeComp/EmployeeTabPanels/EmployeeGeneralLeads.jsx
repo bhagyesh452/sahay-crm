@@ -73,14 +73,14 @@ function EmployeeGeneralLeads({
                         <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
                             <thead>
                                 <tr className="tr-sticky">
-                                    {fordesignation === "admin" &&
+                                    {(fordesignation === "admin" || fordesignation === "datamanager") &&
                                         (
                                             <th className='AEP-sticky-left-1'>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
                                                         checked={
-                                                            selectedRows.length === generalData.length
+                                                            selectedRows && generalData && (selectedRows.length === generalData.length)
                                                         }
                                                         onChange={(e) => handleCheckboxChange("all" , e)}
                                                     />
@@ -88,8 +88,8 @@ function EmployeeGeneralLeads({
                                                 </label>
                                             </th>
                                         )}
-                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Company Name</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>Company Name</th>
                                     <th>Company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
@@ -105,14 +105,14 @@ function EmployeeGeneralLeads({
                                 <tbody>
                                     {generalData && generalData.map((company, index) => (
                                         <tr key={company._id}
-                                            // onMouseDown={() => 
-                                            //     handleMouseDown(company._id)
-                                            // } // Start drag selection
-                                            // onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
-                                            // onMouseUp={handleMouseUp} // End drag selection
+                                            onMouseDown={() => 
+                                                handleMouseDown(company._id)
+                                            } // Start drag selection
+                                            onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                            onMouseUp={handleMouseUp} // End drag selection
                                             id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
                                         >
-                                            {fordesignation === "admin" && (
+                                            {(fordesignation === "admin" || fordesignation === "datamanager") && (
                                                 <td className='AEP-sticky-left-1'>
                                                     <label className='table-check'>
                                                         <input
@@ -125,8 +125,8 @@ function EmployeeGeneralLeads({
 
                                                 </td>
                                             )}
-                                            <td className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>{startIndex + index + 1}</td>
-                                            <td className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>{company["Company Name"]}</td>
+                                            <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                            <td className={(fordesignation === "admin" || fordesignation === "datamanager") ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
@@ -154,7 +154,7 @@ function EmployeeGeneralLeads({
                                                 />
                                             </td>
                                             <td>
-                                                {fordesignation === "admin" ? (
+                                                {(fordesignation === "admin" || fordesignation === "datamanager") ? (
                                                     <div
                                                         className={company.Status === "Untouched" ? "ep_untouched_status" :
                                                             company.Status === "Busy" ? "ep_busy_status" :
@@ -164,7 +164,7 @@ function EmployeeGeneralLeads({
                                                 ) : (
                                                     <EmployeeStatusChange
                                                         key={`${company["Company Name"]}-${index}`}
-                                                        companyName={company["Company Name"]}
+                                                        companyName={company && company["Company Name"]}
                                                         companyStatus={company.Status}
                                                         id={company._id}
                                                         refetch={refetch}
