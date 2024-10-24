@@ -16,10 +16,12 @@ import BdmMaturedCasesDialogBox from '../BdmMaturedCasesDialogBox';
 import FeedbackDialog from '../ExtraComponents/FeedbackDialog';
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import { FaEye } from "react-icons/fa";
+import Cliploader from "react-spinners/ClipLoader";
 
 function TeamLeadsInterested({
     secretKey,
     interestedData,
+    isLoading,
     refetchTeamLeads,
     formatDateNew,
     startIndex,
@@ -83,6 +85,19 @@ function TeamLeadsInterested({
                         </thead>
 
                         <tbody>
+                            {isLoading && <tr>
+                                <td colSpan="16">
+                                    <div className="LoaderTDSatyle">
+                                        <ClipLoader
+                                            color="lightgrey"
+                                            loading
+                                            size={30}
+                                            aria-label="Loading Spinner"
+                                            data-testid="loader"
+                                        />
+                                    </div>
+                                </td>
+                            </tr>}
                             {interestedData?.length !== 0 ? (
                                 interestedData?.map((company, index) => (
                                     <tr key={index}>
@@ -111,7 +126,7 @@ function TeamLeadsInterested({
                                         <td>
                                             <div className="d-flex justify-content-center">
                                                 <div className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
-                                                    {company.bdeOldStatus}
+                                                    {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                                 </div>
 
                                                 <div className={company.interestedInformation.length !== 0 ? "intersted-history-btn" : "intersted-history-btn disabled"}>
@@ -154,8 +169,8 @@ function TeamLeadsInterested({
                                                     name={company.ename}
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
+                                                    bdeRemarks={company.Remarks}
                                                     refetch={refetchTeamLeads}
-                                                    isBdmRemarks={true}
                                                 />
                                             </div>
                                         </td>
@@ -194,8 +209,8 @@ function TeamLeadsInterested({
                                                     name={company.bdmName}
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
+                                                    bdmRemarks={company.bdmRemarks}
                                                     refetch={refetchTeamLeads}
-                                                    isBdmRemarks={true}
                                                 />
                                             </div>
                                         </td>
@@ -225,6 +240,7 @@ function TeamLeadsInterested({
                                                 feedbackRemarks={company.feedbackRemarks}
                                                 feedbackPoints={company.feedbackPoints}
                                                 refetchTeamLeads={refetchTeamLeads}
+                                                isEditable={true}
                                             />
                                         </td>
                                     </tr>

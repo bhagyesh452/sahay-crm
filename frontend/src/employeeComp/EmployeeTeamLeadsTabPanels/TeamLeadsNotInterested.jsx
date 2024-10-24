@@ -11,10 +11,12 @@ import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import { FaEye } from "react-icons/fa";
+import Cliploader from "react-spinners/ClipLoader";
 
 function TeamLeadsNotInterested({
     secretKey,
     notInterestedData,
+    isLoading,
     refetchTeamLeads,
     formatDateNew,
     startIndex,
@@ -72,6 +74,19 @@ function TeamLeadsNotInterested({
                         </thead>
 
                         <tbody>
+                            {isLoading && <tr>
+                                <td colSpan="14">
+                                    <div className="LoaderTDSatyle">
+                                        <ClipLoader
+                                            color="lightgrey"
+                                            loading
+                                            size={30}
+                                            aria-label="Loading Spinner"
+                                            data-testid="loader"
+                                        />
+                                    </div>
+                                </td>
+                            </tr>}
                             {notInterestedData?.length !== 0 ? (
                                 notInterestedData?.map((company, index) => (
                                     <tr key={index}>
@@ -100,7 +115,7 @@ function TeamLeadsNotInterested({
                                         <td>
                                             <div className="d-flex justify-content-center">
                                                 <div className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
-                                                    {company.bdeOldStatus}
+                                                    {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                                 </div>
 
                                                 <div className={company.interestedInformation.length !== 0 ? "intersted-history-btn" : "intersted-history-btn disabled"}>
@@ -143,8 +158,8 @@ function TeamLeadsNotInterested({
                                                     name={company.ename}
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
+                                                    bdeRemarks={company.Remarks}
                                                     refetch={refetchTeamLeads}
-                                                    isBdmRemarks={true}
                                                 />
                                             </div>
                                         </td>
@@ -168,8 +183,8 @@ function TeamLeadsNotInterested({
                                                     name={company.bdmName}
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
+                                                    bdmRemarks={company.bdmRemarks}
                                                     refetch={refetchTeamLeads}
-                                                    isBdmRemarks={true}
                                                 />
                                             </div>
                                         </td>

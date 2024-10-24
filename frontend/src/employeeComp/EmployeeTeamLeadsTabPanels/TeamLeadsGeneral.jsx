@@ -15,10 +15,12 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import { FaEye } from "react-icons/fa";
+import Cliploader from "react-spinners/ClipLoader";
 
 function TeamLeadsGeneral({
     secretKey,
     generalData,
+    isLoading,
     refetchTeamLeads,
     formatDateNew,
     startIndex,
@@ -104,6 +106,19 @@ function TeamLeadsGeneral({
                         </thead>
 
                         <tbody>
+                            {isLoading && <tr>
+                                <td colSpan="11">
+                                    <div className="LoaderTDSatyle">
+                                        <ClipLoader
+                                            color="lightgrey"
+                                            loading
+                                            size={30}
+                                            aria-label="Loading Spinner"
+                                            data-testid="loader"
+                                        />
+                                    </div>
+                                </td>
+                            </tr>}
                             {generalData?.length !== 0 ? (
                                 generalData?.map((company, index) => (
                                     <tr key={index}>
@@ -115,7 +130,7 @@ function TeamLeadsGeneral({
                                                 <div className={`${company.Status === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
                                                     {company.Status}
                                                 </div>
-    
+
                                                 {/* <div className="intersted-history-btn disabled"> */}
                                                 <div className={company.interestedInformation.length !== 0 ? "intersted-history-btn" : "intersted-history-btn disabled"}>
                                                     <FaEye
@@ -126,7 +141,7 @@ function TeamLeadsGeneral({
                                                         title="Interested Information"
                                                         disabled={!company.interestedInformation}
                                                     />
-    
+
                                                     <EmployeeInterestedInformationDialog
                                                         key={company._id}
                                                         modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
@@ -142,7 +157,7 @@ function TeamLeadsGeneral({
                                                 </div>
                                             </div>
                                         </td>
-    
+
                                         <td>
                                             <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
                                                 <p className="rematkText text-wrap mb-0 mr-1" title={company.Remarks}>
@@ -158,8 +173,8 @@ function TeamLeadsGeneral({
                                                     name={company.ename}
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
+                                                    bdeRemarks={company.Remarks}
                                                     refetch={refetchTeamLeads}
-                                                    isBdmRemarks={true}
                                                 />
                                             </div>
                                         </td>
@@ -190,7 +205,7 @@ function TeamLeadsGeneral({
                                         <Nodata />
                                     </td>
                                 </tr>
-                            )}                            
+                            )}
                         </tbody>
 
                     </table>

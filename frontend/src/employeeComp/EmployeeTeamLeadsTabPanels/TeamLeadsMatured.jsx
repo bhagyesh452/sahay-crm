@@ -18,10 +18,13 @@ import { IconButton } from "@mui/material";
 import axios from "axios";
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import { FaEye } from "react-icons/fa";
+import { useNavigate, useParams } from 'react-router-dom';
+import Cliploader from "react-spinners/ClipLoader";
 
 function TeamLeadsMatured({
     secretKey,
     maturedData,
+    isLoading,
     refetchTeamLeads,
     formatDateNew,
     startIndex,
@@ -39,27 +42,30 @@ function TeamLeadsMatured({
     projectionData
 }) {
 
-    const [formOpen, setFormOpen] = useState(false);
-    const [companyData, setCompanyData] = useState(null);
-    const [companyId, setCompanyId] = useState("");
+    const navigate = useNavigate();
+    const { userId } = useParams();
 
-    const fetchRedesignedFormData = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
-            const data = response.data.find((obj) => obj.company === companyId);
-            console.log("Company Data :", data);
-            setCompanyData(data);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
-    };
+    // const [formOpen, setFormOpen] = useState(false);
+    // const [companyData, setCompanyData] = useState(null);
+    // const [companyId, setCompanyId] = useState("");
 
-    useEffect(() => {
-        //console.log("Matured ID Changed", maturedID);
-        if (companyId) {
-            fetchRedesignedFormData();
-        }
-    }, [companyId]);
+    // const fetchRedesignedFormData = async () => {
+    //     try {
+    //         const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+    //         const data = response.data.find((obj) => obj.company === companyId);
+    //         console.log("Company Data :", data);
+    //         setCompanyData(data);
+    //     } catch (error) {
+    //         console.error("Error fetching data:", error.message);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     //console.log("Matured ID Changed", maturedID);
+    //     if (companyId) {
+    //         fetchRedesignedFormData();
+    //     }
+    // }, [companyId]);
 
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -101,6 +107,19 @@ function TeamLeadsMatured({
                         </thead>
 
                         <tbody>
+                            {isLoading && <tr>
+                                <td colSpan="15">
+                                    <div className="LoaderTDSatyle">
+                                        <ClipLoader
+                                            color="lightgrey"
+                                            loading
+                                            size={30}
+                                            aria-label="Loading Spinner"
+                                            data-testid="loader"
+                                        />
+                                    </div>
+                                </td>
+                            </tr>}
                             {maturedData?.length !== 0 ? (
                                 maturedData?.map((company, index) => (
                                     <tr key={index}>
@@ -128,8 +147,8 @@ function TeamLeadsMatured({
                                         </td>
                                         <td>
                                             <div className="d-flex justify-content-center">
-                                                <div className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
-                                                    {company.bdeOldStatus}
+                                                <div className='dfault_approved-status'>
+                                                    {company.Status}
                                                 </div>
 
                                                 <div className={company.interestedInformation.length !== 0 ? "intersted-history-btn" : "intersted-history-btn disabled"}>
@@ -172,8 +191,8 @@ function TeamLeadsMatured({
                                                     name={company.ename}
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
+                                                    bdeRemarks={company.Remarks}
                                                     refetch={refetchTeamLeads}
-                                                    isBdmRemarks={true}
                                                 />
                                             </div>
                                         </td>
@@ -197,8 +216,8 @@ function TeamLeadsMatured({
                                                     name={company.bdmName}
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
+                                                    bdmRemarks={company.bdmRemarks}
                                                     refetch={refetchTeamLeads}
-                                                    isBdmRemarks={true}
                                                 />
                                             </div>
                                         </td>
@@ -210,10 +229,11 @@ function TeamLeadsMatured({
                                         <td>
                                             <IconButton style={{ marginRight: "5px" }}
                                                 onClick={() => {
-                                                    setCompanyId(company._id);
-                                                    setTimeout(() => {
-                                                        setFormOpen(true);
-                                                    }, 1000);
+                                                    // setCompanyId(company._id);
+                                                    // setTimeout(() => {
+                                                    //     setFormOpen(true);
+                                                    // }, 1000);
+                                                    navigate(`/employee-bookings/${userId}`);
                                                 }}
                                             >
                                                 <IconEye
@@ -260,7 +280,7 @@ function TeamLeadsMatured({
             </>
 
             {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
-            <Drawer anchor="right" open={formOpen}>
+            {/* <Drawer anchor="right" open={formOpen}>
                 <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
                     <div className="LeadFormPreviewDrawar-header">
                         <div className="Container">
@@ -282,7 +302,7 @@ function TeamLeadsMatured({
                         <LeadFormPreview setOpenAnchor={setFormOpen} currentLeadForm={companyData} />
                     </div>
                 </div>
-            </Drawer>
+            </Drawer> */}
 
         </div>
     )

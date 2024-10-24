@@ -394,7 +394,7 @@ function EmployeeTeamLeadsCopy() {
                                         {activeTabId === "General" && dataStatus === "General" && (<TeamLeadsGeneral
                                             secretKey={secretKey}
                                             generalData={teamLeadsData?.data?.data}
-                                            // isLoading={isLoading}
+                                            isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
@@ -416,7 +416,7 @@ function EmployeeTeamLeadsCopy() {
                                         {activeTabId === "Interested" && dataStatus === "Interested" && (<TeamLeadsInterested
                                             secretKey={secretKey}
                                             interestedData={teamLeadsData?.data?.data}
-                                            // isLoading={isLoading}
+                                            isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
@@ -441,7 +441,7 @@ function EmployeeTeamLeadsCopy() {
                                         {activeTabId === "Matured" && (<TeamLeadsMatured
                                             secretKey={secretKey}
                                             maturedData={teamLeadsData?.data?.data}
-                                            // isLoading={isLoading}
+                                            isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
@@ -464,7 +464,7 @@ function EmployeeTeamLeadsCopy() {
                                         {activeTabId === "Not Interested" && (<TeamLeadsNotInterested
                                             secretKey={secretKey}
                                             notInterestedData={teamLeadsData?.data?.data}
-                                            // isLoading={isLoading}
+                                            isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
