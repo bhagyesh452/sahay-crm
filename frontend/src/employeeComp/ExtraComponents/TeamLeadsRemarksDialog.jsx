@@ -15,16 +15,21 @@ const TeamLeadsRemarksDialog = ({
     companyStatus,
     name,
     mainRemarks,
+    bdeRemarks,
+    bdmRemarks,
     designation,
     refetch,
-    isBdmRemarks }) => {
+}) => {
 
     // console.log("Remarks key :", remarksKey);
     // console.log("BDM Accept Status :", bdmAcceptStatus);
+    console.log("BDE Remarks :", bdeRemarks);
+    console.log("BDM Remarks :", bdmRemarks);
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const [remarksData, setRemarksData] = useState([]);
+    const [oldRemarks, setOldRemarks] = useState([]);
     const [newRemarks, setNewRemarks] = useState("");
     const [open, setOpen] = useState(false);
 
@@ -55,8 +60,18 @@ const TeamLeadsRemarksDialog = ({
     const fetchRemarksData = async () => {
         try {
             const res = await axios.get(`${secretKey}/remarks/remarks-history-complete/${companyId}`);
-            // console.log("Remarks Data :", res.data);
+            console.log("Remarks Data :", res.data);
             setRemarksData(res.data);
+        } catch (error) {
+            console.error("Error fetching remarks data:", error);
+        }
+    };
+
+    const fetchOldRemarks = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
+            console.log("Old Remarks :", res.data);
+            setOldRemarks(res.data);
         } catch (error) {
             console.error("Error fetching remarks data:", error);
         }
@@ -66,6 +81,7 @@ const TeamLeadsRemarksDialog = ({
         setOpen(true);
         setNewRemarks("");
         fetchRemarksData();
+        fetchOldRemarks();
     };
 
     const handleCloseModal = () => {
@@ -116,6 +132,7 @@ const TeamLeadsRemarksDialog = ({
 
     useEffect(() => {
         fetchRemarksData();
+        fetchOldRemarks();
     }, [companyName, companyId]);
 
     const renderTeamLeadsButton = () => {
@@ -153,6 +170,43 @@ const TeamLeadsRemarksDialog = ({
                         <div className="modal-body">
                             <div className="remarks-content">
 
+                                {/* Displaying old remarks from old database */}
+                                {oldRemarks.length > 0 && (
+                                    oldRemarks.map((historyItem) => {
+                                        if (isEditable && historyItem.bdmName === name) {
+                                            return (
+                                                <div className="col-sm-12" key={historyItem._id}>
+                                                    <div className="card RemarkCard position-relative">
+                                                        <div className="d-flex justify-content-between">
+                                                            <div className="reamrk-card-innerText">
+                                                                <pre className="remark-text">{historyItem.bdmRemarks}</pre>
+                                                            </div>
+                                                            {/* {isEditable && (
+                                                                <div className="dlticon">
+                                                                    <MdDelete
+                                                                        style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
+                                                                        onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
+                                                                    />
+                                                                </div>
+                                                            )} */}
+                                                        </div>
+                                                        <div className="d-flex card-dateTime justify-content-between">
+                                                            <div className="date">
+                                                                {historyItem.date}
+                                                            </div>
+                                                            <div className="date">
+                                                                By: {historyItem.bdmName}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+
+                                    })
+                                )}
+                                
+                                {/* Displaying remarks from new database*/}
                                 {remarksData && remarksData.length > 0 &&
                                     remarksData[0]?.remarks?.length > 0 ? (
                                     remarksData[0]?.remarks.slice().map((remark) => {
@@ -195,14 +249,17 @@ const TeamLeadsRemarksDialog = ({
                                                         <div className="d-flex justify-content-between">
                                                             <div className="reamrk-card-innerText">
                                                                 <pre className="remark-text">{remark.remarks}</pre>
+                                                                {/* <pre className="remark-text">{remark.remarks || bdeRemarks}</pre> */}
                                                             </div>
                                                         </div>
                                                         <div className="d-flex card-dateTime justify-content-between">
                                                             <div className="date">
                                                                 {formatDateTimeForYesterday(remark.addedOn)}
+                                                                {/* {!bdeRemarks && formatDateTimeForYesterday(remark.addedOn)} */}
                                                             </div>
                                                             <div className="date">
-                                                                By: {remark.employeeName} ({remark.designation})
+                                                                By: {remark.employeeName} {remark.designation}
+                                                                {/* {!bdeRemarks && `By: ${remark.employeeName} (${remark.designation})`} */}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -210,9 +267,10 @@ const TeamLeadsRemarksDialog = ({
                                             );
                                         }
                                     })
-                                ) : (
-                                    <div className="text-center overflow-hidden">No Remarks History</div>
-                                )}
+                                    ) : (
+                                        <div className="text-center overflow-hidden">No Remarks History</div>
+                                    )}
+                                
                             </div>
 
                             {isEditable && (
