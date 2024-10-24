@@ -360,7 +360,7 @@ const scheduleString = `${minutes} ${hours} * * *`;
 //     console.error('Error updating records during the cron job:', error);
 //   }
 // });
-cron.schedule('37 12 * * *', async () => {
+cron.schedule('40 15 * * *', async () => {
   try {
     console.log('Running the 11:45 AM IST cron job...');
 
