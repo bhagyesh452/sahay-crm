@@ -45,7 +45,8 @@ function EmployeeInterestedLeads({
   handleMouseEnter,
   handleMouseUp,
   selectedRows,
-  userId
+  userId,
+  bdenumber
 }) {
   const [companyName, setCompanyName] = useState("");
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
@@ -218,7 +219,10 @@ function EmployeeInterestedLeads({
                         onClick={() => {
                           handleShowCallHistory(
                             company["Company Name"],
-                            company["Company Number"]
+                            company["Company Number"],
+                            bdenumber,
+                            company.bdmName
+
                           );
                           // setShowCallHistory(true);
                           // setClientNumber(company["Company Number"]);
@@ -266,7 +270,11 @@ function EmployeeInterestedLeads({
                             handleFormOpen={handleOpenFormOpen}
                           />
                         )}
-                        <div className={company.interestedInformation ? "intersted-history-btn" : "intersted-history-btn disabled"}>
+                        <div className={company.Status === "Interested" && company.interestedInformation ? 
+                          "intersted-history-btn"
+                          : company.Status === "FollowUp" && company.interestedInformation ? "followup-history-btn"  : 
+                          company.Status === "FollowUp" && !company.interestedInformation ? "followup-history-btn disabled" :
+                          "intersted-history-btn disabled"}>
                           <FaEye
                             key={company._id}
                             style={{ border: "transparent", background: "none" }}

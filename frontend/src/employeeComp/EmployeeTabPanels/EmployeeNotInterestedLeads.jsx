@@ -36,6 +36,7 @@ function EmployeeNotInterestedLeads({
     handleMouseEnter,
     handleMouseUp,
     selectedRows,
+    bdenumber
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -177,7 +178,15 @@ function EmployeeNotInterestedLeads({
                                                 <td>
                                                     <LuHistory
                                                         onClick={() => {
-                                                            handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                            handleShowCallHistory(
+                                                                company["Company Name"],
+                                                                company["Company Number"],
+                                                                bdenumber,
+                                                                company.bdmName
+
+                                                            );
+                                                            // setShowCallHistory(true);
+                                                            // setClientNumber(company["Company Number"]);
                                                         }}
                                                         style={{
                                                             cursor: "pointer",
@@ -187,6 +196,7 @@ function EmployeeNotInterestedLeads({
                                                         color="grey"
                                                     />
                                                 </td>
+
                                                 <td>
                                                     {(fordesignation === "admin" || fordesignation === "datamanager") ? (<div
                                                         className={company.Status === "Not Interested" ? "dfault_notinterested-status" :

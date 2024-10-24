@@ -20,12 +20,27 @@ function ProjectionInformationDialog({
     // Function to update dialog count in the backend
     const updateDialogCount = async (count) => {
         try {
-            console.log("count" , count)
-            await axios.post(`${secretKey}/update-dialog-count`, {
-                userId,
-                dialogCount: count,
-                showDialog: count < 3
-            });
+            const currentTime = new Date(); // Get the current time
+            console.log("count", count);
+
+            if(data.dialog === 0){
+                await axios.post(`${secretKey}/update-dialog-count`, {
+                    userId,
+                    dialogCount: count,
+                    showDialog: count < 3,
+                    lastShowDialogTime: currentTime.toISOString(), // Send current time as string
+                    firstFetch: true
+                });
+            }else{
+                await axios.post(`${secretKey}/update-dialog-count`, {
+                    userId,
+                    dialogCount: count,
+                    showDialog: count < 3,
+                    lastShowDialogTime: currentTime.toISOString(), // Send current time as string
+                    firstFetch: false
+                });
+            }
+
         } catch (error) {
             console.error("Error updating dialog count:", error);
         }

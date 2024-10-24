@@ -35,8 +35,9 @@ function EmployeeGeneralLeads({
     handleMouseEnter,
     handleMouseUp,
     selectedRows,
+    bdenumber
 }) {
-
+    
     const [companyName, setCompanyName] = useState("");
     const [maturedCompanyName, setMaturedCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
@@ -158,7 +159,13 @@ function EmployeeGeneralLeads({
                                                 <td>
                                                     <LuHistory
                                                         onClick={() => {
-                                                            handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                            handleShowCallHistory(
+                                                                company["Company Name"],
+                                                                company["Company Number"],
+                                                                bdenumber,
+                                                                company.bdmName
+
+                                                            );
                                                             // setShowCallHistory(true);
                                                             // setClientNumber(company["Company Number"]);
                                                         }}

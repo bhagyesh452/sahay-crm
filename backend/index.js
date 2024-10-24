@@ -289,7 +289,7 @@ app.post("/api/employeelogin", async (req, res) => {
 });
 
 app.post('/api/update-dialog-count', async (req, res) => {
-  const { userId , dialogCount , showDialog } = req.body;
+  const { userId , dialogCount , showDialog , firstFetch , lastLoginTime } = req.body;
 
   try {
     const user = await adminModel.findById({ _id: userId });
@@ -300,6 +300,8 @@ app.post('/api/update-dialog-count', async (req, res) => {
     } else {
       user.dialogCount = dialogCount;
       user.showDialog = showDialog;
+      user.firstFetch = firstFetch;
+      user.lastShowDialogTime = lastLoginTime;
     }
 
     await user.save();
@@ -360,7 +362,7 @@ const scheduleString = `${minutes} ${hours} * * *`;
 //     console.error('Error updating records during the cron job:', error);
 //   }
 // });
-cron.schedule('0 16 * * *', async () => {
+cron.schedule('34 18 * * *', async () => {
   try {
     console.log('Running the 11:45 AM IST cron job...');
 
@@ -377,7 +379,9 @@ cron.schedule('0 16 * * *', async () => {
       {
         showDialog: true, // Enable the dialog
         showDialogDate: istDate, // Update the showDialogDate to current date
-        dialogCount: 0 // Reset the dialogCount to 0
+        dialogCount: 0 ,// Reset the dialogCount to 0
+        firstFetch: true,
+        lastShowDialogTime: istDate.toISOString()
       }
     );
 

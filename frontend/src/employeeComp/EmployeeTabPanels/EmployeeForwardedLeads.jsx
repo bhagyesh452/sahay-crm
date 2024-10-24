@@ -40,6 +40,7 @@ function EmployeeForwardedLeads({
     handleMouseEnter,
     handleMouseUp,
     selectedRows,
+    bdenumber
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -288,7 +289,15 @@ function EmployeeForwardedLeads({
                                             <td>
                                                 <LuHistory
                                                     onClick={() => {
-                                                        handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                        handleShowCallHistory(
+                                                            company["Company Name"],
+                                                            company["Company Number"],
+                                                            bdenumber,
+                                                            company.bdmName
+
+                                                        );
+                                                        // setShowCallHistory(true);
+                                                        // setClientNumber(company["Company Number"]);
                                                     }}
                                                     style={{
                                                         cursor: "pointer",

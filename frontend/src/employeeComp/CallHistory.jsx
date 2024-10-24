@@ -5,7 +5,8 @@ import Nodata from '../components/Nodata';
 import { IconChevronRight, IconChevronLeft } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
 
-function CallHistory({ handleCloseHistory, clientNumber }) {
+function CallHistory({ handleCloseHistory, clientNumber , bdenumber , bdmName }) {
+    console.log(bdenumber , bdmName)
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -16,6 +17,7 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 100;
 
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, '0');
@@ -23,6 +25,7 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
         const year = date.getFullYear();
         return `${day} ${month} ${year}`;
     };
+
 
     const formatTime = (timeString) => {
         // Split the input time string (HH:MM:SS) into hours, minutes, and seconds
@@ -110,7 +113,8 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
 
                 // Process the POST response
                 const data = await response.json();
-                setCallHistory(data.result);
+                console.log("Calling history is :", bdenumber , data.result.filter((data)=>data.emp_number === bdenumber && bdmName === data.emp_name));
+                setCallHistory(data.result.filter((data)=>data.emp_number === bdenumber));
                 // console.log("Calling history is :", data);
             } catch (err) {
                 console.log(err);
@@ -126,6 +130,8 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
         currentPage * itemsPerPage,
         (currentPage + 1) * itemsPerPage
     );
+
+    console.log("currentData", currentData);
 
     return (
         <div>

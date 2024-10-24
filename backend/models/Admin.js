@@ -172,9 +172,15 @@ const yourSchema = new mongoose.Schema({
     type: Date, 
     default: null 
   },
+  lastShowDialogTime:{
+    type:String
+  },
   dialogCount: { 
     type: Number, 
     default: 0 
+  },
+  firstFetch:{
+    type:Boolean
   }
 });
 

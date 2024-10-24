@@ -37,7 +37,8 @@ function EmployeeMaturedLeads({
     handleMouseEnter,
     handleMouseUp,
     selectedRows,
-    userId
+    userId,
+    bdenumber
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -66,7 +67,7 @@ function EmployeeMaturedLeads({
         }
     };
 
-    console.log("matutered hua")
+    console.log("matutered hua" , bdenumber)
 
 
     return (
@@ -175,7 +176,15 @@ function EmployeeMaturedLeads({
                                             <td>
                                                 <LuHistory
                                                     onClick={() => {
-                                                        handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                        handleShowCallHistory(
+                                                            company["Company Name"],
+                                                            company["Company Number"],
+                                                            bdenumber,
+                                                            company.bdmName
+
+                                                        );
+                                                        // setShowCallHistory(true);
+                                                        // setClientNumber(company["Company Number"]);
                                                     }}
                                                     style={{
                                                         cursor: "pointer",
