@@ -106,10 +106,22 @@ router.post("/update-status/:id", async (req, res) => {
     }
 
     // Update the status field in the CompanyModel
+    // if (newStatus === "Busy" || newStatus === "Not Picked Up") {
+    //   await CompanyModel.findByIdAndUpdate(id, {
+    //     Status: newStatus,
+    //     lastActionDate: new Date()
+    //   });
+    // } else {
+    //   await CompanyModel.findByIdAndUpdate(id, {
+    //     Status: newStatus,
+    //     AssignDate: new Date()
+    //   });
+    // }
     await CompanyModel.findByIdAndUpdate(id, {
       Status: newStatus,
-      lastActionDate: new Date()
+      AssignDate: new Date()
     });
+
 
     // Define an array of statuses for which the lead history should be deleted
     const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched", "Not Picked Up"];

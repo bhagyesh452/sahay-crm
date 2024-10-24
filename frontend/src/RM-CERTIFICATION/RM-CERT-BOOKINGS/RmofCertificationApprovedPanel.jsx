@@ -1749,17 +1749,20 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                           </button>
                         </div>
                       </td> */}
-                      <RMRemarksDialog
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        historyRemarks={obj.Remarks}
-                        ename={employeeData.ename}
-                        designation={employeeData.designation}
-                        bdeName={obj.bdeName}
-                        bdmName={obj.bdmName}
-                      />
+                      <td>
+                        <RMRemarksDialog
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          historyRemarks={obj.Remarks}
+                          ename={employeeData.ename}
+                          designation={employeeData.designation}
+                          bdeName={obj.bdeName}
+                          bdmName={obj.bdmName}
+                        />
+                      </td>
+
                       <td className="td_of_weblink">
                         <WebsiteLink
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
