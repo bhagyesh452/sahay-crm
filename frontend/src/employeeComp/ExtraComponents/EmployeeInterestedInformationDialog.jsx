@@ -49,7 +49,6 @@ function EmployeeInterestedInformationDialog({
     }, []);
     const handleYesClick = (questionId) => {
         setVisibleQuestions({
-
             [questionId]: true, // Toggle the visibility of the question content
         });
     };
@@ -173,44 +172,48 @@ function EmployeeInterestedInformationDialog({
 
     // Reset form data to initial state
     const handleClearInterestedInformation = () => {
-      {fordesignation !== "admin" && fordesignation !== "datamanager" &&
-          setFormData({
-            clientWhatsAppRequest: {
-                nextFollowUpDate: '',
-                remarks: ''
-            },
-            clientEmailRequest: {
-                nextFollowUpDate: '',
-                remarks: ''
-            },
-            interestedInServices: {
-                servicesPitched: [],
-                servicesInterestedIn: [],
-                offeredPrice: '',
-                nextFollowUpDate: '',
-                remarks: ''
-            },
-            interestedButNotNow: {
-                servicesPitched: [],
-                servicesInterestedIn: [],
-                offeredPrice: '',
-                nextFollowUpDate: '',
-                remarks: ''
-            },
-            mainQuestion: [], // Reset the main questions tracking
-            ename: ename,
-            "Company Name": companyName
-        })
-    }
-        if(fordesignation !== "admin" && fordesignation !== "datamanager") {
-            setStatus(companyStatus)
-            setStatusClass("untouched_status")
+        {
+            !forView &&
+            
+                setFormData({
+                clientWhatsAppRequest: {
+                    nextFollowUpDate: '',
+                    remarks: ''
+                },
+                clientEmailRequest: {
+                    nextFollowUpDate: '',
+                    remarks: ''
+                },
+                interestedInServices: {
+                    servicesPitched: [],
+                    servicesInterestedIn: [],
+                    offeredPrice: '',
+                    nextFollowUpDate: '',
+                    remarks: ''
+                },
+                interestedButNotNow: {
+                    servicesPitched: [],
+                    servicesInterestedIn: [],
+                    offeredPrice: '',
+                    nextFollowUpDate: '',
+                    remarks: ''
+                },
+                mainQuestion: [], // Reset the main questions tracking
+                ename: ename,
+                "Company Name": companyName
+            })
+            // Call setStatus and setStatusClass only if they are available
+        if (typeof setStatus === 'function') {
+            setStatus(companyStatus);
         }
-
-        refetch()
+        if (typeof setStatusClass === 'function') {
+            setStatusClass("untouched_status");
+        }
+            setVisibleQuestions({})
+        
+        }
+        refetch();
         // Manually hide the modal
-        setVisibleQuestions({});
-        setIsSubmitted(false);
         const modalElement = document.getElementById(modalId);
         modalElement.classList.remove("show");
         modalElement.setAttribute("aria-hidden", "true");

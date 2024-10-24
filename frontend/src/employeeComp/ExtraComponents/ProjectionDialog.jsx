@@ -159,15 +159,13 @@ function ProjectionDialog({
                     `${secretKey}/projection/update-followup`,
                     finalData
                 );
+                await axios.post(`${secretKey}/update-dialog-count`, {
+                    userId,
+                    dialogCount: 3,
+                    showDialog: false
+                });
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
-                // Dismiss the dialog for today for this specific employee
-                dialogDismissedData[userId] = {
-                    dismissedDate: currentDate, // Set the dismissed date to today
-                    dialogCount: 3 // Set dialogCount to 3 to prevent further dialogs
-                };
-
-                // Save the updated data back to localStorage
-                localStorage.setItem('dialogDismissedData', JSON.stringify(dialogDismissedData));
+                
                 closeProjection(); // Close projection after submitting
                 fetchProjections(); // Refresh data
             }

@@ -113,20 +113,20 @@ export default function HREditEmployee() {
     personalEmail: "",
     currentAddress: "",
     permanentAddress: "",
-    bloodGroup:"",
+    bloodGroup: "",
 
   });
   const validatePersonalInfo = () => {
     const newErrors = {};
-    const { 
-      firstName, 
-      middleName, 
-      lastName, 
-      dob, 
-      gender, 
-      personalPhoneNo, 
-      personalEmail, 
-      currentAddress, 
+    const {
+      firstName,
+      middleName,
+      lastName,
+      dob,
+      gender,
+      personalPhoneNo,
+      personalEmail,
+      currentAddress,
       permanentAddress,
       bloodGroup } = personalInfo;
 
@@ -374,7 +374,7 @@ export default function HREditEmployee() {
         personalEmail: data.personal_email || "",
         currentAddress: data.currentAddress || "",
         permanentAddress: data.permanentAddress || "",
-        bloodGroup:data.bloodGroup || ""
+        bloodGroup: data.bloodGroup || ""
 
       });
 
@@ -559,6 +559,39 @@ export default function HREditEmployee() {
       }));
     }
   };
+
+  const handleFileRemove = (fileName, docType) => {
+    console.log("filename", fileName)
+    // Remove file based on its original name
+    setPayrollInfo((prevState) => ({
+      ...prevState,
+      [docType]: null, // Set the specific docType to null
+    }));
+    setEmpDocumentInfo((prevState) => ({
+      ...prevState,
+      [docType]: null,
+    }));
+    if (docType === "aadharCard") {
+      setAadharCardDocument([])
+    } else if (docType === "panCard") {
+      setPanCardDocument([])
+    } else if (docType === "educationCertificate") {
+      setEducationCertificateDocument([])
+    } else if (docType === "relievingCertificate") {
+      setRelievingCertificateDocument([])
+    }else if(docType === "salarySlip"){
+      setSalarySlipDocument([])
+    }else if(docType === "profilePhoto"){
+      setProfilePhotoDocument([])
+    }else if(docType === "offerLetter"){
+      setOfferLetterDocument([])
+      
+    }
+    // Clear the input field
+    document.getElementById(docType).value = "";
+  };
+
+  console.log("empInfo", empDocumentInfo)
 
   const totalSteps = () => steps.length;
 
@@ -901,7 +934,7 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                    <label for="bloodGroup">Blood Group<span style={{ color: "red" }}> * </span></label>
+                                      <label for="bloodGroup">Blood Group<span style={{ color: "red" }}> * </span></label>
                                       <select
                                         className="form-select mt-1"
                                         name="bloodGroup"
@@ -1427,10 +1460,18 @@ export default function HREditEmployee() {
                                     {errors.aadharCard && <p style={{ color: "red" }}>{errors.aadharCard}</p>}
                                   </div>
                                   {aadharCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(aadharCardDocument[0]?.filename)}>
+                                    <div class="uploaded-fileItem d-flex align-items-center"
+                                    //onClick={() => openDocument(aadharCardDocument[0]?.filename)}
+                                    >
                                       <p class="m-0 cursor-pointer">{aadharCardDocument[0]?.originalname}</p>
-                                      <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
-                                        <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                      <button
+                                        onClick={(e) => {
+                                          e.preventDefault()
+                                          handleFileRemove(aadharCardDocument[0]?.originalname, 'aadharCard');
+                                        }}
+                                        class="fileItem-dlt-btn" disabled="">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                          <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
                                   </div>}
@@ -1449,9 +1490,16 @@ export default function HREditEmployee() {
                                     {errors.panCard && <p style={{ color: "red" }}>{errors.panCard}</p>}
                                   </div>
                                   {panCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(panCardDocument[0]?.filename)}>
+                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    //onClick={() => openDocument(panCardDocument[0]?.filename)}
+                                    >
                                       <p class="m-0 cursor-pointer">{panCardDocument[0]?.originalname}</p>
-                                      <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                      <button onClick={(e) => {
+                                        e.preventDefault()
+                                        handleFileRemove(panCardDocument[0]?.originalname, 'panCard')
+                                      }}
+                                        class="fileItem-dlt-btn" disabled="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
@@ -1471,9 +1519,16 @@ export default function HREditEmployee() {
                                     {errors.educationCertificate && <p style={{ color: "red" }}>{errors.educationCertificate}</p>}
                                   </div>
                                   {educationCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(educationCertificateDocument[0]?.filename)}>
+                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    //onClick={() => openDocument(educationCertificateDocument[0]?.filename)}
+                                    >
                                       <p class="m-0 cursor-pointer">{educationCertificateDocument[0]?.originalname}</p>
-                                      <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                      <button onClick={(e) => {
+                                        e.preventDefault()
+                                        handleFileRemove(educationCertificateDocument[0]?.originalname, 'educationCertificate')
+                                      }}
+                                        class="fileItem-dlt-btn" disabled="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
@@ -1496,9 +1551,16 @@ export default function HREditEmployee() {
                                     {/* {errors.relievingCertificate && <p style={{ color: "red" }}>{errors.relievingCertificate}</p>} */}
                                   </div>
                                   {relievingCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(relievingCertificateDocument[0]?.filename)}>
+                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    //onClick={() => openDocument(relievingCertificateDocument[0]?.filename)}
+                                    >
                                       <p class="m-0 cursor-pointer">{relievingCertificateDocument[0]?.originalname}</p>
-                                      <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                      <button onClick={(e) => {
+                                        e.preventDefault()
+                                        handleFileRemove(relievingCertificateDocument[0]?.originalname, 'relievingCertificate')
+                                      }}
+                                        class="fileItem-dlt-btn" disabled="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
@@ -1521,9 +1583,15 @@ export default function HREditEmployee() {
                                     {/* {errors.salarySlip && <p style={{ color: "red" }}>{errors.salarySlip}</p>} */}
                                   </div>
                                   {salarySlipDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(salarySlipDocument[0]?.filename)}>
+                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    //onClick={() => openDocument(salarySlipDocument[0]?.filename)}
+                                    >
                                       <p class="m-0 cursor-pointer">{salarySlipDocument[0]?.originalname}</p>
-                                      <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                      <button onClick={(e) => {
+                                        e.preventDefault()
+                                        handleFileRemove(salarySlipDocument[0]?.originalname, 'salarySlip')
+                                      }}
+                                        class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
@@ -1543,9 +1611,15 @@ export default function HREditEmployee() {
                                     {/* {errors.profilePhoto && <p style={{ color: "red" }}>{errors.profilePhoto}</p>} */}
                                   </div>
                                   {profilePhotoDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(profilePhotoDocument[0]?.filename)}>
+                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    //onClick={() => openDocument(profilePhotoDocument[0]?.filename)}
+                                    >
                                       <p class="m-0 cursor-pointer">{profilePhotoDocument[0]?.originalname}</p>
-                                      <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                      <button onClick={(e) => {
+                                        e.preventDefault()
+                                        handleFileRemove(profilePhotoDocument[0]?.originalname, 'profilePhoto')
+                                      }}
+                                        class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>

@@ -572,7 +572,7 @@ function EmployeePanel() {
         setShowDialog(true);
         updateDialogCount(); // Increment the dialog count
       }
-    }, 15 * 60 * 1000); // Every 15 minutes
+    }, 1 * 60 * 1000); // Every 15 minutes
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [dialogCount]);

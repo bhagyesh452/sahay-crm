@@ -106,7 +106,7 @@ const sendMail3 = async (
     const info = await transporter.sendMail({
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
       to: recipients.join(", "),
-      replyTo: "shivangi@startupsahay.com",
+      replyTo: "support@startupsahay.com",
       subject,
       text,
       html,

@@ -165,6 +165,9 @@ const yourSchema = new mongoose.Schema({
     type: Boolean, 
     default: false 
   },
+  showDialogDate:{
+    type:Date
+  },
   lastLoginTime: { 
     type: Date, 
     default: null 
