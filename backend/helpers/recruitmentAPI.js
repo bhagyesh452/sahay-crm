@@ -212,7 +212,7 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
           );
           // Send email hr mail
           const emailInfo2 = await sendMailResponseRecruiter(
-            ["hr@startupsahay.com", "recruiter@startupsahay.com", "shivangi@startupsahay.com"],
+            ["hr@startupsahay.com", "recruiter@startupsahay.com"],
             subject2,
             "",
             html2,

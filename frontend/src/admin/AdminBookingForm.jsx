@@ -3482,8 +3482,8 @@ export default function AdminBookingForm({
                                         {/* <option value="SRK Seedfund(Non GST)/IDFC first Bank">
                                           SRK Seedfund(Non GST)/IDFC first Bank
                                         </option> */}
-                                        <option value="STARTUP SAHAY CONSULTANCY / ADVISORS">
-                                          STARTUP SAHAY CONSULTANCY / ADVISORS
+                                        <option value="STARTUP SAHAY COMPANY / SOLUTION">
+                                        STARTUP SAHAY COMPANY / SOLUTION
                                         </option>
                                         <option value="Razorpay">
                                           Razorpay

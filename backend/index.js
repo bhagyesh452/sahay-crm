@@ -277,16 +277,6 @@ app.post("/api/employeelogin", async (req, res) => {
       // If designation is incorrect
       return res.status(401).json({ message: "Designation is incorrect" });
     } else {
-      await adminModel.updateOne(
-        { _id: user._id },
-        {
-          $set: {
-            lastLoginTime: new Date(),
-            dialogCount: 0,
-            showDialog: true
-          }
-        }
-      );
       const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
         expiresIn: "3h",
       });
@@ -348,13 +338,39 @@ const { hours, minutes } = getISTHourMinute();
 // Dynamically set cron schedule based on current IST time
 const scheduleString = `${minutes} ${hours} * * *`;
 // Cron job that runs every day at 9 AM
-cron.schedule('26 0 * * *', async () => {
+// cron.schedule('26 0 * * *', async () => {
+//   try {
+//     console.log('Running the 9 AM cron job...');
+//     // Create the current date in IST (Indian Standard Time)
+//     const now = new Date();
+//     const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
+//     const istDate = new Date(now.getTime() + istOffset);
+//     // Update all Sales Executives and Sales Managers
+//     const result = await adminModel.updateMany(
+//       { designation: { $in: ['Sales Executive', 'Sales Manager'] } }, // Filter for Sales Executives and Sales Managers
+//       {
+//         showDialog: true, // Enable the dialog
+//         showDialogDate: istDate, // Update the showDialogDate to current date
+//         dialogCount: 0 // Reset the dialogCount to 0
+//       }
+//     );
+
+//     console.log(`${result.nModified} records updated successfully.`);
+//   } catch (error) {
+//     console.error('Error updating records during the cron job:', error);
+//   }
+// });
+cron.schedule('37 12 * * *', async () => {
   try {
-    console.log('Running the 9 AM cron job...');
+    console.log('Running the 11:45 AM IST cron job...');
+
     // Create the current date in IST (Indian Standard Time)
     const now = new Date();
     const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
     const istDate = new Date(now.getTime() + istOffset);
+
+    console.log(`Cron job running at IST time: ${istDate.toISOString()}`);
+
     // Update all Sales Executives and Sales Managers
     const result = await adminModel.updateMany(
       { designation: { $in: ['Sales Executive', 'Sales Manager'] } }, // Filter for Sales Executives and Sales Managers

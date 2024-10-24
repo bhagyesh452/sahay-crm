@@ -297,7 +297,8 @@ const RemarksDialog = ({
   mainRemarks,
   refetch,
   designation,
-  bdmName
+  bdmName,
+  fordesignation
 }) => {
   const [open, setOpen] = useState(false);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
@@ -312,11 +313,12 @@ const RemarksDialog = ({
   // Fetch remarks history for the specific company
   const fetchRemarksHistory = async () => {
     try {
-      //const response1 = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
+      const response1 = await axios.get(`${secretKey}/remarks/remarks-history/${companyId}`);
       const response = await axios.get(`${secretKey}/remarks/remarks-history-complete/${companyId}`);
-      // if (response1.data.length !== 0) {
-      //   setRemarksHistoryFromResponse1(response1.data);
-      // }
+      console.log("response1", response1.data);
+      if (response1.data.length !== 0) {
+        setRemarksHistoryFromResponse1(response1.data);
+      }
       setFilteredRemarks(response.data);
       //console.log(response1.data)
     } catch (error) {
@@ -370,7 +372,7 @@ const RemarksDialog = ({
 
   const handleDeleteRemarks = async (remarksId, remarksValue) => {
     const mainRemarks = remarksValue === changeRemarks;
-    console.log("companyId",companyId)
+    console.log("companyId", companyId)
     try {
       await axios.delete(`${secretKey}/remarks/remarks-history/${remarksId}?companyId=${companyId}`);
       if (mainRemarks) {
@@ -388,7 +390,7 @@ const RemarksDialog = ({
   // Render button based on bdmAcceptStatus and company status
   const renderButton = () => {
     if (
-      (remarksKey !== "bdmRemarks") && (bdmAcceptStatus !== "Accept" ||
+      (remarksKey !== "bdmRemarks" && fordesignation !== "admin" && fordesignation !== "datamanager") && (bdmAcceptStatus !== "Accept" ||
         ["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
     ) {
       return (
@@ -404,7 +406,7 @@ const RemarksDialog = ({
     }
 
     if (
-      (remarksKey === "bdmRemarks") || (bdmAcceptStatus === "Accept" &&
+      (remarksKey === "bdmRemarks" || fordesignation === "admin" || fordesignation === "datamanager") || (bdmAcceptStatus === "Accept" &&
         !["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
     ) {
       return (
@@ -468,9 +470,10 @@ const RemarksDialog = ({
             </div>
             <div className="modal-body">
               <div className="remarks-content">
-                {/* {remarksHistoryFromResponse1.length > 0 && (
+                {remarksHistoryFromResponse1.length > 0 && (
                   remarksHistoryFromResponse1.map((historyItem) => {
                     if (isEditable && historyItem.bdeName === bdeName) {
+                      console.log("historyItem", historyItem)
                       return (
                         <div className="col-sm-12" key={historyItem._id}>
                           <div className="card RemarkCard position-relative">
@@ -478,14 +481,35 @@ const RemarksDialog = ({
                               <div className="reamrk-card-innerText">
                                 <pre className="remark-text">{historyItem[remarksKey]}</pre>
                               </div>
-                              {isEditable &&  (
-                                <div className="dlticon">
-                                  <MdDelete
-                                    style={{ cursor: "pointer", color: "#f70000", width: "14px" }}
-                                    onClick={() => handleDeleteRemarks(historyItem._id, historyItem[remarksKey])}
-                                  />
-                                </div>
-                              )}
+                            </div>
+                            <div className="d-flex card-dateTime justify-content-between">
+                              <div className="date">
+                                {historyItem.date}
+                              </div>
+                              <div className="date">
+                                By: {historyItem.bdeName}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    }else{
+                      return null
+                    }
+
+                  })
+                )}
+                {remarksHistoryFromResponse1.length > 0 && (
+                  remarksHistoryFromResponse1.map((historyItem) => {
+                    if (!isEditable && historyItem.bdmName === bdmName) {
+                      console.log("historyItem", historyItem)
+                      return (
+                        <div className="col-sm-12" key={historyItem._id}>
+                          <div className="card RemarkCard position-relative">
+                            <div className="d-flex justify-content-between">
+                              <div className="reamrk-card-innerText">
+                                <pre className="remark-text">{historyItem[remarksKey]}</pre>
+                              </div>
                             </div>
                             <div className="d-flex card-dateTime justify-content-between">
                               <div className="date">
@@ -501,7 +525,8 @@ const RemarksDialog = ({
                     }
 
                   })
-                )} */}
+                )}
+
                 {filteredRemarks[0]?.remarks?.length > 0 ||
                   filteredRemarks[0]?.serviceWiseRemarks?.length > 0 ? (
                   filteredRemarks[0]?.remarks.slice().map((historyItem) => {

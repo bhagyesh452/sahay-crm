@@ -143,9 +143,7 @@ function EmployeePanelCopy({ fordesignation }) {
     }, [data.ename]);
 
 
-    //const dialogDate = new Date(data?.showDialogDate).toISOString().split('T')[0]; // Format as YYYY-MM-DD
-    const currentDate = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
-    const dialogDismissedData = JSON.parse(localStorage.getItem('dialogDismissedData')) || {}; // Fetch all dismissed data from localStorage
+    
     const fetchData = async () => {
         let fetchingId;
         if (userId) {
@@ -158,10 +156,6 @@ function EmployeePanelCopy({ fordesignation }) {
             const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${fetchingId}`);
             // Set the retrieved data in the state
             const userData = response.data.data;
-
-            // if (response.data.data.dialogCount < 3 && response.data.data.showDialogDate) {
-            //     setShowDialog(true);
-            // }
             setEmployeeName(userData.ename)
             //console.log(userData);
             setData(userData);
@@ -176,16 +170,19 @@ function EmployeePanelCopy({ fordesignation }) {
     useEffect(() => {
         const fetchDialogStatus = async () => {
             try {
-
+                // Skip the logic for admin or datamanager
+                if (fordesignation === "admin" || fordesignation === "datamanager") {
+                    return; // Early return to prevent the rest of the logic from running
+                }
                 setDialogCount(data.dialogCount);
 
                 // Ensure data.showDialogDate is valid before processing
-               
-                    if (data.dialogCount < 3 && data.showDialog) {
-                        console.log("yahan dikha")
-                        setShowDialog(true);
-                    }
-                
+
+                if (data.dialogCount < 3 && data.showDialog) {
+                    
+                    setShowDialog(true);
+                }
+
             } catch (error) {
                 console.error("Error fetching dialog status:", error);
             }
@@ -195,16 +192,16 @@ function EmployeePanelCopy({ fordesignation }) {
 
         // Show dialog every 15 minutes if count is less than 3
         const interval = setInterval(() => {
-           
 
-                if (data.dialogCount < 3 && data.showDialog) {
-                    setShowDialog(true);
-                
+
+            if (data.dialogCount < 3 && data.showDialog) {
+                setShowDialog(true);
+
             }
-        }, 1 * 60 * 1000);
+        }, 15 * 60 * 1000);
 
         return () => clearInterval(interval); // Cleanup on unmount
-    }, [userId , data.showDialog, data.showDialogDate]);
+    }, [userId, data.showDialog, data.showDialogDate]);
 
     const handleCloseProjectionPopup = () => {
         setShowDialog(false);
@@ -291,8 +288,8 @@ function EmployeePanelCopy({ fordesignation }) {
                 });
                 return response.data; // Directly return the data
             },
-            staleTime: 300000, // Cache for 1 minute
-            cacheTime: 300000, // Cache for 1 minute
+            // staleTime: 300000, // Cache for 1 minute
+            // cacheTime: 300000, // Cache for 1 minute
             refetchOnWindowFocus: false,
             keepPreviousData: true
         }
@@ -306,29 +303,6 @@ function EmployeePanelCopy({ fordesignation }) {
         setCurrentPage(0); // Reset to the first page on search
         refetch(); // Refetch the data
     };
-
-    // useEffect(() => {
-    //     if (isLoading) {
-    //         setOpenBacdrop(true); // Set openBackDrop to true when loading
-    //     } else {
-    //         setOpenBacdrop(false); // Set openBackDrop to false when not loading
-    //     }
-
-    //     if (queryData) {
-    //         // Assuming queryData now contains both data and revertedData
-    //         setFetchedData(queryData.data); // Update the fetched data
-    //         setRevertedData(queryData.revertedData); // Set revertedData based on response
-    //         setmoreEmpData(queryData.data);
-    //         setEmployenewEmpData(queryData.data);
-    //         setTotalCounts(queryData.totalCounts);
-    //         setTotalPages(Math.ceil(queryData.totalPages)); // Calculate total pages
-    //     }
-    // }, [isLoading, queryData, dataStatus, currentPage]);
-
-    // Create a debounced version of refetch
-    // const debouncedRefetch = useCallback(debounce(() => {
-    //     refetch();
-    // }, 300), [refetch]);
 
     const handlnewEmpDataStatusChange = useCallback((status, tabRef) => {
         setdataStatus(status);
@@ -1158,14 +1132,15 @@ function EmployeePanelCopy({ fordesignation }) {
             }
 
             {/* --------------------------------backdrop------------------------- */}
-            {isLoading && (<Backdrop
+            {/* {isLoading && (<Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={isLoading}
                 onClick={handleCloseBackdrop}>
                 <CircularProgress color="inherit" />
-            </Backdrop>)}
+            </Backdrop>)} */}
 
-            <ProjectionInformationDialog
+            {fordesignation !== "admin" && fordesignation !== "datamanager" && 
+            (<ProjectionInformationDialog
                 showDialog={showDialog}    // Pass the state to the dialog component
                 setShowDialog={setShowDialog}  // Pass setState function to close it
                 //updateDialogCount={updateDialogCount}
@@ -1177,7 +1152,7 @@ function EmployeePanelCopy({ fordesignation }) {
                 dataStatus={dataStatus}
                 setActiveTabId={setActiveTabId}
                 handleCloseProjectionPopup={handleCloseProjectionPopup}
-            />
+            />)}
         </div>
     );
 }

@@ -73,7 +73,7 @@ const EmployeeStatusChange = ({
         });
 
         // Check if the API call was successful
-        if (response.status === 200) {
+        if (response2.status === 200) {
           refetch();
         } else {
           // Handle the case where the API call was not successful
@@ -162,6 +162,7 @@ const EmployeeStatusChange = ({
 
       // Check if the API call was successful
       if (response.status === 200) {
+        console.log("Status updated successfully");
         // Assuming `fetchNewData` is a function to fetch updated employee data
         refetch();
       } else {
@@ -326,7 +327,7 @@ const EmployeeStatusChange = ({
                 Interested
               </button>
             </li>
-            <li>
+            {/* <li>
               <button
                 className="dropdown-item"
                 data-bs-toggle="modal"
@@ -339,7 +340,7 @@ const EmployeeStatusChange = ({
               >
                 Follow Up
               </button>
-            </li>
+            </li> */}
           </ul>
         ) : mainStatus === "Interested" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
@@ -452,17 +453,17 @@ const EmployeeStatusChange = ({
         ) : null}
       </div>
     </section>
-    <EmployeeInterestedInformationDialog
-      modalId={modalId}
-      companyName={companyName}
-      secretKey={secretKey}
-      refetch={refetch}
-      ename={ename}
-      status={status}
-      setStatus={setStatus}
-      setStatusClass={setStatusClass}
-      companyStatus={companyStatus}
-    />
+      <EmployeeInterestedInformationDialog
+        modalId={modalId}
+        companyName={companyName}
+        secretKey={secretKey}
+        refetch={refetch}
+        ename={ename}
+        status={status}
+        setStatus={setStatus}
+        setStatusClass={setStatusClass}
+        companyStatus={companyStatus}
+      />
   </>);
 };
 

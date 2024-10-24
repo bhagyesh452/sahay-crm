@@ -37,7 +37,7 @@ function EmployeeMaturedLeads({
     handleMouseEnter,
     handleMouseUp,
     selectedRows,
-userId
+    userId
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -84,7 +84,7 @@ userId
                                                     <input
                                                         type="checkbox"
                                                         checked={
-                                                            selectedRows && maturedLeads &&   selectedRows.length === maturedLeads.length
+                                                            selectedRows && maturedLeads && selectedRows.length === maturedLeads.length
                                                         }
                                                         onChange={(e) => handleCheckboxChange("all", e)}
                                                     />
@@ -92,8 +92,8 @@ userId
                                                 </label>
                                             </th>
                                         )}
-                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>company Name</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>company Name</th>
                                     <th>company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
@@ -108,7 +108,24 @@ userId
                                     <th className="rm-sticky-action">Add Projections</th>
                                 </tr>
                             </thead>
-                           
+                            {isLoading ? (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="11">
+                                            <div className="LoaderTDSatyle w-100">
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    loading={true}
+                                                    size={30}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            ) : (
                                 <tbody>
                                     {maturedLeads && maturedLeads.map((company, index) => (
                                         <tr key={company._id}
@@ -117,10 +134,10 @@ userId
                                             onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
                                             onMouseUp={handleMouseUp} // End drag selection
                                             id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows 
-                                            >
+                                        >
                                             {(fordesignation === "admin" || fordesignation === "datamanager") && (
                                                 <td
-                                                className='AEP-sticky-left-1'
+                                                    className='AEP-sticky-left-1'
                                                     style={{
                                                         position: "sticky",
                                                         left: 0,
@@ -130,7 +147,7 @@ userId
                                                     <label className='table-check'>
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedRows &&selectedRows.includes(
+                                                            checked={selectedRows && selectedRows.includes(
                                                                 company._id
                                                             )}
                                                             onChange={(e) =>
@@ -142,8 +159,8 @@ userId
                                                     </label>
                                                 </td>
                                             )}
-                                          <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>{startIndex + index + 1}</td>
-                                          <td className={(fordesignation === "admin" || fordesignation === "datamanager") ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>{company["Company Name"]}</td>
+                                            <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                            <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
@@ -198,6 +215,8 @@ userId
                                                             bdeName={company.ename}
                                                             refetch={refetch}
                                                             mainRemarks={company.Remarks}
+                                                            fordesignation={fordesignation}
+
                                                         />
                                                     </div>
                                                 </div>
@@ -233,7 +252,7 @@ userId
                                         </tr>
                                     ))}
                                 </tbody>
-                    
+                            )}
                             {maturedLeads && maturedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
