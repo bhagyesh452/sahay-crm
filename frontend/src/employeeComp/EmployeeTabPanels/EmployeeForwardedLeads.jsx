@@ -149,15 +149,7 @@ function EmployeeForwardedLeads({
     const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
 
     // Function to toggle individual checkbox selection
-    const handleCheckboxToggle = (index) => {
-        setSelectedCompanies((prevSelected) => {
-            if (prevSelected.includes(index)) {
-                return prevSelected.filter((i) => i !== index); // Deselect if already selected
-            } else {
-                return [...prevSelected, index]; // Select if not already selected
-            }
-        });
-    };
+
 
     // Function to start dragging selection
     // const handleMouseDown = (index) => {
@@ -201,14 +193,14 @@ function EmployeeForwardedLeads({
                         <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }} onMouseLeave={handleMouseUp}>
                             <thead>
                                 <tr className="tr-sticky">
-                                    {fordesignation === "admin" &&
+                                    {(fordesignation === "admin" || fordesignation === "datamanager") &&
                                         (
                                             <th className='AEP-sticky-left-1'>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
                                                         checked={
-                                                            selectedRows.length === forwardedLeads.length
+                                                            selectedRows && forwardedLeads && (selectedRows.length === forwardedLeads.length)
                                                         }
                                                         onChange={(e) => handleCheckboxChange("all", e)}
 
@@ -217,8 +209,8 @@ function EmployeeForwardedLeads({
                                                 </label>
                                             </th>
                                         )}
-                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>Company Name</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>Company Name</th>
                                     <th>Company No</th>
                                     <th>Call History</th>
                                     <th>BDE Status</th>
@@ -232,243 +224,263 @@ function EmployeeForwardedLeads({
                                     <th>Assign Date</th>
                                     <th>BDM Name</th>
                                     <th>Forwarded Date</th>
-                                    {fordesignation !== "admin" && <th>Forward To BDM</th>}
+                                    {(fordesignation !== "admin" || fordesignation !== "datamanager") && <th>Forward To BDM</th>}
                                     <th className="rm-sticky-action">Feedback</th>
                                 </tr>
                             </thead>
-
-                            <tbody>
-                                {forwardedLeads.map((company, index) => (
-                                    <tr key={company._id}
-                                        style={{ border: "1px solid #ddd" }}
-                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
-                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
-                                        onMouseUp={handleMouseUp} // End drag selection
-                                        id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
-                                    >
-                                        {fordesignation === "admin" && (
-                                            <td className='AEP-sticky-left-1'>
-                                                <label className='table-check'>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedRows.includes(
-                                                            company._id
-                                                        )}
-                                                        onChange={(e) =>
-                                                            handleCheckboxChange(company._id, e)
-                                                        }
-                                                        onMouseUp={handleMouseUp}
-                                                    />
-                                                    <span class="table_checkmark"></span>
-                                                </label>
-
-                                            </td>
-                                        )}
-                                        <td className={fordesignation === "admin" ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
-                                        <td className={fordesignation === "admin" ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
-                                        <td>
-                                            <div className="d-flex align-items-center justify-content-between wApp">
-                                                <div>{company["Company Number"]}</div>
-                                                <a
-                                                    target="_blank"
-                                                    href={`https://wa.me/91${company["Company Number"]}`}
-                                                >
-                                                    <FaWhatsapp />
-                                                </a>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <LuHistory
-                                                onClick={() => {
-                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
-                                                }}
-                                                style={{
-                                                    cursor: "pointer",
-                                                    width: "15px",
-                                                    height: "15px",
-                                                }}
-                                                color="grey"
-                                            />
-                                        </td>
-                                        <td>
-                                            <div
-                                                className={company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
-                                                    company.bdeOldStatus === "FollowUp" ? "dfault_followup-status" :
-                                                        null}>
-                                                {company.bdeOldStatus}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div
-                                                key={company._id} className='d-flex align-items-center justify-content-between w-100' >
-                                                <p
-                                                    className="rematkText text-wrap m-0"
-                                                    title={company.Remarks}
-                                                >
-                                                    {!company["Remarks"]
-                                                        ? "No Remarks"
-                                                        : company.Remarks}
-                                                </p>
-                                                <RemarksDialog
-                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                    currentCompanyName={company["Company Name"]}
-                                                    //remarksHistory={remarksHistory} // pass your remarks history data
-                                                    companyId={company._id}
-                                                    remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                    isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                    companyStatus={company.Status}
-                                                    secretKey={secretKey}
-                                                    //fetchRemarksHistory={fetchRemarksHistory}
-                                                    bdeName={company.ename}
-                                                    refetch={refetch}
-                                                    mainRemarks={company.Remarks}
+                            {isLoading ? (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="11">
+                                            <div className="LoaderTDSatyle w-100">
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    loading={true}
+                                                    size={30}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
                                                 />
                                             </div>
                                         </td>
-                                        <td>
-                                            <div
-                                                className={company.Status === "Interested" ? "dfault_interested-status" :
-                                                    company.Status === "FollowUp" ? "dfault_followup-status" :
-                                                        null}>
-                                                {company.Status}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div key={company._id}
-                                                style={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "space-between",
-                                                    width: "100px",
-                                                }}>
-                                                <p
-                                                    className="rematkText text-wrap m-0"
-                                                    title={company.bdmRemarks}
-                                                >
-                                                    {!company.bdmRemarks
-                                                        ? "No Remarks"
-                                                        : company.bdmRemarks}
-                                                </p>
-                                                <RemarksDialog
-                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                    currentCompanyName={company["Company Name"]}
-                                                    //filteredRemarks={filteredRemarks}
-                                                    companyId={company._id}
-                                                    remarksKey="bdmRemarks" // For BDM remarks
-                                                    isEditable={false} // Disable editing
-                                                    secretKey={secretKey}
-                                                    //fetchRemarksHistory={fetchRemarksHistory}
-                                                    bdeName={company.ename}
-                                                    fetchNewData={refetch}
-                                                    bdmName={company.bdmName}
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                    companyStatus={company.Status}
-                                                    mainRemarks={company.Remarks}
-                                                //remarksHistory={remarksHistory} // pass your remarks history data
-                                                />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            {formatDateNew(
-                                                company["Company Incorporation Date  "]
+                                    </tr>
+                                </tbody>
+                            ) : (
+                                <tbody>
+                                    {forwardedLeads && forwardedLeads.map((company, index) => (
+                                        <tr key={company._id}
+                                            style={{ border: "1px solid #ddd" }}
+                                            onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                            onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                            onMouseUp={handleMouseUp} // End drag selection
+                                            id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
+                                        >
+                                            {(fordesignation === "admin" || fordesignation === "datamanager") && (
+                                                <td className='AEP-sticky-left-1'>
+                                                    <label className='table-check'>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedRows && selectedRows.includes(
+                                                                company._id
+                                                            )}
+                                                            onChange={(e) =>
+                                                                handleCheckboxChange(company._id, e)
+                                                            }
+                                                            onMouseUp={handleMouseUp}
+                                                        />
+                                                        <span class="table_checkmark"></span>
+                                                    </label>
+
+                                                </td>
                                             )}
-                                        </td>
-                                        <td>{company["City"]}</td>
-                                        <td>{company["State"]}</td>
-                                        <td>{company["Company Email"]}</td>
-                                        <td>{formatDateNew(company["AssignDate"])}</td>
-                                        <td>{company.bdmName}</td>
-                                        <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                        {fordesignation !== "admin" && (<td>
-                                            {company.bdmAcceptStatus === "NotForwarded" ? (<>
-                                                <TiArrowForward
-                                                    // onClick={() => {
-                                                    //     handleConfirmAssign(
-                                                    //         company._id,
-                                                    //         company["Company Name"],
-                                                    //         company.Status, // Corrected parameter name
-                                                    //         company.ename,
-                                                    //         company.bdmAcceptStatus
-                                                    //     );
-                                                    // }}
+                                            <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                            <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
+                                            <td>
+                                                <div className="d-flex align-items-center justify-content-between wApp">
+                                                    <div>{company["Company Number"]}</div>
+                                                    <a
+                                                        target="_blank"
+                                                        href={`https://wa.me/91${company["Company Number"]}`}
+                                                    >
+                                                        <FaWhatsapp />
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <LuHistory
+                                                    onClick={() => {
+                                                        handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                    }}
                                                     style={{
                                                         cursor: "pointer",
-                                                        width: "17px",
-                                                        height: "17px",
+                                                        width: "15px",
+                                                        height: "15px",
                                                     }}
                                                     color="grey"
                                                 />
-                                            </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    className={company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
+                                                        company.bdeOldStatus === "FollowUp" ? "dfault_followup-status" :
+                                                            null}>
+                                                    {company.bdeOldStatus}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    key={company._id} className='d-flex align-items-center justify-content-between w-100' >
+                                                    <p
+                                                        className="rematkText text-wrap m-0"
+                                                        title={company.Remarks}
+                                                    >
+                                                        {!company["Remarks"]
+                                                            ? "No Remarks"
+                                                            : company.Remarks}
+                                                    </p>
+                                                    <RemarksDialog
+                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                        currentCompanyName={company["Company Name"]}
+                                                        //remarksHistory={remarksHistory} // pass your remarks history data
+                                                        companyId={company._id}
+                                                        remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                        isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                        companyStatus={company.Status}
+                                                        secretKey={secretKey}
+                                                        //fetchRemarksHistory={fetchRemarksHistory}
+                                                        bdeName={company.ename}
+                                                        refetch={refetch}
+                                                        mainRemarks={company.Remarks}
+                                                        fordesignation={fordesignation}
 
-                                                <TiArrowBack
-                                                    onClick={() => {
-                                                        handleReverseAssign(
-                                                            company._id,
-                                                            company["Company Name"],
-                                                            company.bdmAcceptStatus,
-                                                            company.Status,
-                                                            company.bdmName
-                                                        )
-                                                    }}
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    className={company.Status === "Interested" ? "dfault_interested-status" :
+                                                        company.Status === "FollowUp" ? "dfault_followup-status" :
+                                                            null}>
+                                                    {company.Status}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div key={company._id}
                                                     style={{
-                                                        cursor: "pointer",
-                                                        width: "17px",
-                                                        height: "17px",
-                                                    }}
-                                                    color="#fbb900"
-                                                />
-                                            </>) :
-                                                (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
-                                                    <>
-                                                        <TiArrowBack
-                                                            onClick={() => handleRevertAcceptedCompany(
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "space-between",
+                                                        width: "100px",
+                                                    }}>
+                                                    <p
+                                                        className="rematkText text-wrap m-0"
+                                                        title={company.bdmRemarks}
+                                                    >
+                                                        {!company.bdmRemarks
+                                                            ? "No Remarks"
+                                                            : company.bdmRemarks}
+                                                    </p>
+                                                    <RemarksDialog
+                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                        currentCompanyName={company["Company Name"]}
+                                                        //filteredRemarks={filteredRemarks}
+                                                        companyId={company._id}
+                                                        remarksKey="bdmRemarks" // For BDM remarks
+                                                        isEditable={false} // Disable editing
+                                                        secretKey={secretKey}
+                                                        //fetchRemarksHistory={fetchRemarksHistory}
+                                                        bdeName={company.ename}
+                                                        fetchNewData={refetch}
+                                                        bdmName={company.bdmName}
+                                                        bdmAcceptStatus={company.bdmAcceptStatus}
+                                                        companyStatus={company.Status}
+                                                        mainRemarks={company.Remarks}
+                                                        fordesignation={fordesignation}
+
+                                                    //remarksHistory={remarksHistory} // pass your remarks history data
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {formatDateNew(
+                                                    company["Company Incorporation Date  "]
+                                                )}
+                                            </td>
+                                            <td>{company["City"]}</td>
+                                            <td>{company["State"]}</td>
+                                            <td>{company["Company Email"]}</td>
+                                            <td>{formatDateNew(company["AssignDate"])}</td>
+                                            <td>{company.bdmName}</td>
+                                            <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                            {(fordesignation !== "admin" || fordesignation !== "datamanager") && (<td>
+                                                {company.bdmAcceptStatus === "NotForwarded" ? (<>
+                                                    <TiArrowForward
+                                                        // onClick={() => {
+                                                        //     handleConfirmAssign(
+                                                        //         company._id,
+                                                        //         company["Company Name"],
+                                                        //         company.Status, // Corrected parameter name
+                                                        //         company.ename,
+                                                        //         company.bdmAcceptStatus
+                                                        //     );
+                                                        // }}
+                                                        style={{
+                                                            cursor: "pointer",
+                                                            width: "17px",
+                                                            height: "17px",
+                                                        }}
+                                                        color="grey"
+                                                    />
+                                                </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
+
+                                                    <TiArrowBack
+                                                        onClick={() => {
+                                                            handleReverseAssign(
                                                                 company._id,
                                                                 company["Company Name"],
-                                                                company.Status
-                                                            )}
-                                                            style={{
-                                                                cursor: "pointer",
-                                                                width: "17px",
-                                                                height: "17px",
-                                                            }}
-                                                            color="black" />
-                                                    </>) :
-                                                    (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
+                                                                company.bdmAcceptStatus,
+                                                                company.Status,
+                                                                company.bdmName
+                                                            )
+                                                        }}
+                                                        style={{
+                                                            cursor: "pointer",
+                                                            width: "17px",
+                                                            height: "17px",
+                                                        }}
+                                                        color="#fbb900"
+                                                    />
+                                                </>) :
+                                                    (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
                                                         <>
                                                             <TiArrowBack
+                                                                onClick={() => handleRevertAcceptedCompany(
+                                                                    company._id,
+                                                                    company["Company Name"],
+                                                                    company.Status
+                                                                )}
                                                                 style={{
                                                                     cursor: "pointer",
                                                                     width: "17px",
                                                                     height: "17px",
                                                                 }}
-                                                                color="lightgrey" />
-                                                        </>) : (<>
-                                                            <TiArrowForward
-                                                                onClick={() => {
-                                                                }}
-                                                                style={{
-                                                                    cursor: "pointer",
-                                                                    width: "17px",
-                                                                    height: "17px",
-                                                                }}
-                                                                color="grey"
-                                                            />
-                                                        </>)}
-                                        </td>)}
-                                        <td className="rm-sticky-action">
-                                            <FeedbackDialog
-                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                companyId={company._id}
-                                                companyName={company["Company Name"]}
-                                                feedbackRemarks={company.feedbackRemarks ? company.feedbackRemarks : "No Remarks"}
-                                                feedbackPoints={company.feedbackPoints ? company.feedbackPoints : "0"}
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-
+                                                                color="black" />
+                                                        </>) :
+                                                        (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
+                                                            <>
+                                                                <TiArrowBack
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "17px",
+                                                                        height: "17px",
+                                                                    }}
+                                                                    color="lightgrey" />
+                                                            </>) : (<>
+                                                                <TiArrowForward
+                                                                    onClick={() => {
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "17px",
+                                                                        height: "17px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </>)}
+                                            </td>)}
+                                            <td className="rm-sticky-action">
+                                                <FeedbackDialog
+                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                    companyId={company._id}
+                                                    companyName={company["Company Name"]}
+                                                    feedbackRemarks={company.feedbackRemarks ? company.feedbackRemarks : "No Remarks"}
+                                                    feedbackPoints={company.feedbackPoints ? company.feedbackPoints : "0"}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            )}
                             {forwardedLeads && forwardedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>

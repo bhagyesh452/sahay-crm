@@ -185,8 +185,8 @@ function App() {
             <Route path="/employee-dashboard/:userId" element={<EmployeeDashboard />} />
             {/* <Route path="/employee-data/:userId" element={<EmployeePanel />} /> */}
             <Route path="/employee-data/:userId" element={<EmployeePanelCopy fordesignation="salesexecutive" />} />
-            <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} />
-            {/* <Route path="/employee-team-leads-copy/:userId" element={<EmployeeTeamLeadsCopy />} /> */}
+            <Route path="/employee-team-leads-old/:userId" element={<EmployeeTeamLeads />} />
+            <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeadsCopy />} />
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
             <Route path="/employee-assets/:userId" element={<EmployeeAssets />} />
@@ -268,7 +268,8 @@ function App() {
             <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager />} />
             <Route path="/dataanalyst/employees" element={<DataManager_Employees />} />
             <Route path="/dataanalyst/newEmployees" element={<DatamanagerNewEmployee />} />
-            <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeeLeads />} />
+            {/* <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeeLeads />} /> */}
+            <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeePanelCopy fordesignation="datamanager" />} />
             <Route path="/dataanalyst/bookings" element={<ManagerBookings />} />
             <Route path="/dataanalyst/expensereport" element={<ExpenseReport />} />
             <Route path="/dataanalyst-profile-details" element={<DataAnalystProfile />} />

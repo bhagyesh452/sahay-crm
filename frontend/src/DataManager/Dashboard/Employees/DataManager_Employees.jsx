@@ -1180,36 +1180,6 @@ function Employees({ onEyeButtonClick, searchValue }) {
 
                           <td >
                             <div className="d-flex justify-content-center align-items-center">
-                              {/* <div className="icons-btn">
-                                  <IconButton onClick={() =>
-                                    handleDeleteClick(item._id, item.ename)}>
-                                    <IconTrash
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "red",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-
-                                    />
-                                  </IconButton>
-                                </div>
-                                <div className="icons-btn">
-                                  <IconButton onClick={() => {
-                                    functionopenpopup();
-                                    handleUpdateClick(item._id, item.ename);
-                                  }}>
-                                    <ModeEditIcon
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "#a29d9d",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-
-                                    />
-                                  </IconButton>
-                                </div> */}
                               <div className="icons-btn">
                                 <Link
                                   style={{ color: "black" }}

@@ -6,10 +6,22 @@ import { IoClose } from "react-icons/io5";
 import { RiInformationLine } from "react-icons/ri";
 import { styled } from "@mui/material/styles";
 import Slider, { SliderThumb } from "@mui/material/Slider";
+import { is } from "date-fns/locale";
+import axios from "axios";
+import Swal from "sweetalert2";
 
+function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoints, refetchTeamLeads, isEditable }) {
 
-function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoints }) {
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
+    console.log("remarks")
+
     const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false);
+    const [valueSlider1, setValueSlider1] = useState(feedbackPoints[0]);
+    const [valueSlider2, setValueSlider2] = useState(feedbackPoints[1]);
+    const [valueSlider3, setValueSlider3] = useState(feedbackPoints[2]);
+    const [valueSlider4, setValueSlider4] = useState(feedbackPoints[3]);
+    const [valueSlider5, setValueSlider5] = useState(feedbackPoints[4]);
+    const [remarks, setRemarks] = useState(feedbackRemarks);
 
     const handleViewFeedback = () => {
         // You can add any additional logic here if needed
@@ -20,9 +32,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
         setFeedbackPopupOpen(false);
     };
 
-    const iOSBoxShadow =
-    '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
-
+    const iOSBoxShadow = '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
 
     const IOSSlider = styled(Slider)(({ theme }) => ({
         color: theme.palette.mode === 'dark' ? '#0a84ff' : '#007bff',
@@ -41,8 +51,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                 },
             },
             '&:before': {
-                boxShadow:
-                    '0px 0px 1px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 1px 0px rgba(0,0,0,0.12)',
+                boxShadow: '0px 0px 1px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 1px 0px rgba(0,0,0,0.12)',
             },
         },
         '& .MuiSlider-valueLabel': {
@@ -70,6 +79,26 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
         },
     }));
 
+    const handleFeedbackSubmit = async () => {
+        const data = {
+            feedbackPoints: [valueSlider1, valueSlider2, valueSlider3, valueSlider4, valueSlider5],
+            feedbackRemarks: remarks,
+        };
+
+        try {
+            const response = await axios.post(`${secretKey}/remarks/post-feedback-remarks/${companyId}`, data);
+
+            if (response.status === 200) {
+                Swal.fire("Feedback Updated");
+                refetchTeamLeads();
+                closeFeedbackPopup();
+            }
+        } catch (error) {
+            Swal.fire("Error sending feedback");
+            console.log("error", error.message);
+        }
+    };
+
     return (
         <>
             <button
@@ -90,13 +119,14 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                             Feedback Of <span className="text-wrap"> {companyName}</span>
                         </div>
                         <div>
-                            <button onClick={closeFeedbackPopup} 
-                            style={{ border: "transparent", background: "none" , float:"right" }}>
+                            <button onClick={closeFeedbackPopup}
+                                style={{ border: "transparent", background: "none", float: "right" }}>
                                 <IoClose color="primary"></IoClose>
                             </button>{" "}
                         </div>
                     </div>
                 </DialogTitle>
+
                 <DialogContent>
                     <div className="remarks-content">
                         {(feedbackRemarks || feedbackPoints) && (
@@ -106,72 +136,97 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled
+                                        disabled={!isEditable}
                                         defaultValue={feedbackPoints[0]}
+                                        value={valueSlider1}
+                                        onChange={(e) => setValueSlider1(e.target.value)}
                                         min={0}
                                         max={10}
                                         valueLabelDisplay="on"
                                     />
                                 </div>
+
                                 <div className="card RemarkCard position-relative">
                                     <div>B. How was the clarity of communication with lead?</div>
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled
+                                        disabled={!isEditable}
                                         defaultValue={feedbackPoints[1]}
+                                        value={valueSlider2}
+                                        onChange={(e) => setValueSlider2(e.target.value)}
                                         min={0}
                                         max={10}
                                         valueLabelDisplay="on"
                                     />
                                 </div>
+
                                 <div className="card RemarkCard position-relative">
                                     <div>C. How was the accuracy of lead qualification?</div>
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled
+                                        disabled={!isEditable}
                                         defaultValue={feedbackPoints[2]}
+                                        value={valueSlider3}
+                                        onChange={(e) => setValueSlider3(e.target.value)}
                                         min={0}
                                         max={10}
                                         valueLabelDisplay="on"
                                     />
                                 </div>
+
                                 <div className="card RemarkCard position-relative">
                                     <div>D. How was engagement level of lead?</div>
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled
+                                        disabled={!isEditable}
                                         defaultValue={feedbackPoints[3]}
+                                        value={valueSlider4}
+                                        onChange={(e) => setValueSlider4(e.target.value)}
                                         min={0}
                                         max={10}
                                         valueLabelDisplay="on"
                                     />
                                 </div>
+
                                 <div className="card RemarkCard position-relative">
                                     <div>E. Payment Chances?</div>
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled
+                                        disabled={!isEditable}
                                         defaultValue={feedbackPoints[4]}
+                                        value={valueSlider5}
+                                        onChange={(e) => setValueSlider5(e.target.value)}
                                         min={0}
                                         max={100}
                                         valueLabelDisplay="on"
                                     />
                                 </div>
+
                                 <div className="card RemarkCard position-relative">
-                                    <div className="d-flex justify-content-between">
-                                        <div className="reamrk-card-innerText">
-                                            <pre className="remark-text">{feedbackRemarks}</pre>
+                                    {isEditable ?
+                                        <>
+                                            <div className="py-1 ms-1">Feedback Remarks :</div>
+                                            <textarea className="form-control" id="remarks-input" rows="3" placeholder="Enter Remarks Here..."
+                                                value={remarks} onChange={(e) => setRemarks(e.target.value)} />
+                                        </> :
+                                        <div className="d-flex justify-content-between">
+                                            <div className="reamrk-card-innerText">
+                                                <pre className="remark-text">{feedbackRemarks}</pre>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 </div>
+
+                                {isEditable && <button className="btn btn-primary" onClick={handleFeedbackSubmit}>Submit</button>}
                             </div>
                         )}
                     </div>
                 </DialogContent>
+
             </Dialog>
         </>
     );

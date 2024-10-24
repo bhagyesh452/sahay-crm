@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const compression = require("compression");
 const pdf = require("html-pdf");
+const cron = require('node-cron');
 // const { Server } = require("socket.io");
 // const http = require("http");
 // const server = http.createServer(app);
@@ -141,7 +142,7 @@ app.use('/api/relationshipManager', RalationshipManagerAPI);
 app.use('/api/graphicDesigner', GraphicDesignerAPI);
 app.use('/api/financeAnalyst', FinanceAnalystAPI);
 app.use('/api/contentWriter', ContentWriterAPI);
-app.use('/api/recruiter',(req,res,next)=>{
+app.use('/api/recruiter', (req, res, next) => {
   req.io = socketIO;
   next();
 }, RecruiterAPI);
@@ -261,31 +262,6 @@ app.post("/api/admin/login-admin", async (req, res) => {
   }
 });
 
-// app.post("/api/employeelogin", async (req, res) => {
-//   const { email, password } = req.body;
-//   //console.log(email , password)
-//   // Replace this with your actual Employee authentication logic
-//   const user = await adminModel.findOne({
-//     email: email,
-//     password: password,
-//     //designation: "Sales Executive",
-//   });
-
-//   if (!user) {
-//     // If user is not found
-//     return res.status(401).json({ message: "Invalid email or password" });
-//   } else if (user.designation !== "Sales Executive") {
-//     // If designation is incorrect
-//     return res.status(401).json({ message: "Designation is incorrect" });
-//   } else {
-//     // If credentials are correct
-//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-//       expiresIn: "3h",
-//     });
-//     res.json({ newtoken });
-//     socketIO.emit("Employee-login");
-//   }
-// });
 
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
@@ -301,11 +277,10 @@ app.post("/api/employeelogin", async (req, res) => {
       // If designation is incorrect
       return res.status(401).json({ message: "Designation is incorrect" });
     } else {
-      // If credentials are correct
       const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
         expiresIn: "3h",
       });
-      res.json({ newtoken });
+      res.status(200).json({ newtoken });
       // socketIO.emit("Employee-login");
     }
   } catch (error) {
@@ -313,6 +288,104 @@ app.post("/api/employeelogin", async (req, res) => {
   }
 });
 
+app.post('/api/update-dialog-count', async (req, res) => {
+  const { userId , dialogCount , showDialog } = req.body;
+
+  try {
+    const user = await adminModel.findById({ _id: userId });
+
+    if (user.dialogCount >= 3) {
+      user.showDialog = false; // Stop showing dialogs after 3 times
+      user.dialogCount = 3; // Ensure the count is set to 3
+    } else {
+      user.dialogCount = dialogCount;
+      user.showDialog = showDialog;
+    }
+
+    await user.save();
+    res.json({ message: 'Dialog count updated', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating dialog count', error });
+  }
+});
+
+app.post('/api/reset-dialog-status', async (req, res) => {
+  try {
+    const today = new Date().setHours(0, 0, 0, 0); // Today's date at midnight
+
+    await adminModel.updateMany(
+      { $or: [{ designation: "Sales Executive" }, { designation: "Sales Manager" }] },
+      { showDialog: true, showDialogDate: today, dialogCount: 0 }
+    );
+
+    res.json({ message: 'Dialog status reset for all users' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error resetting dialog status', error });
+  }
+});
+
+// Function to get current hour and minute in IST
+const getISTHourMinute = () => {
+  const istTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+  const currentISTDate = new Date(istTime);
+  const hours = currentISTDate.getHours();
+  const minutes = currentISTDate.getMinutes();
+  return { hours, minutes };
+};
+
+const { hours, minutes } = getISTHourMinute();
+
+// Dynamically set cron schedule based on current IST time
+const scheduleString = `${minutes} ${hours} * * *`;
+// Cron job that runs every day at 9 AM
+// cron.schedule('26 0 * * *', async () => {
+//   try {
+//     console.log('Running the 9 AM cron job...');
+//     // Create the current date in IST (Indian Standard Time)
+//     const now = new Date();
+//     const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
+//     const istDate = new Date(now.getTime() + istOffset);
+//     // Update all Sales Executives and Sales Managers
+//     const result = await adminModel.updateMany(
+//       { designation: { $in: ['Sales Executive', 'Sales Manager'] } }, // Filter for Sales Executives and Sales Managers
+//       {
+//         showDialog: true, // Enable the dialog
+//         showDialogDate: istDate, // Update the showDialogDate to current date
+//         dialogCount: 0 // Reset the dialogCount to 0
+//       }
+//     );
+
+//     console.log(`${result.nModified} records updated successfully.`);
+//   } catch (error) {
+//     console.error('Error updating records during the cron job:', error);
+//   }
+// });
+cron.schedule('40 15 * * *', async () => {
+  try {
+    console.log('Running the 11:45 AM IST cron job...');
+
+    // Create the current date in IST (Indian Standard Time)
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
+    const istDate = new Date(now.getTime() + istOffset);
+
+    console.log(`Cron job running at IST time: ${istDate.toISOString()}`);
+
+    // Update all Sales Executives and Sales Managers
+    const result = await adminModel.updateMany(
+      { designation: { $in: ['Sales Executive', 'Sales Manager'] } }, // Filter for Sales Executives and Sales Managers
+      {
+        showDialog: true, // Enable the dialog
+        showDialogDate: istDate, // Update the showDialogDate to current date
+        dialogCount: 0 // Reset the dialogCount to 0
+      }
+    );
+
+    console.log(`${result.nModified} records updated successfully.`);
+  } catch (error) {
+    console.error('Error updating records during the cron job:', error);
+  }
+});
 app.post("/api/datamanagerlogin", async (req, res) => {
   const { email, password } = req.body;
 

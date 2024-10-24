@@ -18,7 +18,8 @@ function ProjectionDialog({
     fetchProjections,
     ename,
     hasMaturedStatus,
-    hasExistingProjection
+    hasExistingProjection,
+    userId
 }) {
     const [open, setOpen] = useState(false);
     const [currentProjection, setCurrentProjection] = useState({
@@ -106,6 +107,10 @@ function ProjectionDialog({
     };
     // console.log("currentProjection", currentProjection)
     // Handle form submission
+    const dialogDismissedData = JSON.parse(localStorage.getItem('dialogDismissedData')) || {};
+
+     // Get the current date in YYYY-MM-DD format
+     const currentDate = new Date().toISOString().split('T')[0];
     const handleProjectionSubmit = async () => {
         try {
             // Create a new object with only the relevant data fields
@@ -154,7 +159,13 @@ function ProjectionDialog({
                     `${secretKey}/projection/update-followup`,
                     finalData
                 );
+                await axios.post(`${secretKey}/update-dialog-count`, {
+                    userId,
+                    dialogCount: 3,
+                    showDialog: false
+                });
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
+                
                 closeProjection(); // Close projection after submitting
                 fetchProjections(); // Refresh data
             }
@@ -185,7 +196,7 @@ function ProjectionDialog({
             // Show a success message after successful deletion
 
             setCurrentProjection({
-                companyName:projectionCompanyName,
+                companyName: projectionCompanyName,
                 ename: "",
                 offeredPrize: 0,
                 offeredServices: [],

@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useParams , Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
 import axios from "axios";
 
@@ -35,11 +36,11 @@ import { RiShareForwardFill } from "react-icons/ri";
 import Swal from "sweetalert2";
 import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
 import ForwardToBdmDialog from "../admin/ExtraComponent/ForwardToBdmDialog.jsx";
+import ProjectionInformationDialog from "./ExtraComponents/ProjectionInformationDialog.jsx";
 
 function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
     //const [maturedID, setMaturedID] = useState("");
-    const [currentForm, setCurrentForm] = useState(null);
     const [projectionData, setProjectionData] = useState([]);
     const [dataStatus, setdataStatus] = useState("All");
     const [data, setData] = useState([]);
@@ -58,10 +59,6 @@ function EmployeePanelCopy({ fordesignation }) {
     const endIndex = startIndex + itemsPerPage;
     const { userId } = useParams();
     const [searchQuery, setSearchQuery] = useState("")
-
-    const [moreEmpData, setmoreEmpData] = useState([]);
-
-    const [revertedData, setRevertedData] = useState([]);
     const [formOpen, setFormOpen] = useState(false);
     //const [editFormOpen, setEditFormOpen] = useState(false);
     const [addFormOpen, setAddFormOpen] = useState(false)
@@ -77,8 +74,9 @@ function EmployeePanelCopy({ fordesignation }) {
     const [newBdeName, setNewBdeName] = useState("")
     const [newEmpData, setNewEmpData] = useState([])
     const { id } = useParams();
-
-
+    const [showDialog, setShowDialog] = useState(false);
+    const [dialogCount, setDialogCount] = useState(0);
+    const [showDialogStatus, setShowDialogStatus] = useState(false);
     // Auto logout functionality :
     useEffect(() => {
         // Function to check token expiry and initiate logout if expired
@@ -137,12 +135,15 @@ function EmployeePanelCopy({ fordesignation }) {
             document.title = `Employee-Sahay-CRM`;
         } else if (userId && data.designation === "Sales Manager") {
             document.title = `Floor-Manager-Sahay-CRM`;
-        } else {
+        } else if (fordesignation === "admin") {
             document.title = `Admin-Sahay-CRM`;
+        } else {
+            document.title = `Datamanager-Sahay-CRM`;
         }
     }, [data.ename]);
 
 
+    
     const fetchData = async () => {
         let fetchingId;
         if (userId) {
@@ -166,6 +167,56 @@ function EmployeePanelCopy({ fordesignation }) {
     };
 
 
+    useEffect(() => {
+        const fetchDialogStatus = async () => {
+            try {
+                // Skip the logic for admin or datamanager
+                if (fordesignation === "admin" || fordesignation === "datamanager") {
+                    return; // Early return to prevent the rest of the logic from running
+                }
+                setDialogCount(data.dialogCount);
+
+                // Ensure data.showDialogDate is valid before processing
+
+                if (data.dialogCount < 3 && data.showDialog) {
+                    
+                    setShowDialog(true);
+                }
+
+            } catch (error) {
+                console.error("Error fetching dialog status:", error);
+            }
+        };
+
+        fetchDialogStatus();
+
+        // Show dialog every 15 minutes if count is less than 3
+        const interval = setInterval(() => {
+
+
+            if (data.dialogCount < 3 && data.showDialog) {
+                setShowDialog(true);
+
+            }
+        }, 15 * 60 * 1000);
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [userId, data.showDialog, data.showDialogDate]);
+
+    const handleCloseProjectionPopup = () => {
+        setShowDialog(false);
+        if (activeTabId === "Interested" && interestedTabRef.current) {
+            interestedTabRef.current.click(); // Trigger the Interested tab click
+        } else if (activeTabId === "Matured" && maturedTabRef.current) {
+            maturedTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "All" && allTabRef.current) {
+            allTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
+            notInterestedTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
+            forwardedTabRef.current.click(); // Trigger the Matured tab click
+        }
+    }
 
     useEffect(() => {
         fetchData();
@@ -195,8 +246,6 @@ function EmployeePanelCopy({ fordesignation }) {
 
     // --------------------------------------forward to bdm function---------------------------------------------\
 
-    const [cid, setcid] = useState("");
-
     function ValueLabelComponent(props) {
         const { children, value } = props;
 
@@ -220,24 +269,13 @@ function EmployeePanelCopy({ fordesignation }) {
     const functionopenpopup = () => {
         openchange(true);
     };
-
-    // Fetch employee data using React Query
-    const [fetchedData, setFetchedData] = useState([]);
-    const [totalCounts, setTotalCounts] = useState({
-        untouched: 0,
-        interested: 0,
-        matured: 0,
-        forwarded: 0,
-        notInterested: 0
-    });
-    const [totalPages, setTotalPages] = useState(0)
     const cleanString = (str) => {
         return typeof str === 'string' ? str.replace(/\u00A0/g, ' ').trim() : '';
     };
 
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
-            queryKey: ['newData', cleanString(data.ename), currentPage, searchQuery], // Add searchQuery to the queryKey
+            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage, searchQuery], // Add searchQuery to the queryKey
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees-new/${cleanString(data.ename)}`, {
@@ -257,6 +295,8 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     );
 
+
+
     // Handle search
     const handleSearch = (query) => {
         setSearchQuery(query);
@@ -264,38 +304,15 @@ function EmployeePanelCopy({ fordesignation }) {
         refetch(); // Refetch the data
     };
 
-    useEffect(() => {
-        if (isLoading) {
-            setOpenBacdrop(true); // Set openBackDrop to true when loading
-        } else {
-            setOpenBacdrop(false); // Set openBackDrop to false when not loading
-        }
-
-        if (queryData) {
-            // Assuming queryData now contains both data and revertedData
-            setFetchedData(queryData.data); // Update the fetched data
-            setRevertedData(queryData.revertedData); // Set revertedData based on response
-            setmoreEmpData(queryData.data);
-            setEmployenewEmpData(queryData.data);
-            setTotalCounts(queryData.totalCounts);
-            setTotalPages(Math.ceil(queryData.totalPages)); // Calculate total pages
-        }
-    }, [isLoading, queryData, dataStatus, currentPage]);
-
-    // Create a debounced version of refetch
-    const debouncedRefetch = useCallback(debounce(() => {
-        refetch();
-    }, 300), [refetch]);
-
     const handlnewEmpDataStatusChange = useCallback((status, tabRef) => {
         setdataStatus(status);
         setCurrentPage(0); // Reset to the first page
-        debouncedRefetch(); // Call the debounced refetch function
+
         setActiveTabId(status)
         if (tabRef && tabRef.current) {
             tabRef.current.click(); // Programmatically click the anchor tag to trigger Bootstrap tab switch
         }
-    }, [debouncedRefetch]);
+    }, [refetch]);
 
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
@@ -356,7 +373,7 @@ function EmployeePanelCopy({ fordesignation }) {
         setCompanyNumber("");
         setDeletedEmployeeStatus("")
         setNewBdeName("")
-        debouncedRefetch();
+        refetch();
         if (activeTabId === "Interested" && interestedTabRef.current) {
             interestedTabRef.current.click(); // Trigger the Interested tab click
         } else if (activeTabId === "Matured" && maturedTabRef.current) {
@@ -380,9 +397,9 @@ function EmployeePanelCopy({ fordesignation }) {
         if (id === "all") {
             // If all checkboxes are already selected, clear the selection; otherwise, select all
             setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === fetchedData.length
+                prevSelectedRows.length === queryData?.data.length
                     ? []
-                    : fetchedData.map((row) => row._id)
+                    : queryData?.data.map((row) => row._id)
             );
         } else {
             // Toggle the selection status of the row with the given id
@@ -390,8 +407,8 @@ function EmployeePanelCopy({ fordesignation }) {
                 // If the Ctrl key is pressed
                 if (event.ctrlKey) {
                     //console.log("pressed");
-                    const selectedIndex = fetchedData.findIndex((row) => row._id === id);
-                    const lastSelectedIndex = fetchedData.findIndex((row) =>
+                    const selectedIndex = queryData?.data.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = queryData?.data.findIndex((row) =>
                         prevSelectedRows.includes(row._id)
                     );
 
@@ -399,7 +416,7 @@ function EmployeePanelCopy({ fordesignation }) {
                     if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
                         const start = Math.min(selectedIndex, lastSelectedIndex);
                         const end = Math.max(selectedIndex, lastSelectedIndex);
-                        const idsToSelect = fetchedData
+                        const idsToSelect = queryData?.data
                             .slice(start, end + 1)
                             .map((row) => row._id);
 
@@ -420,24 +437,24 @@ function EmployeePanelCopy({ fordesignation }) {
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        setStartRowIndex(fetchedData.findIndex((row) => row._id === id));
+        setStartRowIndex(queryData?.data.findIndex((row) => row._id === id));
     };
 
     const handleMouseEnter = (id) => {
-        if (startRowIndex !== null && fordesignation === "admin") {
-            const endRowIndex = fetchedData.findIndex(row => row._id === id);
+        if (startRowIndex !== null && (fordesignation === "admin" || fordesignation === "datamanager")) {
+            const endRowIndex = queryData?.data.findIndex(row => row._id === id);
 
             // Ensure startRowIndex and endRowIndex are valid and within array bounds
             const validStartIndex = Math.min(startRowIndex, endRowIndex);
             const validEndIndex = Math.max(startRowIndex, endRowIndex);
 
             // Only proceed if valid indices
-            if (validStartIndex >= 0 && validEndIndex < fetchedData.length) {
+            if (validStartIndex >= 0 && validEndIndex < queryData?.data.length) {
                 const selectedRange = [];
                 for (let i = validStartIndex; i <= validEndIndex; i++) {
-                    if (fetchedData[i] && fetchedData[i]._id) {
-                        // Ensure that fetchedData[i] is not undefined and has an _id
-                        selectedRange.push(fetchedData[i]._id);
+                    if (queryData?.data[i] && queryData?.data[i]._id) {
+                        // Ensure that queryData?.data[i] is not undefined and has an _id
+                        selectedRange.push(queryData?.data[i]._id);
                     }
                 }
 
@@ -450,11 +467,6 @@ function EmployeePanelCopy({ fordesignation }) {
         // End drag selection
         setStartRowIndex(null);
     };
-
-    // console.log("fordesignation", fordesignation)
-    // console.log("fetcgeheddata", fetchedData)
-    // console.log("dataStatus", dataStatus)
-
     // -----------------------------assign leads functions---------------------------
     const [openAssign, openchangeAssign] = useState(false);
     const [selectedOption, setSelectedOption] = useState("direct");
@@ -474,14 +486,14 @@ function EmployeePanelCopy({ fordesignation }) {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
 
-        const csvdata = employenewEmpData
+        const csvdata = queryData?.data
             .filter((employee) => selectedRows.includes(employee._id))
             .map((employee) => ({
                 ...employee,
                 //Status: "Untouched",
                 Remarks: "No Remarks Added",
             }));
-        console.log(csvdata)
+
 
         try {
             Swal.fire({
@@ -528,7 +540,7 @@ function EmployeePanelCopy({ fordesignation }) {
         setOpenAssignToBdm(false);
     };
     const handleForwardDataToBDM = async (bdmName) => {
-        const data = employenewEmpData.filter((employee) => selectedRows.includes(employee._id));
+        const data = queryData?.data.filter((employee) => selectedRows.includes(employee._id));
         // console.log("data is:", data);
         if (selectedRows.length === 0) {
             Swal.fire("Please Select the Company to Forward", "", "Error");
@@ -575,8 +587,8 @@ function EmployeePanelCopy({ fordesignation }) {
     const handleChangeUrlPrev = () => {
         const currId = id;
         const salesExecutivesIds = newEmpData
-      .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
-      .map((employee) => employee._id);
+            .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+            .map((employee) => employee._id);
         //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
 
         // Find the index of the currentId in the newEmpData array
@@ -588,12 +600,23 @@ function EmployeePanelCopy({ fordesignation }) {
 
             if (currentIndex === 0) {
                 // If it's the first page, navigate to the employees page
-                window.location.replace(`/managing-director/user`);
+                if (fordesignation === "admin") {
+                    window.location.replace(`/managing-director/user`);
+                } else {
+                    window.location.replace(`dataanalyst/newEmployees`);
+                }
+
                 //setBackButton(false)
             } else {
                 // Get the previousId from the salesExecutivesIds array
                 const prevId = salesExecutivesIds[prevIndex];
-                window.location.replace(`/managing-director/employees/${prevId}`);
+                if (fordesignation === "admin") {
+                    window.location.replace(`/managing-director/employees/${prevId}`);
+                } else {
+                    window.location.replace(`/dataanalyst/employeeLeads/${prevId}`);
+
+                }
+
             }
             //setBackButton(prevIndex !== 0);
         } else {
@@ -604,10 +627,10 @@ function EmployeePanelCopy({ fordesignation }) {
     const handleChangeUrl = () => {
         const currId = id;
         // Filter the response data to find _id values where designation is "Sales Executive" or "Sales Manager"
-      const salesExecutivesIds = newEmpData
-      .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
-      .map((employee) => employee._id);
-      
+        const salesExecutivesIds = newEmpData
+            .filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager")
+            .map((employee) => employee._id);
+
         //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
 
         // Find the index of the currentId in the newEmpData array
@@ -619,13 +642,21 @@ function EmployeePanelCopy({ fordesignation }) {
 
             // Get the nextId from the salesExecutivesIds array
             const nextId = salesExecutivesIds[nextIndex];
-            window.location.replace(`/managing-director/employees/${nextId}`);
+            if (fordesignation === "admin") {
+                window.location.replace(`/managing-director/employees/${nextId}`);
+            } else {
+                window.location.replace(`/dataanalyst/employeeLeads/${nextId}`);
+
+            }
             //setBackButton(nextId !== 0);
         } else {
             console.log("Current ID not found in newEmpData array.");
         }
     };
-    console.log("selectedRows", selectedRows)
+    // console.log("selectedRows", selectedRows)
+
+    console.log("fetchedData", queryData)
+    console.log("dialogcount", dialogCount)
 
     return (
         <div>
@@ -637,42 +668,62 @@ function EmployeePanelCopy({ fordesignation }) {
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center">
                                         <div >
-                                            {fordesignation === "admin" ? (
+                                            {(fordesignation === "admin" || fordesignation === "datamanager") ? (
                                                 <>
                                                     <div className="btn-group mr-1" role="group" aria-label="Basic example">
                                                         <button className="btn mybtn">
-                                                            <FaCircleChevronLeft 
-                                                            className="ep_right_button" 
-                                                            onClick={handleChangeUrlPrev}  
+                                                            <FaCircleChevronLeft
+                                                                className="ep_right_button"
+                                                                onClick={handleChangeUrlPrev}
                                                             />
                                                         </button>
                                                         <button className="btn mybtn"><b>{data.ename}</b></button>
                                                         <button className="btn mybtn">
-                                                            <FaCircleChevronRight 
-                                                            className="ep_left_button"
-                                                            onClick={handleChangeUrl} 
+                                                            <FaCircleChevronRight
+                                                                className="ep_left_button"
+                                                                onClick={handleChangeUrl}
                                                             />
-                                                            </button>
+                                                        </button>
                                                     </div>
                                                     <div className="btn-group" role="group" aria-label="Basic example">
 
-                                                        <button onClick={() => {
-                                                            window.location.pathname = `/managing-director/employees/${id}`
-                                                        }}
+                                                        <button
+                                                            onClick={() => {
+                                                                if (fordesignation === "admin") {
+                                                                    window.location.pathname = `/managing-director/employees/${id}`;
+                                                                } else if (fordesignation === "datamanager") {
+                                                                    window.location.pathname = `/dataanalyst/employeeLeads/${id}`;
+                                                                }
+                                                            }}
                                                             type="button"
-                                                            className={window.location.pathname === `/managing-director/employees/${id}` && data.bdmWork ? "btn mybtn active" : "btn mybtn"}
-
+                                                            className={
+                                                                ((fordesignation === "admin" && window.location.pathname === `/managing-director/employees/${id}`) ||
+                                                                    (fordesignation === "datamanager" && window.location.pathname === `/dataanalyst/employeeLeads/${id}`)) &&
+                                                                    data.bdmWork
+                                                                    ? "btn mybtn active"
+                                                                    : "btn mybtn"
+                                                            }
                                                         >
                                                             <MdOutlinePersonPin
 
-                                                                className='mr-1' /> Leads
+                                                                className='mr-1' />
+                                                            Leads
                                                         </button>
                                                         {data.bdmWork &&
-                                                            <button type="button"
-                                                                className={window.location.pathname === `/managing-director/employeeleads/${id}` ? "btn mybtn active" : "btn mybtn"}
-
+                                                            <button
+                                                                type="button"
+                                                                className={
+                                                                    (fordesignation === "admin" && window.location.pathname === `/managing-director/employeeleads/${id}`) ||
+                                                                        (fordesignation === "datamanager" && window.location.pathname === `/datamanager/datamanagerside-employeeteamleads/${id}`)
+                                                                        ? "btn mybtn active"
+                                                                        : "btn mybtn"
+                                                                }
                                                                 onClick={() => {
-                                                                    window.location.pathname = `/managing-director/employeeleads/${id}`
+                                                                    if (fordesignation === "admin") {
+                                                                        window.location.pathname = `/managing-director/employeeleads/${id}`;
+                                                                    } else if (fordesignation === "datamanager") {
+                                                                        window.location.pathname = `/datamanager/datamanagerside-employeeteamleads/${id}`;
+                                                                    }
                                                                 }}
                                                             >
                                                                 <AiOutlineTeam
@@ -693,7 +744,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
                                         </div>
 
-                                        {fordesignation !== "admin" && (
+                                        {(fordesignation !== "admin" && fordesignation !== "datamanager") && (
                                             <div className="btn-group" role="group" aria-label="Basic example">
                                                 {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
                                                 <button type="button"
@@ -719,7 +770,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                         )}
                                     </div>
                                     <div className="d-flex align-items-center">
-                                        {fordesignation === "admin" && (
+                                        {(fordesignation === "admin" || fordesignation === "datamanager") && (
                                             <>
                                                 {selectedRows.length !== 0 && (
                                                     <div className="selection-data mr-1" >
@@ -737,7 +788,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                         >
                                                             <IoIosArrowDropleft className='mr-1' /> Back
                                                         </button>
-                                                        </Link>
+                                                    </Link>
                                                 </div>
 
                                                 <div className="btn-group" role="group" aria-label="Basic example">
@@ -757,7 +808,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                                 setBdmName={setBdmName}
                                                                 bdmName={bdmName}
                                                                 newempData={newEmpData}
-                                                                id={fordesignation === "admin" ? id : userId}
+                                                                id={(fordesignation === "admin" || fordesignation === "datamanager") ? id : userId}
                                                                 branchName={data.branchOffice}
                                                             />
                                                         )
@@ -830,7 +881,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
                                                 <div>General</div>
                                                 <div className="no_badge">
-                                                    {totalCounts.untouched}
+                                                    {queryData?.totalCounts.untouched}
                                                 </div>
 
                                             </a>
@@ -845,7 +896,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 Interested
                                                 <span className="no_badge">
-                                                    {totalCounts.interested}
+                                                    {queryData?.totalCounts.interested}
                                                 </span>
                                             </a>
                                         </li>
@@ -859,7 +910,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 Matured
                                                 <span className="no_badge">
-                                                    {totalCounts.matured}
+                                                    {queryData?.totalCounts.matured}
                                                 </span>
                                             </a>
                                         </li>
@@ -874,7 +925,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 >
                                                     Forwarded
                                                     <span className="no_badge">
-                                                        {totalCounts.forwarded}
+                                                        {queryData?.totalCounts.forwarded}
                                                     </span>
                                                 </a>
                                             </li>)
@@ -889,7 +940,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 Not Interested
                                                 <span className="no_badge">
-                                                    {totalCounts.notInterested}
+                                                    {queryData?.totalCounts.notInterested}
                                                 </span>
                                             </a>
                                         </li>
@@ -899,13 +950,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className={`tab-pane ${dataStatus === "All" ? "active" : ""}`} id="general">
                                         {activeTabId === "All" && dataStatus === "All" && (
                                             <EmployeeGeneralLeads
-                                                generalData={fetchedData}
+                                                generalData={queryData?.data}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={totalPages}
+                                                totalPages={queryData?.totalPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 dataStatus={dataStatus}
@@ -927,13 +978,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
                                         {activeTabId === "Interested" && dataStatus === "Interested" && (
                                             <EmployeeInterestedLeads
-                                                interestedData={fetchedData}
+                                                interestedData={queryData?.data}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={totalPages}
+                                                totalPages={queryData?.totalPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 secretKey={secretKey}
@@ -953,17 +1004,18 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseEnter={handleMouseEnter}
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
+                                                userId={userId}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
                                         {activeTabId === "Matured" && (<EmployeeMaturedLeads
-                                            maturedLeads={fetchedData}
+                                            maturedLeads={queryData?.data}
                                             isLoading={isLoading}
                                             refetch={refetch}
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
                                             endIndex={endIndex}
-                                            totalPages={totalPages}
+                                            totalPages={queryData?.totalPages}
                                             setCurrentPage={setCurrentPage}
                                             currentPage={currentPage}
                                             secretKey={secretKey}
@@ -982,18 +1034,19 @@ function EmployeePanelCopy({ fordesignation }) {
                                             handleMouseEnter={handleMouseEnter}
                                             handleMouseUp={handleMouseUp}
                                             selectedRows={selectedRows}
+                                            userId={userId}
                                         />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
                                         {activeTabId === "Forwarded" && (
                                             <EmployeeForwardedLeads
-                                                forwardedLeads={fetchedData}
+                                                forwardedLeads={queryData?.data}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={totalPages}
+                                                totalPages={queryData?.totalPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 secretKey={secretKey}
@@ -1010,18 +1063,19 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseEnter={handleMouseEnter}
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
+                                                userId={userId}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
                                         {activeTabId === "Not Interested" && (
                                             <EmployeeNotInterestedLeads
-                                                notInterestedLeads={fetchedData}
+                                                notInterestedLeads={queryData?.data}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={totalPages}
+                                                totalPages={queryData?.totalPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 secretKey={secretKey}
@@ -1078,17 +1132,29 @@ function EmployeePanelCopy({ fordesignation }) {
             }
 
             {/* --------------------------------backdrop------------------------- */}
-            {openBacdrop && (<Backdrop
+            {/* {isLoading && (<Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={openBacdrop}
+                open={isLoading}
                 onClick={handleCloseBackdrop}>
                 <CircularProgress color="inherit" />
-            </Backdrop>)}
+            </Backdrop>)} */}
+
+            {fordesignation !== "admin" && fordesignation !== "datamanager" && 
+            (<ProjectionInformationDialog
+                showDialog={showDialog}    // Pass the state to the dialog component
+                setShowDialog={setShowDialog}  // Pass setState function to close it
+                //updateDialogCount={updateDialogCount}
+                userId={userId}
+                setdataStatus={setdataStatus}
+                secretKey={secretKey}
+                data={data}
+                refetch={fetchData}
+                dataStatus={dataStatus}
+                setActiveTabId={setActiveTabId}
+                handleCloseProjectionPopup={handleCloseProjectionPopup}
+            />)}
         </div>
     );
 }
 
 export default EmployeePanelCopy;
-
-
-

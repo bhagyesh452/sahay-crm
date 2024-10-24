@@ -37,7 +37,7 @@ function EmployeeMaturedLeads({
     handleMouseEnter,
     handleMouseUp,
     selectedRows,
-
+    userId
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -77,14 +77,14 @@ function EmployeeMaturedLeads({
                         <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }}>
                             <thead>
                                 <tr className="tr-sticky">
-                                    {fordesignation === "admin" &&
+                                    {(fordesignation === "admin" || fordesignation === "datamanager") &&
                                         (
                                             <th className='AEP-sticky-left-1'>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
                                                         checked={
-                                                            selectedRows.length === maturedLeads.length
+                                                            selectedRows && maturedLeads && selectedRows.length === maturedLeads.length
                                                         }
                                                         onChange={(e) => handleCheckboxChange("all", e)}
                                                     />
@@ -92,8 +92,8 @@ function EmployeeMaturedLeads({
                                                 </label>
                                             </th>
                                         )}
-                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>company Name</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>company Name</th>
                                     <th>company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>
@@ -108,19 +108,36 @@ function EmployeeMaturedLeads({
                                     <th className="rm-sticky-action">Add Projections</th>
                                 </tr>
                             </thead>
-                           
+                            {isLoading ? (
                                 <tbody>
-                                    {maturedLeads.map((company, index) => (
+                                    <tr>
+                                        <td colSpan="11">
+                                            <div className="LoaderTDSatyle w-100">
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    loading={true}
+                                                    size={30}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            ) : (
+                                <tbody>
+                                    {maturedLeads && maturedLeads.map((company, index) => (
                                         <tr key={company._id}
                                             style={{ border: "1px solid #ddd" }}
                                             onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
                                             onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
                                             onMouseUp={handleMouseUp} // End drag selection
-                                            id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows 
-                                            >
-                                            {fordesignation === "admin" && (
+                                            id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows 
+                                        >
+                                            {(fordesignation === "admin" || fordesignation === "datamanager") && (
                                                 <td
-                                                className='AEP-sticky-left-1'
+                                                    className='AEP-sticky-left-1'
                                                     style={{
                                                         position: "sticky",
                                                         left: 0,
@@ -130,7 +147,7 @@ function EmployeeMaturedLeads({
                                                     <label className='table-check'>
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedRows.includes(
+                                                            checked={selectedRows && selectedRows.includes(
                                                                 company._id
                                                             )}
                                                             onChange={(e) =>
@@ -142,8 +159,8 @@ function EmployeeMaturedLeads({
                                                     </label>
                                                 </td>
                                             )}
-                                          <td className={fordesignation === "admin" ? "AEP-sticky-left-2" :"rm-sticky-left-1 "}>{startIndex + index + 1}</td>
-                                          <td className={fordesignation === "admin" ?"AEP-sticky-left-3" :"rm-sticky-left-2 "}>{company["Company Name"]}</td>
+                                            <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                            <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                             <td>
                                                 <div className="d-flex align-items-center justify-content-between wApp">
                                                     <div>{company["Company Number"]}</div>
@@ -172,30 +189,6 @@ function EmployeeMaturedLeads({
                                                 <div className="dfault_approved-status">
                                                     {company.Status}
                                                 </div>
-
-                                                {/* <EmployeeStatusChange
-                                                    key={`${company["Company Name"]}-${index}`}
-                                                    companyName={company["Company Name"]}
-                                                    companyStatus={company.Status}
-                                                    id={company._id}
-                                                    refetch={refetch}
-                                                    mainStatus={dataStatus}
-                                                    setCompanyName={setCompanyName}
-                                                    setCompanyEmail={setCompanyEmail}
-                                                    setCompanyInco={setCompanyInco}
-                                                    setCompanyId={setCompanyId}
-                                                    setCompanyNumber={setCompanyNumber}
-                                                    setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                                                    setNewBdeName={setNewBdeName}
-                                                    isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
-                                                    setFormOpen={setFormOpen}
-                                                    setAddFormOpen={setAddFormOpen}
-                                                    cemail={company["Company Email"]}
-                                                    cindate={company["Incorporation Date"]}
-                                                    cnum={company["Company Number"]}
-                                                    ename={company.ename}
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                /> */}
                                             </td>
                                             <td>
                                                 <div key={company._id} className='d-flex align-items-center justify-content-between w-100'>
@@ -222,6 +215,8 @@ function EmployeeMaturedLeads({
                                                             bdeName={company.ename}
                                                             refetch={refetch}
                                                             mainRemarks={company.Remarks}
+                                                            fordesignation={fordesignation}
+
                                                         />
                                                     </div>
                                                 </div>
@@ -250,13 +245,14 @@ function EmployeeMaturedLeads({
                                                     hasExistingProjection={projectionData?.some(
                                                         (item) => item.companyName === company["Company Name"]
                                                     )}
+                                                    userId={userId}
 
                                                 />
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
-                    
+                            )}
                             {maturedLeads && maturedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>

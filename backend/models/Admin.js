@@ -28,7 +28,7 @@ const yourSchema = new mongoose.Schema({
   },
   bloodGroup: {
     type: String,
-    default:""
+    default: ""
   },
   gender: {
     type: String
@@ -160,6 +160,21 @@ const yourSchema = new mongoose.Schema({
   },
   employee_profile: {
     type: Array
+  },
+  showDialog: { 
+    type: Boolean, 
+    default: false 
+  },
+  showDialogDate:{
+    type:Date
+  },
+  lastLoginTime: { 
+    type: Date, 
+    default: null 
+  },
+  dialogCount: { 
+    type: Number, 
+    default: 0 
   }
 });
 

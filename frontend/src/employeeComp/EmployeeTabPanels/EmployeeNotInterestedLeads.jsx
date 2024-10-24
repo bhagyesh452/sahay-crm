@@ -73,14 +73,14 @@ function EmployeeNotInterestedLeads({
                         <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }}>
                             <thead>
                                 <tr className="tr-sticky">
-                                    {fordesignation === "admin" &&
+                                    {(fordesignation === "admin" || fordesignation === "datamanager") &&
                                         (
                                             <th className='AEP-sticky-left-1'>
                                                 <label className='table-check'>
                                                     <input
                                                         type="checkbox"
                                                         checked={
-                                                            selectedRows.length === notInterestedLeads.length
+                                                            selectedRows && notInterestedLeads && selectedRows.length === notInterestedLeads.length
                                                         }
                                                         onChange={(e) => handleCheckboxChange("all", e)}
                                                     />
@@ -88,8 +88,8 @@ function EmployeeNotInterestedLeads({
                                                 </label>
                                             </th>
                                         )}
-                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={fordesignation === "admin" ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>Company Name</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>Company Name</th>
                                     <th>Company No</th>
                                     <th>Call History</th>
                                     <th>BDE Status</th>
@@ -109,180 +109,201 @@ function EmployeeNotInterestedLeads({
                                     <th>Assign Date</th>
                                 </tr>
                             </thead>
-
-                            <tbody>
-                                {notInterestedLeads.map((company, index) => (
-                                    <tr key={company._id}
-
-                                        style={{ border: "1px solid #ddd" }}
-                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
-                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
-                                        onMouseUp={handleMouseUp} // End drag selection
-                                        id={selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
-                                    >
-                                        {fordesignation === "admin" && (
-                                            <td
-                                                className='AEP-sticky-left-1'
-                                                style={{
-                                                    position: "sticky",
-                                                    left: 0,
-                                                    zIndex: 1,
-                                                    background: "white",
-                                                }}>
-                                                <label className='table-check'>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedRows.includes(
-                                                            company._id
-                                                        )}
-                                                        onChange={(e) =>
-                                                            handleCheckboxChange(company._id, e)
-                                                        }
-                                                        onMouseUp={handleMouseUp}
+                            {
+                                isLoading ? (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="11">
+                                                <div className="LoaderTDSatyle w-100">
+                                                    <ClipLoader
+                                                        color="lightgrey"
+                                                        loading={true}
+                                                        size={30}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
                                                     />
-                                                    <span class="table_checkmark"></span>
-                                                </label>
+                                                </div>
                                             </td>
-                                        )}
-                                        <td className={fordesignation === "admin" ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
-                                        <td className={fordesignation === "admin" ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
-                                        <td>
-                                            <div className="d-flex align-items-center justify-content-between wApp">
-                                                <div>{company["Company Number"]}</div>
-                                                <a
-                                                    target="_blank"
-                                                    href={`https://wa.me/91${company["Company Number"]}`}
-                                                >
-                                                    <FaWhatsapp />
-                                                </a>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <LuHistory
-                                                onClick={() => {
-                                                    handleShowCallHistory(company["Company Name"], company["Company Number"]);
-                                                }}
-                                                style={{
-                                                    cursor: "pointer",
-                                                    width: "15px",
-                                                    height: "15px",
-                                                }}
-                                                color="grey"
-                                            />
-                                        </td>
-                                        <td>
-                                            {fordesignation === "admin" ? (<div
-                                                className={company.Status === "Not Interested" ? "dfault_notinterested-status" :
-                                                    company.Status === "Junk" ? "dfault_junk-status" :
-                                                        null}>
-                                                {company.Status}
-                                            </div>) :(
-                                            <EmployeeStatusChange
-                                                key={`${company["Company Name"]}-${index}`}
-                                                companyName={company["Company Name"]}
-                                                companyStatus={company.Status}
-                                                id={company._id}
-                                                refetch={refetch}
-                                                mainStatus={dataStatus}
-                                                setCompanyName={setCompanyName}
-                                                setCompanyEmail={setCompanyEmail}
-                                                setCompanyInco={setCompanyInco}
-                                                setCompanyId={setCompanyId}
-                                                setCompanyNumber={setCompanyNumber}
-                                                setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                                                setNewBdeName={setNewBdeName}
-                                                isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
-                                                setFormOpen={setFormOpen}
-                                                setAddFormOpen={setAddFormOpen}
-                                                cemail={company["Company Email"]}
-                                                cindate={company["Incorporation Date"]}
-                                                cnum={company["Company Number"]}
-                                                ename={company.ename}
-                                                bdmAcceptStatus={company.bdmAcceptStatus}
-                                            />)}
-                                        </td>
-                                        <td>
-                                            <div
-                                                key={company._id} className='d-flex align-items-center justify-content-between w-100'  >
-                                                <p
-                                                    className="rematkText text-wrap m-0"
-                                                    title={company.Remarks}
-                                                >
-                                                    {!company["Remarks"]
-                                                        ? "No Remarks"
-                                                        : company.Remarks}
-                                                </p>
-                                                <RemarksDialog
-                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                    currentCompanyName={company["Company Name"]}
-                                                    //remarksHistory={remarksHistory} // pass your remarks history data
-                                                    companyId={company._id}
-                                                    remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                    isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                    companyStatus={company.Status}
-                                                    secretKey={secretKey}
-                                                    //fetchRemarksHistory={fetchRemarksHistory}
-                                                    bdeName={company.ename}
-                                                    refetch={refetch}
-                                                    mainRemarks={company.Remarks}
-                                                />
-                                            </div>
-                                        </td>
-                                        {designation !== "Sales Manager" && (<>
-                                            <td>
-                                                {company.bdmAcceptStatus !== "NotForwarded" ? "Yes" : "No"}
-                                            </td>
-                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.bdmName : "-"}</td>
-                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.Status : "-"}</td>
-                                            <td>{company.bdmAcceptStatus !== "NotForwarded" ?
-                                                <div key={company._id}
-                                                    style={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "space-between",
-                                                        width: "100px",
-                                                    }}>
-                                                    <p
-                                                        className="rematkText text-wrap m-0"
-                                                        title={company.remarks}
-                                                    >
-                                                        {!company.bdmRemarks
-                                                            ? "No Remarks"
-                                                            : company.bdmRemarks}
-                                                    </p>
-                                                    <RemarksDialog
-                                                        key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                        currentCompanyName={company["Company Name"]}
-                                                        //filteredRemarks={filteredRemarks}
-                                                        companyId={company._id}
-                                                        remarksKey="bdmRemarks" // For BDM remarks
-                                                        isEditable={false} // Disable editing
-                                                        secretKey={secretKey}
-                                                        //fetchRemarksHistory={fetchRemarksHistory}
-                                                        bdeName={company.ename}
-                                                        fetchNewData={refetch}
-                                                        bdmName={company.bdmName}
-                                                        bdmAcceptStatus={company.bdmAcceptStatus}
-                                                        companyStatus={company.Status}
-                                                        mainRemarks={company.Remarks}
-                                                    //remarksHistory={remarksHistory} // pass your remarks history data
-                                                    />
-                                                </div> : "-"}</td>
-                                        </>)}
-                                        <td>
-                                            {formatDateNew(
-                                                company["Company Incorporation Date  "]
-                                            )}
-                                        </td>
-                                        <td>{company["City"]}</td>
-                                        <td>{company["State"]}</td>
-                                        <td>{company["Company Email"]}</td>
-                                        <td>{formatDateNew(company["AssignDate"])}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
+                                        </tr>
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        {notInterestedLeads && notInterestedLeads.map((company, index) => (
+                                            <tr key={company._id}
 
+                                                style={{ border: "1px solid #ddd" }}
+                                                onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                                onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                                onMouseUp={handleMouseUp} // End drag selection
+                                                id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
+                                            >
+                                                {(fordesignation === "admin" || fordesignation === "datamanager") && (
+                                                    <td
+                                                        className='AEP-sticky-left-1'
+                                                        style={{
+                                                            position: "sticky",
+                                                            left: 0,
+                                                            zIndex: 1,
+                                                            background: "white",
+                                                        }}>
+                                                        <label className='table-check'>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedRows && selectedRows.includes(
+                                                                    company._id
+                                                                )}
+                                                                onChange={(e) =>
+                                                                    handleCheckboxChange(company._id, e)
+                                                                }
+                                                                onMouseUp={handleMouseUp}
+                                                            />
+                                                            <span class="table_checkmark"></span>
+                                                        </label>
+                                                    </td>
+                                                )}
+                                                <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                                <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
+                                                <td>
+                                                    <div className="d-flex align-items-center justify-content-between wApp">
+                                                        <div>{company["Company Number"]}</div>
+                                                        <a
+                                                            target="_blank"
+                                                            href={`https://wa.me/91${company["Company Number"]}`}
+                                                        >
+                                                            <FaWhatsapp />
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <LuHistory
+                                                        onClick={() => {
+                                                            handleShowCallHistory(company["Company Name"], company["Company Number"]);
+                                                        }}
+                                                        style={{
+                                                            cursor: "pointer",
+                                                            width: "15px",
+                                                            height: "15px",
+                                                        }}
+                                                        color="grey"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    {(fordesignation === "admin" || fordesignation === "datamanager") ? (<div
+                                                        className={company.Status === "Not Interested" ? "dfault_notinterested-status" :
+                                                            company.Status === "Junk" ? "dfault_junk-status" :
+                                                                null}>
+                                                        {company.Status}
+                                                    </div>) : (
+                                                        <EmployeeStatusChange
+                                                            key={`${company["Company Name"]}-${index}`}
+                                                            companyName={company && company["Company Name"]}
+                                                            companyStatus={company.Status}
+                                                            id={company._id}
+                                                            refetch={refetch}
+                                                            mainStatus={dataStatus}
+                                                            setCompanyName={setCompanyName}
+                                                            setCompanyEmail={setCompanyEmail}
+                                                            setCompanyInco={setCompanyInco}
+                                                            setCompanyId={setCompanyId}
+                                                            setCompanyNumber={setCompanyNumber}
+                                                            setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                                                            setNewBdeName={setNewBdeName}
+                                                            isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
+                                                            setFormOpen={setFormOpen}
+                                                            setAddFormOpen={setAddFormOpen}
+                                                            cemail={company["Company Email"]}
+                                                            cindate={company["Incorporation Date"]}
+                                                            cnum={company["Company Number"]}
+                                                            ename={company.ename}
+                                                            bdmAcceptStatus={company.bdmAcceptStatus}
+                                                        />)}
+                                                </td>
+                                                <td>
+                                                    <div
+                                                        key={company._id} className='d-flex align-items-center justify-content-between w-100'  >
+                                                        <p
+                                                            className="rematkText text-wrap m-0"
+                                                            title={company.Remarks}
+                                                        >
+                                                            {!company["Remarks"]
+                                                                ? "No Remarks"
+                                                                : company.Remarks}
+                                                        </p>
+                                                        <RemarksDialog
+                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                            currentCompanyName={company["Company Name"]}
+                                                            //remarksHistory={remarksHistory} // pass your remarks history data
+                                                            companyId={company._id}
+                                                            remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                            isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                            bdmAcceptStatus={company.bdmAcceptStatus}
+                                                            companyStatus={company.Status}
+                                                            secretKey={secretKey}
+                                                            //fetchRemarksHistory={fetchRemarksHistory}
+                                                            bdeName={company.ename}
+                                                            refetch={refetch}
+                                                            mainRemarks={company.Remarks}
+                                                            fordesignation={fordesignation}
+
+                                                        />
+                                                    </div>
+                                                </td>
+                                                {designation !== "Sales Manager" && (<>
+                                                    <td>
+                                                        {company.bdmAcceptStatus !== "NotForwarded" ? "Yes" : "No"}
+                                                    </td>
+                                                    <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.bdmName : "-"}</td>
+                                                    <td>{company.bdmAcceptStatus !== "NotForwarded" ? company.Status : "-"}</td>
+                                                    <td>{company.bdmAcceptStatus !== "NotForwarded" ?
+                                                        <div key={company._id}
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "space-between",
+                                                                width: "100px",
+                                                            }}>
+                                                            <p
+                                                                className="rematkText text-wrap m-0"
+                                                                title={company.remarks}
+                                                            >
+                                                                {!company.bdmRemarks
+                                                                    ? "No Remarks"
+                                                                    : company.bdmRemarks}
+                                                            </p>
+                                                            <RemarksDialog
+                                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                                currentCompanyName={company["Company Name"]}
+                                                                //filteredRemarks={filteredRemarks}
+                                                                companyId={company._id}
+                                                                remarksKey="bdmRemarks" // For BDM remarks
+                                                                isEditable={false} // Disable editing
+                                                                secretKey={secretKey}
+                                                                //fetchRemarksHistory={fetchRemarksHistory}
+                                                                bdeName={company.ename}
+                                                                fetchNewData={refetch}
+                                                                bdmName={company.bdmName}
+                                                                bdmAcceptStatus={company.bdmAcceptStatus}
+                                                                companyStatus={company.Status}
+                                                                mainRemarks={company.Remarks}
+                                                                fordesignation={fordesignation}
+
+                                                            //remarksHistory={remarksHistory} // pass your remarks history data
+                                                            />
+                                                        </div> : "-"}</td>
+                                                </>)}
+                                                <td>
+                                                    {formatDateNew(
+                                                        company["Company Incorporation Date  "]
+                                                    )}
+                                                </td>
+                                                <td>{company["City"]}</td>
+                                                <td>{company["State"]}</td>
+                                                <td>{company["Company Email"]}</td>
+                                                <td>{formatDateNew(company["AssignDate"])}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                )}
                             {notInterestedLeads && notInterestedLeads.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>

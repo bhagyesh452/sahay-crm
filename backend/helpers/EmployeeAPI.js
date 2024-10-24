@@ -697,6 +697,8 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   }
 });
 
+
+
 // Fetch Profile Photo :
 router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
   const { empId, filename } = req.params;
