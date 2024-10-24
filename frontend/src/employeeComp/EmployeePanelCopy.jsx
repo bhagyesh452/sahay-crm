@@ -37,6 +37,7 @@ import Swal from "sweetalert2";
 import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
 import ForwardToBdmDialog from "../admin/ExtraComponent/ForwardToBdmDialog.jsx";
 import ProjectionInformationDialog from "./ExtraComponents/ProjectionInformationDialog.jsx";
+import { useNavigate } from 'react-router-dom';
 
 function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -76,6 +77,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const { id } = useParams();
     const [showDialog, setShowDialog] = useState(false);
     const [dialogCount, setDialogCount] = useState(0);
+    const navigate = useNavigate();
     // Auto logout functionality :
     useEffect(() => {
         // Function to check token expiry and initiate logout if expired
@@ -185,36 +187,36 @@ function EmployeePanelCopy({ fordesignation }) {
     // }, []);
 
 
-    useEffect(() => {
-        const fetchDialogStatus = async () => {
-            try {
-                // Skip the logic for admin or datamanager
-                if (fordesignation === "admin" || fordesignation === "datamanager") {
-                    return; // Early return to prevent the rest of the logic from running
-                }
-                if (data.dialogCount < 3 && data.showDialog && data.firstFetch) {
-                    setShowDialog(true);
-                }
+    // useEffect(() => {
+    //     const fetchDialogStatus = async () => {
+    //         try {
+    //             // Skip the logic for admin or datamanager
+    //             if (fordesignation === "admin" || fordesignation === "datamanager") {
+    //                 return; // Early return to prevent the rest of the logic from running
+    //             }
+    //             if (data.dialogCount < 3 && data.showDialog && data.firstFetch) {
+    //                 setShowDialog(true);
+    //             }
 
-            } catch (error) {
-                console.error("Error fetching dialog status:", error);
-            }
-        };
+    //         } catch (error) {
+    //             console.error("Error fetching dialog status:", error);
+    //         }
+    //     };
 
-        fetchDialogStatus();
+    //     fetchDialogStatus();
 
-        // Show dialog every 15 minutes if count is less than 3
-        const interval = setInterval(() => {
+    //     // Show dialog every 15 minutes if count is less than 3
+    //     const interval = setInterval(() => {
 
 
-            if (data.dialogCount < 3 && data.showDialog) {
-                setShowDialog(true);
+    //         if (data.dialogCount < 3 && data.showDialog) {
+    //             setShowDialog(true);
 
-            }
-        }, 1 * 60 * 1000);
+    //         }
+    //     }, 1 * 60 * 1000);
 
-        return () => clearInterval(interval); //up on unmount
-    }, []);
+    //     return () => clearInterval(interval); //up on unmount
+    // }, []);
 
     const handleCloseProjectionPopup = () => {
         setShowDialog(false);
@@ -614,9 +616,9 @@ function EmployeePanelCopy({ fordesignation }) {
             if (currentIndex === 0) {
                 // If it's the first page, navigate to the employees page
                 if (fordesignation === "admin") {
-                    window.location.replace(`/managing-director/user`);
+                    navigate(`/managing-director/user`);
                 } else {
-                    window.location.replace(`dataanalyst/newEmployees`);
+                    navigate(`dataanalyst/newEmployees`);
                 }
 
                 //setBackButton(false)
@@ -624,9 +626,9 @@ function EmployeePanelCopy({ fordesignation }) {
                 // Get the previousId from the salesExecutivesIds array
                 const prevId = salesExecutivesIds[prevIndex];
                 if (fordesignation === "admin") {
-                    window.location.replace(`/managing-director/employees/${prevId}`);
+                    navigate(`/managing-director/employees/${prevId}`);
                 } else {
-                    window.location.replace(`/dataanalyst/employeeLeads/${prevId}`);
+                    navigate(`/dataanalyst/employeeLeads/${prevId}`);
 
                 }
 
@@ -656,9 +658,9 @@ function EmployeePanelCopy({ fordesignation }) {
             // Get the nextId from the salesExecutivesIds array
             const nextId = salesExecutivesIds[nextIndex];
             if (fordesignation === "admin") {
-                window.location.replace(`/managing-director/employees/${nextId}`);
+                navigate(`/managing-director/employees/${nextId}`);
             } else {
-                window.location.replace(`/dataanalyst/employeeLeads/${nextId}`);
+                navigate(`/dataanalyst/employeeLeads/${nextId}`);
 
             }
             //setBackButton(nextId !== 0);
@@ -703,9 +705,9 @@ function EmployeePanelCopy({ fordesignation }) {
                                                         <button
                                                             onClick={() => {
                                                                 if (fordesignation === "admin") {
-                                                                    window.location.pathname = `/managing-director/employees/${id}`;
+                                                                    navigate(`/managing-director/employees/${id}`) ;
                                                                 } else if (fordesignation === "datamanager") {
-                                                                    window.location.pathname = `/dataanalyst/employeeLeads/${id}`;
+                                                                    navigate(`/dataanalyst/employeeLeads/${id}`);
                                                                 }
                                                             }}
                                                             type="button"
@@ -733,9 +735,9 @@ function EmployeePanelCopy({ fordesignation }) {
                                                                 }
                                                                 onClick={() => {
                                                                     if (fordesignation === "admin") {
-                                                                        window.location.pathname = `/managing-director/employeeleads/${id}`;
+                                                                        navigate(`/managing-director/employeeleads/${id}`);
                                                                     } else if (fordesignation === "datamanager") {
-                                                                        window.location.pathname = `/datamanager/datamanagerside-employeeteamleads/${id}`;
+                                                                        navigate(`/datamanager/datamanagerside-employeeteamleads/${id}`);
                                                                     }
                                                                 }}
                                                             >
@@ -793,7 +795,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 <div className="btn-group mr-1" role="group" aria-label="Basic example">
                                                     <Link
 
-                                                        to={`/managing-director/user`}
+                                                        to={fordesignation === "admin" ? `/managing-director/user` : `/dataanalyst/newEmployees`}
                                                         style={{ marginLeft: "10px" }}
                                                     >
                                                         <button type="button" className="btn mybtn"

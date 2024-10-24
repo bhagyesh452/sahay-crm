@@ -362,34 +362,34 @@ const scheduleString = `${minutes} ${hours} * * *`;
 //     console.error('Error updating records during the cron job:', error);
 //   }
 // });
-cron.schedule('34 18 * * *', async () => {
-  try {
-    console.log('Running the 11:45 AM IST cron job...');
+// cron.schedule('0 12 * * *', async () => {
+//   try {
+//     console.log('Running the 11:45 AM IST cron job...');
 
-    // Create the current date in IST (Indian Standard Time)
-    const now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
-    const istDate = new Date(now.getTime() + istOffset);
+//     // Create the current date in IST (Indian Standard Time)
+//     const now = new Date();
+//     const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
+//     const istDate = new Date(now.getTime() + istOffset);
 
-    console.log(`Cron job running at IST time: ${istDate.toISOString()}`);
+//     console.log(`Cron job running at IST time: ${istDate.toISOString()}`);
 
-    // Update all Sales Executives and Sales Managers
-    const result = await adminModel.updateMany(
-      { designation: { $in: ['Sales Executive', 'Sales Manager'] } }, // Filter for Sales Executives and Sales Managers
-      {
-        showDialog: true, // Enable the dialog
-        showDialogDate: istDate, // Update the showDialogDate to current date
-        dialogCount: 0 ,// Reset the dialogCount to 0
-        firstFetch: true,
-        lastShowDialogTime: istDate.toISOString()
-      }
-    );
+//     // Update all Sales Executives and Sales Managers
+//     const result = await adminModel.updateMany(
+//       { designation: { $in: ['Sales Executive', 'Sales Manager'] } }, // Filter for Sales Executives and Sales Managers
+//       {
+//         showDialog: true, // Enable the dialog
+//         showDialogDate: istDate, // Update the showDialogDate to current date
+//         dialogCount: 0 ,// Reset the dialogCount to 0
+//         firstFetch: true,
+//         lastShowDialogTime: istDate.toISOString()
+//       }
+//     );
 
-    console.log(`${result.nModified} records updated successfully.`);
-  } catch (error) {
-    console.error('Error updating records during the cron job:', error);
-  }
-});
+//     console.log(`${result.nModified} records updated successfully.`);
+//   } catch (error) {
+//     console.error('Error updating records during the cron job:', error);
+//   }
+// });
 app.post("/api/datamanagerlogin", async (req, res) => {
   const { email, password } = req.body;
 
