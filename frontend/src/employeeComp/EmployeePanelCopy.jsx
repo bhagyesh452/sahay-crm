@@ -142,6 +142,8 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     }, [data.ename]);
 
+
+    //const dialogDate = new Date(data?.showDialogDate).toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const currentDate = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
     const dialogDismissedData = JSON.parse(localStorage.getItem('dialogDismissedData')) || {}; // Fetch all dismissed data from localStorage
     const fetchData = async () => {
@@ -156,15 +158,10 @@ function EmployeePanelCopy({ fordesignation }) {
             const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${fetchingId}`);
             // Set the retrieved data in the state
             const userData = response.data.data;
-            // Get employee-specific data from localStorage
-            const employeeDismissedDate = dialogDismissedData[userId]?.dismissedDate || null;
-            const employeeDialogCount = dialogDismissedData[userId]?.dialogCount || 0;
-            if ((fordesignation !== "admin" || fordesignation !== "datamanager") &&
-                employeeDismissedDate !== currentDate && // Only if the dialog hasn't been dismissed today
-                employeeDialogCount < 3 // Show the dialog if the count is less than 3
-            ) {
-                setShowDialog(true);
-            }
+
+            // if (response.data.data.dialogCount < 3 && response.data.data.showDialogDate) {
+            //     setShowDialog(true);
+            // }
             setEmployeeName(userData.ename)
             //console.log(userData);
             setData(userData);
@@ -174,53 +171,55 @@ function EmployeePanelCopy({ fordesignation }) {
             console.error("Error fetching data:", error.message);
         }
     };
-    const updateDialogCount = async (currentCount) => {
-        try {
-            await axios.post(`${secretKey}/update-dialog-count`, { userId });
-            const updatedDialogCount = (dialogDismissedData[userId]?.dialogCount || 0) + 1;
 
-            // If the dialog is shown 3 times, set it as dismissed for the day
-            if (updatedDialogCount >= 3) {
-                dialogDismissedData[userId] = {
-                    dismissedDate: currentDate,
-                    dialogCount: 3 // Set count to 3, so it doesn't show again today
-                };
-            } else {
-                // Otherwise, just update the dialog count
-                dialogDismissedData[userId] = {
-                    dismissedDate: dialogDismissedData[userId]?.dismissedDate || currentDate, // Keep the previous dismissed date
-                    dialogCount: updatedDialogCount
-                };
-            }
-
-            // Update localStorage
-            localStorage.setItem('dialogDismissedData', JSON.stringify(dialogDismissedData));
-
-            // Update state
-            setDialogCount(updatedDialogCount);
-            setShowDialog(false);
-
-        } catch (error) {
-            console.error("Error updating dialog count:", error);
-        }
-    };
-
-    console.log("Dialog count:", dialogCount, showDialog);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            const employeeDismissedDate = dialogDismissedData[userId]?.dismissedDate || null;
-            const employeeDialogCount = dialogDismissedData[userId]?.dialogCount || 0;
+        const fetchDialogStatus = async () => {
+            try {
 
-            if (employeeDismissedDate !== currentDate && employeeDialogCount < 3) {
-                setShowDialog(true);
-                updateDialogCount(); // Increment the dialog count
+                setDialogCount(data.dialogCount);
+
+                // Ensure data.showDialogDate is valid before processing
+               
+                    if (data.dialogCount < 3 && data.showDialog) {
+                        console.log("yahan dikha")
+                        setShowDialog(true);
+                    }
+                
+            } catch (error) {
+                console.error("Error fetching dialog status:", error);
             }
-        }, 15 * 60 * 1000); // Every 15 minutes
+        };
+
+        fetchDialogStatus();
+
+        // Show dialog every 15 minutes if count is less than 3
+        const interval = setInterval(() => {
+           
+
+                if (data.dialogCount < 3 && data.showDialog) {
+                    setShowDialog(true);
+                
+            }
+        }, 1 * 60 * 1000);
 
         return () => clearInterval(interval); // Cleanup on unmount
-    }, [dialogCount]);
+    }, [userId , data.showDialog, data.showDialogDate]);
 
+    const handleCloseProjectionPopup = () => {
+        setShowDialog(false);
+        if (activeTabId === "Interested" && interestedTabRef.current) {
+            interestedTabRef.current.click(); // Trigger the Interested tab click
+        } else if (activeTabId === "Matured" && maturedTabRef.current) {
+            maturedTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "All" && allTabRef.current) {
+            allTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
+            notInterestedTabRef.current.click(); // Trigger the Matured tab click
+        } else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
+            forwardedTabRef.current.click(); // Trigger the Matured tab click
+        }
+    }
 
     useEffect(() => {
         fetchData();
@@ -1169,9 +1168,15 @@ function EmployeePanelCopy({ fordesignation }) {
             <ProjectionInformationDialog
                 showDialog={showDialog}    // Pass the state to the dialog component
                 setShowDialog={setShowDialog}  // Pass setState function to close it
-                updateDialogCount={updateDialogCount}
+                //updateDialogCount={updateDialogCount}
                 userId={userId}
                 setdataStatus={setdataStatus}
+                secretKey={secretKey}
+                data={data}
+                refetch={fetchData}
+                dataStatus={dataStatus}
+                setActiveTabId={setActiveTabId}
+                handleCloseProjectionPopup={handleCloseProjectionPopup}
             />
         </div>
     );
