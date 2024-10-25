@@ -51,7 +51,7 @@ const EmployeeStatusChange = ({
     try {
 
       if (newStatus === "Matured") {
-        handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename);
+        handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename , bdmName);
         return true;
       }
 

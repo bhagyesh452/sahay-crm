@@ -72,6 +72,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false);
     const [newBdeName, setNewBdeName] = useState("");
     const [teamData, setTeamData] = useState([]);
+    const [bdmName, setbdmName] = useState("")
 
     const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
@@ -113,7 +114,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     };
 
-    const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename) => {
+    const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename , bdmName) => {
         setCompanyName(cname);
         setCompanyEmail(cemail);
         setCompanyInco(cindate);
@@ -121,6 +122,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
         setCompanyNumber(cnum);
         setDeletedEmployeeStatus(isDeletedEmployeeCompany)
         setNewBdeName(ename)
+        setbdmName(bdmName)
         // if (!isDeletedEmployeeCompany) {
         console.log("formchal")
         setFormOpen(true);
@@ -874,8 +876,9 @@ function EmployeeTeamLeadsCopy({ designation }) {
                     companyNumber={companyNumber}
                     setNowToFetch={refetchTeamLeads}
                     companysInco={companyInco}
-                    employeeName={data.ename}
-                    employeeEmail={data.email}
+                    bdmName={data.ename}
+                    employeeName={newBdeName}
+                    employeeEmail ={newEmpData.find(employee => employee.ename === newBdeName)?.email}
                     handleCloseFormOpen={handleCloseFormOpen}
                 />
             ) : null

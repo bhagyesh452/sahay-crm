@@ -504,132 +504,131 @@ function ViewAttendance({ year, month, date }) {
         fetchAttendance(); // Refresh the attendance data after updating
     };
 
-    // const fetchAttendance = async () => {
-    //     try {
-    //         const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
-    //         const attendanceData = res.data.data;
-    //         console.log("Attendance data is :", attendanceData);
+    const fetchAttendance = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
+            const attendanceData = res.data.data;
+            console.log("Attendance data is :", attendanceData);
 
-    //         const attendanceMap = {};
+            const attendanceMap = {};
 
-    //         attendanceData.forEach(employee => {
-    //             const { _id, years } = employee;
-    //             attendanceMap[_id] = {}; // Initialize object for each employee
+            attendanceData.forEach(employee => {
+                const { _id, years } = employee;
+                attendanceMap[_id] = {}; // Initialize object for each employee
 
-    //             // Iterate through all years (to support full-year attendance fetching)
-    //             years.forEach(yearData => {
-    //                 const { months } = yearData;
+                // Iterate through all years (to support full-year attendance fetching)
+                years.forEach(yearData => {
+                    const { months } = yearData;
 
-    //                 months.forEach(monthData => {
-    //                     const { days } = monthData;
+                    months.forEach(monthData => {
+                        const { days } = monthData;
 
-    //                     days.forEach(dayData => {
-    //                         const { date, inTime, outTime, workingHours, status, reasonValue, isAddedManually } = dayData;
+                        days.forEach(dayData => {
+                            const { date, inTime, outTime, workingHours, status, reasonValue, isAddedManually } = dayData;
 
-    //                         // Initialize year and month if not present
-    //                         if (!attendanceMap[_id][yearData.year]) {
-    //                             attendanceMap[_id][yearData.year] = {};
-    //                         }
-    //                         if (!attendanceMap[_id][yearData.year][monthData.month]) {
-    //                             attendanceMap[_id][yearData.year][monthData.month] = {};
-    //                         }
+                            // Initialize year and month if not present
+                            if (!attendanceMap[_id][yearData.year]) {
+                                attendanceMap[_id][yearData.year] = {};
+                            }
+                            if (!attendanceMap[_id][yearData.year][monthData.month]) {
+                                attendanceMap[_id][yearData.year][monthData.month] = {};
+                            }
 
-    //                         // Store the day's attendance
-    //                         attendanceMap[_id][yearData.year][monthData.month][date] = {
-    //                             inTime,
-    //                             outTime,
-    //                             workingHours,
-    //                             status,
-    //                             reasonValue,
-    //                             isAddedManually
-    //                         };
-    //                     });
-    //                 });
-    //             });
-    //         });
+                            // Store the day's attendance
+                            attendanceMap[_id][yearData.year][monthData.month][date] = {
+                                inTime,
+                                outTime,
+                                workingHours,
+                                status,
+                                reasonValue,
+                                isAddedManually
+                            };
+                        });
+                    });
+                });
+            });
 
-    //         setAttendanceData(attendanceMap);
-    //     } catch (error) {
-    //         console.log("Error fetching attendance record", error);
-    //     }
-    // };
+            setAttendanceData(attendanceMap);
+        } catch (error) {
+            console.log("Error fetching attendance record", error);
+        }
+    };
 
     // Function to handle download
     
-    const fetchAttendance = async () => {
-        try {
-          const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
-          const attendanceData = res.data.data;
-          const currentYear = new Date().getFullYear();
+    // const fetchAttendance = async () => {
+    //     try {
+    //       const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
+    //       const attendanceData = res.data.data;
+    //       const currentYear = new Date().getFullYear();
+      
+    //       // Filter attendance data for the given month (passed as a prop)
+    //       const structuredAttendance = [];
+      
+    //       attendanceData.forEach(employee => {
+    //         const { employeeName, years } = employee;
+      
+    //         years.forEach(yearData => {
+    //           if (yearData.year === currentYear) {
+    //             yearData.months.forEach(monthData => {
+    //               if (monthData.month === month) {  // Use the month prop to filter
+    //                 // Create three rows for each employee
+    //                 const statusRow = {
+    //                   "Sr. No": employee._id,  // Adjust this based on your data
+    //                   "Employee Name": employeeName,
+    //                 };
+    //                 const inTimeRow = { "Employee Name": "In Time" };
+    //                 const outTimeRow = { "Employee Name": "Out Time" };
+      
+    //                 // Sort the days array by date before looping through it
+    //                 const sortedDays = [...monthData.days].sort((a, b) => a.date - b.date);
+      
+    //                 // Loop through sorted days of the specified month
+    //                 sortedDays.forEach(dayData => {
+    //                   const dayKey = `${dayData.date}-${dayData.dayName}`;
+    //                   statusRow[dayKey] = dayData.status || '';
+    //                   inTimeRow[dayKey] = dayData.inTime || '';
+    //                   outTimeRow[dayKey] = dayData.outTime || '';
+    //                 });
+      
+    //                 // Push three rows per employee (status, in time, out time)
+    //                 structuredAttendance.push(statusRow);
+    //                 structuredAttendance.push(inTimeRow);
+    //                 structuredAttendance.push(outTimeRow);
+    //               }
+    //             });
+    //           }
+    //         });
+    //       });
+      
+    //       // Set the final structured data in state
+    //       setAttendanceData(structuredAttendance);
+    //     } catch (error) {
+    //       console.log("Error fetching attendance data", error);
+    //     }
+    //   };
     
-          // Filter attendance data for the given month (passed as a prop)
-          const structuredAttendance = [];
+    // const downloadExcel = () => {
+    //     const currentYear = new Date().getFullYear();
+    //     const numDays = new Date(currentYear, new Date(`${month} 1, ${currentYear}`).getMonth() + 1, 0).getDate();  // Get days in selected month
     
-          attendanceData.forEach(employee => {
-            const { employeeName, years } = employee;
+    //     // Generate column headers with day numbers and day names
+    //     const columns = ['Sr. No', 'Employee Name'];
+    //     // for (let i = 1; i <= numDays; i++) {
+    //     //   const dayOfWeek = new Date(currentYear, new Date(`${month} 1, ${currentYear}`).getMonth(), i).toLocaleString('default', { weekday: 'short' });
+    //     //   columns.push(`${i}-${dayOfWeek}`);
+    //     // }
     
-            years.forEach(yearData => {
-              if (yearData.year === currentYear) {
-                yearData.months.forEach(monthData => {
-                  if (monthData.month === month) {  // Use the month prop to filter
-                    // Create three rows for each employee
-                    const statusRow = {
-                      "Sr. No": employee._id,  // Adjust this based on your data
-                      "Employee Name": employeeName,
-                    };
-                    const inTimeRow = { "Employee Name": "In Time" };
-                    const outTimeRow = { "Employee Name": "Out Time" };
+    //     // Create worksheet from attendance data
+    //     const worksheet = XLSX.utils.json_to_sheet(attendanceData, { header: columns });
     
-                    // Loop through days of the specified month
-                    monthData.days.forEach(dayData => {
-                      const dayKey = `${dayData.date}-${dayData.dayName}`;
-                      statusRow[dayKey] = dayData.status || '';
-                      inTimeRow[dayKey] = dayData.inTime || '';
-                      outTimeRow[dayKey] = dayData.outTime || '';
-                    });
+    //     // Create a new workbook and append the worksheet
+    //     const workbook = XLSX.utils.book_new();
+    //     XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance Data");
     
-                    // Push three rows per employee (status, in time, out time)
-                    structuredAttendance.push(statusRow);
-                    structuredAttendance.push(inTimeRow);
-                    structuredAttendance.push(outTimeRow);
-                  }
-                });
-              }
-            });
-          });
-    
-          // Set the final structured data in state
-          setAttendanceData(structuredAttendance);
-        } catch (error) {
-          console.log("Error fetching attendance data", error);
-        }
-      };
-    
-    //   useEffect(() => {
-    //     fetchAttendance();
-    //   }, [month]);
-    
-    const downloadExcel = () => {
-        const currentYear = new Date().getFullYear();
-        const numDays = new Date(currentYear, new Date(`${month} 1, ${currentYear}`).getMonth() + 1, 0).getDate();  // Get days in selected month
-    
-        // Generate column headers with day numbers and day names
-        const columns = ['Sr. No', 'Employee Name'];
-        for (let i = 1; i <= numDays; i++) {
-          const dayOfWeek = new Date(currentYear, new Date(`${month} 1, ${currentYear}`).getMonth(), i).toLocaleString('default', { weekday: 'short' });
-          columns.push(`${i}-${dayOfWeek}`);
-        }
-    
-        // Create worksheet from attendance data
-        const worksheet = XLSX.utils.json_to_sheet(attendanceData, { header: columns });
-    
-        // Create a new workbook and append the worksheet
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance Data");
-    
-        // Trigger the download of the Excel file
-        XLSX.writeFile(workbook, `Employee_Attendance_${month}_${currentYear}.xlsx`);
-      };
+    //     // Trigger the download of the Excel file
+    //     XLSX.writeFile(workbook, `Employee_Attendance_${month}_${currentYear}.xlsx`);
+    //   };
 
     useEffect(() => {
         const initialize = async () => {
@@ -776,11 +775,11 @@ function ViewAttendance({ year, month, date }) {
                                 </div>
                             </a>
                         </li>
-                        <li class="nav-item hr_emply_list_navitem">
+                        {/* <li class="nav-item hr_emply_list_navitem">
                             <button onClick={downloadExcel}>
                                 Download Excel
                             </button>
-                        </li>
+                        </li> */}
                     </ul>
                 </div>
 
@@ -862,13 +861,7 @@ function ViewAttendance({ year, month, date }) {
                                                     ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                                     : emp.gender === "Male" ? MaleEmployee : FemaleEmployee;
                                                 const empAttendance = attendanceData[emp._id] || {};
-                                                // Track if 'LCH' is present in the specific month and year for the given employee
-                                                // let hasLCH = false;
-
-                                                // let presentCount = 0;
-                                                // let leaveCount = 0;
-                                                // let halfDayCount = 0;
-                                                // let lcCount = 0;
+                                               
                                                 const joiningDate = new Date(emp.jdate);
                                                 let presentCount = 0;
                                                 let leaveCount = 0;
