@@ -16,6 +16,7 @@ import BdmMaturedCasesDialogBox from "../BdmMaturedCasesDialogBox";
 import { MdOutlineWorkHistory } from "react-icons/md";
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import { FaEye } from "react-icons/fa";
+import AdminRemarksDialog from "../../admin/ExtraComponent/AdminRemarksDialog";
 
 
 function EmployeeInterestedLeads({
@@ -137,20 +138,20 @@ function EmployeeInterestedLeads({
             </thead>
             {isLoading ? (
               <tbody>
-              <tr>
+                <tr>
                   <td colSpan="11">
-                      <div className="LoaderTDSatyle w-100">
-                          <ClipLoader
-                              color="lightgrey"
-                              loading={true}
-                              size={30}
-                              aria-label="Loading Spinner"
-                              data-testid="loader"
-                          />
-                      </div>
+                    <div className="LoaderTDSatyle w-100">
+                      <ClipLoader
+                        color="lightgrey"
+                        loading={true}
+                        size={30}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                      />
+                    </div>
                   </td>
-              </tr>
-          </tbody>
+                </tr>
+              </tbody>
             ) : (
               <tbody>
                 {interestedData && interestedData.map((company, index) => (
@@ -265,16 +266,16 @@ function EmployeeInterestedLeads({
                             cemail={company["Company Email"]}
                             cindate={company["Incorporation Date"]}
                             cnum={company["Company Number"]}
-                            ename={company.ename}
+                            ename={ename}
                             bdmAcceptStatus={company.bdmAcceptStatus}
                             handleFormOpen={handleOpenFormOpen}
                           />
                         )}
-                        <div className={company.Status === "Interested" && company.interestedInformation ? 
+                        <div className={company.Status === "Interested" && company.interestedInformation ?
                           "intersted-history-btn"
-                          : company.Status === "FollowUp" && company.interestedInformation ? "followup-history-btn"  : 
-                          company.Status === "FollowUp" && !company.interestedInformation ? "followup-history-btn disabled" :
-                          "intersted-history-btn disabled"}>
+                          : company.Status === "FollowUp" && company.interestedInformation ? "followup-history-btn" :
+                            company.Status === "FollowUp" && !company.interestedInformation ? "followup-history-btn disabled" :
+                              "intersted-history-btn disabled"}>
                           <FaEye
                             key={company._id}
                             style={{ border: "transparent", background: "none" }}
@@ -290,7 +291,7 @@ function EmployeeInterestedLeads({
                             companyName={company["Company Name"]}
                             interestedInformation={company.interestedInformation} // Pass the interested information here
                             refetch={refetch}
-                            ename={company.ename}
+                            ename={ename}
                             secretKey={secretKey}
                             status={company.Status}
                             companyStatus={company.Status}
@@ -306,30 +307,45 @@ function EmployeeInterestedLeads({
                         key={company._id}
                         className="d-flex align-items-center justify-content-between w-100"
                       >
-                        <p
-                          className="rematkText text-wrap m-0"
-                          title={company.Remarks}
-                        >
-                          {!company["Remarks"] ? "No Remarks" : company.Remarks}
-                        </p>
-                        <RemarksDialog
-                          key={company._id}
-                          currentCompanyName={company["Company Name"]}
-                          //remarksHistory={remarksHistory} // pass your remarks history data
-                          companyId={company._id}
-                          remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                          isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                          bdmAcceptStatus={company.bdmAcceptStatus}
-                          companyStatus={company.Status}
-                          secretKey={secretKey}
-                          //fetchRemarksHistory={fetchRemarksHistory}
-                          bdeName={company.ename}
-                          bdmName={company.bdmName}
-                          refetch={refetch}
-                          mainRemarks={company.Remarks}
-                          designation={designation}
-                          fordesignation={fordesignation}
-                        />
+
+                        {(fordesignation === "admin" || fordesignation === "datamanager") ? (<>
+                          
+                          <AdminRemarksDialog
+                            key={`${company["Company Name"]}-${index}`}
+                            currentRemarks={company.Remarks}
+                            companyID={company._id}
+                            companyStatus={company.Status}
+                            secretKey={secretKey} />
+                        </>
+
+                        ) :
+                          (<>
+
+                            <p
+                              className="rematkText text-wrap m-0"
+                              title={company.Remarks}
+                            >
+                              {!company["Remarks"] ? "No Remarks" : company.Remarks}
+                            </p>
+                            <RemarksDialog
+                              key={company._id}
+                              currentCompanyName={company["Company Name"]}
+                              //remarksHistory={remarksHistory} // pass your remarks history data
+                              companyId={company._id}
+                              remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                              isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                              bdmAcceptStatus={company.bdmAcceptStatus}
+                              companyStatus={company.Status}
+                              secretKey={secretKey}
+                              //fetchRemarksHistory={fetchRemarksHistory}
+                              bdeName={ename}
+                              bdmName={company.bdmName}
+                              refetch={refetch}
+                              mainRemarks={company.Remarks}
+                              designation={designation}
+                              fordesignation={fordesignation}
+                            />
+                          </>)}
                       </div>
                     </td>
                     <td>
@@ -356,13 +372,14 @@ function EmployeeInterestedLeads({
                           projectionData={projectionData}
                           secretKey={secretKey}
                           fetchProjections={fetchProjections}
-                          ename={company.ename}
+                          ename={ename}
                           bdmAcceptStatus={company.bdmAcceptStatus}
                           hasMaturedStatus={false}
                           hasExistingProjection={projectionData?.some(
                             (item) => item.companyName === company["Company Name"]
                           )}
                           userId={userId}
+                          fordesignation={fordesignation}
                         />
                         {
                           ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (
@@ -372,7 +389,7 @@ function EmployeeInterestedLeads({
                               forwardedCompany={company["Company Name"]}
                               forwardCompanyId={company._id}
                               forwardedStatus={company.Status}
-                              forwardedEName={company.ename}
+                              forwardedEName={ename}
                               bdeOldStatus={company.Status}
                               bdmNewAcceptStatus={"Pending"}
                               fetchNewData={refetch}

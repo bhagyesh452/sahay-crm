@@ -19,7 +19,8 @@ function ProjectionDialog({
     ename,
     hasMaturedStatus,
     hasExistingProjection,
-    userId
+    userId,
+    fordesignation
 }) {
     const [open, setOpen] = useState(false);
     const [currentProjection, setCurrentProjection] = useState({
@@ -220,9 +221,11 @@ function ProjectionDialog({
         }
     };
 
+    //console.log("projectionData", projectionData)
+
     return (
         <div>
-            <button style={{ border: "transparent", background: "none" }}>
+            {<button style={{ border: "transparent", background: "none" }}>
                 <RiEditCircleFill
                     onClick={functionopenprojection}
                     style={{
@@ -233,7 +236,7 @@ function ProjectionDialog({
                     title="View Projection"
                     color={getIconColor()} // Set the color based on conditions
                 />
-            </button>
+            </button>}
             <Drawer
                 style={{ top: "50px" }}
                 anchor="right"
@@ -258,14 +261,14 @@ function ProjectionDialog({
                                     (item) => item.companyName === projectionCompanyName
                                 ) ? (
                                 <>
-                                    <button
+                                    {(fordesignation !== "admin" && fordesignation !== "datamanager" ) && (<button
                                         style={{ border: "transparent", background: "none" }}
                                         onClick={() => {
                                             setIsEditProjection(true);
                                         }}
                                     >
                                         <HiPencilSquare color="grey" />
-                                    </button>
+                                    </button>)}
                                 </>
                             ) : null}
 
@@ -472,7 +475,8 @@ function ProjectionDialog({
                             </div>
                         </div>
                         <div className="submitBtn">
-                            <button
+                            {(fordesignation !== "admin" && fordesignation !== "datamanager" ) &&
+                            (<button
                                 disabled={!isEditProjection}
                                 onClick={handleProjectionSubmit}
                                 style={{ width: "100%" }}
@@ -480,7 +484,7 @@ function ProjectionDialog({
                                 class="btn btn-primary mb-3"
                             >
                                 Submit
-                            </button>
+                            </button>)}
                         </div>
                         <div>
                         </div>

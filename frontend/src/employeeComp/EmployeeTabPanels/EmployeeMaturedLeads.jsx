@@ -10,6 +10,7 @@ import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import RemarksDialog from '../ExtraComponents/RemarksDialog';
 import ProjectionDialog from '../ExtraComponents/ProjectionDialog';
+import AdminRemarksDialog from '../../admin/ExtraComponent/AdminRemarksDialog';
 
 
 function EmployeeMaturedLeads({
@@ -67,7 +68,7 @@ function EmployeeMaturedLeads({
         }
     };
 
-    console.log("matutered hua" , bdenumber)
+    console.log("matutered hua", bdenumber)
 
 
     return (
@@ -201,32 +202,46 @@ function EmployeeMaturedLeads({
                                             </td>
                                             <td>
                                                 <div key={company._id} className='d-flex align-items-center justify-content-between w-100'>
-                                                    <p
-                                                        className="rematkText text-wrap m-0"
-                                                        title={company.Remarks}
-                                                    >
-                                                        {!company["Remarks"]
-                                                            ? "No Remarks"
-                                                            : company.Remarks}
-                                                    </p>
-                                                    <div>
-                                                        <RemarksDialog
-                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                            currentCompanyName={company["Company Name"]}
-                                                            //remarksHistory={remarksHistory} // pass your remarks history data
-                                                            companyId={company._id}
-                                                            remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                                                            isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                                                            bdmAcceptStatus={company.bdmAcceptStatus}
-                                                            companyStatus={company.Status}
-                                                            secretKey={secretKey}
-                                                            //fetchRemarksHistory={fetchRemarksHistory}
-                                                            bdeName={company.ename}
-                                                            refetch={refetch}
-                                                            mainRemarks={company.Remarks}
-                                                            fordesignation={fordesignation}
 
-                                                        />
+                                                    <div>
+                                                        {fordesignation === "admin" || fordesignation === "datamanager" ? (
+                                                            <AdminRemarksDialog
+                                                                key={`${company["Company Name"]}-${index}`}
+                                                                currentRemarks={company.Remarks}
+                                                                companyID={company._id}
+                                                                companyStatus={company.Status}
+                                                                secretKey={secretKey}
+                                                            />
+
+                                                        ) : (<>
+                                                            <p
+                                                                className="rematkText text-wrap m-0"
+                                                                title={company.Remarks}
+                                                            >
+                                                                {!company["Remarks"]
+                                                                    ? "No Remarks"
+                                                                    : company.Remarks}
+                                                            </p>
+                                                            <RemarksDialog
+                                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                                currentCompanyName={company["Company Name"]}
+                                                                //remarksHistory={remarksHistory} // pass your remarks history data
+                                                                companyId={company._id}
+                                                                remarksKey={company.bdmAcceptStatus === "Accept" ? "bdmRemarks" : "remarks"} // Adjust this based on the type of remarks (general or bdm)
+                                                                isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                                                bdmAcceptStatus={company.bdmAcceptStatus}
+                                                                companyStatus={company.Status}
+                                                                secretKey={secretKey}
+                                                                //fetchRemarksHistory={fetchRemarksHistory}
+                                                                bdeName={ename}
+                                                                refetch={refetch}
+                                                                mainRemarks={company.Remarks}
+                                                                fordesignation={fordesignation}
+                                                                bdmName={company.bdmName}
+
+                                                            />
+                                                        </>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </td>
@@ -248,14 +263,14 @@ function EmployeeMaturedLeads({
                                                     projectionData={projectionData}
                                                     secretKey={secretKey}
                                                     fetchProjections={fetchProjections}
-                                                    ename={company.ename}
+                                                    ename={ename}
                                                     bdmAcceptStatus={company.bdmAcceptStatus}
                                                     hasMaturedStatus={true}
                                                     hasExistingProjection={projectionData?.some(
                                                         (item) => item.companyName === company["Company Name"]
                                                     )}
                                                     userId={userId}
-
+                                                    fordesignation={fordesignation}
                                                 />
                                             </td>
                                         </tr>

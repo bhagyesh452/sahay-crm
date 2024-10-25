@@ -13,7 +13,7 @@ import { VscGraph } from "react-icons/vsc";
 import { GrDocumentStore } from "react-icons/gr";
 import axios from 'axios';
 import { IoNewspaperOutline } from "react-icons/io5";
-
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -23,7 +23,7 @@ import { IoNewspaperOutline } from "react-icons/io5";
 
 function EmpNav({ userId, bdmWork }) {
   const location = useLocation();
-
+  const navigate = useNavigate();
   //console.log("bdmWORKON NAV", bdmWork)
 
   const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
@@ -106,7 +106,8 @@ function EmpNav({ userId, bdmWork }) {
                     <span className="nav-link-title">Dashboard</span>
                   </a>
                 </Link>
-                <Link to={`/employee-data/${userId}`}
+                <Link
+                  to={`/employee-data/${userId}`}
                   className={
                     location.pathname === `/employee-data/${userId}` ? "nav-item active" : "nav-item"
                   }
@@ -118,24 +119,10 @@ function EmpNav({ userId, bdmWork }) {
                     </span>
                     <span className="nav-link-title">My Leads</span>
                   </a>
-                  {/* </Link> */}
+
                 </Link>
                 {bdmWork && (
                   <>
-                    {/* <Link style={{ textDecoration: "none", color: "black" }} className={
-                      location.pathname === `/employee-team-leads-old/${userId}` ? "nav-item active" : "nav-item"
-                    }
-                      to={`/employee-team-leads-old/${userId}`}>
-
-                      <a className="nav-link" href="#">
-                        <span className="nav-link-icon d-md-none d-lg-inline-block">
-
-                          <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                        </span>
-                        <span className="nav-link-title">Team Leads Old</span>
-                      </a>
-                    </Link> */}
-
                     <Link style={{ textDecoration: "none", color: "black" }} className={
                       location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
                     }
