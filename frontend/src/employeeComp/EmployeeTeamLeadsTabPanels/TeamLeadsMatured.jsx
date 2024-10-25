@@ -127,7 +127,7 @@ function TeamLeadsMatured({
 
                         <tbody>
                             {isLoading && <tr>
-                                <td colSpan="15">
+                                <td colSpan="16">
                                     <div className="LoaderTDSatyle">
                                         <ClipLoader
                                             color="lightgrey"
@@ -253,6 +253,7 @@ function TeamLeadsMatured({
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
                                                     bdmRemarks={company.bdmRemarks}
+                                                    newDesignation={newDesignation}
                                                     refetch={refetchTeamLeads}
                                                 />
                                             </div>
@@ -269,7 +270,7 @@ function TeamLeadsMatured({
                                                     // setTimeout(() => {
                                                     //     setFormOpen(true);
                                                     // }, 1000);
-                                                    navigate(`/employee-bookings/${userId}`);
+                                                    navigate(newDesignation === "admin" ? `/managing-director/bookings` : `/employee-bookings/${userId}`);
                                                 }}
                                             >
                                                 <IconEye
@@ -286,7 +287,7 @@ function TeamLeadsMatured({
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={15} className="text-center">
+                                    <td colSpan={16} className="text-center">
                                         <Nodata />
                                     </td>
                                 </tr>

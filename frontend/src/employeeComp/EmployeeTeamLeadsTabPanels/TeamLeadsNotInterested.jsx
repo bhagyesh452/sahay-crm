@@ -94,7 +94,7 @@ function TeamLeadsNotInterested({
 
                         <tbody>
                             {isLoading && <tr>
-                                <td colSpan="14">
+                                <td colSpan="15">
                                     <div className="LoaderTDSatyle">
                                         <ClipLoader
                                             color="lightgrey"
@@ -220,6 +220,7 @@ function TeamLeadsNotInterested({
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
                                                     bdmRemarks={company.bdmRemarks}
+                                                    newDesignation={newDesignation}
                                                     refetch={refetchTeamLeads}
                                                 />
                                             </div>
@@ -233,7 +234,7 @@ function TeamLeadsNotInterested({
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={14} className="text-center">
+                                    <td colSpan={15} className="text-center">
                                         <Nodata />
                                     </td>
                                 </tr>

@@ -279,6 +279,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
     useEffect(() => {
         if (designation === "admin") {
             document.title = `Admin-Sahay-CRM`;
+        } else {
+            document.title = `Employee-Sahay-CRM`;
         }
     }, [designation]);
 
@@ -288,7 +290,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
             // If all checkboxes are already selected, clear the selection; otherwise, select all
             setSelectedRows((prevSelectedRows) =>
                 prevSelectedRows.length === teamLeadsData?.data.data.length
-                    ? [] 
+                    ? []
                     : teamLeadsData?.data.data.map((row) => row._id)
             );
         } else {
@@ -358,46 +360,67 @@ function EmployeeTeamLeadsCopy({ designation }) {
     };
 
     const handleUploadData = async (e) => {
+        //console.log("Uploading data");
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
+        const bdmAcceptStatus = "NotForwarded"
 
         const csvdata = teamLeadsData?.data?.data
             .filter((employee) => selectedRows.includes(employee._id))
-            .map((employee) => ({
-                ...employee,
-                //Status: "Untouched",
-                Remarks: "No Remarks Added",
-            }));
-
-
-        try {
-            Swal.fire({
-                title: 'Assigning...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
+            .map((employee) => {
+                if (employee.bdmStatus === "Interested" || employee.bdmStatus === "FollowUp"
+                ) {
+                    // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+                    return { ...employee };
+                } else {
+                    // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+                    return {
+                        ...employee,
+                        bdmStatus: "Untouched",
+                        Remarks: "No Remarks Added",
+                    };
                 }
             });
-            const response = await axios.post(`${secretKey}/company-data/assign-new`, {
-                ename: selectedOption === "extractedData" ? "Extracted" : newemployeeSelection,
-                data: csvdata,
-            });
 
-            Swal.close();
+        // Create an array to store promises for updating CompanyModel
+        const updatePromises = [];
+
+        for (const data of csvdata) {
+            const updatedObj = {
+                ...data,
+                date: currentDate,
+                time: currentTime,
+                bdmName: newemployeeSelection,
+                companyName: data["Company Name"],
+                bdmAcceptStatus,
+            };
+            // console.log(newemployeeSelection, data, bdmAcceptStatus)
+            // Add the promise for updating CompanyModel to the array
+            updatePromises.push(axios.post(`${secretKey}/bdm-data/assign-leads-newbdm`, {
+                newemployeeSelection,
+                data: updatedObj,
+                bdmAcceptStatus,
+            }));
+        }
+
+        try {
+            // Wait for all update promises to resolve
+            await Promise.all(updatePromises);
+            //console.log("Employee data updated!");
+
+            // Clear the selection
+            setnewEmployeeSelection("Not Alloted");
+            setSelectedRows([]);
+            refetchTeamLeads();
             Swal.fire({
                 title: "Data Sent!",
                 text: "Data sent successfully!",
                 icon: "success",
             });
-
-
-            setnewEmployeeSelection("Not Alloted");
             handleCloseAssignLeadsFromBdm();
-            setSelectedRows([]);
-            refetchTeamLeads();
         } catch (error) {
             console.error("Error updating employee data:", error);
-            Swal.close();
+
             Swal.fire({
                 title: "Error!",
                 text: "Failed to update employee data. Please try again later.",
@@ -504,8 +527,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                             />
                                                         </button>
                                                     </div>
-                                                    <div className="btn-group" role="group" aria-label="Basic example">
 
+                                                    <div className="btn-group" role="group" aria-label="Basic example">
                                                         <button type="button"
                                                             onClick={() => {
                                                                 if (designation === "admin") {
@@ -523,6 +546,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                             <MdOutlinePersonPin className='mr-1' />
                                                             Leads
                                                         </button>
+
                                                         {data.bdmWork &&
                                                             <button
                                                                 type="button"
@@ -546,7 +570,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                     </div>
                                                 </>
                                             )}
-
                                         </div>
 
                                         {designation !== "admin" && <div className="btn-group" role="group" aria-label="Basic example">
@@ -573,16 +596,20 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                         Total Data Selected : <b>{selectedRows.length}</b>
                                                     </div>
                                                 )}
+
                                                 <div className="btn-group mr-1" role="group" aria-label="Basic example">
-                                                    <Link to={`/managing-director/user`} style={{ marginLeft: "10px" }}>
+                                                    <Link style={{ marginLeft: "10px" }}
+                                                        to={designation === "admin" ? `/managing-director/user` : `/dataanalyst/newEmployees`}>
                                                         <button type="button" className="btn mybtn">
                                                             <IoIosArrowDropleft className='mr-1' /> Back
                                                         </button>
                                                     </Link>
                                                 </div>
+
                                                 <button type="button" className="btn mybtn cursor-pointer mr-1" disabled={!selectedRows.length} onClick={() => setShowAssignLeadsFromBdm(true)}>
                                                     <MdOutlinePostAdd className='mr-1' />Assign Leads
                                                 </button>
+
                                                 <button type="button" className="btn mybtn cursor-pointer" disabled={!selectedRows.length} onClick={handleDeleteLeads}>
                                                     <MdOutlinePostAdd className='mr-1' />Delete Leads
                                                 </button>
@@ -603,6 +630,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 )}
                                             </>
                                         )}
+
                                         <div class="input-icon ml-1">
                                             <span class="input-icon-addon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -626,7 +654,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
                         </div>
 
                         <div onCopy={(e) => e.preventDefault()} className="page-body">
-
                             <div className="container-xl">
                                 <div class="card-header my-tab">
                                     <ul class="nav nav-tabs sales-nav-tabs card-header-tabs nav-fill p-0" data-bs-toggle="tabs">

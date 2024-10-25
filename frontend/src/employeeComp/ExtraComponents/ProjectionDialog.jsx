@@ -20,6 +20,7 @@ function ProjectionDialog({
     hasMaturedStatus,
     hasExistingProjection,
     userId,
+    newDesignation,
     isBdmProjection
 }) {
     const [open, setOpen] = useState(false);
@@ -235,6 +236,7 @@ function ProjectionDialog({
                     style={{
                         cursor: "pointer",
                         width: "17px",
+                        newDesignation,
                         height: "17px",
                     }}
                     title="View Projection"
@@ -261,18 +263,16 @@ function ProjectionDialog({
                         <div>
                             {projectionCompanyName &&
                                 projectionData &&
-                                projectionData.some(
-                                    (item) => item.companyName === projectionCompanyName
-                                ) ? (
+                                projectionData.some((item) => item.companyName === projectionCompanyName) ? (
                                 <>
-                                    <button
+                                    {!newDesignation && <button
                                         style={{ border: "transparent", background: "none" }}
                                         onClick={() => {
                                             setIsEditProjection(true);
                                         }}
                                     >
                                         <HiPencilSquare color="grey" />
-                                    </button>
+                                    </button>}
                                 </>
                             ) : null}
 
@@ -335,7 +335,7 @@ function ProjectionDialog({
                                         label: value,
                                     }))}
                                     placeholder="Select Services..."
-                                    isDisabled={!isEditProjection}
+                                    isDisabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
@@ -359,7 +359,7 @@ function ProjectionDialog({
                                             offeredPrize: e.target.value,
                                         }));
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
@@ -397,7 +397,7 @@ function ProjectionDialog({
                                             }));
                                         }
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
 
                                 <div style={{ color: "lightred" }}>
@@ -426,7 +426,7 @@ function ProjectionDialog({
                                             lastFollowUpdate: e.target.value,
                                         }));
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
@@ -450,7 +450,7 @@ function ProjectionDialog({
                                             estPaymentDate: e.target.value,
                                         }));
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
@@ -474,13 +474,13 @@ function ProjectionDialog({
                                             remarks: e.target.value,
                                         }));
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
                         <div className="submitBtn">
                             <button
-                                disabled={!isEditProjection}
+                                disabled={!isEditProjection || newDesignation}
                                 onClick={handleProjectionSubmit}
                                 style={{ width: "100%" }}
                                 type="submit"

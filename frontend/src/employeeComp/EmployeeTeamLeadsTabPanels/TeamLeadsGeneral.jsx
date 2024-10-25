@@ -120,7 +120,7 @@ function TeamLeadsGeneral({
                                 <th>City</th>
                                 <th>State</th>
                                 <th>BDE Forwarded Date</th>
-                                <th>Action</th>
+                                {!newDesignation && <th>Action</th>}
                             </tr>
                         </thead>
 
@@ -218,7 +218,7 @@ function TeamLeadsGeneral({
                                         <td>{company["City"]}</td>
                                         <td>{company["State"]}</td>
                                         <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                        <td>
+                                        {!newDesignation && <td>
                                             <IconButton style={{ color: "green", marginRight: "5px", height: "25px", width: "25px" }}
                                                 onClick={(e) => handleAcceptClick(
                                                     company._id,
@@ -232,7 +232,7 @@ function TeamLeadsGeneral({
                                             >
                                                 <GrStatusGood />
                                             </IconButton>
-                                        </td>
+                                        </td>}
                                     </tr>
                                 ))
                             ) : (

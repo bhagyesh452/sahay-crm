@@ -18,6 +18,7 @@ const TeamLeadsRemarksDialog = ({
     bdeRemarks,
     bdmRemarks,
     designation,
+    newDesignation,
     refetch,
 }) => {
 
@@ -136,7 +137,7 @@ const TeamLeadsRemarksDialog = ({
     }, [companyName, companyId]);
 
     const renderTeamLeadsButton = () => {
-        if (remarksKey === "remarks" && (bdmAcceptStatus === "Pending" || bdmAcceptStatus === "Accept")) {
+        if (remarksKey === "remarks" && (bdmAcceptStatus === "Pending" || bdmAcceptStatus === "Accept") || newDesignation) {
             return (
                 <button onClick={handleOpenModal} style={{ border: "transparent", background: "none" }}>
                     <MdOutlineRemoveRedEye style={{ width: "14px", height: "14px", color: "#d6a10c", cursor: "pointer" }} />
@@ -293,7 +294,7 @@ const TeamLeadsRemarksDialog = ({
 
                             </div>
 
-                            {isEditable && (
+                            {!newDesignation && isEditable && (
                                 <div className="card-footer">
                                     <div className="mb-3 remarks-input">
                                         <textarea placeholder="Add Remarks Here..." className="form-control" id="remarks-input" rows="3"
@@ -303,7 +304,7 @@ const TeamLeadsRemarksDialog = ({
                             )}
                         </div>
 
-                        {isEditable && (
+                        {!newDesignation && isEditable && (
                             <div className="modal-footer">
                                 <button onClick={handleUpdate} type="submit" className="btn btn-primary">
                                     Submit
