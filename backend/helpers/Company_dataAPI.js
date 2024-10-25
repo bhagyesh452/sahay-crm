@@ -2002,27 +2002,27 @@ router.get("/employees-new/:ename", async (req, res) => {
         break;
       case "FollowUp":
         dataQuery.Status = "FollowUp";
-        dataQuery.bdmAcceptStatus = "NotForwarded";
+        dataQuery.bdmAcceptStatus = {$in : ["NotForwarded" , undefined]};
         break;
       case "Interested":
         dataQuery.Status = { $in: ["Interested", "FollowUp"] };
-        dataQuery.bdmAcceptStatus = "NotForwarded";
+        dataQuery.bdmAcceptStatus = {$in : ["NotForwarded" , undefined]};
         break;
       case "Forwarded":
-        dataQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept"] };
+        dataQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept" , undefined] };
         dataQuery.Status = { $in: ["Interested", "FollowUp"] };
         break;
       case "Matured":
         dataQuery.Status = { $in: ["Matured"] };
-        dataQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept", "NotForwarded"] };
+        dataQuery.bdmAcceptStatus = { $in: ["Pending", "Accept", "NotForwarded" , undefined] };
         break;
       case "All":
         dataQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
-        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept"] };
+        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept" , undefined] };
         break;
       default:
         dataQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
-        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept"] };
+        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept" , undefined] };
         break;
     }
 
@@ -2076,22 +2076,22 @@ router.get("/employees-new/:ename", async (req, res) => {
       CompanyModel.countDocuments({
         ...countQuery,
         Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: "NotForwarded"
+        bdmAcceptStatus:{$in : ["NotForwarded" , undefined]}
       }),
       CompanyModel.countDocuments({
         ...countQuery,
         Status: "Matured",
-        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] }
+        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept" , undefined] }
       }),
       CompanyModel.countDocuments({
         ...countQuery,
         Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
+        bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept" , undefined] }
       }),
       CompanyModel.countDocuments({
         ...countQuery,
         Status: { $in: ["Untouched", "Busy", "Not Picked Up"] },
-        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] }
+        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept" , undefined] }
       })
     ]);
 
