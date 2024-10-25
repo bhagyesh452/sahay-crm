@@ -347,7 +347,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         query["Status"] = "Matured";
         query["bdmAcceptStatus"] = "Accept";
       } else if (status === "Not Interested") {
-        query["Status"] = "Not Interested";
+        query["Status"] = { $in: ["Junk", "Not Interested"] };
         query["bdmAcceptStatus"] = "Accept";
       } else if (status === "General") {
         query["bdmAcceptStatus"] = "Pending";
@@ -397,7 +397,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     const totalNotInterested = await CompanyModel.countDocuments({
       ...query,
-      Status: "Not Interested",
+      Status: { $in: ["Not Interested", "Junk"] },
       bdmAcceptStatus: "Accept"
     });
 
