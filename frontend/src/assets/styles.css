@@ -4511,8 +4511,19 @@ div#table-default td {
   line-height: 19px;
   text-align: center;
   border-radius: 100px;
-  background: #f3e2bd;
-  border: 1px solid #c5a255;
+  background: #a3ffd8;
+  border: 1px solid #35c286;
+  margin-left: 8px;
+  font-size: 14px;
+}
+.followup-history-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 19px;
+  text-align: center;
+  border-radius: 100px;
+  background: #ffe1ed;
+  border: 1px solid #f393ba;
   margin-left: 8px;
   font-size: 14px;
 }

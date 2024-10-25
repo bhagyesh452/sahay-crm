@@ -19,6 +19,7 @@ import Notification_box_employee from "./Notification_box_employee";
 import MaleEmployee from "../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import ProjectionInformationDialog from "../employeeComp/ExtraComponents/ProjectionInformationDialog";
+import { useNavigate } from 'react-router-dom';
 // import "./styles/header.css"
 
 
@@ -30,7 +31,7 @@ function Header({ name, id, designation, empProfile, gender }) {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogCount, setDialogCount] = useState(0);
   const [showDialogStatus, setShowDialogStatus] = useState(false);
-
+  const navigate = useNavigate();
   // Fetch initial data when user logs in
   const fetchData = async () => {
     try {
@@ -39,12 +40,12 @@ function Header({ name, id, designation, empProfile, gender }) {
       const userData = tempData.find((item) => item._id === userId);
       setData(userData);
 
-      
+
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-  
+
 
   useEffect(() => {
     fetchData(); // Fetch user data on component mount
@@ -88,16 +89,8 @@ function Header({ name, id, designation, empProfile, gender }) {
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-    });
-
-    // socket.on("data-assigned", (res) => {
-    //   if (res === name) {
-    //     enqueueSnackbar(`New Data Received!`, { variant: "reportComplete", persist: true });
-    //     const audioplayer = new Audio(notification_audio);
-    //     audioplayer.play();
-    //   }
-    // });
-
+    });  
+    
     socket.on("data-action-performed", (res) => {
       if (name === res) {
         enqueueSnackbar(`DATA REQUEST ACCEPTED! PLEASE REFRESH 🔄`, {
@@ -274,13 +267,7 @@ function Header({ name, id, designation, empProfile, gender }) {
 
   // ----------------call logs component------------------
   const [error, setError] = useState(null);
-  const convertSecondsToHMS = (totalSeconds) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 3600 % 60;
-
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  };
+ 
 
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -384,16 +371,105 @@ function Header({ name, id, designation, empProfile, gender }) {
     }
   }, [data]);
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupCount, setPopupCount] = useState(0);
+  const [lastPopupTime, setLastPopupTime] = useState(null);
+  //const [dialogCount, setDialogCount] = useState(0); // Count of how many times dialog has shown
 
+  // Utility function to get the current date in 'YYYY-MM-DD' format
+  const getTodayDate = () => new Date().toISOString().split("T")[0];
+
+  // Load state from localStorage when the component mounts
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem(userId)) || {};
+    const today = getTodayDate();
+
+    // Reset if it's a new day
+    if (storedData.date !== today) {
+      localStorage.setItem(
+        userId,
+        JSON.stringify({ date: today, count: 0, lastShown: null, dismissed: false })
+      );
+      setPopupCount(0);
+      setLastPopupTime(null);
+    } else {
+      setPopupCount(storedData.count || 0);
+      setLastPopupTime(storedData.lastShown || null);
+    }
+  }, [userId]);
+
+  // Control when the popup is shown
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem(userId));
+    if (!storedData || storedData.dismissed) {
+      return;  // Exit early if popup is dismissed
+    }  
+    const now = Date.now();
+    const timeSinceLastPopup = lastPopupTime ? now - new Date(lastPopupTime).getTime() : Infinity;
+
+    // Show the popup if 15 minutes have passed since the last popup and the count is < 3
+    if (!storedData.dismissed && popupCount < 3 && timeSinceLastPopup >= 15 * 60 * 1000) {
+      setShowPopup(true);
+    }
+  }, [lastPopupTime, popupCount, userId]);
+
+  // Set the next popup to appear 15 minutes after the current one closes
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem(userId));
+    if (!storedData.dismissed && popupCount < 3) {
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+      }, 15 * 60 * 1000); // 15 minutes from now
+
+      return () => clearTimeout(timer); // Clean up the timer on component unmount
+    }
+  }, [popupCount, lastPopupTime]);
+
+  // Handle the "Yes" button
+  const handleYesClick = () => {
+    const storedData = JSON.parse(localStorage.getItem(userId));
+    const newCount = storedData.count + 1;
+    const now = new Date();
+   
+    // Update localStorage with new count and last shown time
+    localStorage.setItem(
+      userId,
+      JSON.stringify({ ...storedData, count: newCount, lastShown: now })
+    );
+
+    // Update component state
+    setPopupCount(newCount);
+    setLastPopupTime(now);
+    setShowPopup(false);
+    navigate(`/employee-data/${userId}`);
+  };
+
+  // Handle the "No" button to disable popups for the rest of the day
+  // Handle the "No" button to disable popups for the rest of the day
+  const handleNoClick = () => {
+    const storedData = JSON.parse(localStorage.getItem(userId)) || {};
+    
+    // Set count to 3 and dismissed to true, ensuring no further popups
+    localStorage.setItem(userId, JSON.stringify({
+      ...storedData,
+      count: 3,  // Set count to maximum to prevent further popups
+      dismissed: true,  // Mark dismissed as true
+      lastShown: new Date(),  // Optionally set the lastShown timestamp
+    }));
   
+    // Update component state
+    setPopupCount(3);
+    setShowPopup(false);
+  };
 
- 
+
+
 
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
         <div className="container-xl">
-         
+
           {/* -------------left-side-startupsahay-image-code-------------------- */}
           <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <a href=".">
@@ -407,7 +483,7 @@ function Header({ name, id, designation, empProfile, gender }) {
             </a>
           </h1>
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
-            
+
 
 
             {/* --------------------------notification-box-code--------------------- */}
@@ -464,6 +540,14 @@ function Header({ name, id, designation, empProfile, gender }) {
       </SnackbarProvider>
 
       {/* -----------------showDialog---------------------------- */}
+      
+        <ProjectionInformationDialog
+          handleYesClick={handleYesClick}
+          handleNoClick={handleNoClick}
+          showDialog={showPopup}
+          
+        />
+      
     </div>
   );
 }

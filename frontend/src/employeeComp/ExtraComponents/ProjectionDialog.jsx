@@ -114,6 +114,7 @@ function ProjectionDialog({
      const currentDate = new Date().toISOString().split('T')[0];
     const handleProjectionSubmit = async () => {
         try {
+            
             // Create a new object with only the relevant data fields
             const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
             // console.log("currentProjection", currentProjection)
@@ -160,13 +161,16 @@ function ProjectionDialog({
                     `${secretKey}/projection/update-followup`,
                     finalData
                 );
-                await axios.post(`${secretKey}/update-dialog-count`, {
-                    userId,
-                    dialogCount: 3,
-                    showDialog: false
-                });
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
-                
+                const storedData = JSON.parse(localStorage.getItem(userId)) || {};
+    
+                // Set count to 3 and dismissed to true, ensuring no further popups
+                localStorage.setItem(userId, JSON.stringify({
+                  ...storedData,
+                  count: 3,  // Set count to maximum to prevent further popups
+                  dismissed: true,  // Mark dismissed as true
+                  lastShown: new Date(),  // Optionally set the lastShown timestamp
+                }));
                 closeProjection(); // Close projection after submitting
                 fetchProjections(); // Refresh data
             }

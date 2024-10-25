@@ -1469,55 +1469,6 @@ router.get('/filter-employee-leads', async (req, res) => {
   }
 });
 
-
-
-//9. Filtere search for Reading Multiple Companies
-// router.get('/search-leads', async (req, res) => {
-//   try {
-//     const { searchQuery } = req.query;
-//     const { field } = req.query;
-//     //console.log(searchQuery , "search")
-
-//     let searchResults;
-//     if (field === "Company Name" || field === "Company Email") {
-//       if (searchQuery && searchQuery.trim() !== '') {
-//         // Perform database query to search for leads matching the searchQuery
-//         const query = {};
-//         query[field] = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
-
-//         searchResults = await CompanyModel.find(query).limit(500).lean();
-//       } else {
-//         // If search query is empty, fetch 500 data from CompanyModel
-//         searchResults = await CompanyModel.find().limit(500).lean();
-//       }
-//     }
-//     else if (field === "Company Number") {
-//       if (searchQuery && searchQuery.trim() !== '') {
-//         // Check if the searchQuery is a valid number
-//         const searchNumber = Number(searchQuery);
-
-//         if (!isNaN(searchNumber)) {
-//           // Perform database query to search for leads matching the searchQuery as a number
-//           searchResults = await CompanyModel.find({
-//             'Company Number': searchNumber
-//           }).limit(500).lean();
-//         } else {
-//           // If the searchQuery is not a number, perform a regex search (if needed for some reason)
-//           searchResults = await CompanyModel.find({
-//             'Company Number': { $regex: new RegExp(searchQuery) } // Case-insensitive search
-//           }).limit(500).lean();
-//         }
-//       } else {
-//         // If search query is empty, fetch 500 data from CompanyModel
-//         searchResults = await CompanyModel.find().limit(500).lean();
-//       }
-//     }
-//     res.json(searchResults);
-//   } catch (error) {
-//     console.error('Error searching leads:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
 function escapeRegex(string) {
   return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
@@ -2024,8 +1975,21 @@ router.get("/employees-new/:ename", async (req, res) => {
     };
 
     // Apply searching for company name
-    if (search) {
-      baseQuery["Company Name"] = { $regex: search, $options: "i" };
+    // if (search) {
+    //   baseQuery["Company Name"] = { $regex: search, $options: "i" };
+    // }
+    if (search !== '') {
+      if (!isNaN(search)) {
+        baseQuery = { 'Company Number': search };
+      } else {
+        const escapedSearch = escapeRegex(search);
+        baseQuery = {
+          $or: [
+            { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
+            { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } }
+          ]
+        };
+      }
     }
 
     // Make a copy of the base query for the specific dataStatus
