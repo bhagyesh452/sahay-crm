@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
 import axios from "axios";
 import "../assets/table.css";
@@ -11,6 +10,7 @@ import TeamLeadsGeneral from "./EmployeeTeamLeadsTabPanels/TeamLeadsGeneral.jsx"
 import TeamLeadsInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsInterested.jsx";
 import TeamLeadsMatured from "./EmployeeTeamLeadsTabPanels/TeamLeadsMatured.jsx";
 import TeamLeadsNotInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsNotInterested.jsx";
+import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
 import PropTypes from "prop-types";
 import Tooltip from "@mui/material/Tooltip";
 import { IoFilterOutline } from "react-icons/io5";
@@ -21,10 +21,18 @@ import debounce from 'lodash/debounce';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { jwtDecode } from "jwt-decode";
+import Swal from "sweetalert2";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { FaCircleChevronLeft } from "react-icons/fa6";
+import { FaCircleChevronRight } from "react-icons/fa6";
+import { MdOutlinePersonPin } from "react-icons/md";
+import { AiOutlineTeam } from "react-icons/ai";
+import { IoIosArrowDropleft } from "react-icons/io";
 
-function EmployeeTeamLeadsCopy() {
+function EmployeeTeamLeadsCopy({ designation }) {
 
     const { userId } = useParams();
+    const navigate = useNavigate();
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -34,11 +42,17 @@ function EmployeeTeamLeadsCopy() {
     const [dataStatus, setDataStatus] = useState("General");
     const [data, setData] = useState([]);
     const [isFilter, setIsFilter] = useState(false);
+    const [employeeData, setEmployeeData] = useState([]);
+    const [showAssignLeadsFromBdm, setShowAssignLeadsFromBdm] = useState(false);
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [startRowIndex, setStartRowIndex] = useState(null);
+    const [selectedOption, setSelectedOption] = useState("direct");
+    const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
+    const [newEmpData, setNewEmpData] = useState([]);
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
     const [employeeName, setEmployeeName] = useState("");
     const [showCallHistory, setShowCallHistory] = useState(false);
     const [clientNumber, setClientNumber] = useState("");
-    const [employeeData, setEmployeeData] = useState([]);
     const [nowToFetch, setNowToFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -76,6 +90,10 @@ function EmployeeTeamLeadsCopy() {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
+
+    const handleCloseAssignLeadsFromBdm = () => {
+        setShowAssignLeadsFromBdm(false);
+    };
 
     const handleShowCallHistory = (companyName, clientNumber) => {
         setShowCallHistory(true);
@@ -147,6 +165,18 @@ function EmployeeTeamLeadsCopy() {
         }
     };
 
+    const fetchEmployeeData = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/employee/einfo`);
+            const data = response.data.filter(item => item.designation === "Sales Executive" || item.designation === "Sales Manager");
+            // console.log("Employee data is :", data);
+            setEmployeeData(data);
+            setNewEmpData(data.filter(employee => (employee.newDesignation === "Business Development Manager" || employee.newDesignation === "Floor Manager") && employee._id !== userId));
+        } catch (error) {
+            console.error("Error fetching data:", error.message);
+        }
+    };
+
     const fetchTeamLeadsData = async () => {
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${employeeName}`);
@@ -196,19 +226,9 @@ function EmployeeTeamLeadsCopy() {
         fetchProjections();
     }, []);
 
-    // const debouncedRefetch = useCallback(debounce(() => {
-    //     refetch();
-    // }, 300), [refetch]);
-
-    // const handleDataStatusChange = useCallback((status, tabRef) => {
-    //     setDataStatus(status);
-    //     setCurrentPage(0); // Reset to the first page
-    //     // debouncedRefetch(); // Call the debounced refetch function
-    //     setActiveTabId(status)
-    //     if (tabRef && tabRef.current) {
-    //         tabRef.current.click(); // Programmatically click the anchor tag to trigger Bootstrap tab switch
-    //     }
-    // }, []);
+    useEffect(() => {
+        fetchEmployeeData();
+    }, [designation]);
 
     // Auto logout functionality :
     useEffect(() => {
@@ -256,6 +276,206 @@ function EmployeeTeamLeadsCopy() {
         window.location.replace("/"); // Redirect to login page
     };
 
+    useEffect(() => {
+        if (designation === "admin") {
+            document.title = `Admin-Sahay-CRM`;
+        }
+    }, [designation]);
+
+    const handleCheckboxChange = (id, event) => {
+        // If the id is 'all', toggle all checkboxes
+        if (id === "all") {
+            // If all checkboxes are already selected, clear the selection; otherwise, select all
+            setSelectedRows((prevSelectedRows) =>
+                prevSelectedRows.length === teamLeadsData?.data.data.length
+                    ? [] 
+                    : teamLeadsData?.data.data.map((row) => row._id)
+            );
+        } else {
+            // Toggle the selection status of the row with the given id
+            setSelectedRows((prevSelectedRows) => {
+                // If the Ctrl key is pressed
+                if (event.ctrlKey) {
+                    //console.log("pressed");
+                    const selectedIndex = teamLeadsData?.data.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = teamLeadsData?.data.findIndex((row) => prevSelectedRows.includes(row._id));
+
+                    // Select rows between the last selected row and the current row
+                    if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+                        const start = Math.min(selectedIndex, lastSelectedIndex);
+                        const end = Math.max(selectedIndex, lastSelectedIndex);
+                        const idsToSelect = teamLeadsData?.data.slice(start, end + 1).map((row) => row._id);
+
+                        return prevSelectedRows.includes(id)
+                            ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+                            : [...prevSelectedRows, ...idsToSelect];
+                    }
+                }
+
+                // Toggle the selection status of the row with the given id
+                return prevSelectedRows.includes(id)
+                    ? prevSelectedRows.filter((rowId) => rowId !== id)
+                    : [...prevSelectedRows, id];
+            });
+        }
+    };
+
+
+    const handleMouseDown = (id) => {
+        // Initiate drag selection
+        setStartRowIndex(teamLeadsData?.data.data.findIndex((row) => row._id === id));
+    };
+
+    const handleMouseEnter = (id) => {
+        if (startRowIndex !== null && (designation === "admin" || designation === "datamanager")) {
+            const endRowIndex = teamLeadsData?.data.data.findIndex(row => row._id === id);
+
+            // Ensure startRowIndex and endRowIndex are valid and within array bounds
+            const validStartIndex = Math.min(startRowIndex, endRowIndex);
+            const validEndIndex = Math.max(startRowIndex, endRowIndex);
+
+            // Only proceed if valid indices
+            if (validStartIndex >= 0 && validEndIndex < teamLeadsData?.data.length) {
+                const selectedRange = [];
+                for (let i = validStartIndex; i <= validEndIndex; i++) {
+                    if (teamLeadsData?.data[i] && teamLeadsData?.data[i]._id) {
+                        // Ensure that teamLeadsData?.data[i] is not undefined and has an _id
+                        selectedRange.push(teamLeadsData?.data[i]._id);
+                    }
+                }
+                setSelectedRows(selectedRange); // Update selected rows
+            }
+        }
+    };
+
+    const handleMouseUp = () => {
+        // End drag selection
+        setStartRowIndex(null);
+    };
+
+    const handleOptionChange = (event) => {
+        setSelectedOption(event.target.value);
+    };
+
+    const handleUploadData = async (e) => {
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+
+        const csvdata = teamLeadsData?.data?.data
+            .filter((employee) => selectedRows.includes(employee._id))
+            .map((employee) => ({
+                ...employee,
+                //Status: "Untouched",
+                Remarks: "No Remarks Added",
+            }));
+
+
+        try {
+            Swal.fire({
+                title: 'Assigning...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            const response = await axios.post(`${secretKey}/company-data/assign-new`, {
+                ename: selectedOption === "extractedData" ? "Extracted" : newemployeeSelection,
+                data: csvdata,
+            });
+
+            Swal.close();
+            Swal.fire({
+                title: "Data Sent!",
+                text: "Data sent successfully!",
+                icon: "success",
+            });
+
+
+            setnewEmployeeSelection("Not Alloted");
+            handleCloseAssignLeadsFromBdm();
+            setSelectedRows([]);
+            refetchTeamLeads();
+        } catch (error) {
+            console.error("Error updating employee data:", error);
+            Swal.close();
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to update employee data. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
+
+    const handleChangeUrlPrev = () => {
+        const currId = userId;
+        const salesExecutivesIds = employeeData.map(employee => employee._id);
+        //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+        // Find the index of the currentId in the newEmpData array
+        const currentIndex = salesExecutivesIds.findIndex((itemId) => itemId === currId);
+
+        if (currentIndex !== -1) {
+            // Calculate the previous index in a circular manner
+            const prevIndex = (currentIndex - 1 + salesExecutivesIds.length) % salesExecutivesIds.length;
+
+            if (currentIndex === 0) {
+                // If it's the first page, navigate to the employees page
+                if (designation === "admin") {
+                    navigate(`/managing-director/user`);
+                } else {
+                    navigate(`dataanalyst/newEmployees`);
+                }
+
+                //setBackButton(false)
+            } else {
+                // Get the previousId from the salesExecutivesIds array
+                const prevId = salesExecutivesIds[prevIndex];
+                if (designation === "admin") {
+                    navigate(`/managing-director/employees/${prevId}`);
+                } else {
+                    navigate(`/dataanalyst/employeeLeads/${prevId}`);
+
+                }
+
+            }
+            //setBackButton(prevIndex !== 0);
+        } else {
+            console.log("Current ID not found in newEmpData array.");
+        }
+    };
+
+    const handleChangeUrlNext = () => {
+        const currId = userId;
+        // Filter the response data to find _id values where designation is "Sales Executive" or "Sales Manager"
+        const salesExecutivesIds = employeeData.map(employee => employee._id);
+
+        //console.log(newEmpData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+        // Find the index of the currentId in the newEmpData array
+        const currentIndex = salesExecutivesIds.findIndex((itemId) => itemId === currId);
+
+        if (currentIndex !== -1) {
+            // Calculate the next index in a circular manner
+            const nextIndex = (currentIndex + 1) % salesExecutivesIds.length;
+
+            // Get the nextId from the salesExecutivesIds array
+            const nextId = salesExecutivesIds[nextIndex];
+            if (designation === "admin") {
+                navigate(`/managing-director/employees/${nextId}`);
+            } else {
+                navigate(`/dataanalyst/employeeLeads/${nextId}`);
+
+            }
+            //setBackButton(nextId !== 0);
+        } else {
+            console.log("Current ID not found in newEmpData array.");
+        }
+    };
+
+    const handleDeleteLeads = async () => {
+
+    };
+
     return (
         <div>
             {!showCallHistory && !formOpen && !addFormOpen ? (
@@ -266,7 +486,70 @@ function EmployeeTeamLeadsCopy() {
                                 <div className="d-flex align-items-center justify-content-between">
 
                                     <div className="d-flex align-items-center">
-                                        <div className="btn-group" role="group" aria-label="Basic example">
+                                        <div>
+                                            {(designation === "admin" || designation === "datamanager") && (
+                                                <>
+                                                    <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                        <button className="btn mybtn">
+                                                            <FaCircleChevronLeft
+                                                                className="ep_right_button"
+                                                                onClick={handleChangeUrlPrev}
+                                                            />
+                                                        </button>
+                                                        <button className="btn mybtn"><b>{data.ename}</b></button>
+                                                        <button className="btn mybtn">
+                                                            <FaCircleChevronRight
+                                                                className="ep_left_button"
+                                                                onClick={handleChangeUrlNext}
+                                                            />
+                                                        </button>
+                                                    </div>
+                                                    <div className="btn-group" role="group" aria-label="Basic example">
+
+                                                        <button type="button"
+                                                            onClick={() => {
+                                                                if (designation === "admin") {
+                                                                    navigate(`/managing-director/employees/${userId}`);
+                                                                } else if (designation === "datamanager") {
+                                                                    navigate(`/dataanalyst/employeeLeads/${userId}`);
+                                                                }
+                                                            }}
+                                                            className={
+                                                                ((designation === "admin" && window.location.pathname === `/managing-director/employees/${userId}`) ||
+                                                                    (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeLeads/${userId}`)) &&
+                                                                    data.bdmWork ? "btn mybtn active" : "btn mybtn"
+                                                            }
+                                                        >
+                                                            <MdOutlinePersonPin className='mr-1' />
+                                                            Leads
+                                                        </button>
+                                                        {data.bdmWork &&
+                                                            <button
+                                                                type="button"
+                                                                className={
+                                                                    (designation === "admin" && window.location.pathname === `/managing-director/employeeleads/${userId}`) ||
+                                                                        (designation === "datamanager" && window.location.pathname === `/datamanager/datamanagerside-employeeteamleads/${userId}`)
+                                                                        ? "btn mybtn active"
+                                                                        : "btn mybtn"
+                                                                }
+                                                                onClick={() => {
+                                                                    if (designation === "admin") {
+                                                                        navigate(`/managing-director/employeeleads/${userId}`);
+                                                                    } else if (designation === "datamanager") {
+                                                                        navigate(`/datamanager/datamanagerside-employeeteamleads/${userId}`);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <AiOutlineTeam
+                                                                    className='mr-1' /> Team Leads
+                                                            </button>}
+                                                    </div>
+                                                </>
+                                            )}
+
+                                        </div>
+
+                                        {designation !== "admin" && <div className="btn-group" role="group" aria-label="Basic example">
                                             <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
                                             // onClick={() => setOpenFilterDrawer(true)}
                                             >
@@ -279,10 +562,47 @@ function EmployeeTeamLeadsCopy() {
                                                 setOpenChange={openchange}
                                                 open={open}
                                             />} */}
-                                        </div>
+                                        </div>}
                                     </div>
 
                                     <div className="d-flex align-items-center">
+                                        {(designation === "admin" || designation === "datamanager") && (
+                                            <>
+                                                {selectedRows.length !== 0 && (
+                                                    <div className="selection-data mr-1" >
+                                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                                    </div>
+                                                )}
+                                                <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                    <Link to={`/managing-director/user`} style={{ marginLeft: "10px" }}>
+                                                        <button type="button" className="btn mybtn">
+                                                            <IoIosArrowDropleft className='mr-1' /> Back
+                                                        </button>
+                                                    </Link>
+                                                </div>
+                                                <button type="button" className="btn mybtn cursor-pointer mr-1" disabled={!selectedRows.length} onClick={() => setShowAssignLeadsFromBdm(true)}>
+                                                    <MdOutlinePostAdd className='mr-1' />Assign Leads
+                                                </button>
+                                                <button type="button" className="btn mybtn cursor-pointer" disabled={!selectedRows.length} onClick={handleDeleteLeads}>
+                                                    <MdOutlinePostAdd className='mr-1' />Delete Leads
+                                                </button>
+
+                                                {showAssignLeadsFromBdm && (
+                                                    <AssignLeads
+                                                        openAssign={showAssignLeadsFromBdm}
+                                                        closepopupAssign={handleCloseAssignLeadsFromBdm}
+                                                        selectedOption={selectedOption}
+                                                        setSelectedOption={setSelectedOption}
+                                                        newemployeeSelection={newemployeeSelection}
+                                                        setnewEmployeeSelection={setnewEmployeeSelection}
+                                                        handleOptionChange={handleOptionChange}
+                                                        handleUploadData={handleUploadData}
+                                                        newempData={newEmpData}
+                                                        isAssignFromBdm={true}
+                                                    />
+                                                )}
+                                            </>
+                                        )}
                                         <div class="input-icon ml-1">
                                             <span class="input-icon-addon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -409,6 +729,13 @@ function EmployeeTeamLeadsCopy() {
                                             designation={data.designation}
                                             handleShowCallHistory={handleShowCallHistory}
                                             projectionData={projectionData}
+                                            newDesignation={designation}
+                                            selectedRows={selectedRows}
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
                                         />)}
                                     </div>
 
@@ -434,6 +761,13 @@ function EmployeeTeamLeadsCopy() {
                                             projectionData={projectionData}
                                             teamData={teamData}
                                             handleOpenFormOpen={handleOpenFormOpen}
+                                            newDesignation={designation}
+                                            selectedRows={selectedRows}
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
                                         />)}
                                     </div>
 
@@ -457,6 +791,13 @@ function EmployeeTeamLeadsCopy() {
                                             handleShowCallHistory={handleShowCallHistory}
                                             fetchProjections={fetchProjections}
                                             projectionData={projectionData}
+                                            newDesignation={designation}
+                                            selectedRows={selectedRows}
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
                                         />)}
                                     </div>
 
@@ -478,6 +819,13 @@ function EmployeeTeamLeadsCopy() {
                                             email={data.email}
                                             designation={data.designation}
                                             handleShowCallHistory={handleShowCallHistory}
+                                            newDesignation={designation}
+                                            selectedRows={selectedRows}
+                                            setSelectedRows={setSelectedRows}
+                                            handleCheckboxChange={handleCheckboxChange}
+                                            handleMouseDown={handleMouseDown}
+                                            handleMouseEnter={handleMouseEnter}
+                                            handleMouseUp={handleMouseUp}
                                         />)}
                                     </div>
                                 </div>

@@ -34,7 +34,14 @@ function TeamLeadsGeneral({
     email,
     designation,
     handleShowCallHistory,
-    projectionData
+    projectionData,
+    newDesignation,
+    selectedRows,
+    setSelectedRows,
+    handleCheckboxChange,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp
 }) {
 
     const nextPage = () => {
@@ -92,8 +99,20 @@ function TeamLeadsGeneral({
                     <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
                         <thead>
                             <tr className="tr-sticky">
-                                <th className="rm-sticky-left-1">Sr. No</th>
-                                <th className="rm-sticky-left-2">Company Name</th>
+                                {(newDesignation === "admin" || newDesignation === "datamanager") &&
+                                    (
+                                        <th className='AEP-sticky-left-1'>
+                                            <label className='table-check'>
+                                                <input type="checkbox"
+                                                    checked={selectedRows && generalData && (selectedRows.length === generalData.length)}
+                                                    onChange={(e) => handleCheckboxChange("all", e)}
+                                                />
+                                                <span class="table_checkmark"></span>
+                                            </label>
+                                        </th>
+                                    )}
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-1 "}>Compnay Name</th>
                                 <th>BDE Name</th>
                                 <th>BDE Status</th>
                                 <th>BDE Remarks</th>
@@ -121,9 +140,26 @@ function TeamLeadsGeneral({
                             </tr>}
                             {generalData?.length !== 0 ? (
                                 generalData?.map((company, index) => (
-                                    <tr key={index}>
-                                        <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
-                                        <td className="rm-sticky-left-2">{company["Company Name"]}</td>
+                                    <tr key={company._id}
+                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                        onMouseUp={handleMouseUp} // End drag selection
+                                        id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
+                                    >
+                                        {(newDesignation === "admin" || newDesignation === "datamanager") && (
+                                            <td className='AEP-sticky-left-1'>
+                                                <label className='table-check'>
+                                                    <input type="checkbox"
+                                                        checked={selectedRows && selectedRows.includes(company._id)}
+                                                        onChange={(e) => handleCheckboxChange(company._id, e)}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+
+                                            </td>
+                                        )}
+                                        <td className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                        <td className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                         <td>{company.ename}</td>
                                         <td>
                                             <div className="d-flex justify-content-center">

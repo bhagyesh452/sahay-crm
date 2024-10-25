@@ -10,7 +10,7 @@ import { is } from "date-fns/locale";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoints, refetchTeamLeads, isEditable }) {
+function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoints, refetchTeamLeads, isEmployeeFeedback, isEditable }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     console.log("remarks")
@@ -24,12 +24,17 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
     const [remarks, setRemarks] = useState(feedbackRemarks);
 
     const handleViewFeedback = () => {
-        // You can add any additional logic here if needed
         setFeedbackPopupOpen(true);
     };
 
     const closeFeedbackPopup = () => {
         setFeedbackPopupOpen(false);
+        setValueSlider1(0);
+        setValueSlider2(0);
+        setValueSlider3(0);
+        setValueSlider4(0);
+        setValueSlider5(0);
+        setRemarks("");
     };
 
     const iOSBoxShadow = '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
@@ -105,10 +110,13 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                 style={{ border: "transparent", background: "none" }}
                 onClick={handleViewFeedback}
             >
-                <RiInformationLine
+                {isEmployeeFeedback ? <RiInformationLine
                     style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                    color={feedbackPoints.length ? "#fbb900" : "lightgrey"}
-                />
+                    color={feedbackPoints.length === 0 ? "lightgray" : "#fbb900"}
+                /> : <RiInformationLine
+                    style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                    color={feedbackPoints.length === 0 ? "black" : "#fbb900"}
+                />}
             </button>
 
             {/* Feedback Dialog */}

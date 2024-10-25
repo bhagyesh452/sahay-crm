@@ -19,7 +19,8 @@ function ProjectionDialog({
     ename,
     hasMaturedStatus,
     hasExistingProjection,
-    userId
+    userId,
+    isBdmProjection
 }) {
     const [open, setOpen] = useState(false);
     const [currentProjection, setCurrentProjection] = useState({
@@ -183,6 +184,12 @@ function ProjectionDialog({
         return "black"; // Default color for other statuses
     };
 
+    const bdmProjectionIconColor = () => {
+        if (bdmAcceptStatus === "Accept" || hasMaturedStatus) {
+            return hasExistingProjection ? "#fbb900" : "black";
+        }
+    };
+
     const handleDelete = async (company) => {
         const companyName = company;
         //console.log(companyName);
@@ -227,7 +234,7 @@ function ProjectionDialog({
                         height: "17px",
                     }}
                     title="View Projection"
-                    color={getIconColor()} // Set the color based on conditions
+                    color={isBdmProjection ? bdmProjectionIconColor() : getIconColor()} // Set the color based on conditions
                 />
             </button>
             <Drawer

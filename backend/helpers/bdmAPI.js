@@ -403,7 +403,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Fetch data based on query and pagination
     const data = await CompanyModel.find(query)
-      .sort({ bdeForwardDate: 1 }) // Sorting in ascending order
+      .sort({ bdmStatusChangeDate: 1 }) // Sorting in descending order
       .skip(skip)
       .limit(limit);
 

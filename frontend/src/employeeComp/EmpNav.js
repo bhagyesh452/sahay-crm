@@ -122,7 +122,7 @@ function EmpNav({ userId, bdmWork }) {
                 </Link>
                 {bdmWork && (
                   <>
-                    {/* <Link style={{ textDecoration: "none", color: "black" }} className={
+                    <Link style={{ textDecoration: "none", color: "black" }} className={
                       location.pathname === `/employee-team-leads-old/${userId}` ? "nav-item active" : "nav-item"
                     }
                       to={`/employee-team-leads-old/${userId}`}>
@@ -134,7 +134,7 @@ function EmpNav({ userId, bdmWork }) {
                         </span>
                         <span className="nav-link-title">Team Leads Old</span>
                       </a>
-                    </Link> */}
+                    </Link>
 
                     <Link style={{ textDecoration: "none", color: "black" }} className={
                       location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
