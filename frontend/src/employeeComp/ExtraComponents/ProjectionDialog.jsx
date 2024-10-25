@@ -21,7 +21,8 @@ function ProjectionDialog({
     hasExistingProjection,
     userId,
     newDesignation,
-    isBdmProjection
+    isBdmProjection,
+    fordesignation
 }) {
     const [open, setOpen] = useState(false);
     const [currentProjection, setCurrentProjection] = useState({
@@ -111,11 +112,11 @@ function ProjectionDialog({
     // Handle form submission
     const dialogDismissedData = JSON.parse(localStorage.getItem('dialogDismissedData')) || {};
 
-     // Get the current date in YYYY-MM-DD format
-     const currentDate = new Date().toISOString().split('T')[0];
+    // Get the current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0];
     const handleProjectionSubmit = async () => {
         try {
-            
+
             // Create a new object with only the relevant data fields
             const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
             // console.log("currentProjection", currentProjection)
@@ -164,13 +165,13 @@ function ProjectionDialog({
                 );
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
                 const storedData = JSON.parse(localStorage.getItem(userId)) || {};
-    
+
                 // Set count to 3 and dismissed to true, ensuring no further popups
                 localStorage.setItem(userId, JSON.stringify({
-                  ...storedData,
-                  count: 3,  // Set count to maximum to prevent further popups
-                  dismissed: true,  // Mark dismissed as true
-                  lastShown: new Date(),  // Optionally set the lastShown timestamp
+                    ...storedData,
+                    count: 3,  // Set count to maximum to prevent further popups
+                    dismissed: true,  // Mark dismissed as true
+                    lastShown: new Date(),  // Optionally set the lastShown timestamp
                 }));
                 closeProjection(); // Close projection after submitting
                 fetchProjections(); // Refresh data
@@ -228,9 +229,11 @@ function ProjectionDialog({
         }
     };
 
+    //console.log("projectionData", projectionData)
+
     return (
         <div>
-            <button style={{ border: "transparent", background: "none" }}>
+            {<button style={{ border: "transparent", background: "none" }}>
                 <RiEditCircleFill
                     onClick={functionopenprojection}
                     style={{
@@ -242,7 +245,7 @@ function ProjectionDialog({
                     title="View Projection"
                     color={isBdmProjection ? bdmProjectionIconColor() : getIconColor()} // Set the color based on conditions
                 />
-            </button>
+            </button>}
             <Drawer
                 style={{ top: "50px" }}
                 anchor="right"
@@ -265,14 +268,16 @@ function ProjectionDialog({
                                 projectionData &&
                                 projectionData.some((item) => item.companyName === projectionCompanyName) ? (
                                 <>
-                                    {!newDesignation && <button
-                                        style={{ border: "transparent", background: "none" }}
-                                        onClick={() => {
-                                            setIsEditProjection(true);
-                                        }}
-                                    >
-                                        <HiPencilSquare color="grey" />
-                                    </button>}
+                                    {(fordesignation !== "admin" && fordesignation !== "datamanager" && !newDesignation) && (
+                                        <button
+                                            style={{ border: "transparent", background: "none" }}
+                                            onClick={() => {
+                                                setIsEditProjection(true);
+                                            }}
+                                        >
+                                            <HiPencilSquare color="grey" />
+                                        </button>
+                                    )}
                                 </>
                             ) : null}
 
@@ -280,6 +285,7 @@ function ProjectionDialog({
                                 <IoClose onClick={closeProjection} />
                             </button>
                         </div>
+
                     </div>
                     <hr style={{ margin: "0px" }} />
                     <div className="body-projection">
@@ -479,22 +485,24 @@ function ProjectionDialog({
                             </div>
                         </div>
                         <div className="submitBtn">
-                            <button
-                                disabled={!isEditProjection || newDesignation}
-                                onClick={handleProjectionSubmit}
-                                style={{ width: "100%" }}
-                                type="submit"
-                                class="btn btn-primary mb-3"
-                            >
-                                Submit
-                            </button>
-                        </div>
+                            {(fordesignation !== "admin" && fordesignation !== "datamanager") &&
+                                (<button
+                                    disabled={!isEditProjection || newDesignation}
+                                    onClick={handleProjectionSubmit}
+                                    style={{ width: "100%" }}
+                                    type="submit"
+                                    class="btn btn-primary mb-3"
+                                >
+                                    Submit
+                                </button>)
+                            }
+                        </div >
                         <div>
                         </div>
-                    </div>
-                </div>
-            </Drawer>
-        </div>
+                    </div >
+                </div >
+            </Drawer >
+        </div >
     );
 }
 

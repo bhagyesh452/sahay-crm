@@ -530,52 +530,52 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
-  const updateDialogCount = async (currentCount) => {
-    try {
-      await axios.post(`${secretKey}/update-dialog-count`, { userId });
-      const updatedDialogCount = (dialogDismissedData[userId]?.dialogCount || 0) + 1;
+  // const updateDialogCount = async (currentCount) => {
+  //   try {
+  //     await axios.post(`${secretKey}/update-dialog-count`, { userId });
+  //     const updatedDialogCount = (dialogDismissedData[userId]?.dialogCount || 0) + 1;
 
-      // If the dialog is shown 3 times, set it as dismissed for the day
-      if (updatedDialogCount >= 3) {
-        dialogDismissedData[userId] = {
-          dismissedDate: currentDate,
-          dialogCount: 3 // Set count to 3, so it doesn't show again today
-        };
-      } else {
-        // Otherwise, just update the dialog count
-        dialogDismissedData[userId] = {
-          dismissedDate: dialogDismissedData[userId]?.dismissedDate || currentDate, // Keep the previous dismissed date
-          dialogCount: updatedDialogCount
-        };
-      }
+  //     // If the dialog is shown 3 times, set it as dismissed for the day
+  //     if (updatedDialogCount >= 3) {
+  //       dialogDismissedData[userId] = {
+  //         dismissedDate: currentDate,
+  //         dialogCount: 3 // Set count to 3, so it doesn't show again today
+  //       };
+  //     } else {
+  //       // Otherwise, just update the dialog count
+  //       dialogDismissedData[userId] = {
+  //         dismissedDate: dialogDismissedData[userId]?.dismissedDate || currentDate, // Keep the previous dismissed date
+  //         dialogCount: updatedDialogCount
+  //       };
+  //     }
 
-      // Update localStorage
-      localStorage.setItem('dialogDismissedData', JSON.stringify(dialogDismissedData));
+  //     // Update localStorage
+  //     localStorage.setItem('dialogDismissedData', JSON.stringify(dialogDismissedData));
 
-      // Update state
-      setDialogCount(updatedDialogCount);
-      setShowDialog(false);
+  //     // Update state
+  //     setDialogCount(updatedDialogCount);
+  //     setShowDialog(false);
 
-    } catch (error) {
-      console.error("Error updating dialog count:", error);
-    }
-  };
+  //   } catch (error) {
+  //     console.error("Error updating dialog count:", error);
+  //   }
+  // };
 
-  console.log("Dialog count:", dialogCount, showDialog);
+  // console.log("Dialog count:", dialogCount, showDialog);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const employeeDismissedDate = dialogDismissedData[userId]?.dismissedDate || null;
-      const employeeDialogCount = dialogDismissedData[userId]?.dialogCount || 0;
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const employeeDismissedDate = dialogDismissedData[userId]?.dismissedDate || null;
+  //     const employeeDialogCount = dialogDismissedData[userId]?.dialogCount || 0;
 
-      if (employeeDismissedDate !== currentDate && employeeDialogCount < 3) {
-        setShowDialog(true);
-        updateDialogCount(); // Increment the dialog count
-      }
-    }, 1 * 60 * 1000); // Every 15 minutes
+  //     if (employeeDismissedDate !== currentDate && employeeDialogCount < 3) {
+  //       setShowDialog(true);
+  //       updateDialogCount(); // Increment the dialog count
+  //     }
+  //   }, 1 * 60 * 1000); // Every 15 minutes
 
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [dialogCount]);
+  //   return () => clearInterval(interval); // Cleanup on unmount
+  // }, [dialogCount]);
 
 
   useEffect(() => {
@@ -6075,13 +6075,13 @@ function EmployeePanel() {
           </button>
         </Dialog>
       </div>
-      <ProjectionInformationDialog
+      {/* <ProjectionInformationDialog
         showDialog={showDialog}    // Pass the state to the dialog component
         setShowDialog={setShowDialog}  // Pass setState function to close it
         updateDialogCount={updateDialogCount}
         userId={userId}
         setdataStatus={setdataStatus}
-      />
+      /> */}
     </div>
   );
 }

@@ -137,14 +137,14 @@ function EmployeePanelCopy({ fordesignation }) {
     }, [data.ename]);
 
 
-
+    let fetchingId;
+    if (userId) {
+        fetchingId = userId
+    } else {
+        fetchingId = id
+    }
     const fetchData = async () => {
-        let fetchingId;
-        if (userId) {
-            fetchingId = userId
-        } else {
-            fetchingId = id
-        }
+
         try {
             const completeEmployess = await axios.get(`${secretKey}/employee/einfo`);
             const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${fetchingId}`);
@@ -159,64 +159,7 @@ function EmployeePanelCopy({ fordesignation }) {
             console.error("Error fetching data:", error.message);
         }
     };
-    // useEffect(() => {
-    //     const fetchDialogStatus = async () => {
-    //         try {
-    //             // Skip the logic for admin or datamanager
-    //             if (fordesignation === "admin" || fordesignation === "datamanager" || !userId) {
-    //                 return; // Early return to prevent fetching when no userId or unnecessary roles
-    //             }
-    //             if (data.dialogCount < 3 && data.showDialog) {
-    //                 console.log("yahanfetchhua")
-    //                 setShowDialog(true);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching dialog status:", error);
-    //         }
-    //     };
-
-    //     fetchDialogStatus();
-    //     // Show dialog every 15 minutes if count is less than 3
-    //     const interval = setInterval(() => {
-    //         if (data.dialogCount < 3 && data.showDialog) {
-    //             setShowDialog(true);
-    //         }
-    //     }, 1 * 60 * 1000);
-
-    //     return () => clearInterval(interval); // Cleanup on unmount
-    // }, []);
-
-
-    // useEffect(() => {
-    //     const fetchDialogStatus = async () => {
-    //         try {
-    //             // Skip the logic for admin or datamanager
-    //             if (fordesignation === "admin" || fordesignation === "datamanager") {
-    //                 return; // Early return to prevent the rest of the logic from running
-    //             }
-    //             if (data.dialogCount < 3 && data.showDialog && data.firstFetch) {
-    //                 setShowDialog(true);
-    //             }
-
-    //         } catch (error) {
-    //             console.error("Error fetching dialog status:", error);
-    //         }
-    //     };
-
-    //     fetchDialogStatus();
-
-    //     // Show dialog every 15 minutes if count is less than 3
-    //     const interval = setInterval(() => {
-
-
-    //         if (data.dialogCount < 3 && data.showDialog) {
-    //             setShowDialog(true);
-
-    //         }
-    //     }, 1 * 60 * 1000);
-
-    //     return () => clearInterval(interval); //up on unmount
-    // }, []);
+    
 
     const handleCloseProjectionPopup = () => {
         setShowDialog(false);
@@ -233,16 +176,13 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     }
 
-    useEffect(() => {
-        fetchData();
-        fetchProjections();
-    }, []);
 
     const fetchProjections = async () => {
         try {
             const response = await axios.get(
                 `${secretKey}/projection/projection-data/${data.ename}`
             );
+            //console.log("forprojec" , response.data);
             setProjectionData(response.data);
         } catch (error) {
             console.error("Error fetching Projection Data:", error.message);
@@ -290,7 +230,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
-            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage, searchQuery], // Add searchQuery to the queryKey
+            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage, searchQuery , fetchingId], // Add searchQuery to the queryKey
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees-new/${cleanString(data.ename)}`, {
@@ -310,7 +250,10 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     );
 
-
+    useEffect(() => {
+        fetchData();
+        fetchProjections();
+    }, [fetchingId , dataStatus ,queryData]);
 
     // Handle search
     const handleSearch = (query) => {
@@ -673,10 +616,16 @@ function EmployeePanelCopy({ fordesignation }) {
     console.log("fetchedData", queryData)
     console.log("dialogcount", dialogCount)
 
+    // useEffect(() => {
+
+    //     fetchData()
+    //     refetch()
+    // }, [fetchingId])
+
     return (
         <div>
             {!showCallHistory && !formOpen && !addFormOpen ?
-                (<div className="page-wrapper">
+                (<div className="page-wrapper" key={fetchingId}>
                     <div className="page-wrapper">
                         <div className="page-header mt-3">
                             <div className="container-xl">
@@ -705,7 +654,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                         <button
                                                             onClick={() => {
                                                                 if (fordesignation === "admin") {
-                                                                    navigate(`/managing-director/employees/${id}`) ;
+                                                                    navigate(`/managing-director/employees/${id}`);
                                                                 } else if (fordesignation === "datamanager") {
                                                                     navigate(`/dataanalyst/employeeLeads/${id}`);
                                                                 }
