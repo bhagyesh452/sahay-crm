@@ -224,7 +224,6 @@ const TeamLeadsRemarksDialog = ({
                                                 </div>
                                             )
                                         }
-
                                     })
                                 )}
 
