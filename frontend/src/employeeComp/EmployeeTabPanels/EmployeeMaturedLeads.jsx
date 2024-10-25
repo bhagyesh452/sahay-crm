@@ -201,7 +201,7 @@ function EmployeeMaturedLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                <div key={company._id} className='d-flex align-items-center justify-content-between w-100'>
+                                                <div key={company._id}>
 
                                                     <div>
                                                         {fordesignation === "admin" || fordesignation === "datamanager" ? (
@@ -213,7 +213,7 @@ function EmployeeMaturedLeads({
                                                                 secretKey={secretKey}
                                                             />
 
-                                                        ) : (<>
+                                                        ) : (<div className='d-flex align-items-center justify-content-between w-100'>
                                                             <p
                                                                 className="rematkText text-wrap m-0"
                                                                 title={company.Remarks}
@@ -240,7 +240,7 @@ function EmployeeMaturedLeads({
                                                                 bdmName={company.bdmName}
 
                                                             />
-                                                        </>
+                                                        </div>
                                                         )}
                                                     </div>
                                                 </div>

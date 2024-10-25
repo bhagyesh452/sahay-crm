@@ -574,7 +574,7 @@ function ViewAttendance({ year, month, date }) {
                   if (monthData.month === month) {  // Use the month prop to filter
                     // Create three rows for each employee
                     const statusRow = {
-                      "Sr. No": employee._id,  // You can adjust this based on your data
+                      "Sr. No": employee._id,  // Adjust this based on your data
                       "Employee Name": employeeName,
                     };
                     const inTimeRow = { "Employee Name": "In Time" };
@@ -588,7 +588,7 @@ function ViewAttendance({ year, month, date }) {
                       outTimeRow[dayKey] = dayData.outTime || '';
                     });
     
-                    // Push the three rows for this employee into the structured attendance array
+                    // Push three rows per employee (status, in time, out time)
                     structuredAttendance.push(statusRow);
                     structuredAttendance.push(inTimeRow);
                     structuredAttendance.push(outTimeRow);
@@ -609,7 +609,7 @@ function ViewAttendance({ year, month, date }) {
     //     fetchAttendance();
     //   }, [month]);
     
-      const downloadExcel = () => {
+    const downloadExcel = () => {
         const currentYear = new Date().getFullYear();
         const numDays = new Date(currentYear, new Date(`${month} 1, ${currentYear}`).getMonth() + 1, 0).getDate();  // Get days in selected month
     
@@ -776,11 +776,11 @@ function ViewAttendance({ year, month, date }) {
                                 </div>
                             </a>
                         </li>
-                        {/* <li class="nav-item hr_emply_list_navitem">
+                        <li class="nav-item hr_emply_list_navitem">
                             <button onClick={downloadExcel}>
                                 Download Excel
                             </button>
-                        </li> */}
+                        </li>
                     </ul>
                 </div>
 
