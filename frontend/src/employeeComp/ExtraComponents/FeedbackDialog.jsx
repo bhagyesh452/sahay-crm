@@ -10,10 +10,10 @@ import { is } from "date-fns/locale";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoints, refetchTeamLeads, isEditable }) {
+function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoints, refetchTeamLeads, isEmployeeFeedback, newDesignation, isEditable }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    console.log("remarks")
+    // console.log("remarks");
 
     const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false);
     const [valueSlider1, setValueSlider1] = useState(feedbackPoints[0]);
@@ -24,12 +24,17 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
     const [remarks, setRemarks] = useState(feedbackRemarks);
 
     const handleViewFeedback = () => {
-        // You can add any additional logic here if needed
         setFeedbackPopupOpen(true);
     };
 
     const closeFeedbackPopup = () => {
         setFeedbackPopupOpen(false);
+        setValueSlider1(feedbackPoints[0]);
+        setValueSlider2(feedbackPoints[1]);
+        setValueSlider3(feedbackPoints[2]);
+        setValueSlider4(feedbackPoints[3]);
+        setValueSlider5(feedbackPoints[4]);
+        setRemarks(feedbackRemarks);
     };
 
     const iOSBoxShadow = '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
@@ -105,10 +110,13 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                 style={{ border: "transparent", background: "none" }}
                 onClick={handleViewFeedback}
             >
-                <RiInformationLine
+                {isEmployeeFeedback ? <RiInformationLine
                     style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                    color={feedbackPoints.length ? "#fbb900" : "lightgrey"}
-                />
+                    color={feedbackPoints.length === 0 ? "lightgray" : "#fbb900"}
+                /> : <RiInformationLine
+                    style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                    color={feedbackPoints.length === 0 ? "black" : "#fbb900"}
+                />}
             </button>
 
             {/* Feedback Dialog */}
@@ -136,7 +144,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled={!isEditable}
+                                        disabled={!isEditable || newDesignation}
                                         defaultValue={feedbackPoints[0]}
                                         value={valueSlider1}
                                         onChange={(e) => setValueSlider1(e.target.value)}
@@ -151,7 +159,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled={!isEditable}
+                                        disabled={!isEditable || newDesignation}
                                         defaultValue={feedbackPoints[1]}
                                         value={valueSlider2}
                                         onChange={(e) => setValueSlider2(e.target.value)}
@@ -166,7 +174,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled={!isEditable}
+                                        disabled={!isEditable || newDesignation}
                                         defaultValue={feedbackPoints[2]}
                                         value={valueSlider3}
                                         onChange={(e) => setValueSlider3(e.target.value)}
@@ -181,7 +189,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled={!isEditable}
+                                        disabled={!isEditable || newDesignation}
                                         defaultValue={feedbackPoints[3]}
                                         value={valueSlider4}
                                         onChange={(e) => setValueSlider4(e.target.value)}
@@ -196,7 +204,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                                     <IOSSlider
                                         className="mt-4"
                                         aria-label="ios slider"
-                                        disabled={!isEditable}
+                                        disabled={!isEditable || newDesignation}
                                         defaultValue={feedbackPoints[4]}
                                         value={valueSlider5}
                                         onChange={(e) => setValueSlider5(e.target.value)}
@@ -207,7 +215,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                                 </div>
 
                                 <div className="card RemarkCard position-relative">
-                                    {isEditable ?
+                                    {isEditable && !newDesignation ?
                                         <>
                                             <div className="py-1 ms-1">Feedback Remarks :</div>
                                             <textarea className="form-control" id="remarks-input" rows="3" placeholder="Enter Remarks Here..."
@@ -221,7 +229,7 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
                                     }
                                 </div>
 
-                                {isEditable && <button className="btn btn-primary" onClick={handleFeedbackSubmit}>Submit</button>}
+                                {isEditable && !newDesignation && <button className="btn btn-primary" onClick={handleFeedbackSubmit}>Submit</button>}
                             </div>
                         )}
                     </div>

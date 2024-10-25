@@ -20,6 +20,8 @@ function ProjectionDialog({
     hasMaturedStatus,
     hasExistingProjection,
     userId,
+    newDesignation,
+    isBdmProjection,
     fordesignation
 }) {
     const [open, setOpen] = useState(false);
@@ -110,11 +112,11 @@ function ProjectionDialog({
     // Handle form submission
     const dialogDismissedData = JSON.parse(localStorage.getItem('dialogDismissedData')) || {};
 
-     // Get the current date in YYYY-MM-DD format
-     const currentDate = new Date().toISOString().split('T')[0];
+    // Get the current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0];
     const handleProjectionSubmit = async () => {
         try {
-            
+
             // Create a new object with only the relevant data fields
             const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
             // console.log("currentProjection", currentProjection)
@@ -163,13 +165,13 @@ function ProjectionDialog({
                 );
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
                 const storedData = JSON.parse(localStorage.getItem(userId)) || {};
-    
+
                 // Set count to 3 and dismissed to true, ensuring no further popups
                 localStorage.setItem(userId, JSON.stringify({
-                  ...storedData,
-                  count: 3,  // Set count to maximum to prevent further popups
-                  dismissed: true,  // Mark dismissed as true
-                  lastShown: new Date(),  // Optionally set the lastShown timestamp
+                    ...storedData,
+                    count: 3,  // Set count to maximum to prevent further popups
+                    dismissed: true,  // Mark dismissed as true
+                    lastShown: new Date(),  // Optionally set the lastShown timestamp
                 }));
                 closeProjection(); // Close projection after submitting
                 fetchProjections(); // Refresh data
@@ -186,6 +188,12 @@ function ProjectionDialog({
             return hasExistingProjection ? "#fbb900" : "#8b8b8b";
         }
         return "black"; // Default color for other statuses
+    };
+
+    const bdmProjectionIconColor = () => {
+        if (bdmAcceptStatus === "Accept" || hasMaturedStatus) {
+            return hasExistingProjection ? "#fbb900" : "black";
+        }
     };
 
     const handleDelete = async (company) => {
@@ -231,10 +239,11 @@ function ProjectionDialog({
                     style={{
                         cursor: "pointer",
                         width: "17px",
+                        newDesignation,
                         height: "17px",
                     }}
                     title="View Projection"
-                    color={getIconColor()} // Set the color based on conditions
+                    color={isBdmProjection ? bdmProjectionIconColor() : getIconColor()} // Set the color based on conditions
                 />
             </button>}
             <Drawer
@@ -257,18 +266,18 @@ function ProjectionDialog({
                         <div>
                             {projectionCompanyName &&
                                 projectionData &&
-                                projectionData.some(
-                                    (item) => item.companyName === projectionCompanyName
-                                ) ? (
+                                projectionData.some((item) => item.companyName === projectionCompanyName) ? (
                                 <>
-                                    {(fordesignation !== "admin" && fordesignation !== "datamanager" ) && (<button
-                                        style={{ border: "transparent", background: "none" }}
-                                        onClick={() => {
-                                            setIsEditProjection(true);
-                                        }}
-                                    >
-                                        <HiPencilSquare color="grey" />
-                                    </button>)}
+                                    {(fordesignation !== "admin" && fordesignation !== "datamanager" && !newDesignation) && (
+                                        <button
+                                            style={{ border: "transparent", background: "none" }}
+                                            onClick={() => {
+                                                setIsEditProjection(true);
+                                            }}
+                                        >
+                                            <HiPencilSquare color="grey" />
+                                        </button>
+                                    )}
                                 </>
                             ) : null}
 
@@ -276,6 +285,7 @@ function ProjectionDialog({
                                 <IoClose onClick={closeProjection} />
                             </button>
                         </div>
+
                     </div>
                     <hr style={{ margin: "0px" }} />
                     <div className="body-projection">
@@ -331,7 +341,7 @@ function ProjectionDialog({
                                         label: value,
                                     }))}
                                     placeholder="Select Services..."
-                                    isDisabled={!isEditProjection}
+                                    isDisabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
@@ -355,7 +365,7 @@ function ProjectionDialog({
                                             offeredPrize: e.target.value,
                                         }));
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
@@ -393,7 +403,7 @@ function ProjectionDialog({
                                             }));
                                         }
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
 
                                 <div style={{ color: "lightred" }}>
@@ -422,7 +432,7 @@ function ProjectionDialog({
                                             lastFollowUpdate: e.target.value,
                                         }));
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
@@ -446,7 +456,7 @@ function ProjectionDialog({
                                             estPaymentDate: e.target.value,
                                         }));
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
@@ -470,28 +480,29 @@ function ProjectionDialog({
                                             remarks: e.target.value,
                                         }));
                                     }}
-                                    disabled={!isEditProjection}
+                                    disabled={!isEditProjection || newDesignation}
                                 />
                             </div>
                         </div>
                         <div className="submitBtn">
-                            {(fordesignation !== "admin" && fordesignation !== "datamanager" ) &&
-                            (<button
-                                disabled={!isEditProjection}
-                                onClick={handleProjectionSubmit}
-                                style={{ width: "100%" }}
-                                type="submit"
-                                class="btn btn-primary mb-3"
-                            >
-                                Submit
-                            </button>)}
-                        </div>
+                            {(fordesignation !== "admin" && fordesignation !== "datamanager") &&
+                                (<button
+                                    disabled={!isEditProjection || newDesignation}
+                                    onClick={handleProjectionSubmit}
+                                    style={{ width: "100%" }}
+                                    type="submit"
+                                    class="btn btn-primary mb-3"
+                                >
+                                    Submit
+                                </button>)
+                            }
+                        </div >
                         <div>
                         </div>
-                    </div>
-                </div>
-            </Drawer>
-        </div>
+                    </div >
+                </div >
+            </Drawer >
+        </div >
     );
 }
 

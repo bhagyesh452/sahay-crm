@@ -39,7 +39,14 @@ function TeamLeadsMatured({
     designation,
     handleShowCallHistory,
     fetchProjections,
-    projectionData
+    projectionData,
+    newDesignation,
+    selectedRows,
+    setSelectedRows,
+    handleCheckboxChange,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp
 }) {
 
     const navigate = useNavigate();
@@ -88,8 +95,20 @@ function TeamLeadsMatured({
                     <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
                         <thead>
                             <tr className="tr-sticky">
-                                <th className="rm-sticky-left-1">Sr. No</th>
-                                <th className="rm-sticky-left-2">Compnay Name</th>
+                                {(newDesignation === "admin" || newDesignation === "datamanager") &&
+                                    (
+                                        <th className='AEP-sticky-left-1'>
+                                            <label className='table-check'>
+                                                <input type="checkbox"
+                                                    checked={selectedRows && maturedData && (selectedRows.length === maturedData.length)}
+                                                    onChange={(e) => handleCheckboxChange("all", e)}
+                                                />
+                                                <span class="table_checkmark"></span>
+                                            </label>
+                                        </th>
+                                    )}
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-1 "}>Compnay Name</th>
                                 <th>BDE Name</th>
                                 <th>Company Number</th>
                                 <th>Call History</th>
@@ -108,7 +127,7 @@ function TeamLeadsMatured({
 
                         <tbody>
                             {isLoading && <tr>
-                                <td colSpan="15">
+                                <td colSpan="16">
                                     <div className="LoaderTDSatyle">
                                         <ClipLoader
                                             color="lightgrey"
@@ -122,9 +141,26 @@ function TeamLeadsMatured({
                             </tr>}
                             {maturedData?.length !== 0 ? (
                                 maturedData?.map((company, index) => (
-                                    <tr key={index}>
-                                        <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
-                                        <td className="rm-sticky-left-2">{company["Company Name"]}</td>
+                                    <tr key={company._id}
+                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                        onMouseUp={handleMouseUp} // End drag selection
+                                        id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
+                                    >
+                                        {(newDesignation === "admin" || newDesignation === "datamanager") && (
+                                            <td className='AEP-sticky-left-1'>
+                                                <label className='table-check'>
+                                                    <input type="checkbox"
+                                                        checked={selectedRows && selectedRows.includes(company._id)}
+                                                        onChange={(e) => handleCheckboxChange(company._id, e)}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+
+                                            </td>
+                                        )}
+                                        <td className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                        <td className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                         <td>{company.ename}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-between wApp">
@@ -217,6 +253,7 @@ function TeamLeadsMatured({
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
                                                     bdmRemarks={company.bdmRemarks}
+                                                    newDesignation={newDesignation}
                                                     refetch={refetchTeamLeads}
                                                 />
                                             </div>
@@ -233,7 +270,7 @@ function TeamLeadsMatured({
                                                     // setTimeout(() => {
                                                     //     setFormOpen(true);
                                                     // }, 1000);
-                                                    navigate(`/employee-bookings/${userId}`);
+                                                    navigate(newDesignation === "admin" ? `/managing-director/bookings` : `/employee-bookings/${userId}`);
                                                 }}
                                             >
                                                 <IconEye
@@ -250,7 +287,7 @@ function TeamLeadsMatured({
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={15} className="text-center">
+                                    <td colSpan={16} className="text-center">
                                         <Nodata />
                                     </td>
                                 </tr>

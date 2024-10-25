@@ -123,6 +123,20 @@ function EmpNav({ userId, bdmWork }) {
                 </Link>
                 {bdmWork && (
                   <>
+                    {/* <Link style={{ textDecoration: "none", color: "black" }} className={
+                      location.pathname === `/employee-team-leads-old/${userId}` ? "nav-item active" : "nav-item"
+                    }
+                      to={`/employee-team-leads-old/${userId}`}>
+
+                      <a className="nav-link" href="#">
+                        <span className="nav-link-icon d-md-none d-lg-inline-block">
+
+                          <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                        </span>
+                        <span className="nav-link-title">Team Leads Old</span>
+                      </a>
+                    </Link> */}
+
                     <Link style={{ textDecoration: "none", color: "black" }} className={
                       location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
                     }

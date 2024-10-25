@@ -11,20 +11,18 @@ function AssignLeads({
     handleOptionChange,
     handleUploadData,
     newempData,
+    isAssignFromBdm
 }) {
     return (
         <div>
-            <Dialog
-                open={openAssign}
-                onClose={closepopupAssign}
-                fullWidth
-                maxWidth="sm">
+            <Dialog maxWidth="sm" open={openAssign} onClose={closepopupAssign} fullWidth>
                 <DialogTitle>
-                    Change BDE
+                    {isAssignFromBdm ? "Change BDM" : "Change BDE"}
                     <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
                         <CloseIcon color="primary"></CloseIcon>
                     </IconButton>{" "}
                 </DialogTitle>
+
                 <DialogContent>
                     <div className="maincon">
                         <div className="con2 d-flex">
@@ -42,24 +40,21 @@ function AssignLeads({
                                             cursor: "pointer",
                                         }
                                 }
-                                onClick={() => {
-                                    setSelectedOption("direct");
-                                }}
+                                onClick={() => setSelectedOption("direct")}
                                 className="direct form-control"
                             >
                                 <input
                                     type="radio"
                                     id="direct"
                                     value="direct"
-                                    style={{
-                                        display: "none",
-                                    }}
+                                    style={{display: "none"}}
                                     checked={selectedOption === "direct"}
                                     onChange={handleOptionChange}
                                 />
                                 <label htmlFor="direct">Move In General Data</label>
                             </div>
-                            <div
+
+                            {!isAssignFromBdm && <div
                                 style={
                                     selectedOption === "extractedData"
                                         ? {
@@ -74,16 +69,12 @@ function AssignLeads({
                                         }
                                 }
                                 className="extractedData form-control"
-                                onClick={() => {
-                                    setSelectedOption("extractedData");
-                                }}>
+                                onClick={() => setSelectedOption("extractedData")}>
                                 <input
                                     type="radio"
                                     id="extractedData"
                                     value="extractedData"
-                                    style={{
-                                        display: "none",
-                                    }}
+                                    style={{display: "none"}}
                                     checked={selectedOption === "extractedData"}
                                     onChange={(e) => {
                                         handleOptionChange(e);
@@ -91,7 +82,8 @@ function AssignLeads({
                                     }}
                                 />
                                 <label htmlFor="extractedData">Extracted Data</label>
-                            </div>
+                            </div>}
+
                             <div
                                 style={
                                     selectedOption === "someoneElse"
@@ -115,16 +107,15 @@ function AssignLeads({
                                     type="radio"
                                     id="someoneElse"
                                     value="someoneElse"
-                                    style={{
-                                        display: "none",
-                                    }}
+                                    style={{display: "none"}}
                                     checked={selectedOption === "someoneElse"}
                                     onChange={handleOptionChange}
                                 />
-                                <label htmlFor="someoneElse">Assign to Employee</label>
+                                <label htmlFor="someoneElse">{isAssignFromBdm ? "Assign to BDM" : "Assign to Employee"}</label>
                             </div>
                         </div>
                     </div>
+
                     {selectedOption === "someoneElse" && (
                         <div>
                             {newempData.length !== 0 ? (
@@ -148,9 +139,7 @@ function AssignLeads({
                                                         outline: "none",
                                                     }}
                                                     value={newemployeeSelection}
-                                                    onChange={(e) => {
-                                                        setnewEmployeeSelection(e.target.value);
-                                                    }}
+                                                    onChange={(e) => setnewEmployeeSelection(e.target.value)}
                                                 >
                                                     <option value="Not Alloted" disabled>
                                                         Select employee
@@ -176,7 +165,7 @@ function AssignLeads({
                 </button>
             </Dialog>
         </div>
-    )
+    );
 }
 
-export default AssignLeads
+export default AssignLeads;

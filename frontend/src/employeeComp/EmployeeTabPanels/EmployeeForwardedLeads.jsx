@@ -485,6 +485,7 @@ function EmployeeForwardedLeads({
                                                     companyName={company["Company Name"]}
                                                     feedbackRemarks={company.feedbackRemarks ? company.feedbackRemarks : "No Remarks"}
                                                     feedbackPoints={company.feedbackPoints ? company.feedbackPoints : "0"}
+                                                    isEmployeeFeedback={true}
                                                 />
                                             </td>
                                         </tr>

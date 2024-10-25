@@ -38,8 +38,45 @@ function TeamLeadsInterested({
     fetchProjections,
     projectionData,
     teamData,
-    handleOpenFormOpen
+    handleOpenFormOpen,
+    newDesignation,
+    selectedRows,
+    setSelectedRows,
+    handleCheckboxChange,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp
 }) {
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('default', { month: 'short' });
+        const year = date.getFullYear();
+        return `${day} ${month} ${year}`;
+    };
+
+    function timePassedSince(dateTimeString) {
+        const entryTime = new Date(dateTimeString);
+        const now = new Date();
+
+        // Calculate difference in milliseconds
+        const diffMs = now - entryTime;
+
+        // Convert milliseconds to minutes and hours
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        // Format the difference
+        if (diffDays > 0) {
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        } else if (diffHours > 0) {
+            return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        } else {
+            return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+        }
+    }
 
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -65,8 +102,20 @@ function TeamLeadsInterested({
                     <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
                         <thead>
                             <tr className="tr-sticky">
-                                <th className="rm-sticky-left-1">Sr. No</th>
-                                <th className="rm-sticky-left-2">Compnay Name</th>
+                                {(newDesignation === "admin" || newDesignation === "datamanager") &&
+                                    (
+                                        <th className='AEP-sticky-left-1'>
+                                            <label className='table-check'>
+                                                <input type="checkbox"
+                                                    checked={selectedRows && interestedData && (selectedRows.length === interestedData.length)}
+                                                    onChange={(e) => handleCheckboxChange("all", e)}
+                                                />
+                                                <span class="table_checkmark"></span>
+                                            </label>
+                                        </th>
+                                    )}
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-1 "}>Compnay Name</th>
                                 <th>BDE Name</th>
                                 <th>Company Number</th>
                                 <th>Call History</th>
@@ -81,12 +130,16 @@ function TeamLeadsInterested({
                                 <th>BDE Forwarded Date</th>
                                 <th>Add Projection</th>
                                 <th>Add Feedback</th>
+                                {newDesignation && <>
+                                    <th>Status Modification Date</th>
+                                    <th>Age</th>
+                                </>}
                             </tr>
                         </thead>
 
                         <tbody>
                             {isLoading && <tr>
-                                <td colSpan="16">
+                                <td colSpan="17">
                                     <div className="LoaderTDSatyle">
                                         <ClipLoader
                                             color="lightgrey"
@@ -100,9 +153,26 @@ function TeamLeadsInterested({
                             </tr>}
                             {interestedData?.length !== 0 ? (
                                 interestedData?.map((company, index) => (
-                                    <tr key={index}>
-                                        <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
-                                        <td className="rm-sticky-left-2">{company["Company Name"]}</td>
+                                    <tr key={company._id}
+                                        onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                                        onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                                        onMouseUp={handleMouseUp} // End drag selection
+                                        id={selectedRows && selectedRows.includes(company._id) ? 'selected_admin' : ''} // Highlight selected rows
+                                    >
+                                        {(newDesignation === "admin" || newDesignation === "datamanager") && (
+                                            <td className='AEP-sticky-left-1'>
+                                                <label className='table-check'>
+                                                    <input type="checkbox"
+                                                        checked={selectedRows && selectedRows.includes(company._id)}
+                                                        onChange={(e) => handleCheckboxChange(company._id, e)}
+                                                    />
+                                                    <span class="table_checkmark"></span>
+                                                </label>
+
+                                            </td>
+                                        )}
+                                        <td className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
+                                        <td className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
                                         <td>{company.ename}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-between wApp">
@@ -175,24 +245,28 @@ function TeamLeadsInterested({
                                             </div>
                                         </td>
                                         <td>
-                                            <EmployeeStatusChange
-                                                key={`${company["Company Name"]}-${index}`}
-                                                companyName={company["Company Name"]}
-                                                id={company._id}
-                                                refetch={refetchTeamLeads}
-                                                companyStatus={company.Status}
-                                                mainStatus={dataStatus}
-                                                isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
-                                                cemail={company["Company Email"]}
-                                                cindate={company["Incorporation Date"]}
-                                                cnum={company["Company Number"]}
-                                                ename={company.ename}
-                                                bdmName={company.bdmName}
-                                                bdmAcceptStatus={company.bdmAcceptStatus}
-                                                teamData={teamData}
-                                                handleFormOpen={handleOpenFormOpen}
-                                                isBdmStatusChange={true}
-                                            />
+                                            {newDesignation ?
+                                                <div className={`${company.Status === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                                    {company.Status}
+                                                </div>
+                                                : <EmployeeStatusChange
+                                                    key={`${company["Company Name"]}-${index}`}
+                                                    companyName={company["Company Name"]}
+                                                    id={company._id}
+                                                    refetch={refetchTeamLeads}
+                                                    companyStatus={company.Status}
+                                                    mainStatus={dataStatus}
+                                                    isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
+                                                    cemail={company["Company Email"]}
+                                                    cindate={company["Incorporation Date"]}
+                                                    cnum={company["Company Number"]}
+                                                    ename={company.ename}
+                                                    bdmName={company.bdmName}
+                                                    bdmAcceptStatus={company.bdmAcceptStatus}
+                                                    teamData={teamData}
+                                                    handleFormOpen={handleOpenFormOpen}
+                                                    isBdmStatusChange={true}
+                                                />}
                                         </td>
                                         <td>
                                             <div key={company._id} className='d-flex align-items-center justify-content-between w-100' >
@@ -210,6 +284,7 @@ function TeamLeadsInterested({
                                                     mainRemarks={company.Remarks}
                                                     designation={designation}
                                                     bdmRemarks={company.bdmRemarks}
+                                                    newDesignation={newDesignation}
                                                     refetch={refetchTeamLeads}
                                                 />
                                             </div>
@@ -232,6 +307,8 @@ function TeamLeadsInterested({
                                                 hasExistingProjection={projectionData?.some(
                                                     (item) => item.companyName === company["Company Name"]
                                                 )}
+                                                newDesignation={newDesignation}
+                                                isBdmProjection={true}
                                             /></td>
                                         <td>
                                             <FeedbackDialog
@@ -240,14 +317,19 @@ function TeamLeadsInterested({
                                                 feedbackRemarks={company.feedbackRemarks}
                                                 feedbackPoints={company.feedbackPoints}
                                                 refetchTeamLeads={refetchTeamLeads}
+                                                newDesignation={newDesignation}
                                                 isEditable={true}
                                             />
                                         </td>
+                                        {newDesignation && <>
+                                            <td>{formatDate(company.bdmStatusChangeDate)} || {company.bdmStatusChangeTime}</td>
+                                            <td>{timePassedSince(company.bdmStatusChangeDate)}</td>
+                                        </>}
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={16} className="text-center">
+                                    <td colSpan={17} className="text-center">
                                         <Nodata />
                                     </td>
                                 </tr>

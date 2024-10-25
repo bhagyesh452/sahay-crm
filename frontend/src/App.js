@@ -185,7 +185,7 @@ function App() {
             <Route path="/employee-dashboard/:userId" element={<EmployeeDashboard />} />
             {/* <Route path="/employee-data/:userId" element={<EmployeePanel />} /> */}
             <Route path="/employee-data/:userId" element={<EmployeePanelCopy fordesignation="salesexecutive" />} />
-            <Route path="/employee-team-leads-old/:userId" element={<EmployeeTeamLeads />} />
+            {/* <Route path="/employee-team-leads-old/:userId" element={<EmployeeTeamLeads />} /> */}
             <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeadsCopy />} />
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
@@ -289,7 +289,8 @@ function App() {
                 <Route path="/managing-director/user" element={<NewEmployee />} />
                 {/* <Route path="/managing-director/employees/:id" element={<EmployeeParticular />} /> */}
                 <Route path="/managing-director/employees/:id" element={<EmployeePanelCopy fordesignation="admin" />} />
-                <Route path="/managing-director/employeeleads/:id" element={<AdminEmployeeTeamLeads />} />
+                {/* <Route path="/managing-director/employeeleads/:id" element={<AdminEmployeeTeamLeads />} /> */}
+                <Route path="/managing-director/employeeleads/:userId" element={<EmployeeTeamLeadsCopy designation="admin" />} />
                 <Route path="/managing-director/employees/:id/login-details" element={<LoginDetails />} />
                 <Route path="/managing-director/leads" element={<TestLeads />} />
                 <Route path="/managing-director/leads/:companyId" element={<CompanyParticular />} />
