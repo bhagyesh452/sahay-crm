@@ -110,42 +110,86 @@ function EmployeesProjectionSummary() {
 
   //-----------------------------------fetching function follow up data-----------------------------------
 
+  // const fetchFollowUpData = async () => {
+  //   try {
+  //     setLoading(true)
+  //     const response = await fetch(`${secretKey}/projection/projection-data`);
+
+  //     const followdata = await response.json();
+  //     setfollowData(followdata);
+  //     setFollowDataFilter(followdata)
+  //     setFollowDataNew(followdata)
+  //     //console.log("followdata", followdata)
+  //     setfollowDataToday(
+  //       followdata
+  //         .filter((company) => {
+  //           // Assuming you want to filter companies with an estimated payment date for today
+  //           const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+  //           return company.estPaymentDate === today;
+  //         })
+  //     );
+  //     setfollowDataTodayNew(
+  //       followdata
+  //         .filter((company) => {
+  //           // Assuming you want to filter companies with an estimated payment date for today
+  //           const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+  //           return company.estPaymentDate === today;
+  //         })
+  //     );
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     return { error: "Error fetching data" };
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // };
+
   const fetchFollowUpData = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await fetch(`${secretKey}/projection/projection-data`);
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
       const followdata = await response.json();
       setfollowData(followdata);
-      setFollowDataFilter(followdata)
-      setFollowDataNew(followdata)
-      //console.log("followdata", followdata)
-      setfollowDataToday(
-        followdata
-          .filter((company) => {
-            // Assuming you want to filter companies with an estimated payment date for today
-            const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-            return company.estPaymentDate === today;
-          })
+      setFollowDataFilter(followdata);
+      setFollowDataNew(followdata);
+
+      // Get today's date
+      const today = new Date().toISOString().split("T")[0]; // Format 'YYYY-MM-DD'
+
+      // Filter follow data for today's estimated payment date
+      const filteredFollowData = followdata.filter(company => company.estPaymentDate === today);
+
+      // Create a map of employee names to their projection statuses
+      const projectionStatusMap = Object.fromEntries(
+        employeeData.map(emp => [emp.ename, emp.projectionStatusForToday || "No"]) // Default to "no"
       );
-      setfollowDataTodayNew(
-        followdata
-          .filter((company) => {
-            // Assuming you want to filter companies with an estimated payment date for today
-            const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-            return company.estPaymentDate === today;
-          })
-      );
+      console.log("projectionStatusMap", projectionStatusMap , employeeData)
+
+      // Merge projectionStatusToday into followDataToday
+      const updatedFollowDataToday = filteredFollowData.map(company => ({
+        ...company,
+        projectionStatusForToday: projectionStatusMap[company.ename] || "No" // Default to "no" if not found
+      }));
+
+      setfollowDataToday(updatedFollowDataToday);
+      setfollowDataTodayNew(updatedFollowDataToday);
+
     } catch (error) {
       console.error("Error fetching data:", error);
       return { error: "Error fetching data" };
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchFollowUpData();
-  }, []);
+  }, [employeeData]);
 
 
   //--------------------filter branch office function--------------------------------------
@@ -481,7 +525,7 @@ function EmployeesProjectionSummary() {
     return 0;
   });
 
-
+  console.log("soretdData", sortedData)
   //------------------------projection table open functions--------------------------------------------------
   const functionCompleteProjectionTable = () => {
     setCompleteProjectionTable(true);
@@ -944,32 +988,9 @@ function EmployeesProjectionSummary() {
                         }}
                       />
                     </th>
-                    {/* <th>
-                      Recieved Amount
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={() => {
-                          let newSortType;
-                          if (sortTypeExpectedPayment === "ascending") {
-                            newSortType = "descending";
-                          } else if (
-                            sortTypeExpectedPayment === "descending"
-                          ) {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortExpectedPayment(newSortType);
-                        }}
-                      />
-                    </th> */}
-                    
-                    {/* <th>Est. Payment Date</th> */}
+                    <th>
+                      Projection Status
+                    </th>
                   </tr>
                 </thead>
                 {loading ?
@@ -988,109 +1009,144 @@ function EmployeesProjectionSummary() {
                       </td>
                     </tr>
                   </tbody>) :
-                  (<tbody>
-                    {sortedData && sortedData.length !== 0 ? (
-                      <>
-                        {sortedData.map((obj, index) => (
-                          <tr key={`row-${index}`}>
-                            <td>{index + 1}</td>
-                            <td>{obj}</td>
-                            <td>
-                              {
-                                followDataToday.filter((partObj) =>
-                                  partObj.ename === obj ||
-                                  partObj.bdeName === obj ||
-                                  partObj.bdmName === obj
-                                ).reduce((count, partObj) => {
-                                  if (partObj.caseType === "Recieved") {
-                                    return count + 0.5;  // Increment by 0.5 to effectively halve the count for "Recieved"
+                  (
+                    <tbody>
+                      {sortedData && sortedData.length !== 0 ? (
+                        <>
+                          {sortedData.map((obj, index) => (
+                            <tr key={`row-${index}`}>
+                              <td>{index + 1}</td>
+                              <td>{obj}</td>
+                              <td>
+                                {
+                                  followDataToday.filter((partObj) =>
+                                    partObj.ename === obj ||
+                                    partObj.bdeName === obj ||
+                                    partObj.bdmName === obj
+                                  ).reduce((count, partObj) => {
+                                    if (partObj.caseType === "Recieved") {
+                                      return count + 0.5;  // Increment by 0.5 to effectively halve the count for "Recieved"
+                                    }
+                                    return count + 1;  // Increment by 1 for other cases
+                                  }, 0)
+                                }
+                                <FcDatabase
+                                  onClick={() => {
+                                    // Check if obj exists in any of the fields before calling the function
+                                    const isObjInData = followDataToday.some(
+                                      (partObj) =>
+                                        partObj.ename === obj ||
+                                        partObj.bdeName === obj ||
+                                        partObj.bdmName === obj
+                                    );
+
+                                    if (isObjInData) {
+                                      functionOpenProjectionTable(obj);
+                                    }
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    marginRight: "-71px",
+                                    marginLeft: "58px",
+                                  }}
+                                />
+                              </td>
+                              <td>
+                                {followDataToday.reduce((totalServices, partObj) => {
+                                  if (
+                                    partObj.ename === obj ||
+                                    partObj.bdeName === obj ||
+                                    partObj.bdmName === obj
+                                  ) {
+                                    let sumServices = partObj.offeredServices.length;
+                                    if (partObj.caseType === "Recieved") {
+                                      sumServices /= 2
+                                    }
+                                    totalServices += sumServices;
                                   }
-                                  return count + 1;  // Increment by 1 for other cases
-                                }, 0)
-                              }
-                              <FcDatabase
-                                onClick={() => {
-                                  // Check if obj exists in any of the fields before calling the function
-                                  const isObjInData = followDataToday.some(
-                                    (partObj) =>
-                                      partObj.ename === obj ||
+                                  return totalServices;
+                                }, 0)}
+                              </td>
+                              <td>
+                                {followDataToday
+                                  .reduce((totalOfferedPrize, partObj) => {
+                                    if (partObj.ename === obj ||
                                       partObj.bdeName === obj ||
                                       partObj.bdmName === obj
-                                  );
+                                    ) {
+                                      let prize = partObj.offeredPrize;
 
-                                  if (isObjInData) {
-                                    functionOpenProjectionTable(obj);
-                                  }
-                                }}
-                                style={{
-                                  cursor: "pointer",
-                                  marginRight: "-71px",
-                                  marginLeft: "58px",
-                                }}
-                              />
-                            </td>
-                            <td>
-                              {followDataToday.reduce((totalServices, partObj) => {
-                                if (
-                                  partObj.ename === obj ||
-                                  partObj.bdeName === obj ||
-                                  partObj.bdmName === obj
-                                ) {
-                                  let sumServices = partObj.offeredServices.length;
-                                  if(partObj.caseType === "Recieved"){                                   
-                                    sumServices /= 2
-                                  }
-                                  totalServices += sumServices;
+                                      // If caseType is "Recieved", divide the prize by 2
+                                      if (partObj.caseType === "Recieved") {
+                                        prize /= 2;
+                                      }
+
+                                      totalOfferedPrize += prize;
+                                    }
+                                    return totalOfferedPrize;
+                                  }, 0)
+                                  .toLocaleString("en-IN", numberFormatOptions)}
+                              </td>
+                              <td>
+                                {followDataToday
+                                  .reduce((totalPaymentSum, partObj) => {
+                                    if (partObj.ename === obj ||
+                                      partObj.bdeName === obj ||
+                                      partObj.bdmName === obj
+                                    ) {
+                                      let prize = partObj.totalPayment;
+                                      if (partObj.caseType === "Recieved") {
+                                        prize /= 2
+                                      }
+                                      totalPaymentSum += prize;
+                                    }
+                                    return totalPaymentSum;
+                                  }, 0)
+                                  .toLocaleString("en-IN", numberFormatOptions)}
+                              </td>
+                              <td>
+                                {/* Look up projectionStatusForToday for the employee */}
+                                {
+                                  followDataToday.find(partObj => partObj.ename === obj).projectionStatusForToday || "No"
                                 }
-                                return totalServices;
-                              }, 0)}
-                            </td>
-                            <td>
-                              {followDataToday
-                                .reduce((totalOfferedPrize, partObj) => {
-                                  if (partObj.ename === obj ||
-                                    partObj.bdeName === obj ||
-                                    partObj.bdmName === obj
-                                  ) {
-                                    let prize = partObj.offeredPrize;
-
-                                    // If caseType is "Recieved", divide the prize by 2
-                                    if (partObj.caseType === "Recieved") {
-                                      prize /= 2;
-                                    }
-
-                                    totalOfferedPrize += prize;
-                                  }
-                                  return totalOfferedPrize;
-                                }, 0)
-                                .toLocaleString("en-IN", numberFormatOptions)}
-                            </td>
-                            <td>
-                              {followDataToday
-                                .reduce((totalPaymentSum, partObj) => {
-                                  if (partObj.ename === obj ||
-                                    partObj.bdeName === obj ||
-                                    partObj.bdmName === obj
-                                  ) {
-                                    let prize = partObj.totalPayment;
-                                    if (partObj.caseType === "Recieved") {
-                                      prize /= 2
-                                    }
-                                    totalPaymentSum += prize;
-                                  }
-                                  return totalPaymentSum;
-                                }, 0)
-                                .toLocaleString("en-IN", numberFormatOptions)}
-                            </td>
-                            {/* <td>-</td> */}
-                          </tr>
-                        ))}
-                        {/* Map employeeData with default fields */}
-                        {employeeDataProjectionSummary
-                          .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                              </td>
+                              {/* <td>-</td> */}
+                            </tr>
+                          ))}
+                          {/* Map employeeData with default fields */}
+                          {employeeDataProjectionSummary
+                            .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                            .map((employee, index) => (
+                              <tr key={`employee-row-${index}`}>
+                                <td>{sortedData.length + index + 1}</td>
+                                <td>{employee.ename}</td>
+                                <td>0 <FcDatabase
+                                  onClick={() => {
+                                    functionOpenProjectionTable(employee.ename);
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    marginRight: "-71px",
+                                    marginLeft: "58px",
+                                  }}
+                                /></td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>
+                                  {employee.projectionStatusForToday ? employee.projectionStatusForToday : "No" }
+                                </td>
+                                {/* <td>0</td> */}
+                              </tr>
+                            ))}
+                        </>
+                      ) : (
+                        employeeDataProjectionSummary
+                          .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
                           .map((employee, index) => (
+
                             <tr key={`employee-row-${index}`}>
-                              <td>{sortedData.length + index + 1}</td>
+                              <td>{index + 1}</td>
                               <td>{employee.ename}</td>
                               <td>0 <FcDatabase
                                 onClick={() => {
@@ -1105,37 +1161,13 @@ function EmployeesProjectionSummary() {
                               <td>0</td>
                               <td>0</td>
                               <td>0</td>
-                              {/* <td>0</td> */}
+                              <td>-</td>
                             </tr>
-                          ))}
-                      </>
-                    ) : (
-                      employeeDataProjectionSummary
-                        .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
-                        .map((employee, index) => (
 
-                          <tr key={`employee-row-${index}`}>
-                            <td>{index + 1}</td>
-                            <td>{employee.ename}</td>
-                            <td>0 <FcDatabase
-                              onClick={() => {
-                                functionOpenProjectionTable(employee.ename);
-                              }}
-                              style={{
-                                cursor: "pointer",
-                                marginRight: "-71px",
-                                marginLeft: "58px",
-                              }}
-                            /></td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                            {/* <td>-</td> */}
-                          </tr>
-
-                        ))
-                    )}
-                  </tbody>)}
+                          ))
+                      )}
+                    </tbody>
+                  )}
                 <tfoot className="admin-dash-tbl-tfoot"    >
                   <tr style={{ fontWeight: 500 }}>
                     <td colSpan="2">
@@ -1182,6 +1214,7 @@ function EmployeesProjectionSummary() {
                         }, 0)
                         .toLocaleString("en-IN", numberFormatOptions)}
                     </td>
+                    <td>-</td>
                     {/* <td>0</td> */}
                   </tr>
                 </tfoot>
@@ -1191,6 +1224,7 @@ function EmployeesProjectionSummary() {
                       <td className="particular" colSpan={9}>
                         <Nodata />
                       </td>
+                    
                     </tr>
                   </tbody>
                 )}
@@ -1385,6 +1419,7 @@ function EmployeesProjectionSummary() {
                       />
                     </th>
                     <th>Action</th>
+
                   </tr>
                 </thead>
                 {loading ? (
@@ -1574,7 +1609,7 @@ function EmployeesProjectionSummary() {
                     <tr key={`sub-row-${Index}`}>
                       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
                       {/* Render other employee data */}
-                      <td>{obj.caseType === "Recieved" ? obj.bdeName || obj.ename: obj.ename}</td>
+                      <td>{obj.caseType === "Recieved" ? obj.bdeName || obj.ename : obj.ename}</td>
                       <td>{obj.caseType === "Recieved" ? obj.bdmName || obj.bdeName : obj.ename}</td>
                       <td>{obj.companyName}</td>
                       <td>{obj.offeredServices.join(",")}</td>

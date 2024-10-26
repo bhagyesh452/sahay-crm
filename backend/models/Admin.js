@@ -161,26 +161,12 @@ const yourSchema = new mongoose.Schema({
   employee_profile: {
     type: Array
   },
-  showDialog: { 
-    type: Boolean, 
-    default: false 
-  },
-  showDialogDate:{
-    type:Date
-  },
-  lastLoginTime: { 
-    type: Date, 
-    default: null 
-  },
-  lastShowDialogTime:{
+  projectionStatusForToday:{
     type:String
   },
-  dialogCount: { 
-    type: Number, 
-    default: 0 
-  },
-  firstFetch:{
-    type:Boolean
+  projectionDate:{
+    type:Date,
+    default:new Date()
   }
 });
 

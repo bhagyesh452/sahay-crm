@@ -37,20 +37,18 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
     const fetchEmployeeData = async () => {
         try {
             let response;
-            if (path === `/hr-employee-profile-details/${userId}` || path === `/managing-director/employeeProfileView/${userId}`) {
+            if (path === `/hr-employee-profile-details/${userId}` || 
+                path === `/managing-director/employeeProfileView/${userId}`||
+                path === `/employee-profile-details/${userId}`
+            ) {
                 response = await axios.get(`${secretKey}/employee/einfo`);
             } else {
                 response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             }
 
-            // console.log("Deleted data is :",response.data);
+           
             const tempData = response.data;
-            // let data;
-            // if (hrUserId) {
-            //     data = tempData.find((item) => item._id === hrUserId);
-            // } else if (dataManagerUserId) {
-            //     data = tempData.find((item) => item._id === dataManagerUserId);
-            // } else {
+           
             const data = tempData.find((item) => item._id === userId);
             // }
             // console.log("Payroll Info is :", data);
@@ -71,6 +69,8 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
             console.error("Error fetching employee data", error);
         }
     };
+
+    console.log("data" , data)
 
     const formatSalary = (amount) => {
         return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);

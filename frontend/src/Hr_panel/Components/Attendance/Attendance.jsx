@@ -353,13 +353,28 @@ function Attendance() {
         let rowIndex = 1;  
     
         if (attendanceData && attendanceData.length > 0) {
+            // Check which columns correspond to Sundays
+            const sundayIndices = [];
+    
+            for (let dayIndex = 2; dayIndex < columns.length; dayIndex++) {
+                const dayKey = columns[dayIndex];
+                const isSunday = attendanceData.some((employee, i) => {
+                    const statusRow = attendanceData[i * 3]; // Get the status row
+                    return statusRow && statusRow[dayKey] === 'S'; // Ensure statusRow is defined
+                });
+    
+                if (isSunday) {
+                    sundayIndices.push(dayIndex); // Store the index of the Sunday column
+                }
+            }
+    
             for (let i = 0; i < attendanceData.length; i += 3) {
                 const statusRow = attendanceData[i];
                 const inTimeRow = attendanceData[i + 1];
                 const outTimeRow = attendanceData[i + 2];
     
-                const srNo = statusRow['Sr. No'];  
-                const employeeName = statusRow['Employee Name'];  
+                const srNo = statusRow ? statusRow['Sr. No'] : '';  
+                const employeeName = statusRow ? statusRow['Employee Name'] : '';  
     
                 worksheet[`A${rowIndex + 1}`] = { v: srNo };  
                 worksheet['!merges'] = worksheet['!merges'] || [];
@@ -375,24 +390,44 @@ function Attendance() {
                 for (let dayIndex = 2; dayIndex < columns.length; dayIndex++) {
                     const dayKey = columns[dayIndex];  
     
-                    worksheet[XLSX.utils.encode_cell({ r: rowIndex, c: dayIndex })] = { v: statusRow[dayKey] || '' };
-                    worksheet[XLSX.utils.encode_cell({ r: rowIndex + 1, c: dayIndex })] = { v: inTimeRow[dayKey] || '' };
-                    worksheet[XLSX.utils.encode_cell({ r: rowIndex + 2, c: dayIndex })] = { v: outTimeRow[dayKey] || '' };
+                    const statusValue = statusRow ? statusRow[dayKey] : '';
+                    const inTimeValue = inTimeRow ? inTimeRow[dayKey] : '';
+                    const outTimeValue = outTimeRow ? outTimeRow[dayKey] : '';
     
-                    // Highlight Sundays and OH statuses
-                    if (dayIndex % 7 === 2) { // Assuming columns start at index 2 for the first Sunday
-                        worksheet[XLSX.utils.encode_cell({ r: rowIndex, c: dayIndex })].s = { fill: { fgColor: { argb: "FFFF00" } } }; // Yellow for Sundays
-                        worksheet[XLSX.utils.encode_cell({ r: rowIndex + 1, c: dayIndex })].s = { fill: { fgColor: { argb: "FFFF00" } } }; // Yellow for In Time
-                        worksheet[XLSX.utils.encode_cell({ r: rowIndex + 2, c: dayIndex })].s = { fill: { fgColor: { argb: "FFFF00" } } }; // Yellow for Out Time
-                    }
-                    
-                    if (statusRow[dayKey] === 'OH' || statusRow[dayKey] === 'S') { // Highlight OH status
-                        worksheet[XLSX.utils.encode_cell({ r: rowIndex, c: dayIndex })].s = { fill: { fgColor: { argb: "FF0000" } } }; // Red for OH status
-                    }
+                    worksheet[XLSX.utils.encode_cell({ r: rowIndex, c: dayIndex })] = { v: statusValue };
+                    worksheet[XLSX.utils.encode_cell({ r: rowIndex + 1, c: dayIndex })] = { v: inTimeValue };
+                    worksheet[XLSX.utils.encode_cell({ r: rowIndex + 2, c: dayIndex })] = { v: outTimeValue };
                 }
     
-                rowIndex += 3;
+                rowIndex += 3; // Move to the next set of rows
             }
+    
+            // Highlight the columns for Sundays
+            sundayIndices.forEach(colIndex => {
+                for (let rowOffset = 0; rowOffset < attendanceData.length / 3; rowOffset++) {
+                    // Highlight status row
+                    const statusCell = worksheet[XLSX.utils.encode_cell({ r: rowOffset * 3 + 1, c: colIndex })];
+                    if (statusCell) {
+                        statusCell.s = {
+                            fill: { fgColor: { rgb: "FFFF00" } } // Yellow for Sundays
+                        };
+                    }
+                    // Highlight in-time row
+                    const inTimeCell = worksheet[XLSX.utils.encode_cell({ r: rowOffset * 3 + 2, c: colIndex })];
+                    if (inTimeCell) {
+                        inTimeCell.s = {
+                            fill: { fgColor: { rgb: "FFFF00" } } // Yellow for In Time
+                        };
+                    }
+                    // Highlight out-time row
+                    const outTimeCell = worksheet[XLSX.utils.encode_cell({ r: rowOffset * 3 + 3, c: colIndex })];
+                    if (outTimeCell) {
+                        outTimeCell.s = {
+                            fill: { fgColor: { rgb: "FFFF00" } } // Yellow for Out Time
+                        };
+                    }
+                }
+            });
         } else {
             console.log("No attendance data found!");
         }
@@ -402,6 +437,10 @@ function Attendance() {
     
         XLSX.writeFile(workbook, `Employee_Attendance_${selectedMonth}_${currentYear}.xlsx`);
     };
+    
+    
+    
+    
     
     
     

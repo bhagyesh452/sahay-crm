@@ -226,7 +226,7 @@ function EmployeeForwardedLeads({
                                     <th>Assign Date</th>
                                     <th>BDM Name</th>
                                     <th>Forwarded Date</th>
-                                    {(fordesignation !== "admin" || fordesignation !== "datamanager") && <th>Forward To BDM</th>}
+                                    {(fordesignation !== "admin" && fordesignation !== "datamanager") && <th>Forward To BDM</th>}
                                     <th className="rm-sticky-action">Feedback</th>
                                 </tr>
                             </thead>
@@ -402,7 +402,7 @@ function EmployeeForwardedLeads({
                                             <td>{formatDateNew(company["AssignDate"])}</td>
                                             <td>{company.bdmName}</td>
                                             <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                            {(fordesignation !== "admin" || fordesignation !== "datamanager") && (<td>
+                                            {(fordesignation !== "admin" && fordesignation !== "datamanager") && (<td>
                                                 {company.bdmAcceptStatus === "NotForwarded" ? (<>
                                                     <TiArrowForward
                                                         // onClick={() => {

@@ -3345,6 +3345,58 @@ router.get("/employeedocuments/:documenttype/:id/:filename", async (req, res) =>
   });
 });
 
+router.post("/projectionstatustoday/:userId", async (req, res) => {
+  const { projectionStatusForToday, projectionDate } = req.body;
+  const userId = req.params.userId; // Correctly access userId from params
+
+  try {
+      // Ensure _id is correctly set if you're using ObjectId for userId
+      const result = await adminModel.findOneAndUpdate(
+          { _id: userId }, // Ensure you search using the correct field
+          { 
+            projectionStatusForToday: projectionStatusForToday, 
+            projectionDate: projectionDate 
+          },
+          { new: true } // Return the updated document
+      );
+      
+      if (!result) {
+          return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      res.status(200).json({ success: true, result: result });
+  } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/projectionstatustoday-no/:userId", async (req, res) => {
+  const { projectionStatusForToday, projectionDate } = req.body;
+  const userId = req.params.userId; // Correctly access userId from params
+
+  try {
+      // Ensure _id is correctly set if you're using ObjectId for userId
+      const result = await adminModel.findOneAndUpdate(
+          { _id: userId }, // Ensure you search using the correct field
+          { 
+            projectionStatusForToday: projectionStatusForToday, 
+            projectionDate: projectionDate 
+          },
+          { new: true } // Return the updated document
+      );
+      
+      if (!result) {
+          return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      res.status(200).json({ success: true, result: result });
+  } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 module.exports = router;
