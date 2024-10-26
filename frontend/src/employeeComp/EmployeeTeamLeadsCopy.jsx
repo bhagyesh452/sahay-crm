@@ -1,23 +1,18 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import notificationSound from "../assets/media/iphone_sound.mp3";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import "../assets/table.css";
 import "../assets/styles.css";
 import CallHistory from "./CallHistory.jsx";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
-import LeadFormPreview from "../admin/LeadFormPreview.jsx";
 import TeamLeadsGeneral from "./EmployeeTeamLeadsTabPanels/TeamLeadsGeneral.jsx";
 import TeamLeadsInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsInterested.jsx";
 import TeamLeadsMatured from "./EmployeeTeamLeadsTabPanels/TeamLeadsMatured.jsx";
 import TeamLeadsNotInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsNotInterested.jsx";
 import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
-import PropTypes from "prop-types";
-import Tooltip from "@mui/material/Tooltip";
 import { IoFilterOutline } from "react-icons/io5";
 // import DrawerComponent from "../components/Drawer.js";
 import { MdOutlinePostAdd } from "react-icons/md";
 import { useQuery } from '@tanstack/react-query';
-import debounce from 'lodash/debounce';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { jwtDecode } from "jwt-decode";
@@ -35,11 +30,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const navigate = useNavigate();
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-    const [moreFilteredData, setmoreFilteredData] = useState([]);
-    //const [maturedID, setMaturedID] = useState("");
-    const [currentForm, setCurrentForm] = useState(null);
     const [projectionData, setProjectionData] = useState([]);
-    const [dataStatus, setDataStatus] = useState("General");
     const [data, setData] = useState([]);
     const [isFilter, setIsFilter] = useState(false);
     const [employeeData, setEmployeeData] = useState([]);
@@ -49,20 +40,19 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [selectedOption, setSelectedOption] = useState("direct");
     const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
     const [newEmpData, setNewEmpData] = useState([]);
-    const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
     const [employeeName, setEmployeeName] = useState("");
     const [showCallHistory, setShowCallHistory] = useState(false);
     const [clientNumber, setClientNumber] = useState("");
-    const [nowToFetch, setNowToFetch] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
-    const [moreEmpData, setmoreEmpData] = useState([]);
-    const [revertedData, setRevertedData] = useState([]);
     const [formOpen, setFormOpen] = useState(false);
     const [addFormOpen, setAddFormOpen] = useState(false);
-    const [openBacdrop, setOpenBacdrop] = useState(false);
+    const [dataStatus, setDataStatus] = useState("General");
     const [activeTabId, setActiveTabId] = useState("General"); // Track active tab ID
+    const [generalData, setGeneralData] = useState([]);
+    const [interestedData, setInterestedData] = useState([]);
+    const [maturedData, setMaturedData] = useState([]);
+    const [notInterestedData, setNotInterestedData] = useState([]);
     const [companyName, setCompanyName] = useState("");
     const [maturedCompanyName, setMaturedCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
@@ -72,7 +62,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false);
     const [newBdeName, setNewBdeName] = useState("");
     const [teamData, setTeamData] = useState([]);
-    const [bdmName, setbdmName] = useState("")
+    const [bdmName, setbdmName] = useState("");
 
     const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
@@ -114,7 +104,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     };
 
-    const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename , bdmName) => {
+    const handleOpenFormOpen = (cname, cemail, cindate, employeeId, cnum, isDeletedEmployeeCompany, ename, bdmName) => {
         setCompanyName(cname);
         setCompanyEmail(cemail);
         setCompanyInco(cindate);
@@ -161,7 +151,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
             setEmployeeName(userData.ename)
             //console.log(userData);
             setData(userData);
-            setmoreFilteredData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
@@ -203,12 +192,29 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     };
 
+    // const { data: teamLeadsData, isLoading: isTeamLeadsLoading, isError: isTeamLeadsError, refetch: refetchTeamLeads } = useQuery({
+    //     queryKey: ["teamLeadsData", data.ename, dataStatus, currentPage, searchQuery],
+    //     queryFn: async () => {
+    //         const res = await axios.get(`${secretKey}/bdm-data/teamLeadsData/${data.ename}`, {
+    //             params: {
+    //                 status: dataStatus,
+    //                 companyName: searchQuery, // Send the search query as a parameter
+    //                 page: currentPage + 1, // Send current page for pagination
+    //                 limit: itemsPerPage, // Set the limit of records per page
+    //             }
+    //         });
+    //         return res;
+    //     },
+    //     enabled: !!data.ename,  // Only fetch data when ename is available
+    //     refetchOnWindowFocus: false,  // Prevent fetching on window focus
+    //     keepPreviousData: true, // This helps prevent a loading state when moving between pages
+    // });
+
     const { data: teamLeadsData, isLoading: isTeamLeadsLoading, isError: isTeamLeadsError, refetch: refetchTeamLeads } = useQuery({
-        queryKey: ["teamLeadsData", data.ename, dataStatus, currentPage, searchQuery],
+        queryKey: ["teamLeadsData", data.ename, currentPage, searchQuery],
         queryFn: async () => {
             const res = await axios.get(`${secretKey}/bdm-data/teamLeadsData/${data.ename}`, {
                 params: {
-                    status: dataStatus,
                     companyName: searchQuery, // Send the search query as a parameter
                     page: currentPage + 1, // Send current page for pagination
                     limit: itemsPerPage, // Set the limit of records per page
@@ -222,6 +228,15 @@ function EmployeeTeamLeadsCopy({ designation }) {
     });
 
     // console.log("Team leads data is :", teamLeadsData?.data);
+
+    useEffect(() => {
+        if (teamLeadsData?.data) {
+            setGeneralData(teamLeadsData?.data?.generalData);
+            setInterestedData(teamLeadsData?.data?.interestedData);
+            setMaturedData(teamLeadsData?.data?.maturedData);
+            setNotInterestedData(teamLeadsData?.data?.notInterestedData);
+        }
+    }, [teamLeadsData?.data, searchQuery]);
 
     useEffect(() => {
         fetchData();
@@ -290,11 +305,33 @@ function EmployeeTeamLeadsCopy({ designation }) {
         // If the id is 'all', toggle all checkboxes
         if (id === "all") {
             // If all checkboxes are already selected, clear the selection; otherwise, select all
-            setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === teamLeadsData?.data.data.length
-                    ? []
-                    : teamLeadsData?.data.data.map((row) => row._id)
-            );
+            if (dataStatus === "General" && activeTabId === "General") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === teamLeadsData?.data?.generalData?.length
+                        ? []
+                        : teamLeadsData?.data?.generalData?.map((row) => row._id)
+                );
+            } else if (dataStatus === "Interested" && activeTabId === "Interested") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === teamLeadsData?.data?.interestedData?.length
+                        ? []
+                        : teamLeadsData?.data?.interestedData?.map((row) => row._id)
+                );
+            } else if (dataStatus === "Matured" && activeTabId === "Matured") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === teamLeadsData?.data?.maturedData?.length
+                        ? []
+                        : teamLeadsData?.data?.maturedData?.map((row) => row._id)
+                );
+            } else if (dataStatus === "Not Interested" && activeTabId === "Not Interested") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === teamLeadsData?.data?.notInterestedData?.length
+                        ? []
+                        : teamLeadsData?.data?.notInterestedData?.map((row) => row._id)
+                );
+            } else {
+                setSelectedRows([]);
+            }
         } else {
             // Toggle the selection status of the row with the given id
             setSelectedRows((prevSelectedRows) => {
@@ -368,7 +405,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
         const bdmAcceptStatus = "NotForwarded"
 
         const csvdata = teamLeadsData?.data?.data
-            .filter((employee) => selectedRows.includes(employee._id))
+            .filter((item) => selectedRows.includes(item._id))
             .map((employee) => {
                 if (employee.bdmStatus === "Interested" || employee.bdmStatus === "FollowUp"
                 ) {
@@ -382,7 +419,9 @@ function EmployeeTeamLeadsCopy({ designation }) {
                         Remarks: "No Remarks Added",
                     };
                 }
-            });
+            }
+            );
+        // console.log("Data to be assigned :", csvdata);
 
         // Create an array to store promises for updating CompanyModel
         const updatePromises = [];
@@ -415,19 +454,48 @@ function EmployeeTeamLeadsCopy({ designation }) {
             setSelectedRows([]);
             refetchTeamLeads();
             Swal.fire({
-                title: "Data Sent!",
-                text: "Data sent successfully!",
+                title: "Data Assign!",
+                text: "Data assigned successfully!",
                 icon: "success",
             });
             handleCloseAssignLeadsFromBdm();
         } catch (error) {
             console.error("Error updating employee data:", error);
-
             Swal.fire({
                 title: "Error!",
                 text: "Failed to update employee data. Please try again later.",
                 icon: "error",
             });
+        }
+    };
+
+    const handleDeleteLeadsFromBdm = async () => {
+        const selectedData = teamLeadsData?.data?.data.filter((item) => selectedRows.includes(item._id));
+        // console.log("Data to be deleted :", selectedData);
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you really want to delete this company ${companyName} from BDM?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await axios.post(`${secretKey}/bdm-data/delete-bdm-teamLeads`, {
+                    companies: selectedData
+                });
+                Swal.fire('Deleted!', 'The selected companies have been deleted.', 'success');
+                setSelectedRows([]);
+                refetchTeamLeads();
+                console.log("Companies updated and deleted successfully", response.data);
+            } catch (error) {
+                console.error("Error deleting companies:", error);
+                Swal.fire('Error!', 'There was an error deleting the companies.', 'error');
+            }
         }
     };
 
@@ -497,10 +565,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     };
 
-    const handleDeleteLeads = async () => {
-
-    };
-
     return (
         <div>
             {!showCallHistory && !formOpen && !addFormOpen ? (
@@ -516,11 +580,11 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 <>
                                                     <div className="btn-group mr-1" role="group" aria-label="Basic example">
                                                         <button className="btn mybtn">
-                                                            <FaCircleChevronLeft className="ep_right_button" onClick={handleChangeUrlPrev}/>
+                                                            <FaCircleChevronLeft className="ep_right_button" onClick={handleChangeUrlPrev} />
                                                         </button>
                                                         <button className="btn mybtn"><b>{data.ename}</b></button>
                                                         <button className="btn mybtn">
-                                                            <FaCircleChevronRight className="ep_left_button" onClick={handleChangeUrlNext}/>
+                                                            <FaCircleChevronRight className="ep_left_button" onClick={handleChangeUrlNext} />
                                                         </button>
                                                     </div>
 
@@ -606,7 +670,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                     <MdOutlinePostAdd className='mr-1' />Assign Leads
                                                 </button>
 
-                                                <button type="button" className="btn mybtn cursor-pointer" disabled={!selectedRows.length} onClick={handleDeleteLeads}>
+                                                <button type="button" className="btn mybtn cursor-pointer" disabled={!selectedRows.length} onClick={handleDeleteLeadsFromBdm}>
                                                     <MdOutlinePostAdd className='mr-1' />Delete Leads
                                                 </button>
 
@@ -661,6 +725,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 onClick={() => {
                                                     setDataStatus("General");
                                                     setActiveTabId("General");
+                                                    setSelectedRows([]);
                                                 }}
                                                 className={`nav-link  ${dataStatus === "General" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
@@ -681,6 +746,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 onClick={() => {
                                                     setDataStatus("Interested");
                                                     setActiveTabId("Interested");
+                                                    setSelectedRows([]);
                                                 }}
                                                 className={`nav-link ${dataStatus === "Interested" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
@@ -700,6 +766,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 onClick={() => {
                                                     setDataStatus("Matured");
                                                     setActiveTabId("Matured");
+                                                    setSelectedRows([]);
                                                 }}
                                                 className={`nav-link ${dataStatus === "Matured" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
@@ -719,6 +786,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 onClick={() => {
                                                     setDataStatus("Not Interested");
                                                     setActiveTabId("Not Interested");
+                                                    setSelectedRows([]);
                                                 }}
                                                 className={`nav-link ${dataStatus === "Not Interested" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
@@ -736,7 +804,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                     <div className={`tab-pane ${dataStatus === "General" ? "active" : ""}`} id="general">
                                         {activeTabId === "General" && dataStatus === "General" && (<TeamLeadsGeneral
                                             secretKey={secretKey}
-                                            generalData={teamLeadsData?.data?.data}
+                                            // generalData={teamLeadsData?.data?.data}
+                                            generalData={generalData}
                                             isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
@@ -765,7 +834,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
                                         {activeTabId === "Interested" && dataStatus === "Interested" && (<TeamLeadsInterested
                                             secretKey={secretKey}
-                                            interestedData={teamLeadsData?.data?.data}
+                                            // interestedData={teamLeadsData?.data?.data}
+                                            interestedData={interestedData}
                                             isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
@@ -797,7 +867,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
                                         {activeTabId === "Matured" && (<TeamLeadsMatured
                                             secretKey={secretKey}
-                                            maturedData={teamLeadsData?.data?.data}
+                                            // maturedData={teamLeadsData?.data?.data}
+                                            maturedData={maturedData}
                                             isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
@@ -827,7 +898,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
                                         {activeTabId === "Not Interested" && (<TeamLeadsNotInterested
                                             secretKey={secretKey}
-                                            notInterestedData={teamLeadsData?.data?.data}
+                                            // notInterestedData={teamLeadsData?.data?.data}
+                                            notInterestedData={notInterestedData}
                                             isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
@@ -872,7 +944,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                     companysInco={companyInco}
                     bdmName={data.ename}
                     employeeName={newBdeName}
-                    employeeEmail ={newEmpData.find(employee => employee.ename === newBdeName)?.email}
+                    employeeEmail={newEmpData.find(employee => employee.ename === newBdeName)?.email}
                     handleCloseFormOpen={handleCloseFormOpen}
                 />
             ) : null

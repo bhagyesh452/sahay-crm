@@ -312,10 +312,11 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
   }
 });
 
+// BDM Team Leads API :
 router.get("/teamLeadsData/:bdmName", async (req, res) => {
   try {
     const { bdmName } = req.params;
-    const status = req.query.status;
+    // const status = req.query.status;
     const state = req.query.state;
     const city = req.query.city;
     const companyName = req.query.companyName;
@@ -330,6 +331,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     // Initialize query object with bdmName and bdmAcceptStatus as "Pending"
     let query = {
       bdmName: bdmName,
+      bdmAcceptStatus: { $nin: ["NotForwarded"] },
       Status: { $nin: ["Busy"] }
     };
 
@@ -339,20 +341,20 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     }
 
     // Filter by status
-    if (status) {
-      if (status === "Interested") {
-        query["Status"] = { $in: ["Interested", "FollowUp"] };
-        query["bdmAcceptStatus"] = "Accept";
-      } else if (status === "Matured") {
-        query["Status"] = "Matured";
-        query["bdmAcceptStatus"] = "Accept";
-      } else if (status === "Not Interested") {
-        query["Status"] = { $in: ["Junk", "Not Interested"] };
-        query["bdmAcceptStatus"] = "Accept";
-      } else if (status === "General") {
-        query["bdmAcceptStatus"] = "Pending";
-      }
-    }
+    // if (status) {
+    //   if (status === "Interested") {
+    //     query["Status"] = { $in: ["Interested", "FollowUp"] };
+    //     query["bdmAcceptStatus"] = "Accept";
+    //   } else if (status === "Matured") {
+    //     query["Status"] = "Matured";
+    //     query["bdmAcceptStatus"] = "Accept";
+    //   } else if (status === "Not Interested") {
+    //     query["Status"] = { $in: ["Junk", "Not Interested"] };
+    //     query["bdmAcceptStatus"] = "Accept";
+    //   } else if (status === "General") {
+    //     query["bdmAcceptStatus"] = "Pending";
+    //   }
+    // }
 
     // Filter by state
     if (state) {
@@ -418,10 +420,14 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
       totalCounts: totalCounts,
       totalPages: totalPages,
       totalGeneral: totalGeneral,
+      generalData: data?.filter(lead => lead.bdmAcceptStatus === "Pending") || [],
       totalInterested: totalInterested,
+      interestedData: data?.filter(lead => lead.bdmAcceptStatus === "Accept" && (lead.Status === "Interested" || lead.Status === "FollowUp")) || [],
       totalMatured: totalMatured,
+      maturedData: data?.filter(lead => lead.bdmAcceptStatus === "Accept" && lead.Status === "Matured") || [],
       totalNotInterested: totalNotInterested,
-      data: data
+      notInterestedData: data?.filter(lead => lead.bdmAcceptStatus === "Accept" && (lead.Status === "Not Interested" || lead.Status === "Junk")) || [],
+      data: data || [],
     });
   } catch (error) {
     console.error(error);
@@ -948,8 +954,55 @@ router.post('/deletebdm-updatebdedata', async (req, res) => {
   }
 });
 
-//---------- request to reject revert back request -------------------------------------
+// API for deleting leads from bdm :
+router.post("/delete-bdm-teamLeads", async (req, res) => {
+  const companies = req.body.companies; // Array of company objects from frontend
 
+  try {
+    const bulkOperations = companies.map((company) => {
+      return {
+        updateOne: {
+          filter: { _id: company._id },
+          update: {
+            $set: {
+              Status: company.bdeOldStatus, // Update Status to bdeOldStatus
+              bdmAcceptStatus: "NotForwarded",
+              feedbackPoints: [],
+              multiBdmName: [],
+            },
+            $unset: {
+              bdeOldStatus: "",
+              bdmName: "",
+              bdeForwardDate: "",
+              bdmStatusChangeDate: "",
+              bdmStatusChangeTime: "",
+              bdmRemarks: "",
+              RevertBackAcceptedCompanyRequest: "",
+            }
+          }
+        }
+      };
+    });
+
+    // Perform bulk write operation to update multiple companies
+    await CompanyModel.bulkWrite(bulkOperations);
+
+    // Delete entries in TeamLeadsModel, FollowUpModel, and RemarksHistory for each company
+    const companyIds = companies.map((company) => company._id);
+    const companyNames = companies.map((company) => company.companyName);
+
+    await TeamLeadsModel.deleteMany({ _id: { $in: companyIds } });
+    await FollowUpModel.deleteMany({ companyName: { $in: companyNames } });
+    // await RemarksHistory.deleteMany({ companyID: { $in: companyIds } });
+
+    res.status(200).json({ message: "Companies updated and deleted successfully" });
+  } catch (error) {
+    console.error("Error updating and deleting companies:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//---------- request to reject revert back request -------------------------------------
 router.post(`/rejectrequestrevertbackcompany`, async (req, res) => {
   const { companyId } = req.query;
   try {
