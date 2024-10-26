@@ -212,7 +212,95 @@ router.get("/redesigned-final-leadData", async (req, res) => {
   }
 });
 
+// router.get("/admin-redesigned-final-leadData", async (req, res) => {
+//   try {
+//     // Retrieve query parameters for pagination and search
+//     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+//     const pageSize = parseInt(req.query.pageSize) || 50; // Default page size is 50
+//     const searchText = req.query.searchText || ""; // Default to empty string if no search text
 
+//     // Match stage for searching by company name (case insensitive)
+//     const matchStage = searchText
+//       ? { "Company Name": { $regex: searchText, $options: "i" } } 
+//       : {};
+
+//     // Pipeline with search, sort, skip, and limit for pagination
+//     const paginatedData = await RedesignedLeadformModel.aggregate([
+//       { $match: matchStage }, // Filter by search text if provided
+//       {
+//         $addFields: {
+//           lastActionDateAsDate: {
+//             $dateFromString: {
+//               dateString: "$lastActionDate",
+//               onError: new Date(0),  // Default to epoch if conversion fails
+//               onNull: new Date(0)    // Default to epoch if null
+//             }
+//           }
+//         }
+//       },
+//       { $sort: { lastActionDateAsDate: -1 } }, // Sort by latest date first
+//       { $skip: (page - 1) * pageSize },         // Skip documents for pagination
+//       { $limit: pageSize }                      // Limit documents to pageSize
+//     ]);
+
+//     // Get the total count for the search query to determine total pages
+//     const totalCount = await RedesignedLeadformModel.countDocuments(matchStage);
+//     const totalPages = Math.ceil(totalCount / pageSize);
+
+//     res.status(200).json({
+//       data: paginatedData,
+//       currentPage: page,
+//       pageSize: pageSize,
+//       totalPages: totalPages,
+//       totalCount: totalCount
+//     });
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     res.status(500).send("Error fetching data");
+//   }
+// });
+
+router.get("/admin-redesigned-final-leadData", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 50;
+    const searchText = req.query.searchText || "";
+
+    const matchStage = searchText
+      ? { "Company Name": { $regex: searchText, $options: "i" } }
+      : {};
+
+    // Fetch data without date conversion and pagination
+    const allData = await RedesignedLeadformModel.aggregate([
+      { $match: matchStage }
+    ]);
+
+    // Convert lastActionDate to a Date object and sort in JavaScript
+    const sortedData = allData.map((doc) => {
+      return {
+        ...doc,
+        lastActionDate: new Date(doc.lastActionDate)
+      };
+    }).sort((a, b) => b.lastActionDate - a.lastActionDate); // Sort in descending order
+
+    // Paginate the sorted data
+    const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
+
+    const totalCount = sortedData.length;
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    res.status(200).json({
+      data: paginatedData,
+      currentPage: page,
+      pageSize: pageSize,
+      totalPages: totalPages,
+      totalCount: totalCount
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
+});
 
 // Get Request for fetching bookings Data for Particular Company
 router.get("/redesigned-final-leadData/:companyName", async (req, res) => {

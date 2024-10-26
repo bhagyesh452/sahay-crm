@@ -44,12 +44,9 @@ function BookingList() {
   const [EditBookingOpen, setEditBookingOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
   const [excelData, setExcelData] = useState([]);
-  const [infiniteBooking, setInfiniteBooking] = useState([]);
   const [bookingIndex, setbookingIndex] = useState(-1);
   const [currentCompanyName, setCurrentCompanyName] = useState("");
-  const [searchText, setSearchText] = useState("");
   const [nowToFetch, setNowToFetch] = useState(false);
-  const [leadFormData, setLeadFormData] = useState([]);
   const [currentLeadform, setCurrentLeadform] = useState(null);
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState();
@@ -62,8 +59,12 @@ function BookingList() {
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
   const [openBacdrop, setOpenBacdrop] = useState(false);
+  const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 50; // Number of items per page
+  const [totalPages, setTotalPages] = useState(1); // Track total pages from backend
+  const [leadFormData, setLeadFormData] = useState([]);
+  const [infiniteBooking, setInfiniteBooking] = useState([]);
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
@@ -157,107 +158,64 @@ function BookingList() {
   //   }
   // }, [leadFormData, currentCompanyName]);
 
+  // Searching and Pagination from back end :
   const { data: bookingData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
-    queryKey: ["bookingData"],
+    queryKey: ["bookingData", page, searchText],
     queryFn: async () => {
-      const res = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+      const res = await axios.get(`${secretKey}/bookings/admin-redesigned-final-leadData`, {
+        params: {
+          page: page,
+          pageSize: pageSize,
+          searchText: searchText
+        }
+      });
       return res.data;
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData
+    refetchInterval: 300000,  // Fetch the data after every 5 minutes
+    refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
   });
 
-  // console.log("Booking data is :", bookingData);
+  useEffect(() => {
+    refetchBookingData();
+  }, [nowToFetch]);
 
-  const fetchRedesignedFormData = useCallback(() => {
-    // setOpenBacdrop(true);
-    // try {
-    //   const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
-    //   const sortedData = response.data.sort((a, b) => {
-    //     const dateA = new Date(a.lastActionDate);
-    //     const dateB = new Date(b.lastActionDate);
-    //     return dateB - dateA; // Sort in descending order
-    //   });
-    //   setInfiniteBooking(sortedData);
-    //   setLeadFormData(sortedData); // Set both states with the sorted data
-    // } catch (error) {
-    //   console.error("Error fetching data:", error.message);
-    // } finally {
-    //   setOpenBacdrop(false);
-    // }
+  useEffect(() => {
+    fetchDatadebounce();
+    refetchBookingData();
+  }, []);
 
-    // Set backdrop loader based on loading state
+  // Update leadFormData based on bookingData whenever it changes
+  useEffect(() => {
+    if (bookingData && bookingData.data) {
+      setLeadFormData(bookingData.data); // Set paginated data from backend
+      setTotalPages(bookingData.totalPages); // Update total pages based on backend response
+    }
+  }, [bookingData]);
+
+  // Handle loading and error states
+  useEffect(() => {
     if (isBookingDataLoading) {
       setOpenBacdrop(true);
     } else {
       setOpenBacdrop(false);
     }
 
-    // Log error if there’s an issue fetching data
     if (isBookingDataError) {
       console.log("Error fetching data:", isBookingDataError);
       setOpenBacdrop(false);
     }
+  }, [isBookingDataLoading, isBookingDataError]);
 
-    // Check if bookingData and bookingData.data are defined before proceeding
-    // if (bookingData) {
-    //   const sortedData = bookingData.sort((a, b) => {
-    //     const dateA = new Date(a.lastActionDate);
-    //     const dateB = new Date(b.lastActionDate);
-    //     return dateB - dateA; // Sort in descending order
-    //   });
-
-    //   // Paginate the sorted data
-    //   const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
-
-    //   setLeadFormData(paginatedData); // Update state with paginated data
-    //   setInfiniteBooking(bookingData); // Set only the current page data
-    
-    if (bookingData) {
-      // Filter data based on search text if available
-      const filteredData = searchText
-        ? bookingData.filter((obj) => obj["Company Name"].toLowerCase().includes(searchText.toLowerCase()))
-        : bookingData;
-  
-      // Sort filtered data
-      const sortedData = filteredData.sort((a, b) => {
-        const dateA = new Date(a.lastActionDate);
-        const dateB = new Date(b.lastActionDate);
-        return dateB - dateA;
-      });
-  
-      // Paginate sorted data
-      const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
-  
-      setLeadFormData(paginatedData); // Update state with paginated data
-      setInfiniteBooking(sortedData); // Store all filtered data in infiniteBooking for reference
-    } else {
-      setLeadFormData([]); // Set to an empty array if no data
-      setInfiniteBooking([]);
-    }
-  }, [bookingData, searchText, page, isBookingDataLoading, isBookingDataError]);
-
-  // useEffect(() => {
-  //   fetchRedesignedFormData();
-  // }, [nowToFetch, bookingData, page, searchText]);
-
-  useEffect(() => {
-    // if (data.companyName) {
-    //   console.log("Company Found");
-    fetchDatadebounce();
-    fetchRedesignedFormData();
-    // } else {
-    //   console.log("No Company Found");
-    // }
-  }, [bookingData, page, searchText]);
-
-  // useEffect(() => {
-  //   setLeadFormData(infiniteBooking.filter((obj) => obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())));
-  // }, [searchText]);
+  // Handle search text change
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+    setPage(1); // Reset to first page when search text changes
+  };
 
   const handleNext = () => {
-    if (page < Math.ceil((searchText ? infiniteBooking?.length : bookingData?.length || 0) / pageSize)) {
+    if (page < totalPages) {
       setPage(prev => prev + 1);
     }
   };
@@ -267,6 +225,120 @@ function BookingList() {
       setPage(prev => prev - 1);
     }
   };
+
+
+  // Searching and Pagination from front end :
+  // const { data: bookingData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
+  //   queryKey: ["bookingData"],
+  //   queryFn: async () => {
+  //     const res = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+  //     return res.data;
+  //   },
+  //   keepPreviousData: true,
+  //   refetchOnWindowFocus: false,
+  //   refetchInterval: 300000,  // Fetch the data after every 5 minutes
+  //   refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
+  // });
+
+  // console.log("Booking data is :", data);
+
+  // const fetchRedesignedFormData = useCallback(() => {
+  //   // setOpenBacdrop(true);
+  //   // try {
+  //   //   const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+  //   //   const sortedData = response.data.sort((a, b) => {
+  //   //     const dateA = new Date(a.lastActionDate);
+  //   //     const dateB = new Date(b.lastActionDate);
+  //   //     return dateB - dateA; // Sort in descending order
+  //   //   });
+  //   //   setInfiniteBooking(sortedData);
+  //   //   setLeadFormData(sortedData); // Set both states with the sorted data
+  //   // } catch (error) {
+  //   //   console.error("Error fetching data:", error.message);
+  //   // } finally {
+  //   //   setOpenBacdrop(false);
+  //   // }
+
+  //   // Set backdrop loader based on loading state
+  //   if (isBookingDataLoading) {
+  //     setOpenBacdrop(true);
+  //   } else {
+  //     setOpenBacdrop(false);
+  //   }
+
+  //   // Log error if there’s an issue fetching data
+  //   if (isBookingDataError) {
+  //     console.log("Error fetching data:", isBookingDataError);
+  //     setOpenBacdrop(false);
+  //   }
+
+  //   // Check if bookingData and bookingData.data are defined before proceeding
+  //   // if (bookingData) {
+  //   //   const sortedData = bookingData.sort((a, b) => {
+  //   //     const dateA = new Date(a.lastActionDate);
+  //   //     const dateB = new Date(b.lastActionDate);
+  //   //     return dateB - dateA; // Sort in descending order
+  //   //   });
+
+  //   //   // Paginate the sorted data
+  //   //   const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
+
+  //   //   setLeadFormData(paginatedData); // Update state with paginated data
+  //   //   setInfiniteBooking(bookingData); // Set only the current page data
+
+  //   if (bookingData) {
+  //     // Filter data based on search text if available
+  //     const filteredData = searchText
+  //       ? bookingData.filter((obj) => obj["Company Name"].toLowerCase().includes(searchText.toLowerCase()))
+  //       : bookingData;
+
+  //     // Sort filtered data
+  //     const sortedData = filteredData.sort((a, b) => {
+  //       const dateA = new Date(a.lastActionDate);
+  //       const dateB = new Date(b.lastActionDate);
+  //       return dateB - dateA;
+  //     });
+
+  //     // Paginate sorted data
+  //     const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
+
+  //     setLeadFormData(paginatedData); // Update state with paginated data
+  //     setInfiniteBooking(sortedData); // Store all filtered data in infiniteBooking for reference
+  //   } else {
+  //     setLeadFormData([]); // Set to an empty array if no data
+  //     setInfiniteBooking([]);
+  //   }
+  // }, [bookingData, searchText, page, isBookingDataLoading, isBookingDataError]);
+
+  // useEffect(() => {
+  //   // fetchRedesignedFormData();
+  // }, [nowToFetch, bookingData, searchText, page, isBookingDataLoading, isBookingDataError]);
+
+  // useEffect(() => {
+  //   // if (data.companyName) {
+  //   //   console.log("Company Found");
+  //   fetchDatadebounce();
+  //   // fetchRedesignedFormData();
+  //   // } else {
+  //   //   console.log("No Company Found");
+  //   // }
+  // }, []);
+
+  // useEffect(() => {
+  //   setLeadFormData(infiniteBooking.filter((obj) => obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())));
+  // }, [searchText]);
+
+  // const handleNext = () => {
+  //   if (page < Math.ceil((searchText ? infiniteBooking?.length : bookingData?.length || 0) / pageSize)) {
+  //     setPage(prev => prev + 1);
+  //   }
+  // };
+
+  // const handlePrev = () => {
+  //   if (page > 1) {
+  //     setPage(prev => prev - 1);
+  //   }
+  // };
 
   const functionOpenBookingForm = () => {
     setBookingFormOpen(true);
@@ -436,19 +508,13 @@ function BookingList() {
   const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(
-      `${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`,
-      "_blank"
-    );
+    window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
   const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     //console.log(pathname);
-    window.open(
-      `${secretKey}/bookings/otherpdf/${companyName}/${pathname}`,
-      "_blank"
-    );
+    window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
 
   // ------------------------------------------------- Delete booking ----------------------------------------------
@@ -497,7 +563,8 @@ function BookingList() {
           .then((response) => {
             if (response.ok) {
               Swal.fire("Success!", "Booking Deleted", "success");
-              fetchRedesignedFormData();
+              // fetchRedesignedFormData();
+              refetchBookingData();
             } else {
               Swal.fire("Error!", "Failed to Delete Company", "error");
             }
@@ -537,11 +604,7 @@ function BookingList() {
   const handleFileInputChange = (event) => {
     const file = event.target.files[0];
 
-    if (
-      file &&
-      file.type ===
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    ) {
+    if (file && file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       const reader = new FileReader();
 
       reader.onload = (e) => {
@@ -660,12 +723,10 @@ function BookingList() {
   const handleSubmitImport = async () => {
     if (excelData.length !== 0) {
       try {
-        const response = await axios.post(
-          `${secretKey}/bookings/redesigned-importData`,
-          excelData
-        );
+        const response = await axios.post(`${secretKey}/bookings/redesigned-importData`, excelData);
         Swal.fire("Success", "Bookings Uploaded Successfully", "success");
-        fetchRedesignedFormData();
+        // fetchRedesignedFormData();
+        refetchBookingData();
         closepopup();
       } catch (error) {
         console.error("Error importing data:", error);
@@ -717,27 +778,23 @@ function BookingList() {
       }
       console.log(formData);
       setCurrentCompanyName(currentLeadform["Company Name"]);
-      const response = await fetch(
-        `${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const response = await fetch(`${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`, {
+        method: "POST",
+        body: formData,
+      });
       if (response.ok) {
         Swal.fire({
           title: "Success!",
-          html: `<small> File Uploaded successfully </small>
-        `,
+          html: `<small> File Uploaded successfully </small>`,
           icon: "success",
         });
         setSelectedDocuments([]);
         setOpenOtherDocs(false);
-        fetchRedesignedFormData();
+        // fetchRedesignedFormData();
+        refetchBookingData();
       } else {
         Swal.fire({
           title: "Error uploading file",
-
           icon: "error",
         });
         console.error("Error uploading file");
@@ -791,7 +848,8 @@ function BookingList() {
                         class="form-control"
                         placeholder="Search Company"
                         aria-label="Search in website"
-                        onChange={(e) => setSearchText(e.target.value)}
+                        onChange={handleSearchChange}
+                      // onChange={(e) => setSearchText(e.target.value)}
                       />
                     </div>
                   </div>
@@ -907,7 +965,7 @@ function BookingList() {
                               const currentDate = new Date(current.bookingDate);
                               return currentDate > latestDate ? current : latest;
                             });
-                            console.log(latestBooking)
+                            // console.log(latestBooking);
 
                             // Set current lead form to the clicked object
                             setCurrentLeadform(leadFormData.find((data) => data["Company Name"] === obj["Company Name"]));
@@ -948,9 +1006,7 @@ function BookingList() {
                                 const servicesWithDates = allBookings.flatMap((booking) =>
                                   booking.services.map((service) => ({
                                     ...service,
-                                    bookingDate: new Date(
-                                      booking.bookingDate
-                                    ),
+                                    bookingDate: new Date(booking.bookingDate),
                                   }))
                                 );
 
@@ -1043,9 +1099,11 @@ function BookingList() {
                             <FaCircleChevronLeft className="ep_right_button" />
                           </button>
 
-                          <button className="btn mybtn">Page {page} of {Math.ceil((searchText ? infiniteBooking?.length : bookingData?.length || 0) / pageSize)}</button>
+                          <button className="btn mybtn">Page {page} of {totalPages}</button>
+                          {/* <button className="btn mybtn">Page {page} of {Math.ceil((searchText ? infiniteBooking?.length : bookingData?.length || 0) / pageSize)}</button> */}
 
-                          <button className="btn mybtn" onClick={handleNext} disabled={page === Math.ceil((searchText ? infiniteBooking?.length : bookingData?.length || 0) / pageSize)}>
+                          {/* <button className="btn mybtn" onClick={handleNext} disabled={page === Math.ceil((searchText ? infiniteBooking?.length : bookingData?.length || 0) / pageSize)}> */}
+                          <button className="btn mybtn" onClick={handleNext} disabled={page === totalPages}>
                             <FaCircleChevronRight className="ep_left_button" />
                           </button>
                         </div>
