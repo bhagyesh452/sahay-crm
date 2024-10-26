@@ -114,6 +114,7 @@ function EmployeesProjectionSummary() {
     try {
       setLoading(true)
       const response = await fetch(`${secretKey}/projection/projection-data`);
+    
       const followdata = await response.json();
       setfollowData(followdata);
       setFollowDataFilter(followdata)
@@ -944,32 +945,9 @@ function EmployeesProjectionSummary() {
                         }}
                       />
                     </th>
-                    {/* <th>
-                      Recieved Amount
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={() => {
-                          let newSortType;
-                          if (sortTypeExpectedPayment === "ascending") {
-                            newSortType = "descending";
-                          } else if (
-                            sortTypeExpectedPayment === "descending"
-                          ) {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortExpectedPayment(newSortType);
-                        }}
-                      />
-                    </th> */}
-                    
-                    {/* <th>Est. Payment Date</th> */}
+                    {/*<th>
+                      Projection Status
+                    </th>*/}
                   </tr>
                 </thead>
                 {loading ?

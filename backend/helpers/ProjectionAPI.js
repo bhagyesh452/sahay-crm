@@ -3,6 +3,7 @@ var router = express.Router()
 const dotenv = require('dotenv')
 dotenv.config();
 const FollowUpModel = require("../models/FollowUp");
+const adminModel = require('../models/Admin');
 
 
 
@@ -51,9 +52,16 @@ router.post("/update-followup", async (req, res) => {
         modifiedAt: formatDate(Date.now()),
         data: previousData,
       });
-      console.log(existingData);
       existingData.set(finalData);
       await existingData.save();
+      await adminModel.findOneAndUpdate(
+        { ename: finalData.ename },
+        {
+          $set: {
+            projectionStatusForToday: "Yes",
+            projectionDate: now // Use the current date directly 
+          }
+        });
       res.status(200).json({ message: "Data updated successfully" });
     } else {
       // Create new document
@@ -103,6 +111,7 @@ router.get("/projection-data/:ename", async (req, res) => {
         // Add more conditions if needed
       ],
     });
+
     // Return the data as JSON response
     res.json(followUps);
   } catch (error) {
@@ -199,25 +208,25 @@ router.post("/followdataexport/", async (req, res) => {
   }
 });
 
-router.post("/post-bdmacceptted-revertbackprojection", async(req,res)=>{
+router.post("/post-bdmacceptted-revertbackprojection", async (req, res) => {
   const { cname } = req.params
-  try{
-    const findData = await FollowUpModel.findOne(cname) 
-    if(findData){
-      const newData = await FollowUpModel.findByIdAndUpdate(cname , {
-        $set:{
-          caseType : "Forwarded",
+  try {
+    const findData = await FollowUpModel.findOne(cname)
+    if (findData) {
+      const newData = await FollowUpModel.findByIdAndUpdate(cname, {
+        $set: {
+          caseType: "Forwarded",
         },
-        $unset:{
+        $unset: {
           bdmName: ""
         }
       })
       res.status(200).save(newData)
-    }else{
-      res.status(400).json({error:"Projection does not exist"})
+    } else {
+      res.status(400).json({ error: "Projection does not exist" })
     }
 
-  }catch(error){
+  } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 
@@ -286,8 +295,8 @@ router.post(`/post-followupupdate-bdmaccepted/:cname`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-  
 
-  
 
-  module.exports = router;
+
+
+module.exports = router;
