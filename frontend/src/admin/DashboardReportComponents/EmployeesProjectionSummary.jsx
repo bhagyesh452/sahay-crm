@@ -991,6 +991,7 @@ function EmployeesProjectionSummary() {
                     <th>
                       Projection Status
                     </th>
+                    
                   </tr>
                 </thead>
                 {loading ?

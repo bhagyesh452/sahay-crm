@@ -50,6 +50,8 @@ import { dateCalendarClasses } from '@mui/x-date-pickers/DateCalendar/dateCalend
 import { LiaPagerSolid } from "react-icons/lia";
 import { TbArrowBackUp } from "react-icons/tb";
 import { RiShareForwardFill } from "react-icons/ri";
+import EmployeeInterestedInformationDialog from '../employeeComp/ExtraComponents/EmployeeInterestedInformationDialog';
+import { FaEye } from "react-icons/fa";
 
 function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -165,7 +167,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     }
 
     //--------------------function to fetch Data ------------------------------
-  const [employeeData, setEmployeeData] = useState([])
+    const [employeeData, setEmployeeData] = useState([])
     const fetchData = async (page, sortType) => {
         try {
             setCurrentDataLoading(true)
@@ -179,7 +181,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                     sortPattern: sortPattern,
                 }
             });
-            console.log("response" , response.data)
+            console.log("response", response.data)
             const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
             const leadHistory = response2.data
             //console.log("data", response.data.data)
@@ -205,7 +207,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             setCurrentDataLoading(false)
         }
     };
-    console.log("data" , data)
+    console.log("data", data)
     //--------------------function to fetch employee data ------------------------------
     const [newEmpData, setNewEmpData] = useState([])
     const [bdmNames, setbdmNames] = useState([])
@@ -1536,42 +1538,42 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         setOpenBacdrop(false)
     }
 
-//------- function forward to bdm---------------------
+    //------- function forward to bdm---------------------
 
-const handleCloseForwardBdmPopup = () => {
-    setOpenAssignToBdm(false);
-  };
+    const handleCloseForwardBdmPopup = () => {
+        setOpenAssignToBdm(false);
+    };
 
-  const handleForwardDataToBDM = async (bdmName) => {
-    const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
-    console.log("data is:", data);
-    if (selectedRows.length === 0) {
-      Swal.fire("Please Select the Company to Forward", "", "Error");
-      setBdmName("Not Alloted");
-      handleCloseForwardBdmPopup();
-      return;
-    }
-    // if (data.length === 0) {
-    //   Swal.fire("Can Not Forward Untouched Company", "", "Error");
-    //   setBdmName("Not Alloted");
-    //   handleCloseForwardBdmPopup();
-    //   return;
-    // }
-    
-    try {
-      const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
-        data: data,
-        name: bdmName
-      });
-      fetchData(1, latestSortCount)
-      Swal.fire("Company Forwarded", "", "success");
-      setBdmName("Not Alloted");
-      handleCloseForwardBdmPopup();
-      console.log("response data is:", response);
-    } catch (error) {
-      console.log("error fetching data", error.message);
-    }
-  };
+    const handleForwardDataToBDM = async (bdmName) => {
+        const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
+        console.log("data is:", data);
+        if (selectedRows.length === 0) {
+            Swal.fire("Please Select the Company to Forward", "", "Error");
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            return;
+        }
+        // if (data.length === 0) {
+        //   Swal.fire("Can Not Forward Untouched Company", "", "Error");
+        //   setBdmName("Not Alloted");
+        //   handleCloseForwardBdmPopup();
+        //   return;
+        // }
+
+        try {
+            const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+                data: data,
+                name: bdmName
+            });
+            fetchData(1, latestSortCount)
+            Swal.fire("Company Forwarded", "", "success");
+            setBdmName("Not Alloted");
+            handleCloseForwardBdmPopup();
+            console.log("response data is:", response);
+        } catch (error) {
+            console.log("error fetching data", error.message);
+        }
+    };
 
 
     return (
@@ -1589,15 +1591,7 @@ const handleCloseForwardBdmPopup = () => {
                                 <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)}>
                                     <IoFilterOutline className='mr-1' /> Filter
                                 </button>
-                                {/* <button type="button" className="btn mybtn" onClick={() => {
-                                    setOpenBulkLeadsCSVPopup(true)
-                                    setCsvData([])
-                                }}>
-                                    <TbFileImport className='mr-1' /> Import Leads
-                                </button> */}
-                                {/* <button type="button" className="btn mybtn" onClick={() => exportData()}>
-                                    <TbFileExport className='mr-1' /> Export Leads
-                                </button> */}
+
                                 <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
                                     <MdOutlinePostAdd className='mr-1' />Assign Leads
                                 </button>
@@ -1606,9 +1600,7 @@ const handleCloseForwardBdmPopup = () => {
                                 >
                                     <RiShareForwardFill className='mr-1' /> Forward to BDM
                                 </button>
-                                {/* <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
-                                    <MdOutlineDeleteSweep className='mr-1' />Delete Leads
-                                </button> */}
+
                             </div>
                         </div>
                         <div className="d-flex align-items-center">
@@ -1702,7 +1694,12 @@ const handleCloseForwardBdmPopup = () => {
                                             <th>Sr.No</th>
                                             <th>Company Name</th>
                                             <th>Company Email</th>
-                                            {(dataStatus === "Assigned") && <th>Status</th>}
+                                            {(dataStatus === "Assigned") &&
+                                                <th>
+                                                    Status
+
+                                                </th>
+                                            }
                                             {(dataStatus === "Assigned") && <th>Remarks</th>}
                                             <th>Uploaded By</th>
                                             <th>Uploaded On</th>
@@ -1851,17 +1848,17 @@ const handleCloseForwardBdmPopup = () => {
                                                             <td>
                                                                 {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
                                                             </td>
-                                                            <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded"|| company.bdmAcceptStatus === "Accept") ?
+                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                                 "Yes" : "No"
                                                             }</td>
-                                                            <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                                 company.bdmName : "-"
                                                             }</td>
-                                                            <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                                 `${formatDateLeadHistory(company.bdeForwardDate)}`
                                                                 : "-"
                                                             }</td>
-                                                            <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                                 `${timePassedSince(company.bdeForwardDate)}`
                                                                 : "-"
                                                             }</td>
@@ -1869,145 +1866,316 @@ const handleCloseForwardBdmPopup = () => {
                                                     )
                                                 })}
 
-                                            {(!isFilter && !isSearching) && data.map((company, index) => {
-                                                let matchingLeadHistory
-                                                if (Array.isArray(leadHistoryData)) {
-                                                    matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
-                                                    // Do something with matchingLeadHistory
-                                                } else {
-                                                    console.error("leadHistoryData is not an array");
-                                                }
-                                                return (
-                                                    <tr
-                                                        key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex - 500 + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>
-                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                <p className="rematkText text-wrap m-0">
-                                                                    {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                </p>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        functionopenpopupremarks(company._id, company.Status);
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}>
-                                                                    <IconEye
+                                            {(!isFilter && !isSearching) &&
+                                                data.map((company, index) => {
+                                                    let matchingLeadHistory
+                                                    if (Array.isArray(leadHistoryData)) {
+                                                        matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
+                                                        // Do something with matchingLeadHistory
+                                                    } else {
+                                                        console.error("leadHistoryData is not an array");
+                                                    }
+                                                    return (
+                                                        <tr
+                                                            key={index}
+                                                            className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                            style={{ border: "1px solid #ddd" }}>
+                                                            <td>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedRows.includes(company._id)}
+                                                                    onChange={() => handleCheckboxChange(company._id)}
+                                                                    onMouseDown={() => handleMouseDown(company._id)}
+                                                                    onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                    onMouseUp={handleMouseUp}
+                                                                />
+                                                            </td>
+                                                            <td>{startIndex - 500 + index + 1}</td>
+                                                            <td>{company["Company Name"]}</td>
+                                                            <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Assigned") &&
+                                                                <td>
+                                                                    <div className='d-flex align-items-center'>
 
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                            marginLeft: "4px",
-                                                                        }}
+                                                                    
+                                                                    {company["Status"]}
+                                                                    <div className={company.Status === "Interested" && company.interestedInformation ?
+                                                                        "intersted-history-btn"
+                                                                        : company.Status === "FollowUp" && company.interestedInformation ? "followup-history-btn" :
+                                                                            company.Status === "FollowUp" && !company.interestedInformation ? "followup-history-btn disabled" :
+                                                                                "intersted-history-btn disabled"}>
+                                                                    <FaEye
+                                                                        key={company._id}
+                                                                        style={{ border: "transparent", background: "none" }}
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                                                                        title="Interested Information"
+                                                                        disabled={!company.interestedInformation}
+                                                                    />
+
+                                                                    <EmployeeInterestedInformationDialog
+                                                                        key={company._id}
+                                                                        modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                                                                        companyName={company["Company Name"]}
+                                                                        interestedInformation={company.interestedInformation} // Pass the interested information here
+                                                                        refetch={fetchData}
+                                                                        ename={company.ename}
+                                                                        secretKey={secretKey}
+                                                                        status={company.Status}
+                                                                        companyStatus={company.Status}
+                                                                        forView={true}
+                                                                        fordesignation={"admin"}
+
                                                                     />
                                                                 </div>
+                                                                </div>
+                                                                </td>}
+                                                            {(dataStatus === "Assigned") && <td>
+                                                        <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                            <p className="rematkText text-wrap m-0">
+                                                                {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                            </p>
+                                                            <div
+                                                                onClick={() => {
+                                                                    functionopenpopupremarks(company._id, company.Status);
+                                                                }}
+                                                                style={{ cursor: "pointer" }}>
+                                                                <IconEye
+
+                                                                    style={{
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        color: "#d6a10c",
+                                                                        cursor: "pointer",
+                                                                        marginLeft: "4px",
+                                                                    }}
+                                                                />
                                                             </div>
-                                                        </td>}
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        <td>{!isNaN(company["UploadDate"]) ? formatDateFinal(company["UploadDate"]) : "-"}</td>
-                                                        {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                        <td>
-                                                            {matchingLeadHistory ? `${formatDateLeadHistory(matchingLeadHistory.date)} || ${formatTime(matchingLeadHistory.time)}` : "-"}
-                                                        </td>
-                                                        <td>
-                                                            {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
-                                                        </td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
-                                                            "Yes" : "No"
-                                                        }</td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded"|| company.bdmAcceptStatus === "Accept") ?
-                                                            company.bdmName : "-"
-                                                        }</td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
-                                                            `${formatDateLeadHistory(company.bdeForwardDate)}`
-                                                            : "-"
-                                                        }</td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
-                                                            `${timePassedSince(company.bdeForwardDate)}`
-                                                            : "-"
-                                                        }</td>
-                                                    </tr>
-                                                )
-                                            })}
-                                        </tbody>
+                                                        </div>
+                                                    </td>}
+                                            <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                            <td>{!isNaN(company["UploadDate"]) ? formatDateFinal(company["UploadDate"]) : "-"}</td>
+                                            {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                            {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                            <td>
+                                                {matchingLeadHistory ? `${formatDateLeadHistory(matchingLeadHistory.date)} || ${formatTime(matchingLeadHistory.time)}` : "-"}
+                                            </td>
+                                            <td>
+                                                {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
+                                            </td>
+                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                                "Yes" : "No"
+                                            }</td>
+                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                                company.bdmName : "-"
+                                            }</td>
+                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                                `${formatDateLeadHistory(company.bdeForwardDate)}`
+                                                : "-"
+                                            }</td>
+                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
+                                                `${timePassedSince(company.bdeForwardDate)}`
+                                                : "-"
+                                            }</td>
+                                        </tr>
+                                    )
+                                    })}
+                                </tbody>
                                     )}
-                                </table>
-                            </div>
+                            </table>
                         </div>
-                        {(!isFilter || !isSearching) && data.length === 0 && !currentDataLoading && (
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="13" className="p-2 particular">
-                                            <Nodata />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        )}
-                        {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0 && !currentDataLoading && (
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="13" className="p-2 particular">
-                                            <Nodata />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        )}
-                        {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0 || extractedData.length !== 0))) && (
-                            <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
-                                    <IconChevronLeft />
-                                </button>
-                                {(isFilter || isSearching) && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
-                                {(!isFilter && !isSearching) && <span>Page {currentPage} / {totalCount}</span>}
-                                <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
-                                    ((isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
-                                    ((!isFilter || !isSearching) && data.length < itemsPerPage)
-                                }>
-                                    <IconChevronRight />
-                                </button>
-                            </div>
-                        )}
                     </div>
+                    {(!isFilter || !isSearching) && data.length === 0 && !currentDataLoading && (
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="13" className="p-2 particular">
+                                        <Nodata />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    )}
+                    {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0 && !currentDataLoading && (
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="13" className="p-2 particular">
+                                        <Nodata />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    )}
+                    {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0 || extractedData.length !== 0))) && (
+                        <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
+                            <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
+                                <IconChevronLeft />
+                            </button>
+                            {(isFilter || isSearching) && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
+                            {(!isFilter && !isSearching) && <span>Page {currentPage} / {totalCount}</span>}
+                            <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
+                                ((isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
+                                ((!isFilter || !isSearching) && data.length < itemsPerPage)
+                            }>
+                                <IconChevronRight />
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
-            {/* --------------------------dialog to assign leads--------------------------------------------------------------- */}
-            <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
-                <DialogTitle>
-                    Assign Data
-                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
-                        <IoIosClose style={{
-                            height: "36px",
-                            width: "32px",
-                            color: "grey"
-                        }} />
-                    </button>
-                </DialogTitle>
-                <DialogContent>
-                    {dataStatus === "Unassigned" && <div>
-                        {empData.length !== 0 ? (
+        </div>
+            {/* --------------------------dialog to assign leads--------------------------------------------------------------- */ }
+    <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
+        <DialogTitle>
+            Assign Data
+            <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
+                <IoIosClose style={{
+                    height: "36px",
+                    width: "32px",
+                    color: "grey"
+                }} />
+            </button>
+        </DialogTitle>
+        <DialogContent>
+            {dataStatus === "Unassigned" && <div>
+                {empData.length !== 0 ? (
+                    <>
+                        <div className="dialogAssign">
+                            <div className="selector form-control">
+                                <select
+                                    style={{
+                                        width: "inherit",
+                                        border: "none",
+                                        outline: "none",
+                                    }}
+                                    value={employeeSelection}
+                                    onChange={(e) => {
+                                        setEmployeeSelection(e.target.value);
+                                    }}
+                                >
+                                    <option value="Not Alloted" disabled>
+                                        Select employee
+                                    </option>
+                                    {empData.map((item) => (
+                                        <option value={item.ename}>{item.ename}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div>
+                        <h1>No Employees Found</h1>
+                    </div>
+                )}
+            </div>}
+            {dataStatus === "Assigned" && (
+                <div>
+                    <div className="con2 d-flex">
+                        <div
+                            style={
+                                selectedOption === "direct"
+                                    ? {
+                                        backgroundColor: "#e9eae9",
+                                        margin: "10px 10px 0px 0px",
+                                        cursor: "pointer",
+                                    }
+                                    : {
+                                        backgroundColor: "white",
+                                        margin: "10px 10px 0px 0px",
+                                        cursor: "pointer",
+                                    }
+                            }
+                            onClick={() => {
+                                setSelectedOption("direct");
+                            }}
+                            className="direct form-control">
+                            <input
+                                type="radio"
+                                id="direct"
+                                value="direct"
+                                style={{
+                                    display: "none",
+                                }}
+                                checked={selectedOption === "direct"}
+                                onChange={(e) => {
+                                    handleOptionChange(e);
+                                    setEmployeeSelection("Not Alloted");
+                                }}
+                            />
+                            <label htmlFor="direct">Move In General Data</label>
+                        </div>
+
+                        <div
+                            style={
+                                selectedOption === "someoneElse"
+                                    ? {
+                                        backgroundColor: "#e9eae9",
+                                        margin: "10px 0px 0px 0px",
+                                        cursor: "pointer",
+                                    }
+                                    : {
+                                        backgroundColor: "white",
+                                        margin: "10px 0px 0px 0px",
+                                        cursor: "pointer",
+                                    }
+                            }
+                            className="indirect form-control"
+                            onClick={() => {
+                                setSelectedOption("someoneElse");
+                            }}>
+                            <input
+                                type="radio"
+                                id="someoneElse"
+                                value="someoneElse"
+                                style={{
+                                    display: "none",
+                                }}
+                                checked={selectedOption === "someoneElse"}
+                                onChange={handleOptionChange}
+                            />
+                            <label htmlFor="someoneElse">Assign to Employee</label>
+                        </div>
+
+                        <div
+                            style={
+                                selectedOption === "extractedData"
+                                    ? {
+                                        backgroundColor: "#e9eae9",
+                                        margin: "10px 0px 0px 9px",
+                                        cursor: "pointer",
+                                    }
+                                    : {
+                                        backgroundColor: "white",
+                                        margin: "10px 0px 0px 9px",
+                                        cursor: "pointer",
+                                    }
+                            }
+                            className="extractedData form-control"
+                            onClick={() => {
+                                setSelectedOption("extractedData");
+                            }}>
+                            <input
+                                type="radio"
+                                id="extractedData"
+                                value="extractedData"
+                                style={{
+                                    display: "none",
+                                }}
+                                checked={selectedOption === "extractedData"}
+                                onChange={(e) => {
+                                    handleOptionChange(e);
+                                    setEmployeeSelection("Extracted");
+                                }}
+                            />
+                            <label htmlFor="extractedData">Extracted Data</label>
+                        </div>
+                    </div>
+                    <div>
+                        {empData.length !== 0 && selectedOption === "someoneElse" && (
                             <>
-                                <div className="dialogAssign">
+                                <div className="dialogAssign mt-2">
                                     <div className="selector form-control">
                                         <select
                                             style={{
@@ -2030,584 +2198,450 @@ const handleCloseForwardBdmPopup = () => {
                                     </div>
                                 </div>
                             </>
-                        ) : (
-                            <div>
-                                <h1>No Employees Found</h1>
-                            </div>
                         )}
-                    </div>}
-                    {dataStatus === "Assigned" && (
-                        <div>
-                            <div className="con2 d-flex">
-                                <div
-                                    style={
-                                        selectedOption === "direct"
-                                            ? {
-                                                backgroundColor: "#e9eae9",
-                                                margin: "10px 10px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                            : {
-                                                backgroundColor: "white",
-                                                margin: "10px 10px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                    }
-                                    onClick={() => {
-                                        setSelectedOption("direct");
-                                    }}
-                                    className="direct form-control">
-                                    <input
-                                        type="radio"
-                                        id="direct"
-                                        value="direct"
-                                        style={{
-                                            display: "none",
-                                        }}
-                                        checked={selectedOption === "direct"}
-                                        onChange={(e) => {
-                                            handleOptionChange(e);
-                                            setEmployeeSelection("Not Alloted");
-                                        }}
-                                    />
-                                    <label htmlFor="direct">Move In General Data</label>
-                                </div>
-
-                                <div
-                                    style={
-                                        selectedOption === "someoneElse"
-                                            ? {
-                                                backgroundColor: "#e9eae9",
-                                                margin: "10px 0px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                            : {
-                                                backgroundColor: "white",
-                                                margin: "10px 0px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                    }
-                                    className="indirect form-control"
-                                    onClick={() => {
-                                        setSelectedOption("someoneElse");
-                                    }}>
-                                    <input
-                                        type="radio"
-                                        id="someoneElse"
-                                        value="someoneElse"
-                                        style={{
-                                            display: "none",
-                                        }}
-                                        checked={selectedOption === "someoneElse"}
-                                        onChange={handleOptionChange}
-                                    />
-                                    <label htmlFor="someoneElse">Assign to Employee</label>
-                                </div>
-
-                                <div
-                                    style={
-                                        selectedOption === "extractedData"
-                                            ? {
-                                                backgroundColor: "#e9eae9",
-                                                margin: "10px 0px 0px 9px",
-                                                cursor: "pointer",
-                                            }
-                                            : {
-                                                backgroundColor: "white",
-                                                margin: "10px 0px 0px 9px",
-                                                cursor: "pointer",
-                                            }
-                                    }
-                                    className="extractedData form-control"
-                                    onClick={() => {
-                                        setSelectedOption("extractedData");
-                                    }}>
-                                    <input
-                                        type="radio"
-                                        id="extractedData"
-                                        value="extractedData"
-                                        style={{
-                                            display: "none",
-                                        }}
-                                        checked={selectedOption === "extractedData"}
-                                        onChange={(e) => {
-                                            handleOptionChange(e);
-                                            setEmployeeSelection("Extracted");
-                                        }}
-                                    />
-                                    <label htmlFor="extractedData">Extracted Data</label>
-                                </div>
-                            </div>
-                            <div>
-                                {empData.length !== 0 && selectedOption === "someoneElse" && (
-                                    <>
-                                        <div className="dialogAssign mt-2">
-                                            <div className="selector form-control">
-                                                <select
-                                                    style={{
-                                                        width: "inherit",
-                                                        border: "none",
-                                                        outline: "none",
-                                                    }}
-                                                    value={employeeSelection}
-                                                    onChange={(e) => {
-                                                        setEmployeeSelection(e.target.value);
-                                                    }}
-                                                >
-                                                    <option value="Not Alloted" disabled>
-                                                        Select employee
-                                                    </option>
-                                                    {empData.map((item) => (
-                                                        <option value={item.ename}>{item.ename}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                    {dataStatus === "Extracted" && (
-                        <div>
-                            <div className="con2 d-flex">
-                                <div
-                                    style={
-                                        selectedOption === "direct"
-                                            ? {
-                                                backgroundColor: "#e9eae9",
-                                                margin: "10px 10px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                            : {
-                                                backgroundColor: "white",
-                                                margin: "10px 10px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                    }
-                                    onClick={() => {
-                                        setSelectedOption("direct");
-                                    }}
-                                    className="direct form-control">
-                                    <input
-                                        type="radio"
-                                        id="direct"
-                                        value="direct"
-                                        style={{
-                                            display: "none",
-                                        }}
-                                        checked={selectedOption === "direct"}
-                                        onChange={(e) => {
-                                            handleOptionChange(e);
-                                            setEmployeeSelection("Not Alloted");
-                                        }}
-                                    />
-                                    <label htmlFor="direct">Move In General Data</label>
-                                </div>
-
-                                <div
-                                    style={
-                                        selectedOption === "someoneElse"
-                                            ? {
-                                                backgroundColor: "#e9eae9",
-                                                margin: "10px 0px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                            : {
-                                                backgroundColor: "white",
-                                                margin: "10px 0px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                    }
-                                    className="indirect form-control"
-                                    onClick={() => {
-                                        setSelectedOption("someoneElse");
-                                    }}>
-                                    <input
-                                        type="radio"
-                                        id="someoneElse"
-                                        value="someoneElse"
-                                        style={{
-                                            display: "none",
-                                        }}
-                                        checked={selectedOption === "someoneElse"}
-                                        onChange={handleOptionChange}
-                                    />
-                                    <label htmlFor="someoneElse">Assign to Employee</label>
-                                </div>
-                            </div>
-                            <div>
-                                {empData.length !== 0 && selectedOption === "someoneElse" && (
-                                    <>
-                                        <div className="dialogAssign mt-2">
-                                            <div className="selector form-control">
-                                                <select
-                                                    style={{
-                                                        width: "inherit",
-                                                        border: "none",
-                                                        outline: "none",
-                                                    }}
-                                                    value={employeeSelection}
-                                                    onChange={(e) => {
-                                                        setEmployeeSelection(e.target.value);
-                                                    }}
-                                                >
-                                                    <option value="Not Alloted" disabled>
-                                                        Select employee
-                                                    </option>
-                                                    {empData.map((item) => (
-                                                        <option value={item.ename}>{item.ename}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-
-                    )}
-                </DialogContent>
-
-                <div className="btn-list">
-                    <button
-                        style={{ width: "100vw", borderRadius: "0px" }}
-                        onClick={handleconfirmAssign}
-                        className="btn btn-primary ms-auto"
-                    >
-                        Assign Data
-                    </button>
+                    </div>
                 </div>
-            </Dialog>
-            {/* ---------------------------dialog to view remarks popup------------------------- */}
-            <Dialog className='My_Mat_Dialog'
-                open={openRemarks}
-                onClose={closepopupRemarks}
-                fullWidth
-                maxWidth="sm"
+            )}
+            {dataStatus === "Extracted" && (
+                <div>
+                    <div className="con2 d-flex">
+                        <div
+                            style={
+                                selectedOption === "direct"
+                                    ? {
+                                        backgroundColor: "#e9eae9",
+                                        margin: "10px 10px 0px 0px",
+                                        cursor: "pointer",
+                                    }
+                                    : {
+                                        backgroundColor: "white",
+                                        margin: "10px 10px 0px 0px",
+                                        cursor: "pointer",
+                                    }
+                            }
+                            onClick={() => {
+                                setSelectedOption("direct");
+                            }}
+                            className="direct form-control">
+                            <input
+                                type="radio"
+                                id="direct"
+                                value="direct"
+                                style={{
+                                    display: "none",
+                                }}
+                                checked={selectedOption === "direct"}
+                                onChange={(e) => {
+                                    handleOptionChange(e);
+                                    setEmployeeSelection("Not Alloted");
+                                }}
+                            />
+                            <label htmlFor="direct">Move In General Data</label>
+                        </div>
+
+                        <div
+                            style={
+                                selectedOption === "someoneElse"
+                                    ? {
+                                        backgroundColor: "#e9eae9",
+                                        margin: "10px 0px 0px 0px",
+                                        cursor: "pointer",
+                                    }
+                                    : {
+                                        backgroundColor: "white",
+                                        margin: "10px 0px 0px 0px",
+                                        cursor: "pointer",
+                                    }
+                            }
+                            className="indirect form-control"
+                            onClick={() => {
+                                setSelectedOption("someoneElse");
+                            }}>
+                            <input
+                                type="radio"
+                                id="someoneElse"
+                                value="someoneElse"
+                                style={{
+                                    display: "none",
+                                }}
+                                checked={selectedOption === "someoneElse"}
+                                onChange={handleOptionChange}
+                            />
+                            <label htmlFor="someoneElse">Assign to Employee</label>
+                        </div>
+                    </div>
+                    <div>
+                        {empData.length !== 0 && selectedOption === "someoneElse" && (
+                            <>
+                                <div className="dialogAssign mt-2">
+                                    <div className="selector form-control">
+                                        <select
+                                            style={{
+                                                width: "inherit",
+                                                border: "none",
+                                                outline: "none",
+                                            }}
+                                            value={employeeSelection}
+                                            onChange={(e) => {
+                                                setEmployeeSelection(e.target.value);
+                                            }}
+                                        >
+                                            <option value="Not Alloted" disabled>
+                                                Select employee
+                                            </option>
+                                            {empData.map((item) => (
+                                                <option value={item.ename}>{item.ename}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+            )}
+        </DialogContent>
+
+        <div className="btn-list">
+            <button
+                style={{ width: "100vw", borderRadius: "0px" }}
+                onClick={handleconfirmAssign}
+                className="btn btn-primary ms-auto"
             >
-                <DialogTitle>
-                    Remarks
-                    <button style={{ background: "none", border: "0px transparent", float: "right" }}
-                        onClick={closepopupRemarks}>
+                Assign Data
+            </button>
+        </div>
+    </Dialog>
+    {/* ---------------------------dialog to view remarks popup------------------------- */ }
+    <Dialog className='My_Mat_Dialog'
+        open={openRemarks}
+        onClose={closepopupRemarks}
+        fullWidth
+        maxWidth="sm"
+    >
+        <DialogTitle>
+            Remarks
+            <button style={{ background: "none", border: "0px transparent", float: "right" }}
+                onClick={closepopupRemarks}>
+                <IoIosClose style={{
+                    height: "36px",
+                    width: "32px",
+                    color: "grey"
+                }} />
+            </button>
+        </DialogTitle>
+        <DialogContent>
+            <div className="remarks-content">
+                {filteredRemarks.length !== 0 ? (
+                    filteredRemarks
+                        .slice()
+                        .reverse()
+                        .map((historyItem) => (
+                            <div className="col-sm-12" key={historyItem._id}>
+                                <div className="card RemarkCard position-relative">
+                                    <div className="d-flex justify-content-between">
+                                        <div className="reamrk-card-innerText">
+                                            <pre>{historyItem.remarks}</pre>
+                                        </div>
+                                    </div>
+
+                                    <div className="d-flex card-dateTime justify-content-between">
+                                        <div className="date">{historyItem.date}</div>
+                                        <div className="time">{historyItem.time}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                ) : (
+                    <div className="text-center overflow-hidden">
+                        No Remarks History
+                    </div>
+                )}
+            </div>
+        </DialogContent>
+    </Dialog>
+
+    {/* ---------------------------drawer for filter----------------------------- */ }
+    <Drawer
+        style={{ top: "50px" }}
+        anchor="left"
+        open={openFilterDrawer}
+        onClose={functionCloseFilterDrawer}>
+        <div style={{ width: "31em" }}>
+            <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
+                <h2 className="title m-0">
+                    Filters
+                </h2>
+                <div>
+                    <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
                         <IoIosClose style={{
                             height: "36px",
                             width: "32px",
                             color: "grey"
                         }} />
                     </button>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="remarks-content">
-                        {filteredRemarks.length !== 0 ? (
-                            filteredRemarks
-                                .slice()
-                                .reverse()
-                                .map((historyItem) => (
-                                    <div className="col-sm-12" key={historyItem._id}>
-                                        <div className="card RemarkCard position-relative">
-                                            <div className="d-flex justify-content-between">
-                                                <div className="reamrk-card-innerText">
-                                                    <pre>{historyItem.remarks}</pre>
-                                                </div>
-                                            </div>
+                </div>
+            </div>
+            <hr style={{ margin: "0px" }} />
+            <div className="body-Drawer">
+                <div className='container-xl mt-2 mb-2'>
+                    <div className='row'>
+                        <div className='col-sm-12 mt-3'>
+                            <div className='form-group'>
+                                <label for="exampleFormControlInput1" class="form-label">Status</label>
+                                <select class="form-select form-select-md" aria-label="Default select example"
+                                    value={selectedStatus}
+                                    onChange={(e) => {
+                                        setSelectedStatus(e.target.value)
+                                    }}>
+                                    <option selected value='Select Status'>Select Status</option>
 
-                                            <div className="d-flex card-dateTime justify-content-between">
-                                                <div className="date">{historyItem.date}</div>
-                                                <div className="time">{historyItem.time}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                        ) : (
-                            <div className="text-center overflow-hidden">
-                                No Remarks History
+                                    <option value="Interested">Interested</option>
+
+                                    <option value="FollowUp">Followup</option>
+                                </select>
                             </div>
-                        )}
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* ---------------------------drawer for filter----------------------------- */}
-            <Drawer
-                style={{ top: "50px" }}
-                anchor="left"
-                open={openFilterDrawer}
-                onClose={functionCloseFilterDrawer}>
-                <div style={{ width: "31em" }}>
-                    <div className="d-flex justify-content-between align-items-center container-xl pt-2 pb-2">
-                        <h2 className="title m-0">
-                            Filters
-                        </h2>
-                        <div>
-                            <button style={{ background: "none", border: "0px transparent" }} onClick={() => functionCloseFilterDrawer()}>
-                                <IoIosClose style={{
-                                    height: "36px",
-                                    width: "32px",
-                                    color: "grey"
-                                }} />
-                            </button>
                         </div>
-                    </div>
-                    <hr style={{ margin: "0px" }} />
-                    <div className="body-Drawer">
-                        <div className='container-xl mt-2 mb-2'>
-                            <div className='row'>
-                                <div className='col-sm-12 mt-3'>
-                                    <div className='form-group'>
-                                        <label for="exampleFormControlInput1" class="form-label">Status</label>
-                                        <select class="form-select form-select-md" aria-label="Default select example"
-                                            value={selectedStatus}
-                                            onChange={(e) => {
-                                                setSelectedStatus(e.target.value)
-                                            }}>
-                                            <option selected value='Select Status'>Select Status</option>
-                                           
-                                            <option value="Interested">Interested</option>
-                                            
-                                            <option value="FollowUp">Followup</option>
-                                        </select>
-                                    </div>
+                        <div className='col-sm-12 mt-2 d-none'>
+                            <div className='d-flex align-items-center justify-content-between'>
+                                <div className='form-group w-50 mr-1'>
+                                    <label for="exampleFormControlInput1" class="form-label">State</label>
+                                    <select class="form-select form-select-md" aria-label="Default select example"
+                                        value={selectedState}
+                                        onChange={(e) => {
+                                            setSelectedState(e.target.value)
+                                            setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
+                                            setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
+                                            //handleSelectState(e.target.value)
+                                        }}>
+                                        <option value=''>State</option>
+                                        {stateList.length !== 0 && stateList.map((item) => (
+                                            <option value={item.name}>{item.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <div className='col-sm-12 mt-2 d-none'>
-                                    <div className='d-flex align-items-center justify-content-between'>
-                                        <div className='form-group w-50 mr-1'>
-                                            <label for="exampleFormControlInput1" class="form-label">State</label>
-                                            <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedState}
-                                                onChange={(e) => {
-                                                    setSelectedState(e.target.value)
-                                                    setSelectedStateCode(stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode);
-                                                    setSelectedCity(City.getCitiesOfState("IN", stateList.filter(obj => obj.name === e.target.value)[0]?.isoCode))
-                                                    //handleSelectState(e.target.value)
-                                                }}>
-                                                <option value=''>State</option>
-                                                {stateList.length !== 0 && stateList.map((item) => (
-                                                    <option value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className='form-group w-50'>
-                                            <label for="exampleFormControlInput1" class="form-label">City</label>
-                                            <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedNewCity}
-                                                onChange={(e) => {
-                                                    setSelectedNewCity(e.target.value)
-                                                }}>
-                                                <option value="">City</option>
-                                                {selectedCity.lenth !== 0 && selectedCity.map((item) => (
-                                                    <option value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="exampleFormControlInput1" class="form-label">Assigned To</label>
-                                        <select class="form-select form-select-md" aria-label="Default select example"
-                                            value={selectedBDEName}
-                                            onChange={(e) => {
-                                                setSelectedBDEName(e.target.value)
-                                            }}>
-                                            <option value=''>Select BDE</option>
-                                            {newEmpData && newEmpData.map((item) => (
-                                                <option value={item.ename}>{item.ename}</option>))}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="exampleFormControlInput1" class="form-label">Bdm Forwarded</label>
-                                        <select class="form-select form-select-md" aria-label="Default select example"
-                                            value={selectedFowradedStatus}
-                                            onChange={(e) => {
-                                                setSelectedFowradedStatus(e.target.value)
-                                            }}>
-                                            <option value=''>Select BDE</option>
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="exampleFormControlInput1" class="form-label">Select Bdm</label>
-                                        <select class="form-select form-select-md" aria-label="Default select example"
-                                            value={selectedBdmName}
-                                            onChange={(e) => {
-                                                setSelectedBdmName(e.target.value)
-                                            }}>
-                                            <option value=''>Select BDE</option>
-                                            {bdmNames && bdmNames.map((item) => (
-                                                <option value={item.ename}>{item.ename}</option>))}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="assignon" class="form-label">Assign On</label>
-                                        <input type="date" class="form-control" id="assignon"
-                                            value={selectedAssignDate}
-                                            placeholder="dd-mm-yyyy"
-                                            defaultValue={null}
-                                            onChange={(e) => setSelectedAssignDate(e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2 d-none'>
-                                    <label class="form-label">Incorporation Date</label>
-                                    <div className='row align-items-center justify-content-between'>
-                                        <div className='col form-group mr-1'>
-                                            <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedYear}
-                                                onChange={(e) => {
-                                                    setSelectedYear(e.target.value)
-                                                }}>
-                                                <option value=''>Year</option>
-                                                {years.length !== 0 && years.map((item) => (
-                                                    <option>{item}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className='col form-group mr-1'>
-                                            <select class="form-select form-select-md" aria-label="Default select example"
-                                                value={selectedMonth}
-                                                disabled={selectedYear === ""}
-                                                onChange={(e) => {
-                                                    setSelectedMonth(e.target.value)
-                                                }}>
-                                                <option value=''>Month</option>
-                                                {months && months.map((item) => (
-                                                    <option value={item}>{item}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className='col form-group mr-1'>
-                                            <select class="form-select form-select-md" aria-label="Default select example"
-                                                disabled={selectedMonth === ''}
-                                                value={selectedDate}
-                                                onChange={(e) => setSelectedDate(e.target.value)}>
-                                                <option value=''>Date</option>
-                                                {daysInMonth.map((day) => (
-                                                    <option key={day} value={day}>{day}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="Uploadedby" class="form-label">Uploaded By</label>
-                                        <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name"
-                                            value={selectedAdminName}
-                                            onChange={(e) => {
-                                                setSelectedAdminName(e.target.value)
-                                            }} />
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="Uploadon" class="form-label">Uploaded On</label>
-                                        <input type="date" class="form-control" id="Uploadon"
-                                            value={selectedUploadedDate}
-                                            defaultValue={null}
-                                            placeholder="dd-mm-yyyy"
-                                            onChange={(e) => setSelectedUploadedDate(e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2 d-none'>
-                                    <div className='form-group'>
-                                        <label for="Uploadon" class="form-label">Extracted On</label>
-                                        <input type="date" class="form-control" id="Uploadon"
-                                            value={selectedExtractedDate}
-                                            defaultValue={null}
-                                            placeholder="dd-mm-yyyy"
-                                            onChange={(e) => setSelectedExtractedDate(e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="Uploadon" class="form-label">Status Modification Date</label>
-                                        <input type="date" class="form-control" id="Uploadon"
-                                            value={selectedStatusModificationDate}
-                                            defaultValue={null}
-                                            placeholder="dd-mm-yyyy"
-                                            onChange={(e) => setSelectedStatusModificationDate(e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className='col-sm-12 mt-2'>
-                                    <div className='form-group'>
-                                        <label for="Uploadon" class="form-label">Bde Forward Date</label>
-                                        <input type="date" class="form-control" id="Uploadon"
-                                            value={selectedBdeForwardDate}
-                                            defaultValue={null}
-                                            placeholder="dd-mm-yyyy"
-                                            onChange={(e) => setSelectedBdeForwardDate(e.target.value)} />
-                                    </div>
+                                <div className='form-group w-50'>
+                                    <label for="exampleFormControlInput1" class="form-label">City</label>
+                                    <select class="form-select form-select-md" aria-label="Default select example"
+                                        value={selectedNewCity}
+                                        onChange={(e) => {
+                                            setSelectedNewCity(e.target.value)
+                                        }}>
+                                        <option value="">City</option>
+                                        {selectedCity.lenth !== 0 && selectedCity.map((item) => (
+                                            <option value={item.name}>{item.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="footer-Drawer d-flex justify-content-between align-items-center">
-                        <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
-                        <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button>
+                        <div className='col-sm-12 mt-2'>
+                            <div className='form-group'>
+                                <label for="exampleFormControlInput1" class="form-label">Assigned To</label>
+                                <select class="form-select form-select-md" aria-label="Default select example"
+                                    value={selectedBDEName}
+                                    onChange={(e) => {
+                                        setSelectedBDEName(e.target.value)
+                                    }}>
+                                    <option value=''>Select BDE</option>
+                                    {newEmpData && newEmpData.map((item) => (
+                                        <option value={item.ename}>{item.ename}</option>))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2'>
+                            <div className='form-group'>
+                                <label for="exampleFormControlInput1" class="form-label">Bdm Forwarded</label>
+                                <select class="form-select form-select-md" aria-label="Default select example"
+                                    value={selectedFowradedStatus}
+                                    onChange={(e) => {
+                                        setSelectedFowradedStatus(e.target.value)
+                                    }}>
+                                    <option value=''>Select BDE</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2'>
+                            <div className='form-group'>
+                                <label for="exampleFormControlInput1" class="form-label">Select Bdm</label>
+                                <select class="form-select form-select-md" aria-label="Default select example"
+                                    value={selectedBdmName}
+                                    onChange={(e) => {
+                                        setSelectedBdmName(e.target.value)
+                                    }}>
+                                    <option value=''>Select BDE</option>
+                                    {bdmNames && bdmNames.map((item) => (
+                                        <option value={item.ename}>{item.ename}</option>))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2'>
+                            <div className='form-group'>
+                                <label for="assignon" class="form-label">Assign On</label>
+                                <input type="date" class="form-control" id="assignon"
+                                    value={selectedAssignDate}
+                                    placeholder="dd-mm-yyyy"
+                                    defaultValue={null}
+                                    onChange={(e) => setSelectedAssignDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2 d-none'>
+                            <label class="form-label">Incorporation Date</label>
+                            <div className='row align-items-center justify-content-between'>
+                                <div className='col form-group mr-1'>
+                                    <select class="form-select form-select-md" aria-label="Default select example"
+                                        value={selectedYear}
+                                        onChange={(e) => {
+                                            setSelectedYear(e.target.value)
+                                        }}>
+                                        <option value=''>Year</option>
+                                        {years.length !== 0 && years.map((item) => (
+                                            <option>{item}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className='col form-group mr-1'>
+                                    <select class="form-select form-select-md" aria-label="Default select example"
+                                        value={selectedMonth}
+                                        disabled={selectedYear === ""}
+                                        onChange={(e) => {
+                                            setSelectedMonth(e.target.value)
+                                        }}>
+                                        <option value=''>Month</option>
+                                        {months && months.map((item) => (
+                                            <option value={item}>{item}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className='col form-group mr-1'>
+                                    <select class="form-select form-select-md" aria-label="Default select example"
+                                        disabled={selectedMonth === ''}
+                                        value={selectedDate}
+                                        onChange={(e) => setSelectedDate(e.target.value)}>
+                                        <option value=''>Date</option>
+                                        {daysInMonth.map((day) => (
+                                            <option key={day} value={day}>{day}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2'>
+                            <div className='form-group'>
+                                <label for="Uploadedby" class="form-label">Uploaded By</label>
+                                <input type="text" class="form-control" id="Uploadedby" placeholder="Enter Name"
+                                    value={selectedAdminName}
+                                    onChange={(e) => {
+                                        setSelectedAdminName(e.target.value)
+                                    }} />
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2'>
+                            <div className='form-group'>
+                                <label for="Uploadon" class="form-label">Uploaded On</label>
+                                <input type="date" class="form-control" id="Uploadon"
+                                    value={selectedUploadedDate}
+                                    defaultValue={null}
+                                    placeholder="dd-mm-yyyy"
+                                    onChange={(e) => setSelectedUploadedDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2 d-none'>
+                            <div className='form-group'>
+                                <label for="Uploadon" class="form-label">Extracted On</label>
+                                <input type="date" class="form-control" id="Uploadon"
+                                    value={selectedExtractedDate}
+                                    defaultValue={null}
+                                    placeholder="dd-mm-yyyy"
+                                    onChange={(e) => setSelectedExtractedDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2'>
+                            <div className='form-group'>
+                                <label for="Uploadon" class="form-label">Status Modification Date</label>
+                                <input type="date" class="form-control" id="Uploadon"
+                                    value={selectedStatusModificationDate}
+                                    defaultValue={null}
+                                    placeholder="dd-mm-yyyy"
+                                    onChange={(e) => setSelectedStatusModificationDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className='col-sm-12 mt-2'>
+                            <div className='form-group'>
+                                <label for="Uploadon" class="form-label">Bde Forward Date</label>
+                                <input type="date" class="form-control" id="Uploadon"
+                                    value={selectedBdeForwardDate}
+                                    defaultValue={null}
+                                    placeholder="dd-mm-yyyy"
+                                    onChange={(e) => setSelectedBdeForwardDate(e.target.value)} />
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </Drawer>
+            </div>
+            <div className="footer-Drawer d-flex justify-content-between align-items-center">
+                <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
+                <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button>
+            </div>
+        </div>
+    </Drawer>
 
-            {/* ------------------------------- Forward to BDM -------------------------- */}
-      <Dialog
+    {/* ------------------------------- Forward to BDM -------------------------- */ }
+    <Dialog
         open={openAssignToBdm}
         onClose={handleCloseForwardBdmPopup}
         fullWidth
         maxWidth="sm">
         <DialogTitle>
-          Forward to BDM{" "}
-          <IconButton onClick={handleCloseForwardBdmPopup} style={{ float: "right" }}>
-            <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+            Forward to BDM{" "}
+            <IconButton onClick={handleCloseForwardBdmPopup} style={{ float: "right" }}>
+                <CloseIcon color="primary"></CloseIcon>
+            </IconButton>{" "}
         </DialogTitle>
         <DialogContent>
-          <div>
-            {newEmpData.length !== 0 ? (
-              <>
-                <div className="dialogAssign">
-                  <label>Forward to BDM</label>
-                  <div className="form-control">
-                    <select
-                      style={{
-                        width: "inherit",
-                        border: "none",
-                        outline: "none",
-                      }}
-                      value={bdmName}
-                      onChange={(e) => setBdmName(e.target.value)}
-                    >
-                      <option value="Not Alloted" disabled>
-                        Select a BDM
-                      </option>
-                      {newEmpData.filter((item) =>
-                        (item.bdmWork || item.designation === "Sales Manager")
-                      ).map((item) => (
-                        <option value={item.ename}>{item.ename}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div>
-                <h1>No Employees Found</h1>
-              </div>
-            )}
-          </div>
+            <div>
+                {newEmpData.length !== 0 ? (
+                    <>
+                        <div className="dialogAssign">
+                            <label>Forward to BDM</label>
+                            <div className="form-control">
+                                <select
+                                    style={{
+                                        width: "inherit",
+                                        border: "none",
+                                        outline: "none",
+                                    }}
+                                    value={bdmName}
+                                    onChange={(e) => setBdmName(e.target.value)}
+                                >
+                                    <option value="Not Alloted" disabled>
+                                        Select a BDM
+                                    </option>
+                                    {newEmpData.filter((item) =>
+                                        (item.bdmWork || item.designation === "Sales Manager")
+                                    ).map((item) => (
+                                        <option value={item.ename}>{item.ename}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div>
+                        <h1>No Employees Found</h1>
+                    </div>
+                )}
+            </div>
         </DialogContent>
         <button onClick={() => handleForwardDataToBDM(bdmName)} className="btn btn-primary">
-          Submit
+            Submit
         </button>
-      </Dialog>
+    </Dialog>
 
-        </div>
+        </div >
     )
 
 }

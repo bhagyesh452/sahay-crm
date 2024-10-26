@@ -478,7 +478,9 @@ function Header({ name, id, designation, empProfile, gender }) {
   // Set the next popup to appear 15 minutes after the current one closes
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem(userId));
-    if (!storedData.dismissed && popupCount < 3) {
+    const now = new Date();
+    const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
+    if (!storedData.dismissed && storedData.count < 3) {
       const timer = setTimeout(() => {
         console.log("3 yahan chala", storedData, popupCount, lastPopupTime)
         setShowPopup(true);
@@ -509,11 +511,11 @@ function Header({ name, id, designation, empProfile, gender }) {
         projectionDate: now // Use the current date directly
       });
 
-      if (newCount >= 3) {
-        setNoPopup(true)
-        setpopupMessage("This is your last chance to complete your projections; failure to do so will result in CRM access restrictions. Contact your floor manager for any assistance.");
-        return;
-      }
+      // if (newCount >= 3) {
+      //   setNoPopup(true)
+      //   setpopupMessage("This is your last chance to complete your projections; failure to do so will result in CRM access restrictions. Contact your floor manager for any assistance.");
+      //   return;
+      // }
 
       // Update component state
 
