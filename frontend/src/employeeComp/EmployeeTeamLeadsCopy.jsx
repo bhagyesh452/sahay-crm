@@ -516,17 +516,11 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 <>
                                                     <div className="btn-group mr-1" role="group" aria-label="Basic example">
                                                         <button className="btn mybtn">
-                                                            <FaCircleChevronLeft
-                                                                className="ep_right_button"
-                                                                onClick={handleChangeUrlPrev}
-                                                            />
+                                                            <FaCircleChevronLeft className="ep_right_button" onClick={handleChangeUrlPrev}/>
                                                         </button>
                                                         <button className="btn mybtn"><b>{data.ename}</b></button>
                                                         <button className="btn mybtn">
-                                                            <FaCircleChevronRight
-                                                                className="ep_left_button"
-                                                                onClick={handleChangeUrlNext}
-                                                            />
+                                                            <FaCircleChevronRight className="ep_left_button" onClick={handleChangeUrlNext}/>
                                                         </button>
                                                     </div>
 
