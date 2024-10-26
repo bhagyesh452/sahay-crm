@@ -918,7 +918,7 @@ function EmployeeProfile() {
 
                     {/* Payroll Information Component */}
                     <div class="tab-pane fade" id="PayrollInformation">
-                      <EmployeeViewPayrollView editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData} />
+                      <EmployeeViewPayrollView editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData}  />
                     </div>
 
                     <div class="tab-pane fade" id="Emergency_Contact">

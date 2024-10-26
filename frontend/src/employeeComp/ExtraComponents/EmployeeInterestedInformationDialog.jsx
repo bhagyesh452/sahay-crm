@@ -20,7 +20,9 @@ function EmployeeInterestedInformationDialog({
     companyStatus,
     interestedInformation = [], // Existing interested information
     forView,
-    fordesignation
+    fordesignation,
+    id
+
 }) {
 
     // console.log("inetsredtedInform", interestedInformation)
@@ -148,6 +150,9 @@ function EmployeeInterestedInformationDialog({
     };
 
     const handleSubmitToBackend = async () => {
+        const DT = new Date();
+        const date = DT.toLocaleDateString();
+        const time = DT.toLocaleTimeString();
         const payload = {
             ...formData,
             "Company Name": companyName,
@@ -157,7 +162,11 @@ function EmployeeInterestedInformationDialog({
             const response = await axios.post(`${secretKey}/company-data/company/${companyName}/interested-info`,
                 {
                     newInterestedInfo: payload, // The formData object
-                    status: status // Include the company status
+                    status: status, // Include the company status
+                    id: id,
+                    ename: ename,
+                    date: date,
+                    time: time
                 }
             );
             if (response.status === 200) {
@@ -174,43 +183,43 @@ function EmployeeInterestedInformationDialog({
     const handleClearInterestedInformation = () => {
         {
             !forView &&
-            
+
                 setFormData({
-                clientWhatsAppRequest: {
-                    nextFollowUpDate: '',
-                    remarks: ''
-                },
-                clientEmailRequest: {
-                    nextFollowUpDate: '',
-                    remarks: ''
-                },
-                interestedInServices: {
-                    servicesPitched: [],
-                    servicesInterestedIn: [],
-                    offeredPrice: '',
-                    nextFollowUpDate: '',
-                    remarks: ''
-                },
-                interestedButNotNow: {
-                    servicesPitched: [],
-                    servicesInterestedIn: [],
-                    offeredPrice: '',
-                    nextFollowUpDate: '',
-                    remarks: ''
-                },
-                mainQuestion: [], // Reset the main questions tracking
-                ename: ename,
-                "Company Name": companyName
-            })
+                    clientWhatsAppRequest: {
+                        nextFollowUpDate: '',
+                        remarks: ''
+                    },
+                    clientEmailRequest: {
+                        nextFollowUpDate: '',
+                        remarks: ''
+                    },
+                    interestedInServices: {
+                        servicesPitched: [],
+                        servicesInterestedIn: [],
+                        offeredPrice: '',
+                        nextFollowUpDate: '',
+                        remarks: ''
+                    },
+                    interestedButNotNow: {
+                        servicesPitched: [],
+                        servicesInterestedIn: [],
+                        offeredPrice: '',
+                        nextFollowUpDate: '',
+                        remarks: ''
+                    },
+                    mainQuestion: [], // Reset the main questions tracking
+                    ename: ename,
+                    "Company Name": companyName
+                })
             // Call setStatus and setStatusClass only if they are available
-        if (typeof setStatus === 'function') {
-            setStatus(companyStatus);
-        }
-        if (typeof setStatusClass === 'function') {
-            setStatusClass("untouched_status");
-        }
+            if (typeof setStatus === 'function') {
+                setStatus(companyStatus);
+            }
+            if (typeof setStatusClass === 'function') {
+                setStatusClass("untouched_status");
+            }
             setVisibleQuestions({})
-        
+
         }
         refetch();
         // Manually hide the modal

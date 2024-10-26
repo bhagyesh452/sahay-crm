@@ -32,6 +32,7 @@ function formatDateNew(timestamp) {
 
 // 1. ADD PROJECTION
 router.post("/update-followup", async (req, res) => {
+  const socketIO = req.io;
   try {
     const { companyName } = req.body;
     const todayDate = new Date();
@@ -39,7 +40,7 @@ router.post("/update-followup", async (req, res) => {
     const date = todayDate.toLocaleDateString();
     const finalData = { ...req.body, date, time };
 
-   
+    console.log(finalData)
 
     // Check if a document with companyName exists
     const existingData = await FollowUpModel.findOne({ companyName });
@@ -62,6 +63,7 @@ router.post("/update-followup", async (req, res) => {
             projectionDate: new Date() // Use the current date directly 
           }
         });
+      socketIO.emit('todays-projection-submmited', { projectionStatusForToday: "Yes" , name: finalData.ename });
       res.status(200).json({ message: "Data updated successfully" });
     } else {
       // Create new document

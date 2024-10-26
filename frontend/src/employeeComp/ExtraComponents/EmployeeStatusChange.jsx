@@ -463,6 +463,7 @@ const EmployeeStatusChange = ({
         setStatus={setStatus}
         setStatusClass={setStatusClass}
         companyStatus={companyStatus}
+        id={id}
       />
   </>);
 };

@@ -117,11 +117,6 @@ router.post("/update-status/:id", async (req, res) => {
         AssignDate: new Date()
       });
     }
-    // await CompanyModel.findByIdAndUpdate(id, {
-    //   Status: newStatus,
-    //   AssignDate: new Date()
-    // });
-
 
     // Define an array of statuses for which the lead history should be deleted
     const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched", "Not Picked Up"];
@@ -140,17 +135,20 @@ router.post("/update-status/:id", async (req, res) => {
       }
 
     } else if (newStatus === "FollowUp" || newStatus === "Interested") {
-      // Check if newStatus is either "FollowUp" or "Interested"
+
       // Find the company in LeadHistoryForInterestedandFollowModel
       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
         "Company Name": company["Company Name"],
       });
+      console.log("0 leadHistory", leadHistory)
 
       if (leadHistory) {
+        console.log("1 leadHistory", leadHistory)
         // If the record exists, update old status, new status, date, and time
-        leadHistory.oldStatus = oldStatus;
+        leadHistory.oldStatus = "Interested";
         leadHistory.newStatus = newStatus;
       } else {
+        console.log("2 leadHistory", leadHistory)
         // If the record does not exist, create a new one with the company name, ename, and statuses
         leadHistory = new LeadHistoryForInterestedandFollowModel({
           _id: id,
@@ -162,18 +160,11 @@ router.post("/update-status/:id", async (req, res) => {
           time: time,
         });
       }
+      console.log("3 leadHistory", leadHistory)
 
       // Save the lead history update
       await leadHistory.save();
     }
-
-    // Optionally, you can still create and save a new document in RecentUpdatesModel collection
-    // const newUpdate = new RecentUpdatesModel({
-    //   title: title,
-    //   date: date,
-    //   time: time,
-    // });
-    // await newUpdate.save();
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -2002,27 +1993,27 @@ router.get("/employees-new/:ename", async (req, res) => {
         break;
       case "FollowUp":
         dataQuery.Status = "FollowUp";
-        dataQuery.bdmAcceptStatus = {$in : ["NotForwarded" , undefined]};
+        dataQuery.bdmAcceptStatus = { $in: ["NotForwarded", undefined] };
         break;
       case "Interested":
         dataQuery.Status = { $in: ["Interested", "FollowUp"] };
-        dataQuery.bdmAcceptStatus = {$in : ["NotForwarded" , undefined]};
+        dataQuery.bdmAcceptStatus = { $in: ["NotForwarded", undefined] };
         break;
       case "Forwarded":
-        dataQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept" , undefined] };
+        dataQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept", undefined] };
         dataQuery.Status = { $in: ["Interested", "FollowUp"] };
         break;
       case "Matured":
         dataQuery.Status = { $in: ["Matured"] };
-        dataQuery.bdmAcceptStatus = { $in: ["Pending", "Accept", "NotForwarded" , undefined] };
+        dataQuery.bdmAcceptStatus = { $in: ["Pending", "Accept", "NotForwarded", undefined] };
         break;
       case "All":
         dataQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
-        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept" , undefined] };
+        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept", undefined] };
         break;
       default:
         dataQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
-        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept" , undefined] };
+        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept", undefined] };
         break;
     }
 
@@ -2076,22 +2067,22 @@ router.get("/employees-new/:ename", async (req, res) => {
       CompanyModel.countDocuments({
         ...countQuery,
         Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus:{$in : ["NotForwarded" , undefined]}
+        bdmAcceptStatus: { $in: ["NotForwarded", undefined] }
       }),
       CompanyModel.countDocuments({
         ...countQuery,
         Status: "Matured",
-        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept" , undefined] }
+        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", undefined] }
       }),
       CompanyModel.countDocuments({
         ...countQuery,
         Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept" , undefined] }
+        bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept", undefined] }
       }),
       CompanyModel.countDocuments({
         ...countQuery,
         Status: { $in: ["Untouched", "Busy", "Not Picked Up"] },
-        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept" , undefined] }
+        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] }
       })
     ]);
 
@@ -2697,7 +2688,7 @@ router.get("/bdmMaturedCases", async (req, res) => {
 // POST route to add/update interestedInformation
 router.post('/company/:companyName/interested-info', async (req, res) => {
   const companyName = req.params.companyName; // Extract company name from params
-  const { newInterestedInfo, status } = req.body; // Data from the request body
+  const { newInterestedInfo, status , id , ename ,date ,time} = req.body; // Data from the request body
   console.log(newInterestedInfo, status)
 
   try {
@@ -2718,6 +2709,38 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
         upsert: true // Create a new document if it doesn't exist
       }
     );
+
+    if (status === "FollowUp" || status === "Interested") {
+
+      // Find the company in LeadHistoryForInterestedandFollowModel
+      let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+        "Company Name": companyName,
+      });
+      console.log("0 leadHistory", leadHistory)
+
+      if (leadHistory) {
+        console.log("1 leadHistory", leadHistory)
+        // If the record exists, update old status, new status, date, and time
+        leadHistory.oldStatus = "Untouched";
+        leadHistory.newStatus = status;
+      } else {
+        console.log("2 leadHistory", leadHistory)
+        // If the record does not exist, create a new one with the company name, ename, and statuses
+        leadHistory = new LeadHistoryForInterestedandFollowModel({
+          _id: id,
+          "Company Name": companyName,
+          ename: ename,
+          oldStatus: "Untouched",
+          newStatus: status,
+          date: new Date(),  // Convert the date string to a Date object
+          time: time,
+        });
+      }
+      console.log("3 leadHistory", leadHistory)
+
+      // Save the lead history update
+      await leadHistory.save();
+    }
 
     if (updatedCompany) {
       res.status(200).json({

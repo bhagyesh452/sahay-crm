@@ -20,6 +20,7 @@ import MaleEmployee from "../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import ProjectionInformationDialog from "../employeeComp/ExtraComponents/ProjectionInformationDialog";
 import { useNavigate } from 'react-router-dom';
+import EmployeeNoPopup from "../employeeComp/ExtraComponents/EmployeeNoPopup";
 // import "./styles/header.css"
 
 
@@ -213,6 +214,21 @@ function Header({ name, id, designation, empProfile, gender }) {
       }
     });
 
+    socket.on("payment-approval-requets-reject", (res) => {
+      if (name === res.name) {
+        // Set count to 3 and dismissed to true, ensuring no further popups
+        localStorage.setItem(userId, JSON.stringify({
+          ...storedData,
+          count: 3,  // Set count to maximum to prevent further popups
+          dismissed: true,  // Mark dismissed as true
+          lastShown: new Date(),  // Optionally set the lastShown timestamp
+        }));
+        // Update component state
+        setPopupCount(3);
+        setShowPopup(false);
+      }
+    });
+
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
@@ -355,7 +371,7 @@ function Header({ name, id, designation, empProfile, gender }) {
   };
 
   useEffect(() => {
-    if (data.number) {
+    if (data?.number) {
       // Calculate the previous day
       const previousDay = new Date();
       previousDay.setDate(previousDay.getDate() - 1);
@@ -375,6 +391,8 @@ function Header({ name, id, designation, empProfile, gender }) {
   const [showPopup, setShowPopup] = useState(false);
   const [popupCount, setPopupCount] = useState(storedData.count || 0);
   const [lastPopupTime, setLastPopupTime] = useState(storedData.lastShown || null);
+  const [noPopup, setNoPopup] = useState(false)
+  const [popupMessage, setpopupMessage] = useState("")
   //const [dialogCount, setDialogCount] = useState(0); // Count of how many times dialog has shown
 
   // Utility function to get the current date in 'YYYY-MM-DD' format
@@ -440,7 +458,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     }
 
     // Show the popup if 15 minutes have passed since the last popup and the count is < 3
-    if (!storedData.dismissed && storedData.count < 3 && timeSinceLastPopup >= 15 * 60 * 1000) {
+    if (!storedData.dismissed && storedData.count < 3 && timeSinceLastPopup >= 1 * 60 * 1000) {
       console.log("Condition 2 met, showing popup:", {
         dismissed: storedData.dismissed,
         popupCount: storedData.count,
@@ -464,7 +482,7 @@ function Header({ name, id, designation, empProfile, gender }) {
       const timer = setTimeout(() => {
         console.log("3 yahan chala", storedData, popupCount, lastPopupTime)
         setShowPopup(true);
-      }, 15 * 60 * 1000); // 15 minutes from now
+      }, 1 * 60 * 1000); // 15 minutes from now
 
       return () => clearTimeout(timer); // Clean up the timer on component unmount
     }
@@ -475,6 +493,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     const storedData = JSON.parse(localStorage.getItem(userId));
     const newCount = storedData.count + 1;
     const now = new Date();
+
 
     // Update localStorage with new count and last shown time
     localStorage.setItem(
@@ -489,6 +508,12 @@ function Header({ name, id, designation, empProfile, gender }) {
         projectionStatusForToday: "Pending",
         projectionDate: now // Use the current date directly
       });
+
+      if (newCount >= 3) {
+        setNoPopup(true)
+        setpopupMessage("This is your last chance to complete your projections; failure to do so will result in CRM access restrictions. Contact your floor manager for any assistance.");
+        return;
+      }
 
       // Update component state
 
@@ -513,14 +538,16 @@ function Header({ name, id, designation, empProfile, gender }) {
     }));
     // Update component state
     setPopupCount(3);
-    setShowPopup(false)
+    setShowPopup(false);
+    setNoPopup(true)
+    setpopupMessage("Today's projection count is zero, strict actions will be taken!")
     try {
       await axios.post(`${secretKey}/employee/projectionstatustoday-no/${userId}`, {
         projectionStatusForToday: "No",
         projectionDate: new Date() // Use the current date directly
       });
 
-      
+
     } catch (error) {
       console.error("Error updating projection status:", error);
       // Handle error (e.g., show a notification or alert)
@@ -613,6 +640,12 @@ function Header({ name, id, designation, empProfile, gender }) {
         showDialog={showPopup}
 
       />
+      <EmployeeNoPopup
+        noPopup={noPopup}
+        setNoPopup={setNoPopup}
+        message={popupMessage}
+      />
+
 
     </div>
   );

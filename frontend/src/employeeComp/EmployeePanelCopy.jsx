@@ -131,8 +131,10 @@ function EmployeePanelCopy({ fordesignation }) {
             document.title = `Floor-Manager-Sahay-CRM`;
         } else if (fordesignation === "admin") {
             document.title = `Admin-Sahay-CRM`;
-        } else {
+        } else if(fordesignation === "datamanager") {
             document.title = `Datamanager-Sahay-CRM`;
+        } else{
+            document.title = `Employee-Sahay-CRM`;
         }
     }, [data.ename]);
 
