@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { MdOutlineEdit } from "react-icons/md";
@@ -240,7 +240,7 @@ const TeamLeadsRemarksDialog = ({
                                                             <div className="reamrk-card-innerText">
                                                                 <pre className="remark-text">{remark.bdmRemarks}</pre>
                                                             </div>
-                                                            {isEditable && (
+                                                            {isEditable && !newDesignation &&(
                                                                 <div className="dlticon">
                                                                     <MdDelete
                                                                         style={{ cursor: "pointer", color: "#f70000", width: "14px" }}

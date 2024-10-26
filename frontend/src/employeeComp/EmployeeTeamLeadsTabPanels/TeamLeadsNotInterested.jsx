@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -6,12 +6,8 @@ import { GoArrowLeft } from "react-icons/go";
 import { GoArrowRight } from "react-icons/go";
 import Nodata from '../../components/Nodata';
 import TeamLeadsRemarksDialog from '../ExtraComponents/TeamLeadsRemarksDialog';
-import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
-import RedesignedForm from '../../admin/RedesignedForm';
-import AddLeadForm from '../../admin/AddLeadForm';
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import { FaEye } from "react-icons/fa";
-import Cliploader from "react-spinners/ClipLoader";
 
 function TeamLeadsNotInterested({
     secretKey,
