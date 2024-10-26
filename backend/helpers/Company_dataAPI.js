@@ -2000,8 +2000,8 @@ router.get("/employees-new/:ename", async (req, res) => {
         dataQuery.bdmAcceptStatus = { $in: ["NotForwarded", undefined] };
         break;
       case "Forwarded":
-        dataQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept", undefined] };
         dataQuery.Status = { $in: ["Interested", "FollowUp"] };
+        dataQuery.bdmAcceptStatus = { $in: ["Pending", "Accept"] };
         break;
       case "Matured":
         dataQuery.Status = { $in: ["Matured"] };
@@ -2077,7 +2077,7 @@ router.get("/employees-new/:ename", async (req, res) => {
       CompanyModel.countDocuments({
         ...countQuery,
         Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept", undefined] }
+        bdmAcceptStatus: { $in: ["Pending", "Accept"] }
       }),
       CompanyModel.countDocuments({
         ...countQuery,

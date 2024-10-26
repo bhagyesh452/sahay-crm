@@ -168,7 +168,7 @@ function EmployeesProjectionSummary() {
       const projectionStatusMap = Object.fromEntries(
         employeeData.map(emp => [emp.ename, emp.projectionStatusForToday || "No"]) // Default to "no"
       );
-      console.log("projectionStatusMap", projectionStatusMap)
+      console.log("projectionStatusMap", projectionStatusMap , employeeData)
 
       // Merge projectionStatusToday into followDataToday
       const updatedFollowDataToday = filteredFollowData.map(company => ({
