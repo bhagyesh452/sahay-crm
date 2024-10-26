@@ -39,7 +39,7 @@ router.post("/update-followup", async (req, res) => {
     const date = todayDate.toLocaleDateString();
     const finalData = { ...req.body, date, time };
 
-    console.log(finalData)
+   
 
     // Check if a document with companyName exists
     const existingData = await FollowUpModel.findOne({ companyName });
@@ -59,7 +59,7 @@ router.post("/update-followup", async (req, res) => {
         {
           $set: {
             projectionStatusForToday: "Yes",
-            projectionDate: now // Use the current date directly 
+            projectionDate: new Date() // Use the current date directly 
           }
         });
       res.status(200).json({ message: "Data updated successfully" });

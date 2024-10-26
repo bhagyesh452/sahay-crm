@@ -110,37 +110,79 @@ function EmployeesProjectionSummary() {
 
   //-----------------------------------fetching function follow up data-----------------------------------
 
+  // const fetchFollowUpData = async () => {
+  //   try {
+  //     setLoading(true)
+  //     const response = await fetch(`${secretKey}/projection/projection-data`);
+
+  //     const followdata = await response.json();
+  //     setfollowData(followdata);
+  //     setFollowDataFilter(followdata)
+  //     setFollowDataNew(followdata)
+  //     //console.log("followdata", followdata)
+  //     setfollowDataToday(
+  //       followdata
+  //         .filter((company) => {
+  //           // Assuming you want to filter companies with an estimated payment date for today
+  //           const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+  //           return company.estPaymentDate === today;
+  //         })
+  //     );
+  //     setfollowDataTodayNew(
+  //       followdata
+  //         .filter((company) => {
+  //           // Assuming you want to filter companies with an estimated payment date for today
+  //           const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+  //           return company.estPaymentDate === today;
+  //         })
+  //     );
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     return { error: "Error fetching data" };
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // };
+
   const fetchFollowUpData = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await fetch(`${secretKey}/projection/projection-data`);
-    
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
       const followdata = await response.json();
       setfollowData(followdata);
-      setFollowDataFilter(followdata)
-      setFollowDataNew(followdata)
-      //console.log("followdata", followdata)
-      setfollowDataToday(
-        followdata
-          .filter((company) => {
-            // Assuming you want to filter companies with an estimated payment date for today
-            const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-            return company.estPaymentDate === today;
-          })
+      setFollowDataFilter(followdata);
+      setFollowDataNew(followdata);
+
+      // Get today's date
+      const today = new Date().toISOString().split("T")[0]; // Format 'YYYY-MM-DD'
+
+      // Filter follow data for today's estimated payment date
+      const filteredFollowData = followdata.filter(company => company.estPaymentDate === today);
+
+      // Create a map of employee names to their projection statuses
+      const projectionStatusMap = Object.fromEntries(
+        employeeData.map(emp => [emp.ename, emp.projectionStatusForToday || "No"]) // Default to "no"
       );
-      setfollowDataTodayNew(
-        followdata
-          .filter((company) => {
-            // Assuming you want to filter companies with an estimated payment date for today
-            const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-            return company.estPaymentDate === today;
-          })
-      );
+
+      // Merge projectionStatusToday into followDataToday
+      const updatedFollowDataToday = filteredFollowData.map(company => ({
+        ...company,
+        projectionStatusToday: projectionStatusMap[company.ename] || "no" // Default to "no" if not found
+      }));
+
+      setfollowDataToday(updatedFollowDataToday);
+      setfollowDataTodayNew(updatedFollowDataToday);
+
     } catch (error) {
       console.error("Error fetching data:", error);
       return { error: "Error fetching data" };
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -482,7 +524,7 @@ function EmployeesProjectionSummary() {
     return 0;
   });
 
-
+console.log("soretdData" , sortedData)
   //------------------------projection table open functions--------------------------------------------------
   const functionCompleteProjectionTable = () => {
     setCompleteProjectionTable(true);
@@ -945,9 +987,9 @@ function EmployeesProjectionSummary() {
                         }}
                       />
                     </th>
-                    {/*<th>
+                    <th>
                       Projection Status
-                    </th>*/}
+                    </th>
                   </tr>
                 </thead>
                 {loading ?
@@ -1015,7 +1057,7 @@ function EmployeesProjectionSummary() {
                                   partObj.bdmName === obj
                                 ) {
                                   let sumServices = partObj.offeredServices.length;
-                                  if(partObj.caseType === "Recieved"){                                   
+                                  if (partObj.caseType === "Recieved") {
                                     sumServices /= 2
                                   }
                                   totalServices += sumServices;
@@ -1060,6 +1102,7 @@ function EmployeesProjectionSummary() {
                                 }, 0)
                                 .toLocaleString("en-IN", numberFormatOptions)}
                             </td>
+                            <td>{followDataToday.projectionStatusForToday}</td>
                             {/* <td>-</td> */}
                           </tr>
                         ))}
@@ -1363,6 +1406,7 @@ function EmployeesProjectionSummary() {
                       />
                     </th>
                     <th>Action</th>
+                    
                   </tr>
                 </thead>
                 {loading ? (
@@ -1552,7 +1596,7 @@ function EmployeesProjectionSummary() {
                     <tr key={`sub-row-${Index}`}>
                       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
                       {/* Render other employee data */}
-                      <td>{obj.caseType === "Recieved" ? obj.bdeName || obj.ename: obj.ename}</td>
+                      <td>{obj.caseType === "Recieved" ? obj.bdeName || obj.ename : obj.ename}</td>
                       <td>{obj.caseType === "Recieved" ? obj.bdmName || obj.bdeName : obj.ename}</td>
                       <td>{obj.companyName}</td>
                       <td>{obj.offeredServices.join(",")}</td>

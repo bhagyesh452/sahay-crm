@@ -464,7 +464,7 @@ function Header({ name, id, designation, empProfile, gender }) {
       const timer = setTimeout(() => {
         console.log("3 yahan chala", storedData, popupCount, lastPopupTime)
         setShowPopup(true);
-      }, 1 * 60 * 1000); // 15 minutes from now
+      }, 15 * 60 * 1000); // 15 minutes from now
 
       return () => clearTimeout(timer); // Clean up the timer on component unmount
     }
