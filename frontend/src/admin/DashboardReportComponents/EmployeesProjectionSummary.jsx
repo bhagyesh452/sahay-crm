@@ -168,7 +168,7 @@ function EmployeesProjectionSummary() {
       const projectionStatusMap = Object.fromEntries(
         employeeData.map(emp => [emp.ename, emp.projectionStatusForToday || "No"]) // Default to "no"
       );
-      console.log("projectionStatusMap", projectionStatusMap , employeeData)
+      console.log("projectionStatusMap", projectionStatusMap, employeeData)
 
       // Merge projectionStatusToday into followDataToday
       const updatedFollowDataToday = filteredFollowData.map(company => ({
@@ -991,7 +991,7 @@ function EmployeesProjectionSummary() {
                     <th>
                       Projection Status
                     </th>
-                    
+
                   </tr>
                 </thead>
                 {loading ?
@@ -1135,7 +1135,7 @@ function EmployeesProjectionSummary() {
                                 <td>0</td>
                                 <td>0</td>
                                 <td>
-                                  {employee.projectionStatusForToday ? employee.projectionStatusForToday : "No" }
+                                  {employee.projectionStatusForToday ? employee.projectionStatusForToday : "No"}
                                 </td>
                                 {/* <td>0</td> */}
                               </tr>
@@ -1162,7 +1162,9 @@ function EmployeesProjectionSummary() {
                               <td>0</td>
                               <td>0</td>
                               <td>0</td>
-                              <td>-</td>
+                              <td>
+                                {employee.projectionStatusForToday ? employee.projectionStatusForToday : "No"}
+                              </td>
                             </tr>
 
                           ))
@@ -1225,7 +1227,7 @@ function EmployeesProjectionSummary() {
                       <td className="particular" colSpan={9}>
                         <Nodata />
                       </td>
-                    
+
                     </tr>
                   </tbody>
                 )}

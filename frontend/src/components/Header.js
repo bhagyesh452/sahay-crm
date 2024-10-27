@@ -32,6 +32,12 @@ function Header({ name, id, designation, empProfile, gender }) {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogCount, setDialogCount] = useState(0);
   const [showDialogStatus, setShowDialogStatus] = useState(false);
+  const storedData = JSON.parse(localStorage.getItem(userId)) || {};
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupCount, setPopupCount] = useState(storedData.count || 0);
+  const [lastPopupTime, setLastPopupTime] = useState(storedData.lastShown || null);
+  const [noPopup, setNoPopup] = useState(false)
+  const [popupMessage, setpopupMessage] = useState("")
   const navigate = useNavigate();
   // Fetch initial data when user logs in
   const fetchData = async () => {
@@ -214,18 +220,16 @@ function Header({ name, id, designation, empProfile, gender }) {
       }
     });
 
-    socket.on("payment-approval-requets-reject", (res) => {
+    socket.on("todays-projection-submmited", (res) => {
+      console.log("res" , res)
       if (name === res.name) {
         // Set count to 3 and dismissed to true, ensuring no further popups
-        localStorage.setItem(userId, JSON.stringify({
-          ...storedData,
-          count: 3,  // Set count to maximum to prevent further popups
-          dismissed: true,  // Mark dismissed as true
-          lastShown: new Date(),  // Optionally set the lastShown timestamp
-        }));
+        const newStoredData = JSON.parse(localStorage.getItem(userId))
+    
+        console.log("kyaidharchala" , newStoredData )
         // Update component state
-        setPopupCount(3);
-        setShowPopup(false);
+        setPopupCount(newStoredData.count || 0);
+        setLastPopupTime(new Date(newStoredData.lastShown) || null);
       }
     });
 
@@ -234,6 +238,8 @@ function Header({ name, id, designation, empProfile, gender }) {
       socket.disconnect();
     };
   }, [name]);
+
+  console.log("popupcount" , popupCount)
 
   useEffect(() => {
     const checkAndRunActiveStatus = () => {
@@ -387,12 +393,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     }
   }, [data]);
 
-  const storedData = JSON.parse(localStorage.getItem(userId)) || {};
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupCount, setPopupCount] = useState(storedData.count || 0);
-  const [lastPopupTime, setLastPopupTime] = useState(storedData.lastShown || null);
-  const [noPopup, setNoPopup] = useState(false)
-  const [popupMessage, setpopupMessage] = useState("")
+  
   //const [dialogCount, setDialogCount] = useState(0); // Count of how many times dialog has shown
 
   // Utility function to get the current date in 'YYYY-MM-DD' format
@@ -448,7 +449,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     console.log("Popup Count:", storedData?.count);
 
     // Check if storedData is null or if popup is dismissed
-    if (!storedData || storedData.dismissed || storedData.count >= 3) {
+    if (!storedData && storedData.dismissed && storedData.count >= 3) {
       console.log("Condition 1 met, exiting:", {
         dismissed: storedData?.dismissed,
         popupCount: storedData?.count,
@@ -458,7 +459,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     }
 
     // Show the popup if 15 minutes have passed since the last popup and the count is < 3
-    if (!storedData.dismissed && storedData.count < 3 && timeSinceLastPopup >= 1 * 60 * 1000) {
+    if (!storedData.dismissed && storedData.count < 3 && timeSinceLastPopup >= 15 * 60 * 1000) {
       console.log("Condition 2 met, showing popup:", {
         dismissed: storedData.dismissed,
         popupCount: storedData.count,
@@ -478,13 +479,19 @@ function Header({ name, id, designation, empProfile, gender }) {
   // Set the next popup to appear 15 minutes after the current one closes
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem(userId));
+    console.log("Stored Data:", storedData);
+    
     const now = new Date();
     const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
     if (!storedData.dismissed && storedData.count < 3) {
       const timer = setTimeout(() => {
-        console.log("3 yahan chala", storedData, popupCount, lastPopupTime)
+        console.log("Condition 2 met, showing popup:", {
+          dismissed: storedData.dismissed,
+          popupCount: storedData.count,
+          timeSinceLastPopup: timeSinceLastPopup,
+        });
         setShowPopup(true);
-      }, 1 * 60 * 1000); // 15 minutes from now
+      }, 15 * 60 * 1000); // 15 minutes from now
 
       return () => clearTimeout(timer); // Clean up the timer on component unmount
     }
@@ -526,7 +533,6 @@ function Header({ name, id, designation, empProfile, gender }) {
     }
   };
 
-  // Handle the "No" button to disable popups for the rest of the day
   // Handle the "No" button to disable popups for the rest of the day
   const handleNoClick = async () => {
     const storedData = JSON.parse(localStorage.getItem(userId)) || {};

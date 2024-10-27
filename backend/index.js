@@ -123,7 +123,7 @@ app.use('/api/bdm-data', (req, res, next) => {
   req.io = socketIO;
   next();
 }, bdmAPI)
-app.use('/api/projection', ProjectionAPI)
+
 app.use('/api/employee', EmployeeAPI)
 app.use('/api/rm-services', (req, res, next) => {
   req.io = socketIO;
@@ -142,6 +142,10 @@ app.use('/api/relationshipManager', RalationshipManagerAPI);
 app.use('/api/graphicDesigner', GraphicDesignerAPI);
 app.use('/api/financeAnalyst', FinanceAnalystAPI);
 app.use('/api/contentWriter', ContentWriterAPI);
+app.use('/api/projection', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, ProjectionAPI);
 app.use('/api/recruiter', (req, res, next) => {
   req.io = socketIO;
   next();

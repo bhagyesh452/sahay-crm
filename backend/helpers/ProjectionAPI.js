@@ -69,6 +69,15 @@ router.post("/update-followup", async (req, res) => {
       // Create new document
       const newData = new FollowUpModel(finalData);
       await newData.save();
+      await adminModel.findOneAndUpdate(
+        { ename: finalData.ename },
+        {
+          $set: {
+            projectionStatusForToday: "Yes",
+            projectionDate: new Date() // Use the current date directly 
+          }
+        });
+      socketIO.emit('todays-projection-submmited', { projectionStatusForToday: "Yes" , name: finalData.ename });
       res.status(201).json({ message: "New data added successfully" });
     }
   } catch (error) {
