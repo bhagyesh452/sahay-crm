@@ -955,14 +955,15 @@ function EmployeeTeamLeadsCopy({ designation }) {
             ) : addFormOpen ? (
                 <AddLeadForm
                     isEmployee={true}
-                    employeeEmail={data.email}
-                    newBdeName={newBdeName}
+                    employeeName={newBdeName}
+                    employeeEmail={newEmpData.find(employee => employee.ename === newBdeName)?.email}
                     isDeletedEmployeeCompany={deletedEmployeeStatus}
                     setFormOpen={setAddFormOpen}
                     companysName={companyName}
                     setNowToFetch={refetchTeamLeads}
                     setDataStatus={setDataStatus}
-                    employeeName={data.ename}
+                    bdmName={data.ename}
+                    bdmEmail={data.email}
                     handleCloseFormOpen={handleCloseFormOpen}
                 />
             ) : null

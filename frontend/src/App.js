@@ -188,7 +188,7 @@ function App() {
             <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeadsCopy />} />
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
-            <Route path="/employee-assets/:userId" element={<EmployeeAssets />} />
+            {/* <Route path="/employee-assets/:userId" element={<EmployeeAssets />} /> */}
             <Route path="/employee-profile-details/:userId" element={<EmployeeProfile />} />
             <Route path="/employee/show-notification/:userId" element={<EmployeeShowNotification />} />
           </Route>
@@ -296,7 +296,7 @@ function App() {
                 <Route path="/managing-director/bookings" element={<BookingList />} />
                 <Route path="/managing-director/notification" element={<ShowNotification />} />
                 <Route path="/managing-director/bookings/Addbookings" element={<RedesignedForm />} />
-                <Route path="/managing-director/servicesandschemes" element={<Services />} />
+                {/* <Route path="/managing-director/servicesandschemes" element={<Services />} /> */}
                 <Route path="/managing-director/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
                 <Route path="/managing-director/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />
               </Route>
