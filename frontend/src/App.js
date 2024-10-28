@@ -188,7 +188,7 @@ function App() {
             <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeadsCopy />} />
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
-            <Route path="/employee-assets/:userId" element={<EmployeeAssets />} />
+            {/* <Route path="/employee-assets/:userId" element={<EmployeeAssets />} /> */}
             <Route path="/employee-profile-details/:userId" element={<EmployeeProfile />} />
             <Route path="/employee/show-notification/:userId" element={<EmployeeShowNotification />} />
           </Route>
@@ -209,7 +209,8 @@ function App() {
             <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
             <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
-            <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} />
+            {/* <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} /> */}
+            <Route path="/floormanager/teamleads/:userId" element={<EmployeeTeamLeadsCopy />} />
             <Route path="/floormanager/bookings/:userId" element={<BdmBookings />} />
             <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
@@ -296,7 +297,7 @@ function App() {
                 <Route path="/managing-director/bookings" element={<BookingList />} />
                 <Route path="/managing-director/notification" element={<ShowNotification />} />
                 <Route path="/managing-director/bookings/Addbookings" element={<RedesignedForm />} />
-                <Route path="/managing-director/servicesandschemes" element={<Services />} />
+                {/* <Route path="/managing-director/servicesandschemes" element={<Services />} /> */}
                 <Route path="/managing-director/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
                 <Route path="/managing-director/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />
               </Route>

@@ -121,7 +121,7 @@ function Navbar() {
                       : "nav-item"
                   }
                 >
-                  <Link
+                  {/* <Link
                     style={{ textDecoration: "none", color: "black" }}
                     to="/managing-director/servicesandschemes"
                   >
@@ -131,7 +131,7 @@ function Navbar() {
                       </span>
                       <span className="nav-link-title">Schemes & Services</span>
                     </a>
-                  </Link>
+                  </Link> */}
                 </li>
               </ul>
 

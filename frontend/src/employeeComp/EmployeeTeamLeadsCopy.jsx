@@ -714,7 +714,7 @@ console.log("data" , teamLeadsData?.data);
                             </div>
                         </div>
 
-                        <div onCopy={(e) => e.preventDefault()} className="page-body">
+                        <div onCopy={(e) => !designation && e.preventDefault()} className="page-body">
                             <div className="container-xl">
                                 <div class="card-header my-tab">
                                     <ul class="nav nav-tabs sales-nav-tabs card-header-tabs nav-fill p-0" data-bs-toggle="tabs">
@@ -955,14 +955,15 @@ console.log("data" , teamLeadsData?.data);
             ) : addFormOpen ? (
                 <AddLeadForm
                     isEmployee={true}
-                    employeeEmail={data.email}
-                    newBdeName={newBdeName}
+                    employeeName={newBdeName}
+                    employeeEmail={newEmpData.find(employee => employee.ename === newBdeName)?.email}
                     isDeletedEmployeeCompany={deletedEmployeeStatus}
                     setFormOpen={setAddFormOpen}
                     companysName={companyName}
                     setNowToFetch={refetchTeamLeads}
                     setDataStatus={setDataStatus}
-                    employeeName={data.ename}
+                    bdmName={data.ename}
+                    bdmEmail={data.email}
                     handleCloseFormOpen={handleCloseFormOpen}
                 />
             ) : null
