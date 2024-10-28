@@ -209,7 +209,8 @@ function App() {
             <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
             <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
-            <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} />
+            {/* <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} /> */}
+            <Route path="/floormanager/teamleads/:userId" element={<EmployeeTeamLeadsCopy />} />
             <Route path="/floormanager/bookings/:userId" element={<BdmBookings />} />
             <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>

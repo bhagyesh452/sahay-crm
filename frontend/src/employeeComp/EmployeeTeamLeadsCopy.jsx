@@ -65,7 +65,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [teamData, setTeamData] = useState([]);
     const [bdmName, setbdmName] = useState("");
 
-    const itemsPerPage = 500;
+    const itemsPerPage = 50;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
@@ -714,7 +714,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                             </div>
                         </div>
 
-                        <div onCopy={(e) => e.preventDefault()} className="page-body">
+                        <div onCopy={(e) => !designation && e.preventDefault()} className="page-body">
                             <div className="container-xl">
                                 <div class="card-header my-tab">
                                     <ul class="nav nav-tabs sales-nav-tabs card-header-tabs nav-fill p-0" data-bs-toggle="tabs">
