@@ -65,7 +65,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [teamData, setTeamData] = useState([]);
     const [bdmName, setbdmName] = useState("");
 
-    const itemsPerPage = 50;
+    const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
