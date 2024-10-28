@@ -150,8 +150,8 @@ function TestLeads() {
     //         console.error("Error fetching remarks history:", error);
     //     }
     // };
-    console.log("remarksHisory", remarksHistory)
-    console.log("filtered", filteredRemarks)
+    // console.log("remarksHisory", remarksHistory)
+    // console.log("filtered", filteredRemarks)
 
 
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate

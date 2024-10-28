@@ -1108,9 +1108,12 @@ function EmployeesProjectionSummary() {
                               <td>
                                 {/* Look up projectionStatusForToday for the employee */}
                                 {
-                                  followDataToday.find(partObj => partObj.ename === obj).projectionStatusForToday || "No"
+                                  followDataToday.find(partObj => partObj.ename === obj)
+                                    ? followDataToday.find(partObj => partObj.ename === obj).projectionStatusForToday
+                                    : "No"
                                 }
                               </td>
+
                               {/* <td>-</td> */}
                             </tr>
                           ))}
