@@ -217,11 +217,14 @@ function EmployeeInterestedInformationDialog({
             }
             if (typeof setStatusClass === 'function') {
                 setStatusClass("untouched_status");
+            } if (typeof refetch === 'function') {
+                refetch();
             }
             setVisibleQuestions({})
 
         }
-        refetch();
+
+     
         // Manually hide the modal
         const modalElement = document.getElementById(modalId);
         modalElement.classList.remove("show");

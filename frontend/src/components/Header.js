@@ -221,12 +221,12 @@ function Header({ name, id, designation, empProfile, gender }) {
     });
 
     socket.on("todays-projection-submmited", (res) => {
-      console.log("res" , res)
+      console.log("res", res)
       if (name === res.name) {
         // Set count to 3 and dismissed to true, ensuring no further popups
         const newStoredData = JSON.parse(localStorage.getItem(userId))
-    
-        console.log("kyaidharchala" , newStoredData )
+
+        console.log("kyaidharchala", newStoredData)
         // Update component state
         setPopupCount(newStoredData.count || 0);
         setLastPopupTime(new Date(newStoredData.lastShown) || null);
@@ -239,7 +239,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     };
   }, [name]);
 
-  console.log("popupcount" , popupCount)
+  console.log("popupcount", popupCount)
 
   useEffect(() => {
     const checkAndRunActiveStatus = () => {
@@ -393,7 +393,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     }
   }, [data]);
 
-  
+
   //const [dialogCount, setDialogCount] = useState(0); // Count of how many times dialog has shown
 
   // Utility function to get the current date in 'YYYY-MM-DD' format
@@ -480,7 +480,7 @@ function Header({ name, id, designation, empProfile, gender }) {
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem(userId));
     console.log("Stored Data:", storedData);
-    
+
     const now = new Date();
     const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
     if (!storedData.dismissed && storedData.count < 3) {
@@ -518,11 +518,13 @@ function Header({ name, id, designation, empProfile, gender }) {
         projectionDate: now // Use the current date directly
       });
 
-      // if (newCount >= 3) {
-      //   setNoPopup(true)
-      //   setpopupMessage("This is your last chance to complete your projections; failure to do so will result in CRM access restrictions. Contact your floor manager for any assistance.");
-      //   return;
-      // }
+      // If the new count is 3, set a timer for 15 minutes
+      if (newCount === 3) {
+        setTimeout(() => {
+          setpopupMessage("Today's projection count is zero, strict actions will be taken!");
+          setNoPopup(true);
+        }, 15 * 60 * 1000); // 15 minutes in milliseconds
+      }
 
       // Update component state
 
@@ -562,8 +564,6 @@ function Header({ name, id, designation, empProfile, gender }) {
     }
     ;
   };
-
-
 
 
   return (

@@ -50,6 +50,8 @@ import { dateCalendarClasses } from '@mui/x-date-pickers/DateCalendar/dateCalend
 import { LiaPagerSolid } from "react-icons/lia";
 import InterestedFollowUpLeads from './InterestedFollowUpLeads';
 import AdminRemarksDialog from './ExtraComponent/AdminRemarksDialog';
+import { LuHistory } from "react-icons/lu";
+import CallHistory from '../employeeComp/CallHistory';
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -148,8 +150,8 @@ function TestLeads() {
     //         console.error("Error fetching remarks history:", error);
     //     }
     // };
-    console.log("remarksHisory", remarksHistory)
-    console.log("filtered", filteredRemarks)
+    // console.log("remarksHisory", remarksHistory)
+    // console.log("filtered", filteredRemarks)
 
 
     const latestSortCount = sortPattern === "IncoDate" ? newSortType.incoDate : newSortType.assignDate
@@ -165,15 +167,7 @@ function TestLeads() {
     }, [dataStatus, isSearching, sortPattern, isFilter])
 
     //--------------------function to change pages ------------------------------
-    // const handleNextPage = () => {
-    //     setCurrentPage(currentPage + 1);
-    //     fetchData(currentPage + 1, latestSortCount);
-    // };
 
-    // const handlePreviousPage = () => {
-    //     setCurrentPage(currentPage - 1);
-    //     fetchData(currentPage - 1, latestSortCount);
-    // };
 
     const handleNextPage = () => {
         const nextPage = currentPage + 1;
@@ -590,177 +584,6 @@ function TestLeads() {
 
         return formattedDate;
     }
-    //console.log(csvdata)
-
-    // const handleUploadData = async (e) => {
-    //     // Get current date and time
-
-    //     // newArray now contains objects with updated properties
-    //     const adminName = localStorage.getItem("adminName")
-
-    //     if (selectedOption === "someoneElse") {
-    //         const properDate = new Date();
-    //         const updatedCsvdata = csvdata.map((data) => ({
-    //             ...data,
-    //             ename: newemployeeSelection,
-    //             AssignDate: properDate,
-    //             UploadedBy: adminName ? adminName : "Admin"
-    //         }));
-
-    //         const currentDate = new Date().toLocaleDateString();
-    //         const currentTime = new Date().toLocaleTimeString();
-
-    //         //console.log(updatedCsvdata)
-    //         // Create a new array of objects with desired properties
-    //         const newArray = updatedCsvdata.map((data) => ({
-    //             date: currentDate,
-    //             time: currentTime,
-    //             ename: newemployeeSelection,
-    //             companyName: data["Company Name"], // Assuming companyName is one of the existing properties in updatedCsvdata
-    //         }));
-    //         if (updatedCsvdata.length !== 0) {
-    //             setLoading(true); // Move setLoading outside of the loop
-    //             setOpenBacdrop(true)
-    //             try {
-    //                 const response = await axios.post(
-    //                     `${secretKey}/company-data/leads`,
-    //                     updatedCsvdata
-    //                 );
-    //                 await axios.post(`${secretKey}/employee/employee-history`, newArray);
-    //                 // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
-
-    //                 const counter = response.data.counter;
-    //                 // console.log("counter", counter)
-    //                 const successCounter = response.data.sucessCounter;
-    //                 //console.log(successCounter)
-
-    //                 if (counter === 0) {
-    //                     //console.log(response.data)
-    //                     Swal.fire({
-    //                         title: "Data Send!",
-    //                         text: "Data successfully sent to the Employee",
-    //                         icon: "success",
-    //                     });
-
-    //                 } else {
-    //                     const lines = response.data.split('\n');
-    //                     const numberOfDuplicateEntries = lines.length - 1;
-    //                     const noofSuccessEntries = newArray.length - numberOfDuplicateEntries
-    //                     Swal.fire({
-    //                         title: 'Do you want download duplicate entries report?',
-    //                         html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
-    //                         icon: 'question',
-    //                         showCancelButton: true,
-    //                         confirmButtonText: 'Yes',
-    //                         cancelButtonText: 'No'
-    //                     }).then((result) => {
-    //                         if (result.isConfirmed) {
-    //                             //console.log(response.data)
-    //                             const url = window.URL.createObjectURL(new Blob([response.data]));
-    //                             const link = document.createElement("a");
-    //                             link.href = url;
-    //                             link.setAttribute("download", "DuplicateEntriesLeads.csv");
-    //                             document.body.appendChild(link);
-    //                             link.click();
-    //                             // User clicked "Yes", perform action
-    //                             // Call your function or execute your code here
-    //                         } else if (result.dismiss === Swal.DismissReason.cancel) {
-    //                             return true;
-    //                         }
-    //                     });
-    //                 }
-    //                 fetchData(1, latestSortCount);
-    //                 closeBulkLeadsCSVPopup();
-    //                 setnewEmployeeSelection("Not Alloted");
-    //                 setOpenBacdrop(false);
-    //             } catch (error) {
-    //                 if (error.response.status !== 500) {
-    //                     setErrorMessage(error.response.data.error);
-    //                     Swal.fire("Some of the data are not unique");
-    //                 } else {
-    //                     setErrorMessage("An error occurred. Please try again.");
-    //                     Swal.fire("Please upload unique data");
-    //                 }
-    //                 console.log("Error:", error);
-    //             }
-    //             setLoading(false); // Move setLoading outside of the loop
-    //             setCsvData([]);
-    //         } else {
-    //             Swal.fire("Please upload data");
-    //         }
-    //     } else {
-    //         if (csvdata.length !== 0) {
-    //             setLoading(true); // Move setLoading outside of the loop
-
-    //             try {
-    //                 const response = await axios.post(
-    //                     `${secretKey}/company-data/leads`,
-    //                     csvdata
-    //                 );
-
-    //                 // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
-
-    //                 const counter = response.data.counter;
-    //                 // console.log("counter", counter)
-    //                 const successCounter = response.data.sucessCounter;
-    //                 //console.log(successCounter)
-
-    //                 if (counter === 0) {
-    //                     //console.log(response.data)
-    //                     Swal.fire({
-    //                         title: "Data Added!",
-    //                         text: "Data Successfully added to the Leads",
-    //                         icon: "success",
-    //                     });
-    //                 } else {
-    //                     const lines = response.data.split('\n');
-
-    //                     // Count the number of lines (entries)
-    //                     const numberOfDuplicateEntries = lines.length - 1;
-    //                     const noofSuccessEntries = csvdata.length - numberOfDuplicateEntries
-    //                     Swal.fire({
-    //                         title: 'Do you want download duplicate entries report?',
-    //                         html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
-    //                         icon: 'question',
-    //                         showCancelButton: true,
-    //                         confirmButtonText: 'Yes',
-    //                         cancelButtonText: 'No'
-    //                     }).then((result) => {
-    //                         if (result.isConfirmed) {
-    //                             //console.log(response.data)
-    //                             const url = window.URL.createObjectURL(new Blob([response.data]));
-    //                             const link = document.createElement("a");
-    //                             link.href = url;
-    //                             link.setAttribute("download", "DuplicateEntriesLeads.csv");
-    //                             document.body.appendChild(link);
-    //                             link.click();
-    //                             // User clicked "Yes", perform action
-    //                             // Call your function or execute your code here
-    //                         } else if (result.dismiss === Swal.DismissReason.cancel) {
-    //                             return true;
-    //                         }
-    //                     });
-    //                 }
-    //                 fetchData(1, latestSortCount);
-    //                 closeBulkLeadsCSVPopup();
-    //                 setnewEmployeeSelection("Not Alloted");
-    //             } catch (error) {
-    //                 if (error.response.status !== 500) {
-    //                     setErrorMessage(error.response.data.error);
-    //                     Swal.fire("Some of the data are not unique");
-    //                 } else {
-    //                     setErrorMessage("An error occurred. Please try again.");
-    //                     Swal.fire("Please upload unique data");
-    //                 }
-    //                 console.log("Error:", error);
-    //             }
-    //             setLoading(false); // Move setLoading outside of the loop
-    //             setCsvData([]);
-    //         } else {
-    //             Swal.fire("Please upload data");
-    //         }
-    //     }
-    // };
 
     const handleUploadData = async (e) => {
         const adminName = localStorage.getItem("adminName") || "Admin";
@@ -880,71 +703,7 @@ function TestLeads() {
     const [startRowIndex, setStartRowIndex] = useState(null);
     const [allIds, setAllIds] = useState([])
 
-    // const handleCheckboxChange = async (id) => {
-    //     // If the id is 'all', toggle all checkboxes
-    //     if (id === "all") {
-    //         // If all checkboxes are already selected, clear the selection; otherwise, select all
-    //         //console.log(id)
-    //         const response = await axios.get(`${secretKey}/admin-leads/getIds?dataStatus=${dataStatus}`)
-    //         //console.log(response.data)
-    //         setAllIds(response.data)
-    //         setSelectedRows((prevSelectedRows) =>
-    //             prevSelectedRows.length === response.data.length
-    //                 ? []
-    //                 : response.data
-    //         );
-    //     } else {
-    //         // Toggle the selection status of the row with the given id
-    //         setSelectedRows((prevSelectedRows) => {
-    //             if (prevSelectedRows.includes(id)) {
-    //                 return prevSelectedRows.filter((rowId) => rowId !== id);
-    //             } else {
-    //                 return [...prevSelectedRows, id];
-    //             }
-    //         });
-    //     }
-    // };
 
-    // const handleCheckboxChange = async (id) => {
-    //     if (id === "all") {
-    //         if(isFilter){
-    //             const response = await axios.get(`${secretKey}/admin-leads/getIds`, {
-    //                 params: {
-    //                     dataStatus,
-    //                     selectedStatus,
-    //                     selectedState,
-    //                     selectedNewCity,
-    //                     selectedBDEName,
-    //                     selectedAssignDate,
-    //                     selectedUploadedDate,
-    //                     selectedAdminName,
-    //                     selectedYear,
-    //                     selectedCompanyIncoDate
-    //                 }
-    //             });
-    //         }else if(isSearching){
-    //             const response = await axios.get(`${secretKey}/admin-leads/getIds`, {
-    //                 params: {
-    //                     dataStatus,
-    //                     searchQuery : searchText,
-    //                 }
-    //             });
-
-    //         }
-    //         setAllIds(response.data);
-    //         setSelectedRows((prevSelectedRows) =>
-    //             prevSelectedRows.length === response.data.length ? [] : response.data
-    //         );
-    //     } else {
-    //         setSelectedRows((prevSelectedRows) => {
-    //             if (prevSelectedRows.includes(id)) {
-    //                 return prevSelectedRows.filter((rowId) => rowId !== id);
-    //             } else {
-    //                 return [...prevSelectedRows, id];
-    //             }
-    //         });
-    //     }
-    // };
 
     const handleCheckboxChange = async (id) => {
         try {
@@ -1056,26 +815,6 @@ function TestLeads() {
         setStartRowIndex(null);
     };
 
-    // const exportData = async () => {
-    //     try {
-    //         const response = await axios.post(
-    //             `${secretKey}/admin-leads/exportLeads/`,
-    //             selectedRows
-    //         );
-    //         //console.log("response",response.data)
-    //         const url = window.URL.createObjectURL(new Blob([response.data]));
-    //         const link = document.createElement("a");
-    //         link.href = url;
-    //         dataStatus === "Assigned"
-    //             ? link.setAttribute("download", "AssignedLeads_Admin.csv")
-    //             : link.setAttribute("download", "UnAssignedLeads_Admin.csv");
-
-    //         document.body.appendChild(link);
-    //         link.click();
-    //     } catch (error) {
-    //         console.error("Error downloading CSV:", error);
-    //     }
-    // };
 
     const exportData = async () => {
         try {
@@ -1129,51 +868,7 @@ function TestLeads() {
         setEmployeeSelection("Not Alloted")
     }
 
-    // const handleconfirmAssign = async () => {
-    //     let selectedObjects = [];
-    //     if (isFilter || isSearching) {
-    //         if (dataStatus === 'Unassigned') {
-    //             selectedObjects = unAssignedData.filter((row) =>
-    //                 selectedRows.includes(row._id)
-    //             );
-    //         } else if (dataStatus === 'Assigned') {
-    //             selectedObjects = assignedData.filter((row) =>
-    //                 selectedRows.includes(row._id)
-    //             );
 
-    //         }
-    //     } else {
-    //         selectedObjects = data.filter((row) =>
-    //             selectedRows.includes(row._id)
-    //         );
-    //         console.log("selectedObjects" , data)
-    //     }
-    //     //console.log("selectedObjecyt", selectedObjects)
-    //     // Check if no data is selected
-    //     if (selectedObjects.length === 0) {
-    //         Swal.fire("Empty Data!");
-    //         closeAssignLeadsDialog();
-    //         return; // Exit the function early if no data is selected
-    //     }
-    //     const alreadyAssignedData = selectedObjects.filter(
-    //         (obj) => obj.ename && obj.ename !== "Not Alloted"
-    //     );
-
-    //     // If all selected data is not already assigned, proceed with assignment
-    //     if (alreadyAssignedData.length === 0) {
-    //         handleAssignData();
-    //         return; // Exit the function after handling assignment
-    //     }
-
-    //     // If some selected data is already assigned, show confirmation dialog
-    //     const userConfirmed = window.confirm(
-    //         `Some data is already assigned. Do you want to continue?`
-    //     );
-
-    //     if (userConfirmed) {
-    //         handleAssignData();
-    //     }
-    // };
 
     const handleconfirmAssign = async () => {
         let selectedObjects = [];
@@ -1617,22 +1312,7 @@ function TestLeads() {
         }
     };
 
-    //-----------------------function to open popup remarks--------------------------------
 
-    // const functionopenpopupremarks = (companyID, companyStatus) => {
-    //     openchangeRemarks(true);
-    //     setFilteredRemarks(
-    //         remarksHistory.filter((obj) => obj.companyID === companyID)
-    //     );
-    //     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
-
-    //     setcid(companyID);
-    //     setCstat(companyStatus);
-    // };
-    // const closepopupRemarks = () => {
-    //     openchangeRemarks(false);
-    //     setFilteredRemarks([]);
-    // };
     //------------------filter functions------------------------
     const [openFilterDrawer, setOpenFilterDrawer] = useState(false)
     const stateList = State.getStatesOfCountry("IN")
@@ -1813,12 +1493,38 @@ function TestLeads() {
         }
     };
 
+    // ---------------call history popup------------------------
+    const [showCallHistory, setShowCallHistory] = useState(false);
+    const [clientNumber, setClientNumber] = useState("");
+
+
+    const handleShowCallHistory = (companyName, clientNumber) => {
+        setShowCallHistory(true)
+        setClientNumber(clientNumber)
+        setCompanyName(companyName)
+    }
+
+    const hanleCloseCallHistory = () => {
+        setShowCallHistory(false);
+        // if (activeTabId === "Interested" && interestedTabRef.current) {
+        //     interestedTabRef.current.click(); // Trigger the Interested tab click
+        // } else if (activeTabId === "Matured" && maturedTabRef.current) {
+        //     maturedTabRef.current.click(); // Trigger the Matured tab click
+        // } else if (activeTabId === "All" && allTabRef.current) {
+        //     allTabRef.current.click(); // Trigger the Matured tab click
+        // } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
+        //     notInterestedTabRef.current.click(); // Trigger the Matured tab click
+        // } else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
+        //     forwardedTabRef.current.click(); // Trigger the Matured tab click
+        // }
+    };
+
 
 
 
     return (
         <div>
-            {!openInterestFollowPage && (
+            {!openInterestFollowPage && !showCallHistory && (
                 <div className="page-wrapper">
                     <div className="page-header d-print-none">
                         <div className="container-xl">
@@ -1992,6 +1698,7 @@ function TestLeads() {
                                                     <th>Sr.No</th>
                                                     <th>Company Name</th>
                                                     <th>Company Number</th>
+                                                    {(dataStatus === "Assigned" || dataStatus === "Extracted") && <th>Call History</th>}
                                                     <th style={{ cursor: "pointer" }}    >
                                                         <div className="d-flex align-items-center justify-content-between">
                                                             <div>Incorporation Date</div>
@@ -2108,7 +1815,6 @@ function TestLeads() {
                                                                 />
                                                             </div>
                                                         </div>
-
                                                     </th>)}
 
 
@@ -2151,7 +1857,26 @@ function TestLeads() {
                                                             </td>
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
+
                                                             <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                                <LuHistory
+                                                                    onClick={() => {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+
+
+                                                                        );
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "15px",
+                                                                        height: "15px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </td>)}
                                                             <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
@@ -2258,6 +1983,24 @@ function TestLeads() {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                                <LuHistory
+                                                                    onClick={() => {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+
+
+                                                                        );
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "15px",
+                                                                        height: "15px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </td>)}
                                                             <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
@@ -2362,6 +2105,24 @@ function TestLeads() {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                                <LuHistory
+                                                                    onClick={() => {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+
+
+                                                                        );
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "15px",
+                                                                        height: "15px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </td>)}
                                                             <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
@@ -2377,27 +2138,7 @@ function TestLeads() {
                                                                     secretKey={secretKey}
 
                                                                 />
-                                                                {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                    <p className="rematkText text-wrap m-0">
-                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                    </p>
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            functionopenpopupremarks(company._id, company.Status);
-                                                                        }}
-                                                                        style={{ cursor: "pointer" }}>
-                                                                        <IconEye
-
-                                                                            style={{
-                                                                                width: "14px",
-                                                                                height: "14px",
-                                                                                color: "#d6a10c",
-                                                                                cursor: "pointer",
-                                                                                marginLeft: "4px",
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                </div> */}
+                                                                
                                                             </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2466,6 +2207,24 @@ function TestLeads() {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                                <LuHistory
+                                                                    onClick={() => {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+
+
+                                                                        );
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "15px",
+                                                                        height: "15px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </td>)}
                                                             <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
@@ -2650,6 +2409,19 @@ function TestLeads() {
                     <InterestedFollowUpLeads
                         closeOpenInterestedLeads={setOpenInterestFollowPage} />
                 )
+            }
+
+            {/* -------------------call history page--------------------------------- */}
+
+            {
+                showCallHistory &&
+                (<CallHistory
+                    handleCloseHistory={hanleCloseCallHistory}
+                    clientNumber={clientNumber}
+                    companyName={companyName}
+                // bdenumber={data.number}
+                // bdmName={data.bdmName}
+                />)
             }
 
             {/* -------------------- dialog to add leads---------------------------- */}
@@ -3834,55 +3606,8 @@ function TestLeads() {
                 </button>
             </Dialog>
 
-            {/* ---------------------------dialog to view remarks popup------------------------- */}
-            {/* <Dialog className='My_Mat_Dialog'
-                open={openRemarks}
-                onClose={closepopupRemarks}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>
-                    Remarks
-                    <button style={{ background: "none", border: "0px transparent", float: "right" }}
-                        onClick={closepopupRemarks}>
-                        <IoIosClose style={{
-                            height: "36px",
-                            width: "32px",
-                            color: "grey"
-                        }} />
-                    </button>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="remarks-content">
-                        {filteredRemarks.length !== 0 ? (
-                            filteredRemarks
-                                .slice()
-                                .reverse()
-                                .map((historyItem) => (
-                                    <div className="col-sm-12" key={historyItem._id}>
-                                        <div className="card RemarkCard position-relative">
-                                            <div className="d-flex justify-content-between">
-                                                <div className="reamrk-card-innerText">
-                                                    <pre>{historyItem.remarks || historyItem.bdmRemarks}</pre>
-                                                    <pre>{historyItem.bdeName || historyItem.bdmName}</pre>
-                                                </div>
-                                            </div>
-
-                                            <div className="d-flex card-dateTime justify-content-between">
-                                                <div className="date">{historyItem.date}</div>
-                                                <div className="time">{historyItem.time}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                        ) : (
-                            <div className="text-center overflow-hidden">
-                                No Remarks History
-                            </div>
-                        )}
-                    </div>
-                </DialogContent>
-            </Dialog> */}
+            
+            
 
             {/* ---------------------------drawer for filter----------------------------- */}
             <Drawer

@@ -46,14 +46,15 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import InterestedFollowUpLeads from '../../../admin/InterestedFollowUpLeads.jsx';
 import { LiaPagerSolid } from "react-icons/lia";
-
+import { LuHistory } from "react-icons/lu";
+import CallHistory from '../../../employeeComp/CallHistory.jsx';
 
 function ManageLeads() {
 
     const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const userId = localStorage.getItem("dataManagerUserId");
-    
+
     const [myInfo, setMyInfo] = useState([]);
     const [currentDataLoading, setCurrentDataLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -954,7 +955,7 @@ function ManageLeads() {
         console.log("tempFilter", tempFilter)
         console.log("data", data)
         console.log("tempStatusData", tempStatusData)
-        
+
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
@@ -1441,12 +1442,37 @@ function ManageLeads() {
         fetchPersonalInfo();
     }, []);
 
+    const [showCallHistory, setShowCallHistory] = useState(false);
+    const [clientNumber, setClientNumber] = useState("");
+
+
+    const handleShowCallHistory = (companyName, clientNumber) => {
+        setShowCallHistory(true)
+        setClientNumber(clientNumber)
+        setCompanyName(companyName)
+    }
+
+    const hanleCloseCallHistory = () => {
+        setShowCallHistory(false);
+        // if (activeTabId === "Interested" && interestedTabRef.current) {
+        //     interestedTabRef.current.click(); // Trigger the Interested tab click
+        // } else if (activeTabId === "Matured" && maturedTabRef.current) {
+        //     maturedTabRef.current.click(); // Trigger the Matured tab click
+        // } else if (activeTabId === "All" && allTabRef.current) {
+        //     allTabRef.current.click(); // Trigger the Matured tab click
+        // } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
+        //     notInterestedTabRef.current.click(); // Trigger the Matured tab click
+        // } else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
+        //     forwardedTabRef.current.click(); // Trigger the Matured tab click
+        // }
+    };
+
     return (
         <div>
             {/* <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
             <Navbar name={dataManagerName} /> */}
 
-            {!openInterestFollowPage && (<div className='page-wrapper'>
+            {!openInterestFollowPage && !showCallHistory && (<div className='page-wrapper'>
                 <div className="page-header d-print-none">
                     <div className="container-xl">
                         <div className="d-flex align-items-center justify-content-between">
@@ -1603,6 +1629,7 @@ function ManageLeads() {
                                                 <th>Sr.No</th>
                                                 <th>Company Name</th>
                                                 <th>Company Number</th>
+                                                {(dataStatus === "Assigned" || dataStatus === "Extracted") && <th>Call History</th>}
                                                 <th style={{ cursor: "pointer" }}    >
                                                     <div className="d-flex align-items-center justify-content-between">
                                                         <div>Incorporation Date</div>
@@ -1762,6 +1789,24 @@ function ManageLeads() {
                                                         <td>{startIndex - 500 + index + 1}</td>
                                                         <td>{company["Company Name"]}</td>
                                                         <td>{company["Company Number"]}</td>
+                                                        {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                            <LuHistory
+                                                                onClick={() => {
+                                                                    handleShowCallHistory(
+                                                                        company["Company Name"],
+                                                                        company["Company Number"],
+
+
+                                                                    );
+                                                                }}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                }}
+                                                                color="grey"
+                                                            />
+                                                        </td>)}
                                                         <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
@@ -1859,6 +1904,24 @@ function ManageLeads() {
                                                         <td>{startIndex - 500 + index + 1}</td>
                                                         <td>{company["Company Name"]}</td>
                                                         <td>{company["Company Number"]}</td>
+                                                        {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                            <LuHistory
+                                                                onClick={() => {
+                                                                    handleShowCallHistory(
+                                                                        company["Company Name"],
+                                                                        company["Company Number"],
+
+
+                                                                    );
+                                                                }}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                }}
+                                                                color="grey"
+                                                            />
+                                                        </td>)}
                                                         <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
@@ -1955,6 +2018,24 @@ function ManageLeads() {
                                                         <td>{startIndex - 500 + index + 1}</td>
                                                         <td>{company["Company Name"]}</td>
                                                         <td>{company["Company Number"]}</td>
+                                                        {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                            <LuHistory
+                                                                onClick={() => {
+                                                                    handleShowCallHistory(
+                                                                        company["Company Name"],
+                                                                        company["Company Number"],
+
+
+                                                                    );
+                                                                }}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                }}
+                                                                color="grey"
+                                                            />
+                                                        </td>)}
                                                         <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
@@ -2051,6 +2132,24 @@ function ManageLeads() {
                                                         <td>{startIndex - 500 + index + 1}</td>
                                                         <td>{company["Company Name"]}</td>
                                                         <td>{company["Company Number"]}</td>
+                                                        {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                            <LuHistory
+                                                                onClick={() => {
+                                                                    handleShowCallHistory(
+                                                                        company["Company Name"],
+                                                                        company["Company Number"],
+
+
+                                                                    );
+                                                                }}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                }}
+                                                                color="grey"
+                                                            />
+                                                        </td>)}
                                                         <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
@@ -2182,17 +2281,7 @@ function ManageLeads() {
                                 </table>
                             )}
 
-                            {/* {data.length !== 0 && (
-                                <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
-                                        <IconChevronLeft />
-                                    </button>
-                                    <span>Page {currentPage} /{totalCount}</span>
-                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={data.length < itemsPerPage}>
-                                        <IconChevronRight />
-                                    </button>
-                                </div>
-                            )} */}
+
 
                             {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0 || extractedData.length !== 0))) && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
@@ -2217,6 +2306,22 @@ function ManageLeads() {
                     </div>
                 </div>
             </div>)
+            }
+
+
+
+
+            {/* -------------------call history page--------------------------------- */}
+
+            {
+                showCallHistory &&
+                (<CallHistory
+                    handleCloseHistory={hanleCloseCallHistory}
+                    clientNumber={clientNumber}
+                    companyName={companyName}
+                // bdenumber={data.number}
+                // bdmName={data.bdmName}
+                />)
             }
             {/* -------------------- dialog to add leads---------------------------- */}
             <Dialog className='My_Mat_Dialog' open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
@@ -2732,157 +2837,16 @@ function ManageLeads() {
                 </button>
             </Dialog>
 
-            {/* ----------------------- dialog to assign leads to employees ----------------------------- */}
-            {/* <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
-                <DialogTitle>
-                    Assign Data{" "}
-                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
-                        <IoIosClose style={{
-                            height: "36px",
-                            width: "32px",
-                            color: "grey"
-                        }} />
-                    </button>
-                </DialogTitle>
-                <DialogContent>
-                    <div>
-                        {empData.length !== 0 && dataStatus === "Unassigned" && (
-                            <>
-                                <div className="dialogAssign">
-                                    <div className="selector form-control">
-                                        <select
-                                            style={{
-                                                width: "inherit",
-                                                border: "none",
-                                                outline: "none",
-                                            }}
-                                            value={employeeSelection}
-                                            onChange={(e) => {
-                                                setEmployeeSelection(e.target.value);
-                                            }}
-                                        >
-                                            <option value="Not Alloted" disabled>
-                                                Select employee
-                                            </option>
-                                            {empData.map((item) => (
-                                                <option value={item.ename}>{item.ename}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                        {dataStatus === "Assigned" && <div>
-                            <div className="con2 d-flex">
-                                <div
-                                    style={
-                                        selectedOption === "direct"
-                                            ? {
-                                                backgroundColor: "#e9eae9",
-                                                margin: "10px 10px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                            : {
-                                                backgroundColor: "white",
-                                                margin: "10px 10px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                    }
-                                    onClick={() => {
-                                        setSelectedOption("direct");
-                                        setEmployeeSelection("Not Alloted")
-                                    }}
-                                    className="direct form-control"
-                                >
-                                    <input
-                                        type="radio"
-                                        id="direct"
-                                        value="direct"
-                                        style={{
-                                            display: "none",
-                                        }}
-                                        checked={selectedOption === "direct"}
-                                        onChange={(e) => {
-                                            handleOptionChange(e)
-                                            setEmployeeSelection("Not Alloted")
-                                        }}
-                                    />
-                                    <label htmlFor="direct">Move In General Data</label>
-                                </div>
-                                <div
-                                    style={
-                                        selectedOption === "someoneElse"
-                                            ? {
-                                                backgroundColor: "#e9eae9",
-                                                margin: "10px 0px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                            : {
-                                                backgroundColor: "white",
-                                                margin: "10px 0px 0px 0px",
-                                                cursor: "pointer",
-                                            }
-                                    }
-                                    className="indirect form-control"
-                                    onClick={() => {
-                                        setSelectedOption("someoneElse");
-
-                                    }}
-                                >
-                                    <input
-                                        type="radio"
-                                        id="someoneElse"
-                                        value="someoneElse"
-                                        style={{
-                                            display: "none",
-                                        }}
-                                        checked={selectedOption === "someoneElse"}
-                                        onChange={handleOptionChange}
-                                    />
-                                    <label htmlFor="someoneElse">Assign to Employee</label>
-                                </div>
-                            </div>
-                            <div>
-                                {empData.length !== 0 && selectedOption === "someoneElse" && (
-                                    <>
-                                        <div className="dialogAssign mt-2">
-                                            <div className="selector form-control">
-                                                <select
-                                                    style={{
-                                                        width: "inherit",
-                                                        border: "none",
-                                                        outline: "none",
-                                                    }}
-                                                    value={employeeSelection}
-                                                    onChange={(e) => {
-                                                        setEmployeeSelection(e.target.value);
-                                                    }}
-                                                >
-                                                    <option value="Not Alloted" disabled>
-                                                        Select employee
-                                                    </option>
-                                                    {empData.map((item) => (
-                                                        <option value={item.ename}>{item.ename}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </div>}
-                    </div>
-                </DialogContent>
-                <div className="btn-list" >
-                    <button
-                        style={{ width: "100vw", borderRadius: "0px" }}
-                        onClick={handleconfirmAssign}
-                        className="btn btn-primary ms-auto bdr-radius-none"
-                    >
-                        Assign Data
-                    </button>
-                </div>
-            </Dialog> */}
+            {
+                showCallHistory &&
+                (<CallHistory
+                    handleCloseHistory={hanleCloseCallHistory}
+                    clientNumber={clientNumber}
+                    companyName={companyName}
+                // bdenumber={data.number}
+                // bdmName={data.bdmName}
+                />)
+            }
 
             {/* --------------------------dialog to assign leads----------------------- */}
             <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">

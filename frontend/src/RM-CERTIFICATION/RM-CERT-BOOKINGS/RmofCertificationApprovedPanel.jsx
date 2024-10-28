@@ -1749,7 +1749,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                           </button>
                         </div>
                       </td> */}
-                      <td>
+                      <td className="td_of_weblink">
                         <RMRemarksDialog
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}
