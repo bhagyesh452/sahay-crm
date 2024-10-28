@@ -4,6 +4,7 @@ import "../assets/table.css";
 import "../assets/styles.css";
 import CallHistory from "./CallHistory.jsx";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
+import AddLeadForm from "../admin/AddLeadForm.jsx";
 import TeamLeadsGeneral from "./EmployeeTeamLeadsTabPanels/TeamLeadsGeneral.jsx";
 import TeamLeadsInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsInterested.jsx";
 import TeamLeadsMatured from "./EmployeeTeamLeadsTabPanels/TeamLeadsMatured.jsx";
@@ -113,13 +114,13 @@ function EmployeeTeamLeadsCopy({ designation }) {
         setDeletedEmployeeStatus(isDeletedEmployeeCompany)
         setNewBdeName(ename)
         setbdmName(bdmName)
-        // if (!isDeletedEmployeeCompany) {
+        if (!isDeletedEmployeeCompany) {
         console.log("formchal")
         setFormOpen(true);
-        // } else {
-        //     console.log("addleadfromchal")
-        //     setAddFormOpen(true)
-        // }
+        } else {
+            console.log("addleadfromchal")
+            setAddFormOpen(true)
+        }
     };
 
     const handleCloseFormOpen = () => {
@@ -215,7 +216,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
         queryFn: async () => {
             const res = await axios.get(`${secretKey}/bdm-data/teamLeadsData/${data.ename}`, {
                 params: {
-                    companyName: searchQuery, // Send the search query as a parameter
+                    searchQuery: searchQuery, // Send the search query as a parameter
                     page: currentPage + 1, // Send current page for pagination
                     limit: itemsPerPage, // Set the limit of records per page
                 }
@@ -726,6 +727,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                     setDataStatus("General");
                                                     setActiveTabId("General");
                                                     setSelectedRows([]);
+                                                    setCurrentPage(0);
                                                 }}
                                                 className={`nav-link  ${dataStatus === "General" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
@@ -747,6 +749,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                     setDataStatus("Interested");
                                                     setActiveTabId("Interested");
                                                     setSelectedRows([]);
+                                                    setCurrentPage(0);
                                                 }}
                                                 className={`nav-link ${dataStatus === "Interested" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
@@ -767,6 +770,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                     setDataStatus("Matured");
                                                     setActiveTabId("Matured");
                                                     setSelectedRows([]);
+                                                    setCurrentPage(0);
                                                 }}
                                                 className={`nav-link ${dataStatus === "Matured" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
@@ -787,6 +791,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                     setDataStatus("Not Interested");
                                                     setActiveTabId("Not Interested");
                                                     setSelectedRows([]);
+                                                    setCurrentPage(0);
                                                 }}
                                                 className={`nav-link ${dataStatus === "Not Interested" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
@@ -811,7 +816,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
                                             endIndex={endIndex}
-                                            totalPages={teamLeadsData?.data?.totalPages}
+                                            totalPages={teamLeadsData?.data?.totalGeneralPages}
                                             setCurrentPage={setCurrentPage}
                                             currentPage={currentPage}
                                             dataStatus={dataStatus}
@@ -841,7 +846,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
                                             endIndex={endIndex}
-                                            totalPages={teamLeadsData?.data?.totalPages}
+                                            totalPages={teamLeadsData?.data?.totalInterestedPages}
                                             setCurrentPage={setCurrentPage}
                                             currentPage={currentPage}
                                             dataStatus={dataStatus}
@@ -874,7 +879,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
                                             endIndex={endIndex}
-                                            totalPages={teamLeadsData?.data?.totalPages}
+                                            totalPages={teamLeadsData?.data?.totalMaturedPages}
                                             setCurrentPage={setCurrentPage}
                                             currentPage={currentPage}
                                             dataStatus={dataStatus}
@@ -905,7 +910,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             formatDateNew={formatDateNew}
                                             startIndex={startIndex}
                                             endIndex={endIndex}
-                                            totalPages={teamLeadsData?.data?.totalPages}
+                                            totalPages={teamLeadsData?.data?.totalNotInterestedPages}
                                             setCurrentPage={setCurrentPage}
                                             currentPage={currentPage}
                                             dataStatus={dataStatus}
@@ -945,6 +950,19 @@ function EmployeeTeamLeadsCopy({ designation }) {
                     bdmName={data.ename}
                     employeeName={newBdeName}
                     employeeEmail={newEmpData.find(employee => employee.ename === newBdeName)?.email}
+                    handleCloseFormOpen={handleCloseFormOpen}
+                />
+            ) : addFormOpen ? (
+                <AddLeadForm
+                    isEmployee={true}
+                    employeeEmail={data.email}
+                    newBdeName={newBdeName}
+                    isDeletedEmployeeCompany={deletedEmployeeStatus}
+                    setFormOpen={setAddFormOpen}
+                    companysName={companyName}
+                    setNowToFetch={refetchTeamLeads}
+                    setDataStatus={setDataStatus}
+                    employeeName={data.ename}
                     handleCloseFormOpen={handleCloseFormOpen}
                 />
             ) : null
