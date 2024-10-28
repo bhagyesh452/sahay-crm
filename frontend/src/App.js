@@ -41,7 +41,6 @@ import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx"
 import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
-import FetchingEmployeeData from "./employeeComp/EmployeeDashboardComponents/FetchingEmployeeData.jsx";
 import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
 
 // Floor Manager Imports

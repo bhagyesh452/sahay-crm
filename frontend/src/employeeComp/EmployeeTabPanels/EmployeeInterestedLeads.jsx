@@ -309,7 +309,7 @@ function EmployeeInterestedLeads({
                       >
 
                         {(fordesignation === "admin" || fordesignation === "datamanager") ? (<>
-                          
+
                           <AdminRemarksDialog
                             key={`${company["Company Name"]}-${index}`}
                             currentRemarks={company.Remarks}

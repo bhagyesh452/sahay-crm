@@ -98,6 +98,11 @@ body {
   border-radius: 0px 5px 5px 0px;
 }
 
+.btn.disabled, .btn:disabled, fieldset:disabled .btn {
+  border: 1px solid #dadada;
+  background: #eee;
+  color:#808080;
+}
 /* 
 .css-13cymwt-control {
   border: 1px solid #ffb900 !important;
