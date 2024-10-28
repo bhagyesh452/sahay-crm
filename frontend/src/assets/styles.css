@@ -3317,7 +3317,7 @@ td input {
   border: none;
   padding: 3px 8px 3px 8px;
   background: transparent;
-  width: fit-content !important;
+  width: 100% !important;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
 }

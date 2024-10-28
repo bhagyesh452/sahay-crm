@@ -1460,8 +1460,8 @@ function RmofCertificationReadyToSubmitPanel({
                                                 )}
                                             </div>
                                         </td>
-                                        <td>
-                                        <RMRemarksDialog
+                                        <td className='td_of_weblink'>
+                                        <RMRemarksDialog 
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}

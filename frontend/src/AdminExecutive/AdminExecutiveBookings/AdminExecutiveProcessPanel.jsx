@@ -1070,7 +1070,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td className="td_of_weblink">
                         <DscRemarks
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}
@@ -1141,7 +1141,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           }
                         />
                       </td>
-                      <td>
+                      <td className="td_of_weblink">
                         <DscEmailId
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}
