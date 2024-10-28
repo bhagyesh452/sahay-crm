@@ -249,6 +249,8 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       bdmName: bdmName,
     }).lean();
 
+    console.log("teamLeads" , teamLeadsData)
+
     // Fetch the related company data from newcdatas collection
     const companyNames = teamLeadsData.map((lead) => lead["Company Name"]).filter(Boolean); // Remove any undefined or null values
     const enames = teamLeadsData.map((lead) => lead.ename);
@@ -352,7 +354,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Fetch paginated data for each status
     const [generalData, interestedData, maturedData, notInterestedData] = await Promise.all([
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Pending" })
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in : ["Pending"]} })
         .sort({ bdmStatusChangeDate: 1 })
         .skip(skip)
         .limit(limit),

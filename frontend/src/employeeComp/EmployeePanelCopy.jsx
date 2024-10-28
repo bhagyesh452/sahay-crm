@@ -38,6 +38,7 @@ import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
 import ForwardToBdmDialog from "../admin/ExtraComponent/ForwardToBdmDialog.jsx";
 import ProjectionInformationDialog from "./ExtraComponents/ProjectionInformationDialog.jsx";
 import { useNavigate } from 'react-router-dom';
+import NewProjectionDialog from "./ExtraComponents/NewProjectionDialog.jsx";
 
 function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -131,9 +132,9 @@ function EmployeePanelCopy({ fordesignation }) {
             document.title = `Floor-Manager-Sahay-CRM`;
         } else if (fordesignation === "admin") {
             document.title = `Admin-Sahay-CRM`;
-        } else if(fordesignation === "datamanager") {
+        } else if (fordesignation === "datamanager") {
             document.title = `Datamanager-Sahay-CRM`;
-        } else{
+        } else {
             document.title = `Employee-Sahay-CRM`;
         }
     }, [data.ename]);
@@ -161,7 +162,7 @@ function EmployeePanelCopy({ fordesignation }) {
             console.error("Error fetching data:", error.message);
         }
     };
-    
+
 
     const handleCloseProjectionPopup = () => {
         setShowDialog(false);
@@ -223,6 +224,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
     // -------------------request dialog functions-------------------
     const [open, openchange] = useState(false);
+
     const functionopenpopup = () => {
         openchange(true);
     };
@@ -230,9 +232,15 @@ function EmployeePanelCopy({ fordesignation }) {
         return typeof str === 'string' ? str.replace(/\u00A0/g, ' ').trim() : '';
     };
 
+    const [generalData, setGeneralData] = useState([]);
+    const [interestedData, setInterestedData] = useState([]);
+    const [maturedData, setMaturedData] = useState([]);
+    const [notInterestedData, setNotInterestedData] = useState([]);
+    const [forwardedData, setForwardedData] = useState([]);
+
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
-            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage, searchQuery , fetchingId], // Add searchQuery to the queryKey
+            queryKey: ['newData', cleanString(data.ename), currentPage, searchQuery, fetchingId], // Add searchQuery to the queryKey
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees-new/${cleanString(data.ename)}`, {
@@ -252,10 +260,22 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     );
 
+    console.log("queryData", queryData)
+
+    useEffect(() => {
+        if (queryData) {
+            setGeneralData(queryData?.generalData);
+            setInterestedData(queryData?.interestedData);
+            setMaturedData(queryData?.maturedData);
+            setNotInterestedData(queryData?.notInterestedData);
+            setForwardedData(queryData?.forwardedData);
+        }
+    }, [queryData, searchQuery]);
+
     useEffect(() => {
         fetchData();
         fetchProjections();
-    }, [fetchingId , dataStatus ,queryData]);
+    }, [fetchingId, dataStatus, queryData]);
 
     // Handle search
     const handleSearch = (query) => {
@@ -356,12 +376,39 @@ function EmployeePanelCopy({ fordesignation }) {
     const handleCheckboxChange = (id, event) => {
         // If the id is 'all', toggle all checkboxes
         if (id === "all") {
-            // If all checkboxes are already selected, clear the selection; otherwise, select all
-            setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === queryData?.data.length
-                    ? []
-                    : queryData?.data.map((row) => row._id)
-            );
+            if (dataStatus === "All" && activeTabId === "All") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === queryData?.generalData?.length
+                        ? []
+                        : queryData?.generalData?.map((row) => row._id)
+                );
+            }else if (dataStatus === "Interested" && activeTabId === "Interested") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === queryData?.interestedData?.length
+                        ? []
+                        : queryData?.interestedData?.map((row) => row._id)
+                );
+            }else if (dataStatus === "Matured" && activeTabId === "Matured") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === queryData?.maturedData?.length
+                        ? []
+                        : queryData?.maturedData?.map((row) => row._id)
+                );
+            }else if (dataStatus === "Not Interested" && activeTabId === "Not Interested") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === queryData?.notInterestedData?.length
+                        ? []
+                        : queryData?.notInterestedData?.map((row) => row._id)
+                );
+            }else if (dataStatus === "Forwarded" && activeTabId === "Forwarded") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === queryData?.forwardedData?.length
+                        ? []
+                        : queryData?.forwardedData?.map((row) => row._id)
+                );
+            }else {
+                setSelectedRows([]);
+            }
         } else {
             // Toggle the selection status of the row with the given id
             setSelectedRows((prevSelectedRows) => {
@@ -398,7 +445,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
-        setStartRowIndex(queryData?.data.findIndex((row) => row._id === id));
+        setStartRowIndex(queryData?.data?.findIndex((row) => row._id === id));
     };
 
     const handleMouseEnter = (id) => {
@@ -616,14 +663,24 @@ function EmployeePanelCopy({ fordesignation }) {
     };
     // console.log("selectedRows", selectedRows)
 
-    console.log("fetchedData", queryData)
-    console.log("dialogcount", dialogCount)
+    // console.log("fetchedData", queryData)
+    // console.log("dialogcount", dialogCount)
 
-    // useEffect(() => {
+    // console.log("maturedData" , maturedData)
 
-    //     fetchData()
-    //     refetch()
-    // }, [fetchingId])
+// ------------------add projection popup new----------------------------------
+
+const [openProjectionPopUpNew, setopenProjectionPopUpNew] = useState(false)
+
+const handleProjectionPopupNew = () => {
+    setopenProjectionPopUpNew(true);
+}
+
+const handleCloseNewProjectionPopup=() => {
+    setopenProjectionPopUpNew(false);
+}
+
+
 
     return (
         <div>
@@ -724,6 +781,11 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     onClick={functionopenpopup}
                                                 >
                                                     <MdOutlinePostAdd className='mr-1' /> Request Data
+                                                </button>
+                                                <button type="button" className="btn mybtn"
+                                                    onClick={handleProjectionPopupNew}
+                                                >
+                                                    <MdOutlinePostAdd className='mr-1' /> Add Projection
                                                 </button>
                                                 {open &&
                                                     <EmployeeRequestDataDialog
@@ -929,13 +991,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className={`tab-pane ${dataStatus === "All" ? "active" : ""}`} id="general">
                                         {activeTabId === "All" && dataStatus === "All" && (
                                             <EmployeeGeneralLeads
-                                                generalData={queryData?.data}
+                                                generalData={generalData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={queryData?.totalPages}
+                                                totalPages={queryData?.totalGeneralPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 dataStatus={dataStatus}
@@ -959,13 +1021,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
                                         {activeTabId === "Interested" && dataStatus === "Interested" && (
                                             <EmployeeInterestedLeads
-                                                interestedData={queryData?.data}
+                                                interestedData={interestedData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={queryData?.totalPages}
+                                                totalPages={queryData?.totalInterestedPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 secretKey={secretKey}
@@ -992,45 +1054,45 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
                                         {activeTabId === "Matured" && (
                                             <EmployeeMaturedLeads
-                                            maturedLeads={queryData?.data}
-                                            isLoading={isLoading}
-                                            refetch={refetch}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={queryData?.totalPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            secretKey={secretKey}
-                                            dataStatus={dataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            setdataStatus={setdataStatus}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            fetchProjections={fetchProjections}
-                                            projectionData={projectionData}
-                                            designation={data.designation}
-                                            fordesignation={fordesignation}
-                                            setSelectedRows={setSelectedRows}
-                                            handleCheckboxChange={handleCheckboxChange}
-                                            handleMouseDown={handleMouseDown}
-                                            handleMouseEnter={handleMouseEnter}
-                                            handleMouseUp={handleMouseUp}
-                                            selectedRows={selectedRows}
-                                            userId={userId}
-                                            bdenumber={data.number}
-                                        />)}
-                                    </div>
-                                    <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
-                                        {activeTabId === "Forwarded" && (
-                                            <EmployeeForwardedLeads
-                                                forwardedLeads={queryData?.data}
+                                                maturedLeads={maturedData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={queryData?.totalPages}
+                                                totalPages={queryData?.totalMaturedPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                fetchProjections={fetchProjections}
+                                                projectionData={projectionData}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                                userId={userId}
+                                                bdenumber={data.number}
+                                            />)}
+                                    </div>
+                                    <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
+                                        {activeTabId === "Forwarded" && (
+                                            <EmployeeForwardedLeads
+                                                forwardedLeads={forwardedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={queryData?.totalForwardedCount}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 secretKey={secretKey}
@@ -1054,13 +1116,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
                                         {activeTabId === "Not Interested" && (
                                             <EmployeeNotInterestedLeads
-                                                notInterestedLeads={queryData?.data}
+                                                notInterestedLeads={notInterestedData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={queryData?.totalPages}
+                                                totalPages={queryData?.totalNotInterestedPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 secretKey={secretKey}
@@ -1142,6 +1204,12 @@ function EmployeePanelCopy({ fordesignation }) {
                     setActiveTabId={setActiveTabId}
                     handleCloseProjectionPopup={handleCloseProjectionPopup}
                 />)}
+
+                <NewProjectionDialog
+                open={openProjectionPopUpNew}
+                closepopup={handleCloseNewProjectionPopup}
+                secretKey={secretKey}
+                />
         </div>
     );
 }
