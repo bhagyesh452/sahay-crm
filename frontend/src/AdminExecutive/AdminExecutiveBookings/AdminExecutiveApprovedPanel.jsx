@@ -1104,7 +1104,7 @@ function AdminExecutiveApprovedPanel({ searchText,
                           obj.subCategoryStatus}
                       </div>
                     </td>
-                    <td>
+                    <td className="td_of_weblink">
                       <DscRemarks
                         key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                         companyName={obj["Company Name"]}
@@ -1175,7 +1175,7 @@ function AdminExecutiveApprovedPanel({ searchText,
                         }
                       />
                     </td>
-                    <td>
+                    <td className="td_of_weblink">
                       <DscEmailId
                         key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                         companyName={obj["Company Name"]}

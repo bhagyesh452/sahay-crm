@@ -1122,7 +1122,7 @@ function AdminExecutiveDefaulterPanel({ searchText,totalFilteredDataPortal, show
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td className="td_of_weblink">
                         <DscRemarks
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}
@@ -1193,7 +1193,7 @@ function AdminExecutiveDefaulterPanel({ searchText,totalFilteredDataPortal, show
                           }
                         />
                       </td>
-                      <td>
+                      <td className="td_of_weblink">
                         <DscEmailId
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}
