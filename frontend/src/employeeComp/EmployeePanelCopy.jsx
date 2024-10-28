@@ -989,7 +989,8 @@ function EmployeePanelCopy({ fordesignation }) {
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
-                                        {activeTabId === "Matured" && (<EmployeeMaturedLeads
+                                        {activeTabId === "Matured" && (
+                                            <EmployeeMaturedLeads
                                             maturedLeads={queryData?.data}
                                             isLoading={isLoading}
                                             refetch={refetch}

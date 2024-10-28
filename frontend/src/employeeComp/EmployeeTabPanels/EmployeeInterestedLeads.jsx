@@ -225,8 +225,6 @@ function EmployeeInterestedLeads({
                             company.bdmName
 
                           );
-                          // setShowCallHistory(true);
-                          // setClientNumber(company["Company Number"]);
                         }}
                         style={{
                           cursor: "pointer",
