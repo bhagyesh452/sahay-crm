@@ -287,6 +287,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const handleShowCallHistory = (companyName, clientNumber) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
+        setCompanyName(companyName)
     }
 
     const hanleCloseCallHistory = () => {
@@ -1089,6 +1090,7 @@ function EmployeePanelCopy({ fordesignation }) {
                         clientNumber={clientNumber}
                         bdenumber={data.number}
                         bdmName={data.bdmName}
+                        companyName={companyName}
                     />)
                     : formOpen ? (
                         <RedesignedForm

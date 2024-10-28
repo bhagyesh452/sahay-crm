@@ -1497,9 +1497,11 @@ function TestLeads() {
     const [showCallHistory, setShowCallHistory] = useState(false);
     const [clientNumber, setClientNumber] = useState("");
 
+
     const handleShowCallHistory = (companyName, clientNumber) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
+        setCompanyName(companyName)
     }
 
     const hanleCloseCallHistory = () => {
@@ -1696,7 +1698,7 @@ function TestLeads() {
                                                     <th>Sr.No</th>
                                                     <th>Company Name</th>
                                                     <th>Company Number</th>
-                                                    <th>Call History</th>
+                                                    {(dataStatus === "Assigned" || dataStatus === "Extracted") && <th>Call History</th>}
                                                     <th style={{ cursor: "pointer" }}    >
                                                         <div className="d-flex align-items-center justify-content-between">
                                                             <div>Incorporation Date</div>
@@ -1855,7 +1857,26 @@ function TestLeads() {
                                                             </td>
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
+
                                                             <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                                <LuHistory
+                                                                    onClick={() => {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+
+
+                                                                        );
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "15px",
+                                                                        height: "15px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </td>)}
                                                             <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
@@ -1962,6 +1983,24 @@ function TestLeads() {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                                <LuHistory
+                                                                    onClick={() => {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+
+
+                                                                        );
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "15px",
+                                                                        height: "15px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </td>)}
                                                             <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
@@ -2066,6 +2105,24 @@ function TestLeads() {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
+                                                                <LuHistory
+                                                                    onClick={() => {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+
+
+                                                                        );
+                                                                    }}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        width: "15px",
+                                                                        height: "15px",
+                                                                    }}
+                                                                    color="grey"
+                                                                />
+                                                            </td>)}
                                                             <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
@@ -2081,27 +2138,7 @@ function TestLeads() {
                                                                     secretKey={secretKey}
 
                                                                 />
-                                                                {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                    <p className="rematkText text-wrap m-0">
-                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                    </p>
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            functionopenpopupremarks(company._id, company.Status);
-                                                                        }}
-                                                                        style={{ cursor: "pointer" }}>
-                                                                        <IconEye
-
-                                                                            style={{
-                                                                                width: "14px",
-                                                                                height: "14px",
-                                                                                color: "#d6a10c",
-                                                                                cursor: "pointer",
-                                                                                marginLeft: "4px",
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                </div> */}
+                                                                
                                                             </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2170,13 +2207,13 @@ function TestLeads() {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
-                                                            <td>
+                                                            {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
-                                                                            
+
 
                                                                         );
                                                                     }}
@@ -2187,7 +2224,7 @@ function TestLeads() {
                                                                     }}
                                                                     color="grey"
                                                                 />
-                                                            </td>
+                                                            </td>)}
                                                             <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
@@ -2378,12 +2415,13 @@ function TestLeads() {
 
             {
                 showCallHistory &&
-                    (<CallHistory
-                        handleCloseHistory={hanleCloseCallHistory}
-                        clientNumber={clientNumber}
-                        // bdenumber={data.number}
-                        // bdmName={data.bdmName}
-                    />)
+                (<CallHistory
+                    handleCloseHistory={hanleCloseCallHistory}
+                    clientNumber={clientNumber}
+                    companyName={companyName}
+                // bdenumber={data.number}
+                // bdmName={data.bdmName}
+                />)
             }
 
             {/* -------------------- dialog to add leads---------------------------- */}
