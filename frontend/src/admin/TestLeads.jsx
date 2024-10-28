@@ -3606,55 +3606,8 @@ function TestLeads() {
                 </button>
             </Dialog>
 
-            {/* ---------------------------dialog to view remarks popup------------------------- */}
-            {/* <Dialog className='My_Mat_Dialog'
-                open={openRemarks}
-                onClose={closepopupRemarks}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>
-                    Remarks
-                    <button style={{ background: "none", border: "0px transparent", float: "right" }}
-                        onClick={closepopupRemarks}>
-                        <IoIosClose style={{
-                            height: "36px",
-                            width: "32px",
-                            color: "grey"
-                        }} />
-                    </button>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="remarks-content">
-                        {filteredRemarks.length !== 0 ? (
-                            filteredRemarks
-                                .slice()
-                                .reverse()
-                                .map((historyItem) => (
-                                    <div className="col-sm-12" key={historyItem._id}>
-                                        <div className="card RemarkCard position-relative">
-                                            <div className="d-flex justify-content-between">
-                                                <div className="reamrk-card-innerText">
-                                                    <pre>{historyItem.remarks || historyItem.bdmRemarks}</pre>
-                                                    <pre>{historyItem.bdeName || historyItem.bdmName}</pre>
-                                                </div>
-                                            </div>
-
-                                            <div className="d-flex card-dateTime justify-content-between">
-                                                <div className="date">{historyItem.date}</div>
-                                                <div className="time">{historyItem.time}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                        ) : (
-                            <div className="text-center overflow-hidden">
-                                No Remarks History
-                            </div>
-                        )}
-                    </div>
-                </DialogContent>
-            </Dialog> */}
+            
+            
 
             {/* ---------------------------drawer for filter----------------------------- */}
             <Drawer
