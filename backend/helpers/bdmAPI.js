@@ -319,115 +319,94 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     // const status = req.query.status;
     const state = req.query.state;
     const city = req.query.city;
-    const companyName = req.query.companyName;
+    const searchQuery = req.query.searchQuery;
     const bdeForwardDate = req.query.bdeForwardDate;
     const incorporationDate = req.query.incorporationDate;
     const page = parseInt(req.query.page) || 1; // Page number
     const limit = parseInt(req.query.limit) || 500; // Default limit to 500
 
     // Calculate skip for pagination
-    const skip = (page - 1) * limit;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Initialize query object with bdmName and bdmAcceptStatus as "Pending"
-    let query = {
+    // Build common query object
+    let commonQuery = {
       bdmName: bdmName,
       bdmAcceptStatus: { $nin: ["NotForwarded"] },
-      Status: { $nin: ["Busy"] }
+      Status: { $nin: ["Busy"] },
     };
 
-    // Filter by company name (case-insensitive search)
-    if (companyName) {
-      query["Company Name"] = { $regex: new RegExp(companyName, 'i') };
+    // Add filters if provided
+    if (searchQuery) {
+      const isNumber = !isNaN(searchQuery);
+      if (isNumber) {
+        // Perform partial match by converting Company Number to string
+        commonQuery.$expr = { $regexMatch: { input: { $toString: "$Company Number" }, regex: searchQuery, options: "i" } };
+      } else {
+        commonQuery["Company Name"] = { $regex: new RegExp(searchQuery, 'i') };
+      }
     }
+    if (state) commonQuery["State"] = state;
+    if (city) commonQuery["City"] = city;
+    if (bdeForwardDate) commonQuery["bdeForwardDate"] = { $gte: new Date(bdeForwardDate).toISOString() };
+    if (incorporationDate) commonQuery["Company Incorporation Date"] = { $gte: new Date(incorporationDate).toISOString() };
 
-    // Filter by status
-    // if (status) {
-    //   if (status === "Interested") {
-    //     query["Status"] = { $in: ["Interested", "FollowUp"] };
-    //     query["bdmAcceptStatus"] = "Accept";
-    //   } else if (status === "Matured") {
-    //     query["Status"] = "Matured";
-    //     query["bdmAcceptStatus"] = "Accept";
-    //   } else if (status === "Not Interested") {
-    //     query["Status"] = { $in: ["Junk", "Not Interested"] };
-    //     query["bdmAcceptStatus"] = "Accept";
-    //   } else if (status === "General") {
-    //     query["bdmAcceptStatus"] = "Pending";
-    //   }
-    // }
+    // Fetch paginated data for each status
+    const [generalData, interestedData, maturedData, notInterestedData] = await Promise.all([
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Pending" })
+        .sort({ bdmStatusChangeDate: 1 })
+        .skip(skip)
+        .limit(limit),
 
-    // Filter by state
-    if (state) {
-      query["State"] = state;
-    }
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } })
+        .sort({ bdmStatusChangeDate: 1 })
+        .skip(skip)
+        .limit(limit),
 
-    // Filter by city
-    if (city) {
-      query["City"] = city;
-    }
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" })
+        .sort({ bdmStatusChangeDate: 1 })
+        .skip(skip)
+        .limit(limit),
 
-    // Filter by bdeForwardDate (converting to ISO format if necessary)
-    if (bdeForwardDate) {
-      const date = new Date(bdeForwardDate);
-      query["bdeForwardDate"] = { $gte: date.toISOString() };
-    }
-
-    // Filter by incorporation date (using date range if required)
-    if (incorporationDate) {
-      const incDate = new Date(incorporationDate);
-      query["Company Incorporation Date"] = { $gte: incDate.toISOString() };
-    }
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } })
+        .sort({ bdmStatusChangeDate: 1 })
+        .skip(skip)
+        .limit(limit),
+    ]);
 
     // Count total for each status category
-    const totalGeneral = await CompanyModel.countDocuments({
-      ...query,
-      Status: { $nin: ["Busy"] },
-      bdmAcceptStatus: "Pending"
-    });
+    const [totalGeneral, totalInterested, totalMatured, totalNotInterested] = await Promise.all([
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Pending" }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } }),
+    ]);
 
-    const totalInterested = await CompanyModel.countDocuments({
-      ...query,
-      Status: { $in: ["Interested", "FollowUp"] },
-      bdmAcceptStatus: "Accept"
-    });
+    // Total pages calculation based on the largest dataset (generalData as reference)
+    const totalGeneralPages = Math.ceil(totalGeneral / limit);
+    const totalInterestedPages = Math.ceil(totalInterested / limit);
+    const totalMaturedPages = Math.ceil(totalMatured / limit);
+    const totalNotInterestedPages = Math.ceil(totalNotInterested / limit);
 
-    const totalMatured = await CompanyModel.countDocuments({
-      ...query,
-      Status: "Matured",
-      bdmAcceptStatus: "Accept"
-    });
+    // Combine all data into a single field for easy access if needed
+    const combinedData = [...generalData, ...interestedData, ...maturedData, ...notInterestedData];
 
-    const totalNotInterested = await CompanyModel.countDocuments({
-      ...query,
-      Status: { $in: ["Not Interested", "Junk"] },
-      bdmAcceptStatus: "Accept"
-    });
-
-    // Fetch data based on query and pagination
-    const data = await CompanyModel.find(query)
-      .sort({ bdmStatusChangeDate: 1 }) // Sorting in descending order
-      .skip(skip)
-      .limit(limit);
-
-    const totalCounts = await CompanyModel.countDocuments(query);
-
-    const totalPages = Math.ceil(totalCounts / limit);
-
-    // Return paginated data
     return res.status(200).json({
-      currentPage: page,
-      perPage: limit,
-      totalCounts: totalCounts,
-      totalPages: totalPages,
+      currentPage: parseInt(page),
+      perPage: parseInt(limit),
+      totalCounts: totalGeneral + totalInterested + totalMatured + totalNotInterested,
       totalGeneral: totalGeneral,
-      generalData: data?.filter(lead => lead.bdmAcceptStatus === "Pending") || [],
+      generalData: generalData || [],
+      totalGeneralPages: totalGeneralPages,
       totalInterested: totalInterested,
-      interestedData: data?.filter(lead => lead.bdmAcceptStatus === "Accept" && (lead.Status === "Interested" || lead.Status === "FollowUp")) || [],
+      interestedData: interestedData || [],
+      totalInterestedPages: totalInterestedPages,
       totalMatured: totalMatured,
-      maturedData: data?.filter(lead => lead.bdmAcceptStatus === "Accept" && lead.Status === "Matured") || [],
+      maturedData: maturedData || [],
+      totalMaturedPages: totalMaturedPages,
       totalNotInterested: totalNotInterested,
-      notInterestedData: data?.filter(lead => lead.bdmAcceptStatus === "Accept" && (lead.Status === "Not Interested" || lead.Status === "Junk")) || [],
-      data: data || [],
+      notInterestedData: notInterestedData || [],
+      totalNotInterestedPages: totalNotInterestedPages,
+      data: combinedData // combined data of all statuses on this page
     });
   } catch (error) {
     console.error(error);
@@ -1059,7 +1038,7 @@ router.post(`/rejectedrequestdonebybdm`, async (req, res) => {
 
 router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
   const { data, name } = req.body;
-  console.log("data" , data, name)
+  console.log("data", data, name)
   try {
     const updatePromises = data.map(async (company) => {
       const uploadDate = company.UploadDate === '$AssignDate' ? new Date() : company.UploadDate;
@@ -1078,10 +1057,10 @@ router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
         bdmName: name,
         bdeForwardDate: new Date()
       });
-      console.log("response2" , response2)
+      console.log("response2", response2)
     });
 
-    
+
 
     await Promise.all(updatePromises);
     //console.log("Updated Data is :", updatePromises);
