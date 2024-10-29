@@ -228,7 +228,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                         </ul>
                     )}
 
-                    {selectedCompany && !companyNotFound && (
+                    {!companyNotFound && (
                         <>
                             <div className="row">
                                 <div className="col-sm-6">
@@ -238,7 +238,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                             <input type="text" className="form-control mt-1" value={selectedBde} disabled />
                                         </> : <>
                                             <label for="bdmName">Select BDM :</label>
-                                            <select className="form-select mt-1" name="bdmName" id="bdmName"
+                                            <select className="form-select mt-1" name="bdmName" id="bdmName" disabled={!selectedCompany}
                                                 value={selectedBdm} onChange={(e) => setSelectedBdm(e.target.value)}
                                             >
                                                 <option value="">Select BDM</option>
@@ -253,7 +253,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="services">Offered Services <span style={{ color: "red" }}>*</span> :</label>
-                                        <Select isMulti className="mt-1" options={options} placeholder="Select Services..."
+                                        <Select isMulti className="mt-1" options={options} placeholder="Select Services..." isDisabled={!selectedCompany}
                                             onChange={(selectedOptions) => setOfferedServices(selectedOptions.map((option) => option.value))}
                                             value={offeredServices && offeredServices.map((value) => ({
                                                 value,
@@ -268,7 +268,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="offeredPrice">Offered Price (With GST) <span style={{ color: "red" }}>*</span> :</label>
-                                        <input type="number" className="form-control mt-1" placeholder="Please Enter Offered Price"
+                                        <input type="number" className="form-control mt-1" placeholder="Please Enter Offered Price" disabled={!selectedCompany}
                                             value={offeredPrice} onChange={(e) => setOfferedPrice(e.target.value)}
                                         />
                                     </div>
@@ -277,7 +277,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="expectedPrice">Expected Price (With GST) <span style={{ color: "red" }}>*</span> :</label>
-                                        <input type="number" className="form-control mt-1" placeholder="Please Enter Expected Price"
+                                        <input type="number" className="form-control mt-1" placeholder="Please Enter Expected Price" disabled={!selectedCompany}
                                             value={expectedPrice} onChange={(e) => setExpectedPrice(e.target.value)}
                                         />
                                     </div>
@@ -288,7 +288,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="followupDate">Last Follow Up Date <span style={{ color: "red" }}>*</span> :</label>
-                                        <input type="date" className="form-control mt-1"
+                                        <input type="date" className="form-control mt-1" disabled={!selectedCompany}
                                             value={followupDate} onChange={(e) => setFollowupDate(e.target.value)}
                                         />
                                     </div>
@@ -297,7 +297,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="paymentDate">Payment Expected On <span style={{ color: "red" }}>*</span> :</label>
-                                        <input type="date" className="form-control mt-1"
+                                        <input type="date" className="form-control mt-1" disabled={!selectedCompany}
                                             value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)}
                                         />
                                     </div>
@@ -305,7 +305,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
 
                                 <div className="form-group mt-2 mb-2">
                                     <label for="remarks">Remarks <span style={{ color: "red" }}>*</span> :</label>
-                                    <textarea className="form-control mt-1" placeholder="Enter Remarks Here"
+                                    <textarea className="form-control mt-1" placeholder="Enter Remarks Here" disabled={!selectedCompany}
                                         value={remarks} onChange={(e) => setRemarks(e.target.value)}
                                     />
                                 </div>
