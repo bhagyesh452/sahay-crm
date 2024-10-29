@@ -75,7 +75,7 @@ function EmployeeMaturedLeads({
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
             {!formOpen && !addFormOpen && (
                 <>
-                    <div className="table table-responsive table-style-3 m-0" onMouseUp={handleMouseUp}>
+                    <div className="table table-responsive e-Leadtable-style m-0" onMouseUp={handleMouseUp}>
                         <table className="table table-vcenter table-nowrap" style={{ width: "2200px" }}>
                             <thead>
                                 <tr className="tr-sticky">
