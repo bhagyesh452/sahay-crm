@@ -378,7 +378,7 @@ function EmployeesProjectionSummary() {
     ),
   ];
 
-  console.log("uniqueEnames", uniqueEnames)
+  console.log("uniqueEnames", uniqueEnames);
 
   const [sortTypeProjection, setSortTypeProjection] = useState({
     totalCompanies: "ascending",
@@ -525,7 +525,6 @@ function EmployeesProjectionSummary() {
     return 0;
   });
 
-  console.log("soretdData", sortedData)
   //------------------------projection table open functions--------------------------------------------------
   const functionCompleteProjectionTable = () => {
     setCompleteProjectionTable(true);
@@ -766,8 +765,8 @@ function EmployeesProjectionSummary() {
     setSortedTodaysProjection(sortedData);
   }, [todaysProjection]);
 
-  console.log("sortedData", sortedData)
-  console.log("followDataToday", followDataToday)
+  console.log("sortedData", sortedData);
+  console.log("followDataToday", followDataToday);
 
 
   return (
