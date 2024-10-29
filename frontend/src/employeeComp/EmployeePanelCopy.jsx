@@ -382,31 +382,31 @@ function EmployeePanelCopy({ fordesignation }) {
                         ? []
                         : queryData?.generalData?.map((row) => row._id)
                 );
-            }else if (dataStatus === "Interested" && activeTabId === "Interested") {
+            } else if (dataStatus === "Interested" && activeTabId === "Interested") {
                 setSelectedRows((prevSelectedRows) =>
                     prevSelectedRows.length === queryData?.interestedData?.length
                         ? []
                         : queryData?.interestedData?.map((row) => row._id)
                 );
-            }else if (dataStatus === "Matured" && activeTabId === "Matured") {
+            } else if (dataStatus === "Matured" && activeTabId === "Matured") {
                 setSelectedRows((prevSelectedRows) =>
                     prevSelectedRows.length === queryData?.maturedData?.length
                         ? []
                         : queryData?.maturedData?.map((row) => row._id)
                 );
-            }else if (dataStatus === "Not Interested" && activeTabId === "Not Interested") {
+            } else if (dataStatus === "Not Interested" && activeTabId === "Not Interested") {
                 setSelectedRows((prevSelectedRows) =>
                     prevSelectedRows.length === queryData?.notInterestedData?.length
                         ? []
                         : queryData?.notInterestedData?.map((row) => row._id)
                 );
-            }else if (dataStatus === "Forwarded" && activeTabId === "Forwarded") {
+            } else if (dataStatus === "Forwarded" && activeTabId === "Forwarded") {
                 setSelectedRows((prevSelectedRows) =>
                     prevSelectedRows.length === queryData?.forwardedData?.length
                         ? []
                         : queryData?.forwardedData?.map((row) => row._id)
                 );
-            }else {
+            } else {
                 setSelectedRows([]);
             }
         } else {
@@ -668,17 +668,17 @@ function EmployeePanelCopy({ fordesignation }) {
 
     // console.log("maturedData" , maturedData)
 
-// ------------------add projection popup new----------------------------------
+    // ------------------add projection popup new----------------------------------
 
-const [openProjectionPopUpNew, setopenProjectionPopUpNew] = useState(false)
+    const [openProjectionPopUpNew, setopenProjectionPopUpNew] = useState(false)
 
-const handleProjectionPopupNew = () => {
-    setopenProjectionPopUpNew(true);
-}
+    const handleProjectionPopupNew = () => {
+        setopenProjectionPopUpNew(true);
+    }
 
-const handleCloseNewProjectionPopup=() => {
-    setopenProjectionPopUpNew(false);
-}
+    const handleCloseNewProjectionPopup = () => {
+        setopenProjectionPopUpNew(false);
+    }
 
 
 
@@ -762,7 +762,6 @@ const handleCloseNewProjectionPopup=() => {
                                                     fetchData={fetchData}
                                                     ename={data.ename}
                                                     refetch={refetch}
-
                                                 />
                                             )}
 
@@ -777,16 +776,12 @@ const handleCloseNewProjectionPopup=() => {
                                                 >
                                                     <IoFilterOutline className='mr-1' /> Filter
                                                 </button>
-                                                <button type="button" className="btn mybtn"
-                                                    onClick={functionopenpopup}
-                                                >
+                                                <button type="button" className="btn mybtn" onClick={functionopenpopup}>
                                                     <MdOutlinePostAdd className='mr-1' /> Request Data
                                                 </button>
-                                                {/* <button type="button" className="btn mybtn"
-                                                    onClick={handleProjectionPopupNew}
-                                                >
+                                                <button type="button" className="btn mybtn" onClick={handleProjectionPopupNew}>
                                                     <MdOutlinePostAdd className='mr-1' /> Add Projection
-                                                </button> */}
+                                                </button>
                                                 {open &&
                                                     <EmployeeRequestDataDialog
                                                         secretKey={secretKey}
@@ -1205,11 +1200,12 @@ const handleCloseNewProjectionPopup=() => {
                     handleCloseProjectionPopup={handleCloseProjectionPopup}
                 />)}
 
-                <NewProjectionDialog
+            <NewProjectionDialog
                 open={openProjectionPopUpNew}
                 closepopup={handleCloseNewProjectionPopup}
-                secretKey={secretKey}
-                />
+                employeeName={data.ename}
+                refetch={refetch}
+            />
         </div>
     );
 }

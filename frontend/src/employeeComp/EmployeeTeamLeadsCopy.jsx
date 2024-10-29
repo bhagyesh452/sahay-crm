@@ -10,12 +10,11 @@ import TeamLeadsInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsIntereste
 import TeamLeadsMatured from "./EmployeeTeamLeadsTabPanels/TeamLeadsMatured.jsx";
 import TeamLeadsNotInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsNotInterested.jsx";
 import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
+import NewProjectionDialog from "./ExtraComponents/NewProjectionDialog.jsx";
 import { IoFilterOutline } from "react-icons/io5";
 // import DrawerComponent from "../components/Drawer.js";
 import { MdOutlinePostAdd } from "react-icons/md";
 import { useQuery } from '@tanstack/react-query';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -64,6 +63,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [newBdeName, setNewBdeName] = useState("");
     const [teamData, setTeamData] = useState([]);
     const [bdmName, setbdmName] = useState("");
+    const [showProjection, setShowProjection] = useState(false);
 
     const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
@@ -74,6 +74,10 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const interestedTabRef = useRef(null); // Ref for the Interested tab
     const maturedTabRef = useRef(null); // Ref for the Matured tab
     const notInterestedTabRef = useRef(null); // Ref for the Matured tab
+
+    const handleCloseProjection = () => {
+        setShowProjection(false);
+    };
 
     function formatDateNew(timestamp) {
         const date = new Date(timestamp);
@@ -115,8 +119,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
         setNewBdeName(ename)
         setbdmName(bdmName)
         if (!isDeletedEmployeeCompany) {
-        console.log("formchal")
-        setFormOpen(true);
+            console.log("formchal")
+            setFormOpen(true);
         } else {
             console.log("addleadfromchal")
             setAddFormOpen(true)
@@ -389,7 +393,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
             }
         }
     };
-console.log("data" , teamLeadsData?.data);
+    console.log("data", teamLeadsData?.data);
     const handleMouseUp = () => {
         // End drag selection
         setStartRowIndex(null);
@@ -638,6 +642,9 @@ console.log("data" , teamLeadsData?.data);
                                             // onClick={() => setOpenFilterDrawer(true)}
                                             >
                                                 <IoFilterOutline className='mr-1' /> Filter
+                                            </button>
+                                            <button type="button" className="btn mybtn" onClick={() => setShowProjection(true)}>
+                                                <MdOutlinePostAdd className='mr-1' /> Add Projection
                                             </button>
                                             {/* {open &&
                                             <EmployeeRequestDataDialog
@@ -969,12 +976,13 @@ console.log("data" , teamLeadsData?.data);
             ) : null
             }
 
-            {/* --------------------------------backdrop------------------------- */}
-            {isTeamLeadsLoading && (
-                <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
-            )}
+            <NewProjectionDialog
+                open={showProjection}
+                closepopup={handleCloseProjection}
+                employeeName={data.ename}
+                refetch={refetchTeamLeads}
+                isFilledFromTeamLeads={true}
+            />
 
         </div>
     );

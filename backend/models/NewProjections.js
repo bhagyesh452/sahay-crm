@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 // Define the schema
 const CompanySchema = new mongoose.Schema({
-  "Company Name": {
+  companyName: {
     type: String,
     required: true
   },
@@ -14,7 +14,7 @@ const CompanySchema = new mongoose.Schema({
     required: true
   },
   date: {
-    type: String,
+    type: Date,
     required: true
   },
   time: {
@@ -25,20 +25,20 @@ const CompanySchema = new mongoose.Schema({
     type: [String],
     default: []
   },
-  offeredPrize: {
+  offeredPrice: {
     type: Number,
-    required: true
-  },
-  lastFollowUpdate: {
-    type: String,
     required: true
   },
   totalPayment: {
     type: Number,
     required: true
   },
+  lastFollowUpdate: {
+    type: Date,
+    required: true
+  },
   estPaymentDate: {
-    type: String,
+    type: Date,
     required: true
   },
   remarks: {
@@ -75,7 +75,7 @@ const CompanySchema = new mongoose.Schema({
         required: true
       },
       date: {
-        type: String,
+        type: Date,
         required: true
       },
       time: {
@@ -86,20 +86,20 @@ const CompanySchema = new mongoose.Schema({
         type: [String],
         default: []
       },
-      offeredPrize: {
+      offeredPrice: {
         type: Number,
-        required: true
-      },
-      lastFollowUpdate: {
-        type: String,
         required: true
       },
       totalPayment: {
         type: Number,
         required: true
       },
+      lastFollowUpdate: {
+        type: Date,
+        required: true
+      },
       estPaymentDate: {
-        type: String,
+        type: Date,
         required: true
       },
       remarks: {
@@ -109,12 +109,26 @@ const CompanySchema = new mongoose.Schema({
       editCount: {
         type: Number,
         default: 0
-      }
+      },
+      bdeName: {
+        type: String,
+      },
+      bdmName: {
+        type: String
+      },
+      caseType: {
+        type: String,
+        default: "NotForwarded"
+      },
+      isPreviousMaturedCase: {
+        type: String,
+        default: false,
+      },
     },
   }],
 });
 
 
-const NewFollowUpModel = mongoose.model('NewFollowupCollection', CompanySchema);
+const NewFollowUpModel = mongoose.model('Projection', CompanySchema);
 
 module.exports = NewFollowUpModel;

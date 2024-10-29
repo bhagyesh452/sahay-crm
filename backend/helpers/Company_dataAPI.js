@@ -6,6 +6,7 @@ const CompanyModel = require("../models/Leads");
 const RemarksHistory = require("../models/RemarksHistory");
 const RecentUpdatesModel = require("../models/RecentUpdates");
 const TeamLeadsModel = require("../models/TeamLeads.js");
+const ProjectionModel = require("../models/NewProjections.js");
 const { Parser } = require('json2csv');
 const { State } = require('country-state-city');
 const FollowUpModel = require('../models/FollowUp.js');
@@ -2243,8 +2244,8 @@ router.get("/employees-new/:ename", async (req, res) => {
       totalForwardedCount: totalForwardedCount,
       totalMaturedPages: totalMaturedPages,
       totalNotInterestedPages: totalNotInterestedPages,
-      data:combinedData,
-      totalPages: Math.ceil((untouchedCount + interestedCount + maturedCount +forwardedCount+ notInterestedCount) / limit), // Adjust this based on your pagination needs
+      data: combinedData,
+      totalPages: Math.ceil((untouchedCount + interestedCount + maturedCount + forwardedCount + notInterestedCount) / limit), // Adjust this based on your pagination needs
     });
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -2904,27 +2905,128 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
   }
 });
 
-// Search Company API
-router.get('/companies/search', async (req, res) => {
+// Search Company API For Leads
+router.get('/companies/searchforLeads/:employeeName', async (req, res) => {
+  const { employeeName } = req.params;
   const { name } = req.query;
 
   // Check if the name is provided
   if (!name) {
-      return res.status(400).json({ found: false, companies: [] });
+    return res.status(400).json({ found: false, companies: [] });
   }
 
   try {
-      // Find companies by name (case insensitive)
-      const companies = await CompanyModel.find({ "Company Name": new RegExp(name, 'i') }).limit(10); // Limit results for performance
+    // Find companies by name and employee name (if provided) in a case-insensitive manner
+    const query = { "Company Name": new RegExp(name, 'i') };
+    if (employeeName) {
+      query.ename = employeeName;
+    }
 
-      // Respond with the found companies
-      return res.json({ found: companies.length > 0, companies });
+    // Execute the query with a limit of 10 results for performance
+    const companies = await CompanyModel.find(query).limit(10);
+
+    // Respond with the found companies
+    return res.json({ found: companies.length > 0, companies });
   } catch (error) {
-      console.error("Error searching for companies:", error);
-      return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error searching for companies:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Search Company API For Team Leads
+router.get('/companies/searchforTeamLeads/:employeeName', async (req, res) => {
+  const { employeeName } = req.params;
+  const { name } = req.query;
+
+  // Check if the name is provided
+  if (!name) {
+    return res.status(400).json({ found: false, companies: [] });
+  }
+
+  try {
+    // Find companies by name and employee name (if provided) in a case-insensitive manner
+    const query = { "Company Name": new RegExp(name, 'i') };
+    if (employeeName) {
+      query.bdmName = employeeName;
+    }
+
+    // Execute the query with a limit of 10 results for performance
+    const companies = await TeamLeadsModel.find(query).limit(10); // Limit results for performance
+
+    // Respond with the found companies
+    return res.json({ found: companies.length > 0, companies });
+  } catch (error) {
+    console.error("Error searching for companies:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 
+router.post('/addProjection/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+  const payload = req.body;
+
+  try {
+    // Check if the company exists
+    let existingCompany = await ProjectionModel.findOne({ companyId });
+
+    if (existingCompany) {
+      // Company exists, add new projection data to the history array only
+      const newHistoryEntry = {
+        data: {
+          ename: payload.ename,
+          date: payload.date,
+          time: payload.time,
+          offeredServices: payload.offeredServices,
+          offeredPrice: payload.offeredPrice,
+          totalPayment: payload.totalPayment,
+          lastFollowUpdate: payload.lastFollowUpdate,
+          estPaymentDate: payload.estPaymentDate,
+          remarks: payload.remarks,
+          bdeName: payload.bdeName,
+          bdmName: payload.bdmName,
+          caseType: payload.caseType,
+          isPreviousMaturedCase: payload.isPreviousMaturedCase,
+        }
+      };
+
+      // Add the new entry to the history array without updating the original fields
+      const updatedCompany = await ProjectionModel.findByIdAndUpdate(
+        existingCompany._id,
+        { $push: { history: newHistoryEntry } },
+        { new: true }
+      );
+
+      res.json({ result: true, message: "Projection added to history", data: updatedCompany });
+
+    } else {
+      // Company does not exist, create a new entry with the initial data and add the first history entry
+      const newCompany = new ProjectionModel({
+        companyName: payload.companyName,
+        companyId: payload.companyId,
+        ename: payload.ename,
+        date: payload.date,
+        time: payload.time,
+        offeredServices: payload.offeredServices,
+        offeredPrice: payload.offeredPrice,
+        totalPayment: payload.totalPayment,
+        lastFollowUpdate: payload.lastFollowUpdate,
+        estPaymentDate: payload.estPaymentDate,
+        remarks: payload.remarks,
+        bdeName: payload.bdeName,
+        bdmName: payload.bdmName,
+        caseType: payload.caseType,
+        isPreviousMaturedCase: payload.isPreviousMaturedCase,
+        history: []
+      });
+
+      await newCompany.save();
+      res.json({ result: true, message: "New company projection added", data: newCompany });
+    }
+
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Internal server error", error: error });
+  }
+});
 
 module.exports = router;
