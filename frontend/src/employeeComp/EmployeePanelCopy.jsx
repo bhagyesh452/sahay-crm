@@ -782,11 +782,11 @@ const handleCloseNewProjectionPopup=() => {
                                                 >
                                                     <MdOutlinePostAdd className='mr-1' /> Request Data
                                                 </button>
-                                                <button type="button" className="btn mybtn"
+                                                {/* <button type="button" className="btn mybtn"
                                                     onClick={handleProjectionPopupNew}
                                                 >
                                                     <MdOutlinePostAdd className='mr-1' /> Add Projection
-                                                </button>
+                                                </button> */}
                                                 {open &&
                                                     <EmployeeRequestDataDialog
                                                         secretKey={secretKey}
