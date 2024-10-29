@@ -3565,6 +3565,11 @@ td input {
   width: 240px;
 }
 
+.td_of_weblink .My_Text_Wrap
+{
+   width: calc(100% - 38px);
+}
+
 .rm-mybookingmain .table-style-3 table tbody tr td {
   border-right: 1px solid #eee !important;
 }
@@ -4513,24 +4518,26 @@ div#table-default td {
 .intersted-history-btn {
   width: 24px;
   height: 24px;
-  line-height: 19px;
+  line-height: 20px;
   text-align: center;
-  border-radius: 100px;
+  border-radius: 5px;
   background: #a3ffd8;
   border: 1px solid #35c286;
   margin-left: 8px;
-  font-size: 14px;
+  font-size: 11px;
+  color: #6f6f6f;
 }
 .followup-history-btn {
   width: 24px;
   height: 24px;
-  line-height: 19px;
+  line-height: 20px;
   text-align: center;
-  border-radius: 100px;
+  border-radius: 5px;
   background: #ffe1ed;
   border: 1px solid #f393ba;
   margin-left: 8px;
-  font-size: 14px;
+  font-size: 11px;
+  color: #6f6f6f;
 }
 
 .int-sub-que {
