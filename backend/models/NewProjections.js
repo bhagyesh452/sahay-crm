@@ -2,9 +2,12 @@ const mongoose = require('mongoose');
 
 // Define the schema
 const CompanySchema = new mongoose.Schema({
-  companyName: {
+  "Company Name": {
     type: String,
     required: true
+  },
+  companyId: {
+    type: String,
   },
   ename: {
     type: String,
@@ -46,19 +49,19 @@ const CompanySchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  bdeName:{
-    type:String,
+  bdeName: {
+    type: String,
   },
-  bdmName:{
-    type:String
+  bdmName: {
+    type: String
   },
-  caseType:{
-    type:String,
-    default:"NotForwarded"
+  caseType: {
+    type: String,
+    default: "NotForwarded"
   },
-  isPreviousMaturedCase:{
-    type:String,
-    default:false,
+  isPreviousMaturedCase: {
+    type: String,
+    default: false,
   },
   history: [{
     modifiedAt: { type: String, default: Date.now() },

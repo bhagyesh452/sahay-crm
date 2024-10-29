@@ -389,7 +389,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
             }
         }
     };
-
+console.log("data" , teamLeadsData?.data);
     const handleMouseUp = () => {
         // End drag selection
         setStartRowIndex(null);

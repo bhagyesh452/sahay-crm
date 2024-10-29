@@ -96,7 +96,7 @@ router.get("/leads/interestedleads/followupleads", async (req, res) => {
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
   const { newStatus, title, date, time, oldStatus } = req.body;
-  console.log(newStatus, title, date, time, oldStatus);
+  // console.log(newStatus, title, date, time, oldStatus);
 
   try {
     // Find the company by ID in the CompanyModel to get the company details
@@ -140,15 +140,15 @@ router.post("/update-status/:id", async (req, res) => {
       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
         "Company Name": company["Company Name"],
       });
-      console.log("0 leadHistory", leadHistory)
+      // console.log("0 leadHistory", leadHistory)
 
       if (leadHistory) {
-        console.log("1 leadHistory", leadHistory)
+        // console.log("1 leadHistory", leadHistory)
         // If the record exists, update old status, new status, date, and time
         leadHistory.oldStatus = "Interested";
         leadHistory.newStatus = newStatus;
       } else {
-        console.log("2 leadHistory", leadHistory)
+        // console.log("2 leadHistory", leadHistory)
         // If the record does not exist, create a new one with the company name, ename, and statuses
         leadHistory = new LeadHistoryForInterestedandFollowModel({
           _id: id,
@@ -160,7 +160,7 @@ router.post("/update-status/:id", async (req, res) => {
           time: time,
         });
       }
-      console.log("3 leadHistory", leadHistory)
+      // console.log("3 leadHistory", leadHistory)
 
       // Save the lead history update
       await leadHistory.save();
@@ -179,7 +179,7 @@ router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   try {
     const lead = await LeadHistoryForInterestedandFollowModel.find({ ename: ename });
 
-    console.log("Lead Data:", lead);
+    // console.log("Lead Data:", lead);
     res.status(200).send(lead);
   } catch (error) {
     console.error("Error Fetching:", error);
@@ -1290,7 +1290,7 @@ router.get('/filter-leads/interestedleads', async (req, res) => {
 
     // Handle status modification date filter
     if (selectedStatusModificationDate) {
-      console.log("modificationdate", selectedStatusModificationDate);
+      // console.log("modificationdate", selectedStatusModificationDate);
       const matchingLeadHistory = await LeadHistoryForInterestedandFollowModel.find({
         date: {
           $gte: new Date(new Date(selectedStatusModificationDate).setHours(0, 0, 0, 0)).toISOString(),
@@ -1412,7 +1412,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     if (selectedStatus) baseQuery.Status = selectedStatus;
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
-    console.log("selectedAssignDate", selectedAssignDate)
+    // console.log("selectedAssignDate", selectedAssignDate)
 
     if (selectedYear) {
       if (monthIndex !== '0') {
@@ -1764,7 +1764,7 @@ router.post(`/post-bdenextfollowupdate/:id`, async (req, res) => {
 router.get("/employees-data/:ename", async (req, res) => {
   try {
     const employeeName = req.params.ename;
-    console.log("Employee name:", employeeName);
+    // console.log("Employee name:", employeeName);
 
     // Fetch data from CompanyModel where ename matches employeeName
     const data = await CompanyModel.find({
@@ -1785,7 +1785,7 @@ router.get("/employees-data/:ename", async (req, res) => {
 router.get("/employees/:ename", async (req, res) => {
   try {
     const employeeName = req.params.ename;
-    console.log("Employee name:", employeeName);
+    // console.log("Employee name:", employeeName);
 
     // Fetch data from CompanyModel where ename matches employeeName
     const data = await CompanyModel.find({
@@ -1948,12 +1948,167 @@ router.get("/employees/:ename", async (req, res) => {
 //   }
 // });
 
+// router.get("/employees-new/:ename", async (req, res) => {
+//   try {
+//     const employeeName = req.params.ename;
+//     const limit = parseInt(req.query.limit) || 500; // Default limit to 500
+//     const skip = parseInt(req.query.skip) || 0; // Default skip to 0
+//     const dataStatus = req.query.dataStatus; // Extract the dataStatus from query parameters
+//     const search = req.query.search ? req.query.search.toLowerCase() : ""; // Extract the search query
+
+//     // Base query for employee-related data
+//     let baseQuery = {
+//       $or: [
+//         { ename: employeeName },
+//         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+//         { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+//       ]
+//     };
+
+//     // Apply searching for company name
+//     // if (search) {
+//     //   baseQuery["Company Name"] = { $regex: search, $options: "i" };
+//     // }
+//     if (search !== '') {
+//       if (!isNaN(search)) {
+//         baseQuery = { 'Company Number': search };
+//       } else {
+//         const escapedSearch = escapeRegex(search);
+//         baseQuery = {
+//           $or: [
+//             { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
+//             { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } }
+//           ]
+//         };
+//       }
+//     }
+
+//     // Make a copy of the base query for the specific dataStatus
+//     let dataQuery = { ...baseQuery };
+
+//     // Apply dataStatus filtering
+//     switch (dataStatus) {
+//       case "Not Interested":
+//         dataQuery.Status = { $in: ["Not Interested", "Junk"] };
+//         break;
+//       case "FollowUp":
+//         dataQuery.Status = "FollowUp";
+//         dataQuery.bdmAcceptStatus = { $in: ["NotForwarded", undefined] };
+//         break;
+//       case "Interested":
+//         dataQuery.Status = { $in: ["Interested", "FollowUp"] };
+//         dataQuery.bdmAcceptStatus = { $in: ["NotForwarded", undefined] };
+//         break;
+//       case "Forwarded":
+//         dataQuery.Status = { $in: ["Interested", "FollowUp"] };
+//         dataQuery.bdmAcceptStatus = { $in: ["Pending", "Accept"] };
+//         break;
+//       case "Matured":
+//         dataQuery.Status = { $in: ["Matured"] };
+//         dataQuery.bdmAcceptStatus = { $in: ["Pending", "Accept", "NotForwarded", undefined] };
+//         break;
+//       case "All":
+//         dataQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
+//         dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept", undefined] };
+//         break;
+//       default:
+//         dataQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
+//         dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept", undefined] };
+//         break;
+//     }
+
+//     // Execute data query with pagination and sorting
+//     const data = await CompanyModel.find(dataQuery)
+//       .sort(dataStatus === "All" ? { AssignDate: -1 } : { lastActionDate: -1 })
+//       .limit(limit)
+//       .skip(skip)
+//       .lean();
+
+//     const totalDocument = await CompanyModel.countDocuments(dataQuery);
+//     const totalPages = Math.ceil(totalDocument / limit);
+
+//     // Fetch redesigned data for matching companies
+//     const companyIds = data.map(item => item._id);
+//     const redesignedData = await RedesignedLeadformModel.find({ company: { $in: companyIds } })
+//       .select("company bookingDate bookingPublishDate")
+//       .lean();
+
+//     // Create map for redesigned data for quick access
+//     const redesignedMap = redesignedData.reduce((acc, item) => {
+//       acc[item.company] = {
+//         bookingDate: item.bookingDate,
+//         bookingPublishDate: item.bookingPublishDate
+//       };
+//       return acc;
+//     }, {});
+
+//     // Update data with booking information
+//     const updatedData = data.map(item => ({
+//       ...item,
+//       bookingDate: redesignedMap[item._id]?.bookingDate || null,
+//       bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
+//     }));
+
+//     // Clone the base query for counts
+//     const countQuery = { ...baseQuery };
+
+//     // Run count queries in parallel with independent query objects for each status
+//     const [
+//       notInterestedCount,
+//       interestedCount,
+//       maturedCount,
+//       forwardedCount,
+//       untouchedCount
+//     ] = await Promise.all([
+//       CompanyModel.countDocuments({
+//         ...countQuery,
+//         Status: { $in: ["Not Interested", "Junk"] }
+//       }),
+//       CompanyModel.countDocuments({
+//         ...countQuery,
+//         Status: { $in: ["Interested", "FollowUp"] },
+//         bdmAcceptStatus: { $in: ["NotForwarded", undefined] }
+//       }),
+//       CompanyModel.countDocuments({
+//         ...countQuery,
+//         Status: "Matured",
+//         bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", undefined] }
+//       }),
+//       CompanyModel.countDocuments({
+//         ...countQuery,
+//         Status: { $in: ["Interested", "FollowUp"] },
+//         bdmAcceptStatus: { $in: ["Pending", "Accept"] }
+//       }),
+//       CompanyModel.countDocuments({
+//         ...countQuery,
+//         Status: { $in: ["Untouched", "Busy", "Not Picked Up"] },
+//         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] }
+//       })
+//     ]);
+
+//     // Return response with data and counts
+//     res.json({
+//       data: updatedData,
+//       totalCounts: {
+//         notInterested: notInterestedCount,
+//         interested: interestedCount,
+//         matured: maturedCount,
+//         forwarded: forwardedCount,
+//         untouched: untouchedCount
+//       },
+//       totalPages: totalPages
+//     });
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 router.get("/employees-new/:ename", async (req, res) => {
   try {
     const employeeName = req.params.ename;
     const limit = parseInt(req.query.limit) || 500; // Default limit to 500
     const skip = parseInt(req.query.skip) || 0; // Default skip to 0
-    const dataStatus = req.query.dataStatus; // Extract the dataStatus from query parameters
     const search = req.query.search ? req.query.search.toLowerCase() : ""; // Extract the search query
 
     // Base query for employee-related data
@@ -1966,12 +2121,9 @@ router.get("/employees-new/:ename", async (req, res) => {
     };
 
     // Apply searching for company name
-    // if (search) {
-    //   baseQuery["Company Name"] = { $regex: search, $options: "i" };
-    // }
     if (search !== '') {
       if (!isNaN(search)) {
-        baseQuery = { 'Company Number': search };
+        baseQuery['Company Number'] = search;
       } else {
         const escapedSearch = escapeRegex(search);
         baseQuery = {
@@ -1983,53 +2135,59 @@ router.get("/employees-new/:ename", async (req, res) => {
       }
     }
 
-    // Make a copy of the base query for the specific dataStatus
-    let dataQuery = { ...baseQuery };
+    // Fetch data for each status category
+    const [generalData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
+      CompanyModel.find({
+        ...baseQuery,
+        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
+        Status: { $in: ["Busy", "Not Picked Up", "Untouched"] }
+      })
+        .sort({ AssignDate: -1 })
+        .skip(skip)
+        .limit(limit),
 
-    // Apply dataStatus filtering
-    switch (dataStatus) {
-      case "Not Interested":
-        dataQuery.Status = { $in: ["Not Interested", "Junk"] };
-        break;
-      case "FollowUp":
-        dataQuery.Status = "FollowUp";
-        dataQuery.bdmAcceptStatus = { $in: ["NotForwarded", undefined] };
-        break;
-      case "Interested":
-        dataQuery.Status = { $in: ["Interested", "FollowUp"] };
-        dataQuery.bdmAcceptStatus = { $in: ["NotForwarded", undefined] };
-        break;
-      case "Forwarded":
-        dataQuery.Status = { $in: ["Interested", "FollowUp"] };
-        dataQuery.bdmAcceptStatus = { $in: ["Pending", "Accept"] };
-        break;
-      case "Matured":
-        dataQuery.Status = { $in: ["Matured"] };
-        dataQuery.bdmAcceptStatus = { $in: ["Pending", "Accept", "NotForwarded", undefined] };
-        break;
-      case "All":
-        dataQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
-        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept", undefined] };
-        break;
-      default:
-        dataQuery.Status = { $in: ["Busy", "Not Picked Up", "Untouched"] };
-        dataQuery.bdmAcceptStatus = { $nin: ["Forwarded", "Pending", "Accept", undefined] };
-        break;
-    }
+      CompanyModel.find({
+        ...baseQuery,
+        Status: { $in: ["Interested", "FollowUp"] },
+        bdmAcceptStatus: { $in: ["NotForwarded", undefined] }
+      })
+        .sort({ lastActionDate: -1 })
+        .skip(skip)
+        .limit(limit),
 
-    // Execute data query with pagination and sorting
-    const data = await CompanyModel.find(dataQuery)
-      .sort(dataStatus === "All" ? { AssignDate: -1 } : { lastActionDate: -1 })
-      .limit(limit)
-      .skip(skip)
-      .lean();
+      CompanyModel.find({
+        ...baseQuery,
+        bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
+        Status: { $in: ["Interested", "FollowUp"] }
+      })
+        .sort({ lastActionDate: -1 })
+        .skip(skip)
+        .limit(limit),
 
-    const totalDocument = await CompanyModel.countDocuments(dataQuery);
-    const totalPages = Math.ceil(totalDocument / limit);
+      CompanyModel.find({
+        ...baseQuery,
+        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", undefined] },
+        Status: { $in: ["Matured"] }
+      })
+        .sort({ lastActionDate: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      CompanyModel.find({
+        ...baseQuery,
+        Status: { $in: ["Not Interested", "Junk"] }
+      })
+        .sort({ lastActionDate: -1 })
+        .skip(skip)
+        .limit(limit),
+    ]);
 
     // Fetch redesigned data for matching companies
-    const companyIds = data.map(item => item._id);
-    const redesignedData = await RedesignedLeadformModel.find({ company: { $in: companyIds } })
+    const allCompanyIds = [
+      ...maturedData.map(item => item._id),
+    ];
+
+    const redesignedData = await RedesignedLeadformModel.find({ company: { $in: allCompanyIds } })
       .select("company bookingDate bookingPublishDate")
       .lean();
 
@@ -2042,53 +2200,37 @@ router.get("/employees-new/:ename", async (req, res) => {
       return acc;
     }, {});
 
-    // Update data with booking information
-    const updatedData = data.map(item => ({
-      ...item,
+    // Update matured data with booking information
+    const updatedMaturedData = maturedData.map(item => ({
+      ...item._doc, // Spread the original _doc object to include all fields
       bookingDate: redesignedMap[item._id]?.bookingDate || null,
       bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
     }));
 
-    // Clone the base query for counts
-    const countQuery = { ...baseQuery };
-
-    // Run count queries in parallel with independent query objects for each status
-    const [
-      notInterestedCount,
-      interestedCount,
-      maturedCount,
-      forwardedCount,
-      untouchedCount
-    ] = await Promise.all([
-      CompanyModel.countDocuments({
-        ...countQuery,
-        Status: { $in: ["Not Interested", "Junk"] }
-      }),
-      CompanyModel.countDocuments({
-        ...countQuery,
-        Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: { $in: ["NotForwarded", undefined] }
-      }),
-      CompanyModel.countDocuments({
-        ...countQuery,
-        Status: "Matured",
-        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", undefined] }
-      }),
-      CompanyModel.countDocuments({
-        ...countQuery,
-        Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: { $in: ["Pending", "Accept"] }
-      }),
-      CompanyModel.countDocuments({
-        ...countQuery,
-        Status: { $in: ["Untouched", "Busy", "Not Picked Up"] },
-        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] }
-      })
+    // Count documents for each category
+    const [notInterestedCount, interestedCount, maturedCount, forwardedCount, untouchedCount] = await Promise.all([
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", undefined] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["Pending", "Accept"] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Untouched", "Busy", "Not Picked Up"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } })
     ]);
+    // Combine all data into a single field for easy access if needed
+    const combinedData = [...generalData, ...interestedData, ...maturedData, ...notInterestedData];
 
-    // Return response with data and counts
-    res.json({
-      data: updatedData,
+    // Total pages calculation based on the largest dataset (generalData as reference)
+    const totalGeneralPages = Math.ceil(untouchedCount / limit);
+    const totalInterestedPages = Math.ceil(interestedCount / limit);
+    const totalMaturedPages = Math.ceil(maturedCount / limit);
+    const totalForwardedCount = Math.ceil(forwardedCount / limit);
+    const totalNotInterestedPages = Math.ceil(notInterestedCount / limit);
+    // Return response with data categorized separately
+    res.status(200).json({
+      generalData,
+      interestedData,
+      forwardedData,
+      maturedData: updatedMaturedData, // Include updated matured data with booking information
+      notInterestedData,
       totalCounts: {
         notInterested: notInterestedCount,
         interested: interestedCount,
@@ -2096,7 +2238,13 @@ router.get("/employees-new/:ename", async (req, res) => {
         forwarded: forwardedCount,
         untouched: untouchedCount
       },
-      totalPages: totalPages
+      totalGeneralPages: totalGeneralPages,
+      totalInterestedPages: totalInterestedPages,
+      totalForwardedCount: totalForwardedCount,
+      totalMaturedPages: totalMaturedPages,
+      totalNotInterestedPages: totalNotInterestedPages,
+      data:combinedData,
+      totalPages: Math.ceil((untouchedCount + interestedCount + maturedCount +forwardedCount+ notInterestedCount) / limit), // Adjust this based on your pagination needs
     });
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -2688,8 +2836,8 @@ router.get("/bdmMaturedCases", async (req, res) => {
 // POST route to add/update interestedInformation
 router.post('/company/:companyName/interested-info', async (req, res) => {
   const companyName = req.params.companyName; // Extract company name from params
-  const { newInterestedInfo, status , id , ename ,date ,time} = req.body; // Data from the request body
-  console.log(newInterestedInfo, status)
+  const { newInterestedInfo, status, id, ename, date, time } = req.body; // Data from the request body
+  // console.log(newInterestedInfo, status)
 
   try {
     // Find the company and push new interestedInformation if it already exists
@@ -2716,15 +2864,15 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
         "Company Name": companyName,
       });
-      console.log("0 leadHistory", leadHistory)
+      // console.log("0 leadHistory", leadHistory)
 
       if (leadHistory) {
-        console.log("1 leadHistory", leadHistory)
+        // console.log("1 leadHistory", leadHistory)
         // If the record exists, update old status, new status, date, and time
         leadHistory.oldStatus = "Untouched";
         leadHistory.newStatus = status;
       } else {
-        console.log("2 leadHistory", leadHistory)
+        // console.log("2 leadHistory", leadHistory)
         // If the record does not exist, create a new one with the company name, ename, and statuses
         leadHistory = new LeadHistoryForInterestedandFollowModel({
           _id: id,
@@ -2736,7 +2884,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
           time: time,
         });
       }
-      console.log("3 leadHistory", leadHistory)
+      // console.log("3 leadHistory", leadHistory)
 
       // Save the lead history update
       await leadHistory.save();
@@ -2755,6 +2903,28 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+// Search Company API
+router.get('/companies/search', async (req, res) => {
+  const { name } = req.query;
+
+  // Check if the name is provided
+  if (!name) {
+      return res.status(400).json({ found: false, companies: [] });
+  }
+
+  try {
+      // Find companies by name (case insensitive)
+      const companies = await CompanyModel.find({ "Company Name": new RegExp(name, 'i') }).limit(10); // Limit results for performance
+
+      // Respond with the found companies
+      return res.json({ found: companies.length > 0, companies });
+  } catch (error) {
+      console.error("Error searching for companies:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 module.exports = router;

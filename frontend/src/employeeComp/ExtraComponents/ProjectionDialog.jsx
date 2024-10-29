@@ -42,7 +42,7 @@ function ProjectionDialog({
     const [isEditProjection, setIsEditProjection] = useState(false);
     const [projectingCompany, setProjectingCompany] = useState("");
     // Check if the company has an existing projection
-    const cleanedProjectionCompanyName = projectionCompanyName.toLowerCase().trim();
+    const cleanedProjectionCompanyName = projectionCompanyName?.toLowerCase().trim();
     const findOneprojection = projectionData?.find(
         (item) => item.companyName.toLowerCase().trim() === cleanedProjectionCompanyName
     );

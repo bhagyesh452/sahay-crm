@@ -250,9 +250,10 @@ const EmployeeStatusChange = ({
 
   return (<>
     <section className="rm_status_dropdown"
-      style={{
-        width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
-      }}>
+      // style={{
+      //   width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
+      // }}
+      >
       <div className={
         mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :
           `dropdown custom-dropdown status_dropdown ${statusClass}`}>
