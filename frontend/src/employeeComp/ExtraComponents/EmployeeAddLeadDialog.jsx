@@ -1,4 +1,4 @@
-import React ,{useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { IoClose } from "react-icons/io5";
 import Swal from "sweetalert2";
@@ -7,11 +7,14 @@ import axios from 'axios';
 import { TiUserAddOutline } from "react-icons/ti";
 
 function EmployeeAddLeadDialog({
-    secretKey,
     fetchData,
     ename,
-    refetch
+    refetch,
+    showPopup,
+    closePopup
 }) {
+
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [openNew, openchangeNew] = useState(false);
     const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
     const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
@@ -49,7 +52,7 @@ function EmployeeAddLeadDialog({
         setOpenThirdDirector(false);
         setFirstPlus(true);
         setSecondPlus(false);
-        setOpenThirdMinus(false)
+        setOpenThirdMinus(false);
         fetchData();
         setErrorDirectorNumberFirst("");
         setErrorDirectorNumberSecond("");
@@ -97,7 +100,7 @@ function EmployeeAddLeadDialog({
         setDirectorNameFirst(value);
     }, 10);
 
-    
+
     const functionOpenSecondDirector = () => {
         setOpenSecondDirector(true);
         setFirstPlus(false);
@@ -229,8 +232,8 @@ function EmployeeAddLeadDialog({
                     html: 'Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896',
                     icon: "success",
                 });
+                showPopup ? closePopup() : closepopupNew();
                 refetch();
-                closepopupNew();
             })
                 .catch((error) => {
                     console.error("Error sending data:", error);
@@ -240,7 +243,6 @@ function EmployeeAddLeadDialog({
                         html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
                     });
                 });
-            
         }
     };
 
@@ -252,10 +254,10 @@ function EmployeeAddLeadDialog({
                 <TiUserAddOutline className='mr-1' /> Add Leads
             </button>
             {/* --------------------------dialog to add leads individually-------------------------------------------- */}
-            <Dialog className='My_Mat_Dialog' open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
+            <Dialog className='My_Mat_Dialog' open={openNew || showPopup} onClose={closepopupNew} fullWidth maxWidth="md">
                 <DialogTitle>
                     Company Info{" "}
-                    <button onClick={closepopupNew} style={{ float: "right",backgroundColor:"transparent",border:"none" }}>
+                    <button onClick={showPopup ? closePopup : closepopupNew} style={{ float: "right", backgroundColor: "transparent", border: "none" }}>
                         <IoClose color="primary">
                         </IoClose>
                     </button>{" "}
