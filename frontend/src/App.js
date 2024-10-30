@@ -42,6 +42,7 @@ import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
 import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
+import CompanyProfile from "./components/CompanyProfile.jsx";
 
 // Floor Manager Imports
 import FloorManagerLayout from "./BDM/Dashboard/FloorManagerLayout.jsx";
@@ -191,6 +192,7 @@ function App() {
             {/* <Route path="/employee-assets/:userId" element={<EmployeeAssets />} /> */}
             <Route path="/employee-profile-details/:userId" element={<EmployeeProfile />} />
             <Route path="/employee/show-notification/:userId" element={<EmployeeShowNotification />} />
+            <Route path="company-profile/:userId" element={<CompanyProfile />} />
           </Route>
 
           {/* --------------------------------------------------Path for Customer-Panel---------------------------------------------------------- */}

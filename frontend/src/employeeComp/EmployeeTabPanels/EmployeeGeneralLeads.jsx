@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
+import { Link } from 'react-router-dom';
 import { GoArrowLeft } from "react-icons/go";
 import { GoArrowRight } from "react-icons/go";
 import Nodata from '../../components/Nodata';
@@ -10,8 +11,8 @@ import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import RemarksDialog from '../ExtraComponents/RemarksDialog';
 
-
 function EmployeeGeneralLeads({
+    userId,
     generalData,
     isLoading,
     refetch,
@@ -37,7 +38,7 @@ function EmployeeGeneralLeads({
     selectedRows,
     bdenumber
 }) {
-    
+
     const [companyName, setCompanyName] = useState("");
     const [maturedCompanyName, setMaturedCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
@@ -63,7 +64,7 @@ function EmployeeGeneralLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
-    console.log("isLoading", isLoading)
+    console.log("isLoading", isLoading);
 
 
     return (
@@ -144,7 +145,11 @@ function EmployeeGeneralLeads({
                                                     </td>
                                                 )}
                                                 <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
-                                                <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>{company["Company Name"]}</td>
+                                                <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>
+                                                    <Link to={`/company-profile/${userId}`} className='text-decoration-none text-dark'>
+                                                        {company["Company Name"]}
+                                                    </Link>
+                                                </td>
                                                 <td>
                                                     <div className="d-flex align-items-center justify-content-between wApp">
                                                         <div>{company["Company Number"]}</div>

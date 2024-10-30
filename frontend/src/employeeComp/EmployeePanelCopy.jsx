@@ -78,6 +78,16 @@ function EmployeePanelCopy({ fordesignation }) {
     const { id } = useParams();
     const [showDialog, setShowDialog] = useState(false);
     const [dialogCount, setDialogCount] = useState(0);
+    const [showCompanyProfile, setShowCompanyProfile] = useState(false);
+
+    const handleOpenCompanyProfile = () => {
+        setShowCompanyProfile(true);
+    };
+
+    const handleCloseCompanyProfile = () => {
+        setShowCompanyProfile(false);
+    };
+
     const navigate = useNavigate();
     // Auto logout functionality :
     useEffect(() => {
@@ -986,6 +996,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                     <div className={`tab-pane ${dataStatus === "All" ? "active" : ""}`} id="general">
                                         {activeTabId === "All" && dataStatus === "All" && (
                                             <EmployeeGeneralLeads
+                                                userId={userId}
                                                 generalData={generalData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
@@ -1010,12 +1021,14 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
                                                 bdenumber={data.number}
-
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
                                         {activeTabId === "Interested" && dataStatus === "Interested" && (
                                             <EmployeeInterestedLeads
+                                                userId={userId}
                                                 interestedData={interestedData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
@@ -1042,13 +1055,15 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseEnter={handleMouseEnter}
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
-                                                userId={userId}
                                                 bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
                                         {activeTabId === "Matured" && (
                                             <EmployeeMaturedLeads
+                                                userId={userId}
                                                 maturedLeads={maturedData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
@@ -1074,13 +1089,15 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseEnter={handleMouseEnter}
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
-                                                userId={userId}
                                                 bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
                                         {activeTabId === "Forwarded" && (
                                             <EmployeeForwardedLeads
+                                                userId={userId}
                                                 forwardedLeads={forwardedData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
@@ -1104,13 +1121,15 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseEnter={handleMouseEnter}
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
-                                                userId={userId}
                                                 bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
                                             />)}
                                     </div>
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
                                         {activeTabId === "Not Interested" && (
                                             <EmployeeNotInterestedLeads
+                                                userId={userId}
                                                 notInterestedLeads={notInterestedData}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
@@ -1135,6 +1154,8 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 handleMouseUp={handleMouseUp}
                                                 selectedRows={selectedRows}
                                                 bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
                                             />)}
                                     </div>
                                 </div>
