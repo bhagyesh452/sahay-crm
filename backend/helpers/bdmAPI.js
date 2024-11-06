@@ -249,7 +249,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       bdmName: bdmName,
     }).lean();
 
-    console.log("teamLeads" , teamLeadsData)
+    //console.log("teamLeads" , teamLeadsData)
 
     // Fetch the related company data from newcdatas collection
     const companyNames = teamLeadsData.map((lead) => lead["Company Name"]).filter(Boolean); // Remove any undefined or null values
@@ -354,7 +354,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Fetch paginated data for each status
     const [generalData, interestedData, maturedData, notInterestedData] = await Promise.all([
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in : ["Pending"]} })
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in : ["Pending" , "Forwarded"]} })
         .sort({ bdmStatusChangeDate: 1 })
         .skip(skip)
         .limit(limit),
@@ -377,7 +377,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Count total for each status category
     const [totalGeneral, totalInterested, totalMatured, totalNotInterested] = await Promise.all([
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Pending" }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in : ["Pending" , "Forwarded"] }}),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } }),
@@ -623,7 +623,7 @@ router.post("/bdm-status-change/:id", async (req, res) => {
     if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
       updateFields.bdmAcceptStatus = "NotForwarded"
     }
-    console.log("updateFie", updateFields)
+    //console.log("updateFie", updateFields)
     // Update the CompanyModel
     await CompanyModel.findByIdAndUpdate(id, { $set: updateFields });
 
@@ -702,7 +702,7 @@ router.delete(`/post-deletecompany-interested/:companyId`, async (req, res) => {
 
   try {
     const existingData = await TeamLeadsModel.findById(companyId);
-    console.log("EXISITING DATA", existingData);
+    //console.log("EXISITING DATA", existingData);
 
     if (existingData) {
       await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
@@ -1040,7 +1040,7 @@ router.post(`/rejectedrequestdonebybdm`, async (req, res) => {
 
 router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
   const { data, name } = req.body;
-  console.log("data", data, name)
+  //console.log("data", data, name)
   try {
     const updatePromises = data.map(async (company) => {
       const uploadDate = company.UploadDate === '$AssignDate' ? new Date() : company.UploadDate;
@@ -1059,7 +1059,7 @@ router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
         bdmName: name,
         bdeForwardDate: new Date()
       });
-      console.log("response2", response2)
+      //console.log("response2", response2)
     });
 
 
