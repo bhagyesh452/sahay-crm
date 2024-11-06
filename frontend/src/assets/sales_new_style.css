@@ -43,7 +43,7 @@
 {
     background: #43474c !important;
     color: #e4e4e4;
-    border: 1px solid #43474c;
+    border: none;
     position: sticky;
     top: 0;
 }
@@ -158,4 +158,8 @@
 .int-accordion-item .form-group label
 {
     text-align: left;
+}
+.class
+{
+    position: relative;
 }
