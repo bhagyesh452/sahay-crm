@@ -164,16 +164,16 @@ function EmployeeGeneralLeads({
                                     <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2"}>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bookingDate'] = el}>
-                                                Booking Date
+                                                Company Name
                                             </div>
 
-                                            <div className='RM_filter_icon'>
+                                            {/* <div className='RM_filter_icon'>
                                                 {isActiveField('bookingDate') ? (
                                                     <FaFilter onClick={() => handleFilterClick("bookingDate")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("bookingDate")} />
                                                 )}
-                                            </div>
+                                            </div> */}
 
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bookingDate' && (
