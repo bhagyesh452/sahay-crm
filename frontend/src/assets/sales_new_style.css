@@ -43,7 +43,7 @@
 {
     background: #43474c !important;
     color: #e4e4e4;
-    border: 1px solid #43474c;
+    border: none;
     position: sticky;
     top: 0;
 }
