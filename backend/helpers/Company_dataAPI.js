@@ -3029,4 +3029,21 @@ router.post('/addProjection/:companyId', async (req, res) => {
   }
 });
 
+router.get('/getProjection', async (req, res) => {
+  try {
+    const data = await ProjectionModel.find();
+    res.json({ result: true, message: "Projection fetched successfully", data: data });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error fetching projection", error: error });
+  }  
+});
+
+router.get('/getProjection/:bdmName', async (req, res) => {
+  const { bdmName } = req.params;
+  try {
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error fetching projection", error: error });
+  }
+});
+
 module.exports = router;
