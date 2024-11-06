@@ -2273,7 +2273,6 @@ function TestLeads() {
 
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
                                                             {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
-
                                                             {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
                                                             
                                                             <td>

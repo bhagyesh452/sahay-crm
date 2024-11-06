@@ -105,8 +105,8 @@ function TeamLeadsGeneral({
                                             </label>
                                         </th>
                                     )}
-                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
-                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-1 "}>Compnay Name</th>
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1"}>Sr. No</th>
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2"}>Compnay Name</th>
                                 <th>BDE Name</th>
                                 <th>BDE Status</th>
                                 <th>BDE Remarks</th>
