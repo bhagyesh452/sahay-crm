@@ -108,7 +108,7 @@ function EmployeeInterestedLeads({
                   className={
                     (fordesignation === "admin" || fordesignation === "datamanager")
                       ? "AEP-sticky-left-2"
-                      : "rm-sticky-left-1 "
+                      : "rm-sticky-left-1"
                   }
                 >
                   Sr. No
@@ -117,7 +117,7 @@ function EmployeeInterestedLeads({
                   className={
                     (fordesignation === "admin" || fordesignation === "datamanager")
                       ? "AEP-sticky-left-3"
-                      : "rm-sticky-left-2 "
+                      : "rm-sticky-left-2"
                   }
                 >
                   Company Name
@@ -245,30 +245,30 @@ function EmployeeInterestedLeads({
                                 null}>
                             {company.Status}
                           </div>) : (
-                          <EmployeeStatusChange
-                            key={company._id}
-                            companyName={company && company["Company Name"]}
-                            companyStatus={company.Status}
-                            id={company._id}
-                            refetch={refetch}
-                            mainStatus={dataStatus}
-                            setCompanyName={setCompanyName}
-                            setCompanyEmail={setCompanyEmail}
-                            setCompanyInco={setCompanyInco}
-                            setCompanyId={setCompanyId}
-                            setCompanyNumber={setCompanyNumber}
-                            setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                            setNewBdeName={setNewBdeName}
-                            isDeletedEmployeeCompany={
-                              company.isDeletedEmployeeCompany
-                            }
-                            cemail={company["Company Email"]}
-                            cindate={company["Incorporation Date"]}
-                            cnum={company["Company Number"]}
-                            ename={ename}
-                            bdmAcceptStatus={company.bdmAcceptStatus}
-                            handleFormOpen={handleOpenFormOpen}
-                          />
+                            <EmployeeStatusChange
+                              key={company._id}
+                              companyName={company && company["Company Name"]}
+                              companyStatus={company.Status}
+                              id={company._id}
+                              refetch={refetch}
+                              mainStatus={dataStatus}
+                              setCompanyName={setCompanyName}
+                              setCompanyEmail={setCompanyEmail}
+                              setCompanyInco={setCompanyInco}
+                              setCompanyId={setCompanyId}
+                              setCompanyNumber={setCompanyNumber}
+                              setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                              setNewBdeName={setNewBdeName}
+                              isDeletedEmployeeCompany={
+                                company.isDeletedEmployeeCompany
+                              }
+                              cemail={company["Company Email"]}
+                              cindate={company["Incorporation Date"]}
+                              cnum={company["Company Number"]}
+                              ename={ename}
+                              bdmAcceptStatus={company.bdmAcceptStatus}
+                              handleFormOpen={handleOpenFormOpen}
+                            />
                         )}
                         <div className={company.Status === "Interested" && company.interestedInformation ?
                           "intersted-history-btn"

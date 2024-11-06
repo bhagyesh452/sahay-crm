@@ -89,7 +89,7 @@ function TeamLeadsGeneral({
     return (
         <div className="sales-panels-main">
             <>
-                <div className="table table-responsive table-style-3 e-Leadtable-style m-0">
+                <div className="table table-responsive e-Leadtable-style m-0">
                     <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
                         <thead>
                             <tr className="tr-sticky">
