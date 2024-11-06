@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useRef} from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -10,6 +10,10 @@ import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import RemarksDialog from '../ExtraComponents/RemarksDialog';
+import FilterableComponentEmployee from '../ExtraComponents/FilterableComponentEmployee';
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
+
 
 function EmployeeGeneralLeads({
     userId,
@@ -51,6 +55,20 @@ function EmployeeGeneralLeads({
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
     const [nowToFetch, setNowToFetch] = useState(false);
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [completeRmData, setcompleteRmData] = useState([])
+    const [dataToFilter, setdataToFilter] = useState([])
+    const [page, setPage] = useState(1);
+    const [isScrollLocked, setIsScrollLocked] = useState(false);
+    // const [totalPages, setTotalPages] = useState(0);
+    const [filteredData, setFilteredData] = useState([]);
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [error, setError] = useState('');
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
             setCurrentPage((prevPage) => prevPage + 1);
@@ -64,7 +82,59 @@ function EmployeeGeneralLeads({
             refetch(); // Trigger a refetch when the page changes
         }
     };
-    console.log("isLoading", isLoading);
+
+    //-------------------filter method-------------------------------
+
+    const handleFilter = (newData) => {
+        setFilteredData(newData)
+        //setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "General"));
+
+    };
+
+    // useEffect(() => {
+    //     if (noOfAvailableData) {
+    //         showingFilterIcon(true)
+    //         totalFilteredData(noOfAvailableData)
+    //     } else {
+    //         showingFilterIcon(false)
+    //         totalFilteredData(0)
+    //     }
+
+    // }, [noOfAvailableData, activeTab])
+
+
+    const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+            setIsScrollLocked(!showFilterMenu);
+        } else {
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+            setIsScrollLocked(true);
+
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+                    setIsScrollLocked(false);
+                }
+            };
+
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+
 
 
     return (
@@ -91,7 +161,43 @@ function EmployeeGeneralLeads({
                                             </th>
                                         )}
                                     <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1"}>Sr. No</th>
-                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2"}>Company Name</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2"}>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['bookingDate'] = el}>
+                                                Booking Date
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('bookingDate') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'bookingDate' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={generalData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={generalData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={generalData}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
                                     <th>Company No</th>
                                     <th>Call History</th>
                                     <th>Status</th>

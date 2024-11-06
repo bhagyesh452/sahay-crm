@@ -1779,9 +1779,9 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                         </tbody>
                                     ) : (
                                         <tbody>
-                                            {(isFilter || isSearching) && dataStatus === 'Assigned'
+                                            {(isFilter || isSearching)
                                                 &&
-                                                assignedData.map((company, index) => {
+                                                (assignedData.map((company, index) => {
                                                     let matchingLeadHistory
                                                     if (Array.isArray(leadHistoryData)) {
                                                         matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
@@ -1807,17 +1807,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
-                                                            {(dataStatus === "Assigned") &&
+                                                           
                                                                 <td>
                                                                     <div className='d-flex align-items-center justify-content-between'>
                                                                         {company["Status"]}
-                                                                        <div
-                                                                        // className={company.Status === "Interested" && company.interestedInformation ?
-                                                                        //     "intersted-history-btn"
-                                                                        //     : company.Status === "FollowUp" && company.interestedInformation ? "followup-history-btn" :
-                                                                        //         company.Status === "FollowUp" && !company.interestedInformation ? "followup-history-btn disabled" :
-                                                                        //             "intersted-history-btn disabled"}
-                                                                        >
+                                                                        <div>
                                                                             <IconEye
                                                                                 className={(company.Status === "Interested" || company.Status === "FollowUp") && !company.interestedInformation ? "disabled" : ""}
                                                                                 key={company._id}
@@ -1851,7 +1845,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                            }
+                                                            
                                                             {(dataStatus === "Assigned") && <td>
                                                                 <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                     <p className="rematkText text-wrap m-0">
@@ -1901,7 +1895,8 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                             }</td>
                                                         </tr>
                                                     )
-                                                })}
+                                                }))
+                                                }
 
                                             {(!isFilter && !isSearching) &&
                                                 data.map((company, index) => {
@@ -1930,7 +1925,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
-                                                            {(dataStatus === "Assigned") &&
+                                                         
                                                                 <td>
                                                                     <div className='d-flex align-items-center justify-content-between'>
                                                                         {company["Status"]}
@@ -1974,7 +1969,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                            }
+                                                            
                                                             {(dataStatus === "Assigned") && <td>
                                                                 <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                     <p className="rematkText text-wrap m-0">
