@@ -15,7 +15,8 @@ const FilterableComponentEmployee = ({
     activeFilters,
     allFilterFields,
     noofItems,
-    showingMenu }) => {
+    showingMenu,
+    refetch }) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -39,67 +40,26 @@ const FilterableComponentEmployee = ({
         if (filteredData && filteredData.length !== 0) {
             const values = filteredData.map(item => {
                 // Handle 'submittedOn' field by removing time part and just considering the date
-                if (filterField === 'submittedOn') {
-                    const submittedDate = new Date(item[filterField]).toLocaleDateString('en-IN'); // Convert date to string (ignoring time)
+                if (filterField === 'AssignDate' || filterField === "Company Incorporation Date  ") {
+                    const submittedDate = formatDatePro(item[filterField]) // Convert date to string (ignoring time)
                     return submittedDate;
                 }
-                // Handle dynamic calculation for 'received Payment'
-                if (filterField === 'receivedPayment') {
-                    const payment = (
-                        parseInt(
-                            (item.paymentTerms === 'Full Advanced' ? item.totalPaymentWGST : item.firstPayment) || 0,
-                            10
-                        ) + parseInt(item.pendingRecievedPayment || 0, 10)
-                    ).toLocaleString('en-IN');
-                    return payment;
-                }
-                // Handle dynamic calculation for 'Pending Payment'
-                if (filterField === 'pendingPayment') {
-                    const pendingPayment = (
-                        parseInt(item.totalPaymentWGST || 0, 10) - (
-                            parseInt(
-                                (item.paymentTerms === 'Full Advanced' ? item.totalPaymentWGST : item.firstPayment) || 0,
-                                10
-                            ) + parseInt(item.pendingRecievedPayment || 0, 10)
-                        )
-                    ).toLocaleString('en-IN');
-                    return pendingPayment;
-                }
-                if (filterField === 'withDSC') {
-                    return item[filterField] ? 'Yes' : 'No';
-                }
+               
+                
+               
                 return item[filterField];
             }).filter(Boolean);
             setColumnValues([...new Set(values)]); // Ensure unique values
         } else {
             const values = dataForFilter.map(item => {
                 // Handle 'submittedOn' field by removing time part and just considering the date
-                if (filterField === 'submittedOn') {
-                    const submittedDate = new Date(item[filterField]).toLocaleDateString('en-IN'); // Convert date to string (ignoring time)
+
+                const submittedDate = item[filterField] ? new Date(item[filterField]).toLocaleDateString('en-IN') : ''; // Convert date to string (ignoring time)
+                if (filterField === 'AssignDate' || filterField === "Company Incorporation Date  ") {
+                    const submittedDate = formatDatePro(item[filterField]) // Convert date to string (ignoring time)
                     return submittedDate;
-                }
-                // Handle dynamic calculation for 'received Payment'
-                if (filterField === 'receivedPayment') {
-                    const payment = (
-                        parseInt(
-                            (item.paymentTerms === 'Full Advanced' ? item.totalPaymentWGST : item.firstPayment) || 0,
-                            10
-                        ) + parseInt(item.pendingRecievedPayment || 0, 10)
-                    ).toLocaleString('en-IN');
-                    return payment;
-                }
-                // Handle dynamic calculation for 'Pending Payment'
-                if (filterField === 'pendingPayment') {
-                    const pendingPayment = (
-                        parseInt(item.totalPaymentWGST || 0, 10) - (
-                            parseInt(
-                                (item.paymentTerms === 'Full Advanced' ? item.totalPaymentWGST : item.firstPayment) || 0,
-                                10
-                            ) + parseInt(item.pendingRecievedPayment || 0, 10)
-                        )
-                    ).toLocaleString('en-IN');
-                    return pendingPayment;
-                }
+                }                
+                
                 return item[filterField];
             }).filter(Boolean);
             setColumnValues([...new Set(values)]); // Ensure unique values
@@ -124,11 +84,6 @@ const FilterableComponentEmployee = ({
         });
     };
 
-    // useEffect(() => {
-    //     if (filterField) {
-    //         applyFilters(selectedFilters, filterField);
-    //     }
-    // }, [selectedFilters, filterField, sortOrder]);
 
     const applyFilters = (filters, column) => {
         // Ensure filters is always an object
@@ -141,28 +96,13 @@ const FilterableComponentEmployee = ({
         // Start with the data to be filtered
         if (filteredData && filteredData.length !== 0) {
             dataToSort = filteredData.map(item => {
-                // Add numeric fields for sorting
-                const receivedPayment = (
-                    parseInt(
-                        (item.paymentTerms === 'Full Advanced' ? item.totalPaymentWGST : item.firstPayment) || 0,
-                        10
-                    ) + parseInt(item.pendingRecievedPayment || 0, 10)
-                );
-                const pendingPayment = (
-                    parseInt(item.totalPaymentWGST || 0, 10) - (
-                        parseInt(
-                            (item.paymentTerms === 'Full Advanced' ? item.totalPaymentWGST : item.firstPayment) || 0,
-                            10
-                        ) + parseInt(item.pendingRecievedPayment || 0, 10)
-                    )
-                );
+                
 
                 return {
                     ...item,
-                    receivedPayment,
-                    pendingPayment,
-                    // Add submittedOn without time for comparison
-                    submittedDate: new Date(item.submittedOn).toLocaleDateString('en-IN')
+                   
+                    companyInco : formatDatePro(item["Company Incorporation Date  "]),
+                    submittedDate: formatDatePro(item.AssignDate)
 
                 };
             });
@@ -179,22 +119,16 @@ const FilterableComponentEmployee = ({
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-                        if (column === 'receivedPayment') {
-                            const payment = item.receivedPayment.toLocaleString('en-IN');
-                            return columnFilters.includes(payment);
-                        }
-                        if (column === 'pendingPayment') {
-                            const pendingPayment = item.pendingPayment.toLocaleString('en-IN');
-                            return columnFilters.includes(pendingPayment);
-                        }
-                        if (column === 'withDSC') {
-                            return columnFilters.includes(item.withDSC ? 'Yes' : 'No');
-                        }
+                        
                         // For 'submittedOn', only compare date without time
-                    if (column === 'submittedOn') {
-                        const submittedDate = new Date(item.submittedOn).toLocaleDateString('en-IN');
-                        return columnFilters.includes(submittedDate);
-                    }
+                        if (column === 'AssignDate') {
+                            const submittedDate = formatDatePro(item.AssignDate)
+                            return columnFilters.includes(submittedDate);
+                        }
+                        if (column === 'Company Incorporation Date  ') {
+                            const submittedDate = formatDatePro(item["Company Incorporation Date  "])
+                            return columnFilters.includes(submittedDate);
+                        }
                         return columnFilters.includes(String(item[column]));
                     });
 
@@ -211,7 +145,7 @@ const FilterableComponentEmployee = ({
                     let valueB = b[column];
 
                     // Handle date sorting
-                    if (column === 'bookingDate') {
+                    if (column === 'AssignDate' || column === "Company Incorporation Date  ") {
                         const dateA = new Date(valueA);
                         const dateB = new Date(valueB);
                         if (sortOrder === 'oldest') {
@@ -245,29 +179,14 @@ const FilterableComponentEmployee = ({
             }
         } else {
             dataToSort = dataForFilter.map(item => {
-                // Update the active filter fields arra
-                // Add numeric fields for sorting
-                const receivedPayment = (
-                    parseInt(
-                        (item.paymentTerms === 'Full Advanced' ? item.totalPaymentWGST : item.firstPayment) || 0,
-                        10
-                    ) + parseInt(item.pendingRecievedPayment || 0, 10)
-                );
-                const pendingPayment = (
-                    parseInt(item.totalPaymentWGST || 0, 10) - (
-                        parseInt(
-                            (item.paymentTerms === 'Full Advanced' ? item.totalPaymentWGST : item.firstPayment) || 0,
-                            10
-                        ) + parseInt(item.pendingRecievedPayment || 0, 10)
-                    )
-                );
+                
 
                 return {
                     ...item,
-                    receivedPayment,
-                    pendingPayment,
+                   
                     // Add submittedOn without time for comparison
-                    submittedDate: new Date(item.submittedOn).toLocaleDateString('en-IN')
+                    companyInco:formatDatePro(item["Company Incorporation Date  "]),
+                    submittedDate: formatDatePro(item.AssignDate)
                 };
             });
 
@@ -282,17 +201,14 @@ const FilterableComponentEmployee = ({
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-                        if (column === 'receivedPayment') {
-                            const payment = item.receivedPayment.toLocaleString('en-IN');
-                            return columnFilters.includes(payment);
-                        }
-                        if (column === 'pendingPayment') {
-                            const pendingPayment = item.pendingPayment.toLocaleString('en-IN');
-                            return columnFilters.includes(pendingPayment);
-                        }
+                        
                         // For 'submittedOn', only compare date without time
-                        if (column === 'submittedOn') {
-                            const submittedDate = new Date(item.submittedOn).toLocaleDateString('en-IN');
+                        if (column === 'AssignDate') {
+                            const submittedDate = formatDatePro(item.AssignDate)
+                            return columnFilters.includes(submittedDate);
+                        }
+                        if (column === 'Company Incorporation Date  ') {
+                            const submittedDate = formatDatePro(item["Company Incorporation Date  "])
                             return columnFilters.includes(submittedDate);
                         }
                         return columnFilters.includes(String(item[column]));
@@ -310,7 +226,7 @@ const FilterableComponentEmployee = ({
                     let valueB = b[column];
 
                     // Handle date sorting
-                    if (column === 'bookingDate') {
+                    if (column === 'AssignDate' || column === "Company Incorporation Date  ") {
                         const dateA = new Date(valueA);
                         const dateB = new Date(valueB);
                         if (sortOrder === 'oldest') {
@@ -359,42 +275,37 @@ const FilterableComponentEmployee = ({
     };
 
     // Example of logging the length of the selected filters for a specific field
-    console.log(selectedFilters[filterField]?.length, columnValues.length);
+    //console.log(selectedFilters[filterField]?.length, columnValues.length);
 
-    // const handleClearAll = async() => {
-    //     setSelectedFilters(prevFilters => ({
-    //         ...prevFilters,
-    //         [filterField]: []
-    //     }));
-    //     allFilterFields([])
-    //     onFilter(completeData)
-    // };
-
+    
     const handleClearAll = async () => {
         setSelectedFilters(prevFilters => ({
             ...prevFilters,
             [filterField]: []
         }));
+        onFilter(completeData);
+        showingMenu(false);
+        allFilterFields([]);
 
-        try {
-            // Fetch the complete dataset from the API
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest-complete`, {
-                params: {
-                    search: "",           // Clear search query
-                    page: 1,              // Reset to first page
-                    limit: 50,            // Adjust limit as needed
-                    activeTab: activeTab  // Adjust as needed
-                }
-            });
+        // try {
+        //     // Fetch the complete dataset from the API
+        //     const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest-complete`, {
+        //         params: {
+        //             search: "",           // Clear search query
+        //             page: 1,              // Reset to first page
+        //             limit: 50,            // Adjust limit as needed
+        //             activeTab: activeTab  // Adjust as needed
+        //         }
+        //     });
 
-            const { data, totalPages } = response.data;
-            onFilter(data);
-            allFilterFields([])
-            showingMenu(false)
-            noofItems(0)
-        } catch (error) {
-            console.error("Error fetching complete data", error.message);
-        }
+        //     const { data, totalPages } = response.data;
+        //     onFilter(data);
+        //     allFilterFields([])
+        //     showingMenu(false)
+        //     noofItems(0)
+        // } catch (error) {
+        //     console.error("Error fetching complete data", error.message);
+        // }
     };
 
     function formatDatePro(inputDate) {
@@ -408,13 +319,13 @@ const FilterableComponentEmployee = ({
     function formatDate(dateString) {
         // Split the date string based on '/' (assuming input is '20/7/2024')
         const [day, month, year] = dateString.split('/');
-    
+
         // Array of month names to convert the numerical month to name
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    
+
         // Parse the month from the array (subtract 1 because month is zero-indexed in arrays)
         const monthName = monthNames[parseInt(month) - 1];
-    
+
         // Return the formatted date as '20July,2024'
         return `${day}${monthName},${year}`;
     }
@@ -427,9 +338,9 @@ const FilterableComponentEmployee = ({
                     onClick={(e) => handleSort("oldest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
-                    {filterField === "bookingDate" ||
+                    {filterField === "AssignDate" ||
                         filterField === "Company Number" ||
-                        filterField === "caNumber" ||
+                        filterField === "Company Incorporation Date  " ||
                         filterField === "totalPaymentWGST" ||
                         filterField === "receivedPayment" ||
                         filterField === "pendingPayment" ? "Ascending" : "Sort A TO Z"}
@@ -440,18 +351,13 @@ const FilterableComponentEmployee = ({
                     onClick={(e) => handleSort("newest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
-                    {filterField === "bookingDate" ||
+                    {filterField === "AssignDate" ||
                         filterField === "Company Number" ||
-                        filterField === "caNumber" ||
+                        filterField === "Company Incorporation Date  " ||
                         filterField === "totalPaymentWGST" ||
                         filterField === "receivedPayment" ||
                         filterField === "pendingPayment" ? "Descending" : "Sort Z TO A"}
                 </div>
-                {/* <div className="inco-subFilter p-2"
-                        onClick={(e) => handleSort("none")}>
-                        <SwapVertIcon style={{ height: "16px" }} />
-                        None
-                    </div> */}
                 <div className='w-100'>
                     <div className="inco-subFilter d-flex align-items-center">
                         <div className='filter-check' onClick={handleSelectAll}>
@@ -480,8 +386,8 @@ const FilterableComponentEmployee = ({
                                 />
                             </div>
                             <label className="filter-val p-2" for={value}>
-                                {filterField === "bookingDate"  ? formatDatePro(value) 
-                                :filterField === "submittedOn" ? formatDate(value) : value}
+                                {filterField === "AssignDate" ? formatDatePro(value)
+                                    : filterField === "Company Incorporation Date  " ? formatDatePro(value) : value}
                             </label>
                         </div>
                     ))}

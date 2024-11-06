@@ -130,7 +130,6 @@ function EmployeeLogin({ setnewToken }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userId) {
-      setErrorMessage("Invalid email or password");
       return; // Prevent further execution if userId is null or undefined
     }
     const date = getCurrentDate();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -18,6 +18,9 @@ import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInte
 import { FaEye } from "react-icons/fa";
 import AdminRemarksDialog from "../../admin/ExtraComponent/AdminRemarksDialog";
 import { width } from "@mui/system";
+import FilterableComponentEmployee from "../ExtraComponents/FilterableComponentEmployee";
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
 
 
 function EmployeeInterestedLeads({
@@ -48,7 +51,11 @@ function EmployeeInterestedLeads({
   handleMouseUp,
   selectedRows,
   userId,
-  bdenumber
+  bdenumber,
+  filteredData,
+  filterMethod,
+  completeGeneralData,
+  dataToFilter
 }) {
   const [companyName, setCompanyName] = useState("");
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
@@ -79,6 +86,49 @@ function EmployeeInterestedLeads({
 
   const modalId = `modal-${companyName.replace(/\s+/g, '')}`; // Generate a unique modal ID
 
+
+
+  // ----------------filter component----------------------
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+  const [error, setError] = useState('');
+  const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+  const [activeFilterField, setActiveFilterField] = useState(null);
+  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+  const [isScrollLocked, setIsScrollLocked] = useState(false)
+  const fieldRefs = useRef({});
+  const filterMenuRef = useRef(null); // Ref for the filter menu container
+  const handleFilterClick = (field) => {
+    if (activeFilterField === field) {
+      setShowFilterMenu(!showFilterMenu);
+      setIsScrollLocked(!showFilterMenu);
+    } else {
+      setActiveFilterField(field);
+      setShowFilterMenu(true);
+      setIsScrollLocked(true);
+
+      const rect = fieldRefs.current[field].getBoundingClientRect();
+      setFilterPosition({ top: rect.bottom, left: rect.left });
+    }
+  };
+  const isActiveField = (field) => activeFilterFields.includes(field);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const handleClickOutside = (event) => {
+        if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+          setShowFilterMenu(false);
+          // setIsScrollLocked(false);
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, []);
 
   return (
     <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -120,7 +170,42 @@ function EmployeeInterestedLeads({
                       : "rm-sticky-left-2"
                   }
                 >
-                  Company Name
+                  <div className='d-flex align-items-center justify-content-center position-relative'>
+                    <div ref={el => fieldRefs.current['Company Name'] = el}>
+                      Company Name
+                    </div>
+
+                    <div className='RM_filter_icon'>
+                      {isActiveField('Company Name') ? (
+                        <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                      )}
+                    </div>
+
+                    {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'Company Name' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableComponentEmployee
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Interested"}
+                          data={interestedData}
+                          filterField={activeFilterField}
+                          onFilter={filterMethod}
+                          completeData={completeGeneralData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                          refetch={refetch}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </th>
                 <th>Company No</th>
                 <th>Call History</th>
@@ -245,30 +330,30 @@ function EmployeeInterestedLeads({
                                 null}>
                             {company.Status}
                           </div>) : (
-                            <EmployeeStatusChange
-                              key={company._id}
-                              companyName={company && company["Company Name"]}
-                              companyStatus={company.Status}
-                              id={company._id}
-                              refetch={refetch}
-                              mainStatus={dataStatus}
-                              setCompanyName={setCompanyName}
-                              setCompanyEmail={setCompanyEmail}
-                              setCompanyInco={setCompanyInco}
-                              setCompanyId={setCompanyId}
-                              setCompanyNumber={setCompanyNumber}
-                              setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                              setNewBdeName={setNewBdeName}
-                              isDeletedEmployeeCompany={
-                                company.isDeletedEmployeeCompany
-                              }
-                              cemail={company["Company Email"]}
-                              cindate={company["Incorporation Date"]}
-                              cnum={company["Company Number"]}
-                              ename={ename}
-                              bdmAcceptStatus={company.bdmAcceptStatus}
-                              handleFormOpen={handleOpenFormOpen}
-                            />
+                          <EmployeeStatusChange
+                            key={company._id}
+                            companyName={company && company["Company Name"]}
+                            companyStatus={company.Status}
+                            id={company._id}
+                            refetch={refetch}
+                            mainStatus={dataStatus}
+                            setCompanyName={setCompanyName}
+                            setCompanyEmail={setCompanyEmail}
+                            setCompanyInco={setCompanyInco}
+                            setCompanyId={setCompanyId}
+                            setCompanyNumber={setCompanyNumber}
+                            setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                            setNewBdeName={setNewBdeName}
+                            isDeletedEmployeeCompany={
+                              company.isDeletedEmployeeCompany
+                            }
+                            cemail={company["Company Email"]}
+                            cindate={company["Incorporation Date"]}
+                            cnum={company["Company Number"]}
+                            ename={ename}
+                            bdmAcceptStatus={company.bdmAcceptStatus}
+                            handleFormOpen={handleOpenFormOpen}
+                          />
                         )}
                         <div className={company.Status === "Interested" && company.interestedInformation ?
                           "intersted-history-btn"
