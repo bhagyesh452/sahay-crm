@@ -124,7 +124,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         const payload = {
             companyName: companyName,
             companyId: companyId,
-            ename: employeeName,
+            ename: employeeName ? employeeName : projectionData.ename,
             date: new Date(),
             time: new Date().toLocaleTimeString(),
             offeredServices: offeredServices,
@@ -134,7 +134,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             estPaymentDate: paymentDate,
             remarks: remarks,
             bdeName: isFilledFromTeamLeads ? selectedBde : (employeeName || projectionData.ename),
-            bdmName: (isFilledFromTeamLeads || !selectedBdm || projectionData) ? employeeName : selectedBdm,
+            bdmName: (isFilledFromTeamLeads || !selectedBdm || projectionData) ? (employeeName || projectionData.ename) : selectedBdm,
             caseType: isFilledFromTeamLeads ? "Received" : "NotForwarded",
             isPreviousMaturedCase: companyStatus === "Matured" ? true : false
         };
