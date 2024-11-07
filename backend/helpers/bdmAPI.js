@@ -355,22 +355,22 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     // Fetch paginated data for each status
     const [generalData, interestedData, maturedData, notInterestedData] = await Promise.all([
       CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in : ["Pending"]} })
-        .sort({ bdmStatusChangeDate: 1 })
+        .sort({ bdeForwardDate: -1 })
         .skip(skip)
         .limit(limit),
 
       CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } })
-        .sort({ bdmStatusChangeDate: 1 })
+        .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
         .limit(limit),
 
       CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" })
-        .sort({ bdmStatusChangeDate: 1 })
+        .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
         .limit(limit),
 
       CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } })
-        .sort({ bdmStatusChangeDate: 1 })
+        .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
         .limit(limit),
     ]);
@@ -397,16 +397,16 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
       perPage: parseInt(limit),
       totalCounts: totalGeneral + totalInterested + totalMatured + totalNotInterested,
       totalGeneral: totalGeneral,
-      generalData: generalData || [],
+      generalData: generalData.sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)) || [],
       totalGeneralPages: totalGeneralPages,
       totalInterested: totalInterested,
-      interestedData: interestedData || [],
+      interestedData: interestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalInterestedPages: totalInterestedPages,
       totalMatured: totalMatured,
-      maturedData: maturedData || [],
+      maturedData: maturedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalMaturedPages: totalMaturedPages,
       totalNotInterested: totalNotInterested,
-      notInterestedData: notInterestedData || [],
+      notInterestedData: notInterestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalNotInterestedPages: totalNotInterestedPages,
       data: combinedData // combined data of all statuses on this page
     });

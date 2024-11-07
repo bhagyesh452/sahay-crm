@@ -303,9 +303,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
         // Clear local storage and redirect to login page
         localStorage.removeItem("newtoken");
         localStorage.removeItem("userId");
-        // localStorage.removeItem("designation");
-        // localStorage.removeItem("loginTime");
-        // localStorage.removeItem("loginDate");
         window.location.replace("/"); // Redirect to login page
     };
 
