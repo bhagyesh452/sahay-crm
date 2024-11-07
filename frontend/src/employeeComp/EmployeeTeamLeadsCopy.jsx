@@ -188,10 +188,20 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     }, [employeeName]);
 
-    const fetchProjections = async () => {
+    // const fetchProjections = async () => {
+    //     try {
+    //         const response = await axios.get(`${secretKey}/projection/projection-data`);
+    //         setProjectionData(response.data);
+    //     } catch (error) {
+    //         console.error("Error fetching Projection Data:", error.message);
+    //     }
+    // };
+
+    const fetchNewProjections = async () => {
         try {
-            const response = await axios.get(`${secretKey}/projection/projection-data`);
-            setProjectionData(response.data);
+            const response = await axios.get(`${secretKey}/company-data/getProjection/${employeeName}`);
+            //console.log("forprojec" , response.data);
+            setProjectionData(response.data.data);
         } catch (error) {
             console.error("Error fetching Projection Data:", error.message);
         }
@@ -245,7 +255,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
 
     useEffect(() => {
         fetchData();
-        fetchProjections();
+        // fetchProjections();
+        fetchNewProjections();
     }, []);
 
     useEffect(() => {
@@ -292,9 +303,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
         // Clear local storage and redirect to login page
         localStorage.removeItem("newtoken");
         localStorage.removeItem("userId");
-        // localStorage.removeItem("designation");
-        // localStorage.removeItem("loginTime");
-        // localStorage.removeItem("loginDate");
         window.location.replace("/"); // Redirect to login page
     };
 
@@ -846,6 +854,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
                                         {activeTabId === "Interested" && dataStatus === "Interested" && (<TeamLeadsInterested
                                             secretKey={secretKey}
+                                            employeeName={employeeName}
                                             // interestedData={teamLeadsData?.data?.data}
                                             interestedData={interestedData}
                                             isLoading={isTeamLeadsLoading}
@@ -862,7 +871,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             email={data.email}
                                             designation={data.designation}
                                             handleShowCallHistory={handleShowCallHistory}
-                                            fetchProjections={fetchProjections}
+                                            fetchProjections={fetchNewProjections}
                                             projectionData={projectionData}
                                             teamData={teamData}
                                             handleOpenFormOpen={handleOpenFormOpen}
@@ -895,7 +904,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             email={data.email}
                                             designation={data.designation}
                                             handleShowCallHistory={handleShowCallHistory}
-                                            fetchProjections={fetchProjections}
+                                            fetchProjections={fetchNewProjections}
                                             projectionData={projectionData}
                                             newDesignation={designation}
                                             selectedRows={selectedRows}

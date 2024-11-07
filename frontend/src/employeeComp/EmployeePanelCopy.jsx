@@ -191,13 +191,21 @@ function EmployeePanelCopy({ fordesignation }) {
     }
 
 
-    const fetchProjections = async () => {
+    // const fetchProjections = async () => {
+    //     try {
+    //         const response = await axios.get(`${secretKey}/projection/projection-data/${data.ename}`);
+    //         //console.log("forprojec" , response.data);
+    //         setProjectionData(response.data);
+    //     } catch (error) {
+    //         console.error("Error fetching Projection Data:", error.message);
+    //     }
+    // };
+
+    const fetchNewProjections = async () => {
         try {
-            const response = await axios.get(
-                `${secretKey}/projection/projection-data/${data.ename}`
-            );
+            const response = await axios.get(`${secretKey}/company-data/getProjection/${data.ename}`);
             //console.log("forprojec" , response.data);
-            setProjectionData(response.data);
+            setProjectionData(response.data.data);
         } catch (error) {
             console.error("Error fetching Projection Data:", error.message);
         }
@@ -277,8 +285,8 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     );
 
-    console.log("queryData", queryData)
-    console.log("generalData", generalData)
+    // console.log("queryData", queryData)
+    // console.log("generalData", generalData)
 
     useEffect(() => {
         if (queryData) {
@@ -299,7 +307,8 @@ function EmployeePanelCopy({ fordesignation }) {
 
     useEffect(() => {
         fetchData();
-        fetchProjections();
+        // fetchProjections();
+        fetchNewProjections();
     }, [fetchingId, dataStatus, queryData]);
 
     // Handle search
@@ -701,19 +710,18 @@ function EmployeePanelCopy({ fordesignation }) {
     }
 
     // -----------------filterable table------------------
-    const [filteredData, setFilteredData] = useState([]);
-    const handleFilter = (newData) => {
-        if (activeTabId === "all") {
-            setFilteredData(newData)
-            setGeneralData(newData);
-            setGeneralDataCount(newData.length)
-        } else if (activeTabId === "Interested") {
-            setFilteredData(newData)
-            setInterestedData(newData);
-            setInterestedDataCount(newData.length)
-        }
-
-        };
+    // const [filteredData, setFilteredData] = useState([]);
+    // const handleFilter = (newData) => {
+    //     if (activeTabId === "all") {
+    //         setFilteredData(newData)
+    //         setGeneralData(newData);
+    //         setGeneralDataCount(newData.length)
+    //     } else if (activeTabId === "Interested") {
+    //         setFilteredData(newData)
+    //         setInterestedData(newData);
+    //         setInterestedDataCount(newData.length)
+    //     }
+    //     };
 
 
         return (
@@ -1047,10 +1055,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
-                                                    filteredData={filteredData}
-                                                    filterMethod={handleFilter}
+                                                    //filteredData={filteredData}
+                                                    //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterGeneral}
                                                     completeGeneralData={completeGeneralData}
+                                                    setGeneralData={setGeneralData}
+                                                    setGeneralDataCount={setGeneralDataCount}
+                                                    //setFilteredData={setFilteredData}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
@@ -1072,7 +1083,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     email={data.email}
                                                     setdataStatus={setdataStatus}
                                                     handleShowCallHistory={handleShowCallHistory}
-                                                    fetchProjections={fetchProjections}
+                                                    fetchProjections={fetchNewProjections}
                                                     projectionData={projectionData}
                                                     handleOpenFormOpen={handleOpenFormOpen}
                                                     designation={data.designation}
@@ -1086,10 +1097,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
-                                                    filteredData={filteredData}
-                                                    filterMethod={handleFilter}
+                                                    //filteredData={filteredData}
+                                                    //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterInterested}
                                                     completeGeneralData={completeInterestedData}
+                                                    setInterestedData={setInterestedData}
+                                                    setInterestedDataCount={setInterestedDataCount}
+                                                    //setFilteredData={setFilteredData}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
@@ -1111,7 +1125,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     email={data.email}
                                                     setdataStatus={setdataStatus}
                                                     handleShowCallHistory={handleShowCallHistory}
-                                                    fetchProjections={fetchProjections}
+                                                    fetchProjections={fetchNewProjections}
                                                     projectionData={projectionData}
                                                     designation={data.designation}
                                                     fordesignation={fordesignation}
