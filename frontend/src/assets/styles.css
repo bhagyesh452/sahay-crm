@@ -3167,7 +3167,6 @@ td input {
   position: sticky;
   left: 42px;
   width: 66px;
-  box-shadow: 3px 0px 4px -4px #cccccc !important;
   z-index: 1;
 }
 
@@ -3176,6 +3175,7 @@ td input {
   left: 108px;
   box-shadow: 3px 0px 4px -4px #cccccc !important;
   z-index: 1;
+  background: #fff !important;
 }
 
 .rm-sticky-left-1 {
