@@ -101,7 +101,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   };
 
 
- 
+
 
   // const functionCalculateAchievedRevenue = () => {
   //   //console.log("yahan chla achieved full function")
@@ -628,20 +628,20 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           case 'Today':
             remainingExpanseCondition = mainBooking.remainingPayments.some(item => new Date(item.paymentDate).toLocaleDateString() === today.toLocaleDateString())
             break;
-            case 'Last Month':
-              remainingExpanseCondition = mainBooking.remainingPayments.some(item => 
-                  new Date(item.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) && 
-                  new Date(item.paymentDate).getFullYear() === today.getFullYear()
-              );
-              break;
-          
+          case 'Last Month':
+            remainingExpanseCondition = mainBooking.remainingPayments.some(item =>
+              new Date(item.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) &&
+              new Date(item.paymentDate).getFullYear() === today.getFullYear()
+            );
+            break;
+
           case 'This Month':
-              remainingExpanseCondition = mainBooking.remainingPayments.some(item => 
-                  new Date(item.paymentDate).getMonth() === today.getMonth() && 
-                  new Date(item.paymentDate).getFullYear() === today.getFullYear()
-              );
-              break;
-          
+            remainingExpanseCondition = mainBooking.remainingPayments.some(item =>
+              new Date(item.paymentDate).getMonth() === today.getMonth() &&
+              new Date(item.paymentDate).getFullYear() === today.getFullYear()
+            );
+            break;
+
           default:
             break;
         }
@@ -669,15 +669,15 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             case 'Today':
               condition = (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
               break;
-              case 'Last Month':
-                condition = (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && 
-                            (new Date(remainingObj.paymentDate).getFullYear() === today.getFullYear());
-                break;
-            
+            case 'Last Month':
+              condition = (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) &&
+                (new Date(remainingObj.paymentDate).getFullYear() === today.getFullYear());
+              break;
+
             case 'This Month':
-                condition = (new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) && 
-                            (new Date(remainingObj.paymentDate).getFullYear() === today.getFullYear());
-                break;
+              condition = (new Date(remainingObj.paymentDate).getMonth() === today.getMonth()) &&
+                (new Date(remainingObj.paymentDate).getFullYear() === today.getFullYear());
+              break;
             default:
               break;
           }
@@ -716,19 +716,19 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           case 'Today':
             condition = (new Date(moreObject.bookingDate).toLocaleDateString() === today.toLocaleDateString())
             break;
-            case 'Last Month':
-              condition = (
-                  new Date(moreObject.bookingDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) &&
-                  new Date(moreObject.bookingDate).getFullYear() === today.getFullYear()
-              );
-              break;
-          
+          case 'Last Month':
+            condition = (
+              new Date(moreObject.bookingDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) &&
+              new Date(moreObject.bookingDate).getFullYear() === today.getFullYear()
+            );
+            break;
+
           case 'This Month':
-              condition = (
-                  new Date(moreObject.bookingDate).getMonth() === today.getMonth() &&
-                  new Date(moreObject.bookingDate).getFullYear() === today.getFullYear()
-              );
-              break;
+            condition = (
+              new Date(moreObject.bookingDate).getMonth() === today.getMonth() &&
+              new Date(moreObject.bookingDate).getFullYear() === today.getFullYear()
+            );
+            break;
           default:
             break;
         }
@@ -748,7 +748,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
                 } else {
                   achievedAmount = achievedAmount + Math.round(serv.firstPayment);
-              console.log("Ye add hone ja raha :", mainBooking['Company Name'],Math.round(serv.firstPayment), achievedAmount)
+                  console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
 
                 }
               }
@@ -787,11 +787,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               } else {
                 if (serv.withGST) {
                   achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18) / 2;
-                console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
+                  console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
 
                 } else {
                   achievedAmount = achievedAmount + Math.round(serv.firstPayment) / 2;
-                console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
+                  console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
 
                 }
               }
@@ -826,16 +826,16 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               moreObject.services.map(serv => {
                 if (serv.paymentTerms === "Full Advanced") {
                   achievedAmount = achievedAmount + serv.totalPaymentWOGST;
-                console.log("Ye add hone ja raha :", mainBooking['Company Name'], serv.totalPaymentWOGST, achievedAmount)
+                  console.log("Ye add hone ja raha :", mainBooking['Company Name'], serv.totalPaymentWOGST, achievedAmount)
 
                 } else {
                   if (serv.withGST) {
                     achievedAmount = achievedAmount + Math.round(serv.firstPayment / 1.18);
-                console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
+                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
 
                   } else {
                     achievedAmount = achievedAmount + Math.round(serv.firstPayment);
-                console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
+                    console.log("Ye add hone ja raha :", mainBooking['Company Name'], Math.round(serv.firstPayment), achievedAmount)
 
                   }
                 }
@@ -874,19 +874,19 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             case 'Today':
               remainingExpanseCondition = moreObject.remainingPayments.some(item => new Date(item.paymentDate).toLocaleDateString() === today.toLocaleDateString())
               break;
-              case 'Last Month':
-                remainingExpanseCondition = moreObject.remainingPayments.some(item => 
-                    new Date(item.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) &&
-                    new Date(item.paymentDate).getFullYear() === today.getFullYear()
-                );
-                break;
-            
+            case 'Last Month':
+              remainingExpanseCondition = moreObject.remainingPayments.some(item =>
+                new Date(item.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) &&
+                new Date(item.paymentDate).getFullYear() === today.getFullYear()
+              );
+              break;
+
             case 'This Month':
-                remainingExpanseCondition = moreObject.remainingPayments.some(item => 
-                    new Date(item.paymentDate).getMonth() === today.getMonth() &&
-                    new Date(item.paymentDate).getFullYear() === today.getFullYear()
-                );
-                break;
+              remainingExpanseCondition = moreObject.remainingPayments.some(item =>
+                new Date(item.paymentDate).getMonth() === today.getMonth() &&
+                new Date(item.paymentDate).getFullYear() === today.getFullYear()
+              );
+              break;
             default:
               break;
           }
@@ -915,15 +915,15 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
               case 'Today':
                 condition = (new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString())
                 break;
-                case 'Last Month':
-                  condition = (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) &&
-                               new Date(remainingObj.paymentDate).getFullYear() === today.getFullYear());
-                  break;
-              
+              case 'Last Month':
+                condition = (new Date(remainingObj.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1) &&
+                  new Date(remainingObj.paymentDate).getFullYear() === today.getFullYear());
+                break;
+
               case 'This Month':
-                  condition = (new Date(remainingObj.paymentDate).getMonth() === today.getMonth() &&
-                               new Date(remainingObj.paymentDate).getFullYear() === today.getFullYear());
-                  break;
+                condition = (new Date(remainingObj.paymentDate).getMonth() === today.getMonth() &&
+                  new Date(remainingObj.paymentDate).getFullYear() === today.getFullYear());
+                break;
               default:
                 break;
             }
@@ -945,11 +945,11 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         }
       })
     })
-    console.log("all amounts" , achievedAmount , remainingAmount , expanse , remainingExpense , remainingMoreExpense , add_caCommision);
+    console.log("all amounts", achievedAmount, remainingAmount, expanse, remainingExpense, remainingMoreExpense, add_caCommision);
     return achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision;
   };
 
- 
+
 
 
   const functionCalculateAdvanceCollected = () => {
@@ -1057,7 +1057,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     })
     return achievedAmount - expanse - add_caCommision;
   };
- 
+
 
   const functionCalculateLastMonthRevenue = () => {
     let achievedAmount = 0;
@@ -1260,7 +1260,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   };
 
 
-  
+
 
   const functionCalculateYesterdayRevenue = () => {
     let achievedAmount = 0;
@@ -1687,12 +1687,14 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
     return datesArray;
   };
-  
+
 
   const getProjectionData = (newFollowData, xLabels) => {
     const projectionData = new Array(xLabels.length).fill(0);
     const tempAchievedData = new Array(xLabels.length).fill(0);
     const targetDateStr = '7/27'; // 27-07-2024 in mm/dd format
+    const targetYear = 2024; // Specify the year you want to filter by
+    const targetMonth = 7; // Specify the month you want to filter by (July)
 
     const cleanString = (str) => (str ? str.replace(/\u00A0/g, ' ').replace(/\s+/g, '').toLowerCase() : '');
 
@@ -1705,37 +1707,40 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
       }
     });
 
-    redesignedData.map(mainBooking => {
+    redesignedData.forEach(mainBooking => {
+      console.log("mainbooking", mainBooking)
       const paymentDate = new Date(mainBooking.bookingDate);
-      const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+      const bookingYear = paymentDate.getFullYear();
+      const bookingMonth = paymentDate.getMonth() + 1; // Months are 0-based
+      const dateStr = `${bookingMonth}/${paymentDate.getDate()}`;
       const index = xLabels.indexOf(dateStr);
 
-      if (index !== -1 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
-        mainBooking.services.map(service => {
+      if (index !== -1 && bookingYear === targetYear &&  (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdmName) === cleanString(data.ename))) {
+        mainBooking.services.forEach(service => {
           if (service.paymentTerms === "Full Advanced") {
             if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
-              console.log("yahan add hua" , parseInt(service.totalPaymentWOGST) )
+              console.log("yahan add hua", parseInt(service.totalPaymentWOGST))
               tempAchievedData[index] += parseInt(service.totalPaymentWOGST);
             } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Close-by") {
-              console.log("yahan add hua" , parseInt(service.totalPaymentWOGST) )
+              console.log("yahan add hua", parseInt(service.totalPaymentWOGST))
               tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2;
             } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Supported-by") {
               if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
-                console.log("yahan add hua" , parseInt(service.totalPaymentWOGST) )
+                console.log("yahan add hua", parseInt(service.totalPaymentWOGST))
                 tempAchievedData[index] += parseInt(service.totalPaymentWOGST);
               }
             }
           } else {
             const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment);
             if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
-              console.log("yahan add hua" , parseInt(payment))
+              console.log("yahan add hua", parseInt(payment))
               tempAchievedData[index] += parseInt(payment);
             } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Close-by") {
-              console.log("yahan add hua" , parseInt(payment))
+              console.log("yahan add hua", parseInt(payment), service)
               tempAchievedData[index] += parseInt(payment) / 2;
             } else if ((cleanString(mainBooking.bdeName) !== cleanString(mainBooking.bdmName)) && mainBooking.bdmType === "Supported-by") {
               if (cleanString(mainBooking.bdeName) === cleanString(data.ename)) {
-                console.log("yahan add hua" , parseInt(payment))
+                console.log("yahan add hua", parseInt(payment))
                 tempAchievedData[index] += parseInt(payment);
               }
             }
@@ -1745,10 +1750,12 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
       mainBooking.remainingPayments.length !== 0 && mainBooking.remainingPayments.forEach((rmObject) => {
         const paymentDate = new Date(rmObject.paymentDate);
-        const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+        const rmYear = paymentDate.getFullYear();
+        const rmMonth = paymentDate.getMonth() + 1; // Months are 0-based
+        const dateStr = `${rmMonth}/${paymentDate.getDate()}`;
         const index = xLabels.indexOf(dateStr);
 
-        if (index !== -1 && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdeName) === cleanString(data.ename))) {
+        if (index !== -1 && rmYear === targetYear && (cleanString(mainBooking.bdeName) === cleanString(data.ename) || cleanString(mainBooking.bdeName) === cleanString(data.ename))) {
           const serviceObject = mainBooking.services.filter(service => service.serviceName === rmObject.serviceName)[0];
           if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
             const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);
@@ -1767,36 +1774,37 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
       mainBooking.moreBookings.forEach((moreObject) => {
         const paymentDate = new Date(moreObject.bookingDate);
-        const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+        const moreYear = paymentDate.getFullYear();
+        const moreMonth = paymentDate.getMonth() + 1; // Months are 0-based
+        const dateStr = `${moreMonth}/${paymentDate.getDate()}`;
         const index = xLabels.indexOf(dateStr);
-
-        if (index !== -1 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
+        if (index !== -1 && moreYear === targetYear && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdmName) === cleanString(data.ename))) {
           moreObject.services.forEach(service => {
             if (service.paymentTerms === "Full Advanced") {
 
               if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
-              console.log("yahan add hua" , parseInt(service.totalPaymentWOGST) )
+                console.log("yahan add hua", parseInt(service.totalPaymentWOGST))
                 tempAchievedData[index] += parseInt(service.totalPaymentWOGST);
               } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Close-by") {
-              console.log("yahan add hua" , parseInt(service.totalPaymentWOGST) )
+                console.log("yahan add hua", parseInt(service.totalPaymentWOGST))
                 tempAchievedData[index] += parseInt(service.totalPaymentWOGST) / 2;
               } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Supported-by") {
                 if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
-              console.log("yahan add hua" , parseInt(service.totalPaymentWOGST) )
+                  console.log("yahan add hua", parseInt(service.totalPaymentWOGST))
                   tempAchievedData[index] += parseInt(service.totalPaymentWOGST);
                 }
               }
             } else {
               const payment = service.withGST ? parseInt(service.firstPayment) / 1.18 : parseInt(service.firstPayment);
               if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
-              console.log("yahan add hua" , parseInt(payment))
+                console.log("yahan add hua", parseInt(payment))
                 tempAchievedData[index] += parseInt(payment);
               } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Close-by") {
-                console.log("yahan add hua" , parseInt(payment))
+                console.log("yahan add hua", parseInt(payment))
                 tempAchievedData[index] += parseInt(payment) / 2;
               } else if ((cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName)) && moreObject.bdmType === "Supported-by") {
                 if (cleanString(moreObject.bdeName) === cleanString(data.ename)) {
-                  console.log("yahan add hua" , parseInt(payment))
+                  console.log("yahan add hua", parseInt(payment))
                   tempAchievedData[index] += parseInt(payment);
                 }
               }
@@ -1805,10 +1813,13 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
 
           moreObject.remainingPayments.length !== 0 && moreObject.remainingPayments.forEach((rmObject) => {
             const paymentDate = new Date(rmObject.paymentDate);
-            const dateStr = `${paymentDate.getMonth() + 1}/${paymentDate.getDate()}`;
+            const rmYear = paymentDate.getFullYear();
+            const rmMonth = paymentDate.getMonth() + 1; // Months are 0-based
+            const dateStr = `${rmMonth}/${paymentDate.getDate()}`;
             const index = xLabels.indexOf(dateStr);
 
-            if (index !== -1 && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdeName) === cleanString(data.ename))) {
+
+            if (index !== -1 && rmYear === targetYear && (cleanString(moreObject.bdeName) === cleanString(data.ename) || cleanString(moreObject.bdeName) === cleanString(data.ename))) {
               const serviceObject = moreObject.services.filter(service => service.serviceName === rmObject.serviceName)[0];
               if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                 const payment = serviceObject.withGST ? parseInt(rmObject.receivedPayment) / 1.18 : parseInt(rmObject.receivedPayment);

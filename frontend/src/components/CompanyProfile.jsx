@@ -2,8 +2,13 @@ import React from 'react';
 
 function CompanyProfile() {
   return (
-    <div>
-        <h1>Company Profile</h1>
+    <div className='CompanyProfileMain'>
+      <div className='CompanyProfileHead'>
+          
+      </div>
+      <div className='CompanyProfilebody'>
+
+      </div>
     </div>
   );
 }

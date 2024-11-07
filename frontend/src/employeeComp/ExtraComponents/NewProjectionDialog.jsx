@@ -9,21 +9,28 @@ import Select from "react-select";
 import { options } from "../../components/Options.js";
 import EmployeeAddLeadDialog from './EmployeeAddLeadDialog';
 
-function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilledFromTeamLeads }) {
+function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, refetch, isFilledFromTeamLeads, isProjectionEditable, projectionData, fetchNewProjection }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-    const [companyName, setCompanyName] = useState('');
-    const [companyId, setCompanyId] = useState('');
-    const [companyStatus, setCompanyStatus] = useState('');
-    const [selectedBdm, setSelectedBdm] = useState('');
-    const [selectedBde, setSelectedBde] = useState('');
-    const [offeredServices, setOfferedServices] = useState([]);
-    const [offeredPrice, setOfferedPrice] = useState(null);
-    const [expectedPrice, setExpectedPrice] = useState(null);
-    const [followupDate, setFollowupDate] = useState('');
-    const [paymentDate, setPaymentDate] = useState('');
-    const [remarks, setRemarks] = useState('');
+    // Convert the date to a valid "YYYY-MM-DD" format for input fields
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        // Ensure date is valid before formatting
+        return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
+    };
+
+    const [companyName, setCompanyName] = useState(projectionData ? (projectionData.companyName || projectionData["Company Name"]) : '');
+    const [companyId, setCompanyId] = useState(projectionData ? projectionData._id : '');
+    const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
+    const [selectedBdm, setSelectedBdm] = useState(projectionData ? projectionData.bdmName : '');
+    const [selectedBde, setSelectedBde] = useState(projectionData ? (projectionData.bdeName || projectionData.ename)  : '');
+    const [offeredServices, setOfferedServices] = useState(projectionData ? projectionData.offeredServices : []);
+    const [offeredPrice, setOfferedPrice] = useState(projectionData ? projectionData.offeredPrice : null);
+    const [expectedPrice, setExpectedPrice] = useState(projectionData ? projectionData.totalPayment : null);
+    const [followupDate, setFollowupDate] = useState(projectionData ? formatDate(projectionData.lastFollowUpdate) : '');
+    const [paymentDate, setPaymentDate] = useState(projectionData ? formatDate(projectionData.estPaymentDate) : '');
+    const [remarks, setRemarks] = useState(projectionData ? projectionData.remarks : '');
     const [bdmName, setBdmName] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
@@ -43,7 +50,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
         }
     };
 
-    console.log("suggections", suggestions);
+    // console.log("suggections", suggestions);
 
     const searchCompany = debounce(async (name) => {
         try {
@@ -86,6 +93,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
         setCompanyName('');
         setSuggestions([]);
         setCompanyNotFound(false);
+        setSelectedBde('');
         setSelectedBdm('');
         setOfferedServices([]);
         setOfferedPrice(null);
@@ -125,12 +133,12 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
             lastFollowUpdate: followupDate,
             estPaymentDate: paymentDate,
             remarks: remarks,
-            bdeName: isFilledFromTeamLeads ? selectedBde : employeeName,
-            bdmName: isFilledFromTeamLeads || !selectedBdm ? employeeName : selectedBdm,
+            bdeName: isFilledFromTeamLeads ? selectedBde : (employeeName || projectionData.ename),
+            bdmName: (isFilledFromTeamLeads || !selectedBdm || projectionData) ? employeeName : selectedBdm,
             caseType: isFilledFromTeamLeads ? "Received" : "NotForwarded",
             isPreviousMaturedCase: companyStatus === "Matured" ? true : false
         };
-        
+
         if (offeredServices.length === 0) {
             Swal.fire({ title: "Please Select service!", icon: "warning" });
             return;
@@ -156,12 +164,62 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
 
         try {
             const res = await axios.post(`${secretKey}/company-data/addProjection/${companyId}`, payload);
-            console.log("Projection submitted :", res.data.data);
+            // console.log("Projection submitted :", res.data.data);
             Swal.fire("Success", "Projection submitted successfully.", "success");
             handleClosePopup();
+            fetchNewProjection();
         } catch (error) {
             console.log("Error submitting projection", error);
             Swal.fire("Error", "Failed to submit projection.", "error");
+        }
+    };
+
+    const handleUpdateProjection = async () => {
+        const payload = {
+            companyName: companyName,
+            offeredServices: offeredServices,
+            offeredPrice: offeredPrice,
+            bdeName: projectionData.bdeName,
+            bdmName: !selectedBdm ? projectionData.bdmName : selectedBdm,
+            totalPayment: expectedPrice,
+            lastFollowUpdate: new Date(followupDate),
+            estPaymentDate: new Date(paymentDate),
+            remarks: remarks,
+            modifiedAt: new Date()
+        };
+
+        if (offeredServices.length === 0) {
+            Swal.fire({ title: "Please Select service!", icon: "warning" });
+            return;
+        } else if (!offeredPrice) {
+            Swal.fire({ title: "Please Enter Offered Price!", icon: "warning" });
+            return;
+        } else if (!expectedPrice) {
+            Swal.fire({ title: "Please Enter Expected Price!", icon: "warning" });
+            return;
+        } else if (Number(expectedPrice) > Number(offeredPrice)) {
+            Swal.fire({ title: "Expected Price cannot be greater than Offered Price!", icon: "warning" });
+            return;
+        } else if (!followupDate) {
+            Swal.fire({ title: "Please Select Follow Up Date!", icon: "warning" });
+            return;
+        } else if (!paymentDate) {
+            Swal.fire({ title: "Please Select Payment Date!", icon: "warning" });
+            return;
+        } else if (remarks === "") {
+            Swal.fire({ title: "Please Enter Remarks!", icon: "warning" });
+            return;
+        }
+
+        try {
+            const res = await axios.put(`${secretKey}/company-data/updateProjection/${projectionData._id}`, payload);
+            // console.log("Projection updated :", res.data.data);
+            Swal.fire("Success", "Projection updated successfully.", "success");
+            handleClosePopup();
+            fetchNewProjection();
+        } catch (error) {
+            console.log("Error updating projection", error);
+            Swal.fire("Error", "Failed to update projection.", "error");
         }
     };
 
@@ -174,7 +232,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
             <Dialog className='My_Mat_Dialog' open={open} fullWidth maxWidth="sm">
 
                 <DialogTitle>
-                    Add Projection{" "}
+                    {viewProjection ? "View Projection" : isProjectionEditable ? "Update Projection" : "Add Projection"}
                     <button onClick={handleClosePopup} style={{ backgroundColor: "transparent", border: "none", float: "right" }}>
                         <IoClose color="primary"></IoClose>
                     </button>{" "}
@@ -185,6 +243,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                     <input id="companyName" type="text" placeholder="Enter Company Name"
                         value={companyName}
                         onChange={handleInputChange}
+                        disabled={isProjectionEditable || viewProjection || projectionData}
                         style={{
                             width: "100%",
                             padding: "8px",
@@ -234,11 +293,11 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         {isFilledFromTeamLeads ? <>
-                                            <label for="bdeName">BDE Name <span style={{ color: "red" }}>*</span> :</label>
+                                            <label for="bdeName">BDE Name :</label>
                                             <input type="text" className="form-control mt-1" value={selectedBde} disabled />
                                         </> : <>
                                             <label for="bdmName">Select BDM :</label>
-                                            <select className="form-select mt-1" name="bdmName" id="bdmName" disabled={!selectedCompany}
+                                            <select className="form-select mt-1" name="bdmName" id="bdmName" disabled={!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData)}
                                                 value={selectedBdm} onChange={(e) => setSelectedBdm(e.target.value)}
                                             >
                                                 <option value="">Select BDM</option>
@@ -253,7 +312,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="services">Offered Services <span style={{ color: "red" }}>*</span> :</label>
-                                        <Select isMulti className="mt-1" options={options} placeholder="Select Services..." isDisabled={!selectedCompany}
+                                        <Select isMulti className="mt-1" options={options} placeholder="Select Services..." isDisabled={!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData)}
                                             onChange={(selectedOptions) => setOfferedServices(selectedOptions.map((option) => option.value))}
                                             value={offeredServices && offeredServices.map((value) => ({
                                                 value,
@@ -268,7 +327,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="offeredPrice">Offered Price (With GST) <span style={{ color: "red" }}>*</span> :</label>
-                                        <input type="number" className="form-control mt-1" placeholder="Please Enter Offered Price" disabled={!selectedCompany}
+                                        <input type="number" className="form-control mt-1" placeholder="Please Enter Offered Price" disabled={!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData)}
                                             value={offeredPrice} onChange={(e) => setOfferedPrice(e.target.value)}
                                         />
                                     </div>
@@ -277,7 +336,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="expectedPrice">Expected Price (With GST) <span style={{ color: "red" }}>*</span> :</label>
-                                        <input type="number" className="form-control mt-1" placeholder="Please Enter Expected Price" disabled={!selectedCompany}
+                                        <input type="number" className="form-control mt-1" placeholder="Please Enter Expected Price" disabled={!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData)}
                                             value={expectedPrice} onChange={(e) => setExpectedPrice(e.target.value)}
                                         />
                                     </div>
@@ -288,7 +347,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="followupDate">Last Follow Up Date <span style={{ color: "red" }}>*</span> :</label>
-                                        <input type="date" className="form-control mt-1" disabled={!selectedCompany}
+                                        <input type="date" className="form-control mt-1" disabled={!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData)}
                                             value={followupDate} onChange={(e) => setFollowupDate(e.target.value)}
                                         />
                                     </div>
@@ -297,7 +356,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                                 <div className="col-sm-6">
                                     <div className="form-group mt-2 mb-2">
                                         <label for="paymentDate">Payment Expected On <span style={{ color: "red" }}>*</span> :</label>
-                                        <input type="date" className="form-control mt-1" disabled={!selectedCompany}
+                                        <input type="date" className="form-control mt-1" disabled={!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData)}
                                             value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)}
                                         />
                                     </div>
@@ -305,7 +364,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
 
                                 <div className="form-group mt-2 mb-2">
                                     <label for="remarks">Remarks <span style={{ color: "red" }}>*</span> :</label>
-                                    <textarea className="form-control mt-1" placeholder="Enter Remarks Here" disabled={!selectedCompany}
+                                    <textarea className="form-control mt-1" placeholder="Enter Remarks Here" disabled={!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData)}
                                         value={remarks} onChange={(e) => setRemarks(e.target.value)}
                                     />
                                 </div>
@@ -314,11 +373,11 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                     )}
                 </DialogContent>
 
-                <div className="card-footer">
+                {!viewProjection && <div className="card-footer">
                     {/* {selectedCompany && ( */}
                     <button style={{ width: "100%" }} className="btn btn-success bdr-radius-none cursor-pointer"
-                        onClick={handleAddProjection} disabled={companyNotFound || !selectedCompany}>
-                        <MdOutlinePostAdd /> Add Projection
+                        onClick={isProjectionEditable ? handleUpdateProjection : handleAddProjection} disabled={companyNotFound && !selectedCompany}>
+                        <MdOutlinePostAdd /> {isProjectionEditable ? "Update Projection" : "Add Projection"}
                     </button>
                     {/* )} */}
 
@@ -331,7 +390,7 @@ function NewProjectionDialog({ closepopup, open, employeeName, refetch, isFilled
                             Submit
                         </button>
                     )} */}
-                </div>
+                </div>}
             </Dialog>
 
             {showAddLeadsPopup && (

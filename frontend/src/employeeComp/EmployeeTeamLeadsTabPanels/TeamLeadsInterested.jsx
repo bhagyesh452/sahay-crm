@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -8,12 +8,16 @@ import Nodata from '../../components/Nodata';
 import TeamLeadsRemarksDialog from '../ExtraComponents/TeamLeadsRemarksDialog';
 import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
 import ProjectionDialog from '../ExtraComponents/ProjectionDialog';
+import NewProjectionDialog from '../ExtraComponents/NewProjectionDialog';
 import FeedbackDialog from '../ExtraComponents/FeedbackDialog';
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import { FaEye } from "react-icons/fa";
+import { IconButton } from "@mui/material";
+import { RiEditCircleFill } from "react-icons/ri";
 
 function TeamLeadsInterested({
     secretKey,
+    employeeName,
     interestedData,
     isLoading,
     refetchTeamLeads,
@@ -41,6 +45,16 @@ function TeamLeadsInterested({
     handleMouseEnter,
     handleMouseUp
 }) {
+
+    const [isFilledFromTeamLeads, setIsFilledFromTeamLeads] = useState(false);
+    const [showNewAddProjection, setShowNewAddProjection] = useState(false);
+    const [viewProjection, setViewProjection] = useState(false);
+    const [isProjectionEditable, setIsProjectionEditable] = useState(false);
+    const [projectionDataToBeFilled, setProjectionDataToBeFilled] = useState({});
+
+    const handleCloseNewProjection = () => {
+        setShowNewAddProjection(false);
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -289,7 +303,62 @@ function TeamLeadsInterested({
                                         <td>{company["Company Email"]}</td>
                                         <td>{formatDateNew(company.bdeForwardDate)}</td>
                                         <td>
-                                            <ProjectionDialog
+                                            {projectionData && projectionData.some((item) => item.companyName === company["Company Name"]) ? (
+                                                <IconButton
+                                                    onClick={() => {
+                                                        const matchedItem = projectionData.find((item) => item.companyName === company["Company Name"]);
+                                                        const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
+                                                        const currentDate = new Date().setHours(0, 0, 0, 0);
+
+                                                        // Check if payment date is before the current date
+                                                        if (paymentDate >= currentDate) {
+                                                            setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
+                                                            setIsProjectionEditable(true);  // Enable edit mode
+                                                            setViewProjection(false); // Ensure view mode is off when editing
+                                                            setShowNewAddProjection(true);  // Open new projection dialog
+                                                            setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                                            console.log("Projection data to be updated :", matchedItem);
+                                                        } else {
+                                                            setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
+                                                            setIsProjectionEditable(false); // Disable edit mode
+                                                            setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                                            setShowNewAddProjection(true);  // Open new projection dialog
+                                                            setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                                            console.log("Projection data to be viewed :", matchedItem);
+                                                        }
+                                                    }}
+                                                >
+                                                    <RiEditCircleFill
+                                                        color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                                            ? "#fbb900"
+                                                            : "lightgrey"}
+                                                        style={{
+                                                            width: "17px",
+                                                            height: "17px",
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            ) : (
+                                                <IconButton
+                                                    onClick={() => {
+                                                        setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
+                                                        setIsProjectionEditable(false); // Not opened in editing mode
+                                                        setShowNewAddProjection(true);  // Open new projection dialog
+                                                        setViewProjection(false); // Open new projection dialog with enabled fields
+                                                        setProjectionDataToBeFilled(company); // Send whole company data when no match found
+                                                        console.log("Projection data to be added :", company);
+                                                    }}
+                                                >
+                                                    <RiEditCircleFill
+                                                        color="grey"
+                                                        style={{
+                                                            width: "17px",
+                                                            height: "17px",
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            )}
+                                            {/* <ProjectionDialog
                                                 key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                                                 projectionCompanyName={company["Company Name"]}
                                                 projectionData={projectionData}
@@ -303,7 +372,8 @@ function TeamLeadsInterested({
                                                 )}
                                                 newDesignation={newDesignation}
                                                 isBdmProjection={true}
-                                            /></td>
+                                            /> */}
+                                        </td>
                                         <td>
                                             <FeedbackDialog
                                                 companyId={company._id}
@@ -352,6 +422,19 @@ function TeamLeadsInterested({
                     </div>
                 )}
             </>
+
+            {showNewAddProjection && (
+                <NewProjectionDialog
+                    open={showNewAddProjection}
+                    closepopup={handleCloseNewProjection}
+                    projectionData={projectionDataToBeFilled}
+                    isProjectionEditable={isProjectionEditable}
+                    viewProjection={viewProjection}
+                    fetchNewProjection={fetchProjections}
+                    isFilledFromTeamLeads={isFilledFromTeamLeads}
+                    employeeName={employeeName}
+                />
+            )}
         </div>
     );
 }

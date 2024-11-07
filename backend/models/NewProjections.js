@@ -63,8 +63,15 @@ const CompanySchema = new mongoose.Schema({
     type: String,
     default: false,
   },
+  modifiedAt: { 
+    type: Date, 
+    default: Date.now() 
+  },
   history: [{
-    modifiedAt: { type: String, default: Date.now() },
+    modifiedAt: { 
+      type: Date, 
+      default: Date.now() 
+    },
     data: {
       companyName: {
         type: String,

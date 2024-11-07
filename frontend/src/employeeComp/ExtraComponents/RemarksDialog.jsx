@@ -493,7 +493,7 @@ const RemarksDialog = ({
                           </div>
                         </div>
                       )
-                    }else{
+                    } else {
                       return null
                     }
 
@@ -583,6 +583,10 @@ const RemarksDialog = ({
                     }
                   })
                 ) : (
+                  // Show "No Remarks History" only if all sources of remarks are empty
+                  (remarksHistoryFromResponse1.length === 0 &&
+                    (!filteredRemarks[0]?.remarks || filteredRemarks[0]?.remarks.length === 0) &&
+                    (!filteredRemarks[0]?.serviceWiseRemarks || filteredRemarks[0]?.serviceWiseRemarks.length === 0)) &&
                   <div className="text-center overflow-hidden">No Remarks History</div>
                 )}
               </div>
