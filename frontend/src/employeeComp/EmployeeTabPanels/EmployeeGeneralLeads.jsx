@@ -41,10 +41,13 @@ function EmployeeGeneralLeads({
     handleMouseUp,
     selectedRows,
     bdenumber,
-    filteredData,
-    filterMethod,
+    //filteredData,
+    //handleFilter,
     completeGeneralData,
-    dataToFilter
+    dataToFilter,
+    setGeneralData,
+    //setFilteredData,
+    setGeneralDataCount
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -68,6 +71,7 @@ function EmployeeGeneralLeads({
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [filteredData, setFilteredData] = useState([]);
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
             setCurrentPage((prevPage) => prevPage + 1);
@@ -84,10 +88,11 @@ function EmployeeGeneralLeads({
 
     //-------------------filter method-------------------------------
 
-    // const handleFilter = (newData) => {
-    //     setFilteredData(newData)
-    //     setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "General"));
-    // };
+    const handleFilter = (newData) => {
+        setFilteredData(newData)
+        setGeneralData(newData);
+        setGeneralDataCount(newData.length);
+    };
 
     // useEffect(() => {
     //     if (noOfAvailableData) {
@@ -133,6 +138,7 @@ function EmployeeGeneralLeads({
         }
     }, []);
 
+    console.log("activeFilterFieldsGeneral", activeFilterFields)
 
 
     return (
@@ -187,7 +193,7 @@ function EmployeeGeneralLeads({
                                                         activeTab={"General"}
                                                         data={generalData}
                                                         filterField={activeFilterField}
-                                                        onFilter={filterMethod}
+                                                        onFilter={handleFilter}
                                                         completeData={completeGeneralData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
@@ -225,7 +231,7 @@ function EmployeeGeneralLeads({
                                                         activeTab={"General"}
                                                         data={generalData}
                                                         filterField={activeFilterField}
-                                                        onFilter={filterMethod}
+                                                        onFilter={handleFilter}
                                                         completeData={completeGeneralData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
@@ -264,7 +270,7 @@ function EmployeeGeneralLeads({
                                                         activeTab={"General"}
                                                         data={generalData}
                                                         filterField={activeFilterField}
-                                                        onFilter={filterMethod}
+                                                        onFilter={handleFilter}
                                                         completeData={completeGeneralData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
@@ -303,7 +309,7 @@ function EmployeeGeneralLeads({
                                                         activeTab={"General"}
                                                         data={generalData}
                                                         filterField={activeFilterField}
-                                                        onFilter={filterMethod}
+                                                        onFilter={handleFilter}
                                                         completeData={completeGeneralData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
@@ -341,7 +347,7 @@ function EmployeeGeneralLeads({
                                                         activeTab={"General"}
                                                         data={generalData}
                                                         filterField={activeFilterField}
-                                                        onFilter={filterMethod}
+                                                        onFilter={handleFilter}
                                                         completeData={completeGeneralData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
@@ -379,7 +385,7 @@ function EmployeeGeneralLeads({
                                                         activeTab={"General"}
                                                         data={generalData}
                                                         filterField={activeFilterField}
-                                                        onFilter={filterMethod}
+                                                        onFilter={handleFilter}
                                                         completeData={completeGeneralData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
@@ -417,7 +423,7 @@ function EmployeeGeneralLeads({
                                                         activeTab={"General"}
                                                         data={generalData}
                                                         filterField={activeFilterField}
-                                                        onFilter={filterMethod}
+                                                        onFilter={handleFilter}
                                                         completeData={completeGeneralData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
@@ -455,7 +461,7 @@ function EmployeeGeneralLeads({
                                                         activeTab={"General"}
                                                         data={generalData}
                                                         filterField={activeFilterField}
-                                                        onFilter={filterMethod}
+                                                        onFilter={handleFilter}
                                                         completeData={completeGeneralData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}

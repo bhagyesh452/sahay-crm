@@ -277,8 +277,8 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     );
 
-    console.log("queryData", queryData)
-    console.log("generalData", generalData)
+    // console.log("queryData", queryData)
+    // console.log("generalData", generalData)
 
     useEffect(() => {
         if (queryData) {
@@ -701,19 +701,18 @@ function EmployeePanelCopy({ fordesignation }) {
     }
 
     // -----------------filterable table------------------
-    const [filteredData, setFilteredData] = useState([]);
-    const handleFilter = (newData) => {
-        if (activeTabId === "all") {
-            setFilteredData(newData)
-            setGeneralData(newData);
-            setGeneralDataCount(newData.length)
-        } else if (activeTabId === "Interested") {
-            setFilteredData(newData)
-            setInterestedData(newData);
-            setInterestedDataCount(newData.length)
-        }
-
-        };
+    // const [filteredData, setFilteredData] = useState([]);
+    // const handleFilter = (newData) => {
+    //     if (activeTabId === "all") {
+    //         setFilteredData(newData)
+    //         setGeneralData(newData);
+    //         setGeneralDataCount(newData.length)
+    //     } else if (activeTabId === "Interested") {
+    //         setFilteredData(newData)
+    //         setInterestedData(newData);
+    //         setInterestedDataCount(newData.length)
+    //     }
+    //     };
 
 
         return (
@@ -1047,10 +1046,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
-                                                    filteredData={filteredData}
-                                                    filterMethod={handleFilter}
+                                                    //filteredData={filteredData}
+                                                    //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterGeneral}
                                                     completeGeneralData={completeGeneralData}
+                                                    setGeneralData={setGeneralData}
+                                                    setGeneralDataCount={setGeneralDataCount}
+                                                    //setFilteredData={setFilteredData}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
@@ -1086,10 +1088,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
-                                                    filteredData={filteredData}
-                                                    filterMethod={handleFilter}
+                                                    //filteredData={filteredData}
+                                                    //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterInterested}
                                                     completeGeneralData={completeInterestedData}
+                                                    setInterestedData={setInterestedData}
+                                                    setInterestedDataCount={setInterestedDataCount}
+                                                    //setFilteredData={setFilteredData}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">

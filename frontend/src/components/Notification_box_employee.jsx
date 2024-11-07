@@ -41,7 +41,7 @@ function Notification_box_employee({ name }) {
 
         try {
             const response = await axios.put(`${secretKey}/requests/update-notification-employee/${id}`);
-            console.log(response)
+            //console.log(response)
 
         } catch (error) {
             console.error("Error updating notification for employee", error)
@@ -71,7 +71,7 @@ function Notification_box_employee({ name }) {
             return `${days} d ago`;
         }
     }
-    console.log("name", name)
+   // console.log("name", name)
     // --------------------------------------  Fetch functions --------------------------------------------
     const fetchNotification = async () => {
         try {
@@ -84,7 +84,7 @@ function Notification_box_employee({ name }) {
         }
     }
 
-    console.log("totalnotification", total_notifications)
+    //console.log("totalnotification", total_notifications)
     // ------------------------------------  Socket IO Requests ----------------------------------------------------------------
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {

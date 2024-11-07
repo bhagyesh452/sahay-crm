@@ -52,10 +52,13 @@ function EmployeeInterestedLeads({
   selectedRows,
   userId,
   bdenumber,
-  filteredData,
+  //filteredData,
   filterMethod,
   completeGeneralData,
-  dataToFilter
+  dataToFilter,
+  setInterestedData,
+  setInterestedDataCount,
+  //setFilteredData
 }) {
   const [companyName, setCompanyName] = useState("");
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
@@ -98,6 +101,14 @@ function EmployeeInterestedLeads({
   const [isScrollLocked, setIsScrollLocked] = useState(false)
   const fieldRefs = useRef({});
   const filterMenuRef = useRef(null); // Ref for the filter menu container
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleFilter = (newData) => {
+    setFilteredData(newData)
+    setInterestedData(newData);
+    setInterestedDataCount(newData.length);
+};
+
   const handleFilterClick = (field) => {
     if (activeFilterField === field) {
       setShowFilterMenu(!showFilterMenu);
@@ -112,6 +123,8 @@ function EmployeeInterestedLeads({
     }
   };
   const isActiveField = (field) => activeFilterFields.includes(field);
+
+  console.log("activeFilterFieldsInterested", activeFilterFields)
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -197,7 +210,7 @@ function EmployeeInterestedLeads({
                           activeTab={"Interested"}
                           data={interestedData}
                           filterField={activeFilterField}
-                          onFilter={filterMethod}
+                          onFilter={handleFilter}
                           completeData={completeGeneralData}
                           showingMenu={setShowFilterMenu}
                           dataForFilter={dataToFilter}

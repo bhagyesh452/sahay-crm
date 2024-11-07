@@ -473,7 +473,7 @@ const RemarksDialog = ({
                 {remarksHistoryFromResponse1.length > 0 && (
                   remarksHistoryFromResponse1.map((historyItem) => {
                     if (isEditable && historyItem.bdeName === bdeName) {
-                      console.log("historyItem", historyItem)
+                      // console.log("historyItem", historyItem)
                       return (
                         <div className="col-sm-12" key={historyItem._id}>
                           <div className="card RemarkCard position-relative">
