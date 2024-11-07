@@ -769,6 +769,63 @@ router.get('/new-leads/interested-followup', async (req, res) => {
   }
 });
 
+// CSV Download Route
+router.get('/download-csv', async (req, res) => {
+  try {
+    let query = {};
+    const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name');
+
+    query = {
+      $and: [
+        { Status: { $in: ["Interested", "FollowUp"] } },
+        { "Company Name": { $in: leadHistoryCompany } }
+      ]
+    };
+
+    const employees = await CompanyModel.find(query)
+      .sort({ AssignDate: -1 }) // Default sorting in descending order by AssignDate
+      .lean();
+
+    // Check if there are any employees to download
+    if (!employees || employees.length === 0) {
+      return res.status(404).json({ error: 'No data available for CSV download' });
+    }
+
+    // Format the data (e.g., format dates)
+    const formattedEmployees = employees.map(emp => ({
+      ...emp,
+      "Company Incorporation Date": emp["Company Incorporation Date  "] ? new Date(emp["Company Incorporation Date  "]).toLocaleDateString() : '',
+      "AssignDate": emp.AssignDate ? new Date(emp.AssignDate).toLocaleDateString() : '',
+    }));
+
+    // Transform the data into a format suitable for CSV
+    const fields = [
+      'Company Name',
+      'Company Number',
+      'Company Email',
+      'Company Incorporation Date', // Adjust header name if needed
+      'City',
+      'State',
+      'ename',
+      'Status',
+      'AssignDate',
+      'bdeNextFollowUpDate'
+    ];
+
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(formattedEmployees);
+
+    // Set headers to prompt for download
+    res.header('Content-Type', 'text/csv');
+    res.attachment('companies.csv'); // The file will be downloaded as 'companies.csv'
+    res.send(csv);
+  } catch (error) {
+    console.error('Error generating CSV:', error);
+    res.status(500).json({ error: 'Failed to generate CSV' });
+  }
+});
+
+
 //-------------------api to filter leads-----------------------------------
 // router.get('/filter-leads', async (req, res) => {
 //   const {
@@ -2121,7 +2178,7 @@ router.get("/employees-new/:ename", async (req, res) => {
       ]
     };
 
-     // Apply searching for company name
+    // Apply searching for company name
     if (search !== '') {
       const escapedSearch = escapeRegex(search);
 
@@ -3087,9 +3144,9 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
       const { bdeName, bdmName, totalPayment, estPaymentDate, history, _id } = projection;
 
       // Check main entry for employee relevance and date range
-      if ((bdeName === employeeName || bdmName === employeeName) && 
-          estPaymentDate >= startOfDay && estPaymentDate <= endOfDay) {
-        
+      if ((bdeName === employeeName || bdmName === employeeName) &&
+        estPaymentDate >= startOfDay && estPaymentDate <= endOfDay) {
+
         let mainEmployeePayment = 0;
         if (bdeName === bdmName && bdeName === employeeName) {
           mainEmployeePayment = totalPayment;
@@ -3119,8 +3176,8 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
         const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
 
         if ((historyBde === employeeName || historyBdm === employeeName) &&
-            historyPaymentDate >= startOfDay && historyPaymentDate <= endOfDay) {
-          
+          historyPaymentDate >= startOfDay && historyPaymentDate <= endOfDay) {
+
           let historyEmployeePayment = 0;
           if (historyBde === historyBdm && historyBde === employeeName) {
             historyEmployeePayment = historyTotal;
@@ -3172,7 +3229,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
     // Add company name filter if provided
     if (companyName) {
       query.companyName = { $regex: companyName, $options: 'i' }; // 'i' for case-insensitive search
-    }    
+    }
 
     // Fetch data from the database
     const projections = await ProjectionModel.find(query);
@@ -3190,8 +3247,8 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 
       // Check main entry for employee relevance and date range
       if ((bdeName === employeeName || bdmName === employeeName) &&
-          (!start || !end || (new Date(estPaymentDate) >= start && new Date(estPaymentDate) <= end))) {
-        
+        (!start || !end || (new Date(estPaymentDate) >= start && new Date(estPaymentDate) <= end))) {
+
         let mainEmployeePayment = 0;
         if (bdeName === bdmName && bdeName === employeeName) {
           mainEmployeePayment = totalPayment;
@@ -3219,9 +3276,9 @@ router.get('/getProjection/:employeeName', async (req, res) => {
       // Process each history entry relevant to the employee and date range
       history.forEach(entry => {
         const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
-        
+
         if ((historyBde === employeeName || historyBdm === employeeName) &&
-            (!start || !end || (new Date(historyPaymentDate) >= start && new Date(historyPaymentDate) <= end))) {
+          (!start || !end || (new Date(historyPaymentDate) >= start && new Date(historyPaymentDate) <= end))) {
 
           let historyEmployeePayment = 0;
           if (historyBde === historyBdm && historyBde === employeeName) {
@@ -3277,8 +3334,8 @@ router.put('/updateProjection/:id', async (req, res) => {
     if (projection) {
       // If found, update the main document fields
       projection.companyName = companyName,
-      projection.bdeName = bdeName,
-      projection.bdmName = bdmName;
+        projection.bdeName = bdeName,
+        projection.bdmName = bdmName;
       projection.offeredServices = offeredServices;
       projection.offeredPrice = offeredPrice;
       projection.totalPayment = totalPayment;

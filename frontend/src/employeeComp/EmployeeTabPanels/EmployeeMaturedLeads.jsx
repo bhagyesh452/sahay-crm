@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useRef } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -39,7 +39,14 @@ function EmployeeMaturedLeads({
     handleMouseUp,
     selectedRows,
     userId,
-    bdenumber
+    bdenumber,
+    //filteredData,
+    filterMethod,
+    completeGeneralData,
+    dataToFilter,
+    setInterestedData,
+    setInterestedDataCount,
+    //setFilteredData
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -68,7 +75,57 @@ function EmployeeMaturedLeads({
         }
     };
 
-    console.log("matutered hua", bdenumber)
+    // ----------------filter component----------------------
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [error, setError] = useState('');
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const [isScrollLocked, setIsScrollLocked] = useState(false)
+    const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [filteredData, setFilteredData] = useState([]);
+
+    const handleFilter = (newData) => {
+        setFilteredData(newData)
+        setInterestedData(newData);
+        setInterestedDataCount(newData.length);
+    };
+
+    const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+            setIsScrollLocked(!showFilterMenu);
+        } else {
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+            setIsScrollLocked(true);
+
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
+    console.log("activeFilterFieldsInterested", activeFilterFields)
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+                    // setIsScrollLocked(false);
+                }
+            };
+
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
 
 
     return (

@@ -200,7 +200,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             setCurrentDataLoading(false)
         }
     };
-    console.log("data", data)
+   
     //--------------------function to fetch employee data ------------------------------
     const [newEmpData, setNewEmpData] = useState([])
     const [bdmNames, setbdmNames] = useState([])
@@ -406,23 +406,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     const [firstPlus, setFirstPlus] = useState(true)
     const [secondPlus, setSecondPlus] = useState(false)
     const [openThirdMinus, setOpenThirdMinus] = useState(false)
-    const [cname, setCname] = useState("");
-    const [cemail, setCemail] = useState("");
-    const [companyAddress, setCompanyAddress] = useState("");
-    const [directorNameFirst, setDirectorNameFirst] = useState("");
-    const [directorNameSecond, setDirectorNameSecond] = useState("");
-    const [directorNameThird, setDirectorNameThird] = useState("");
-    const [directorNumberFirst, setDirectorNumberFirst] = useState(0);
-    const [directorNumberSecond, setDirectorNumberSecond] = useState(0);
-    const [directorNumberThird, setDirectorNumberThird] = useState(0);
-    const [directorEmailFirst, setDirectorEmailFirst] = useState("");
-    const [directorEmailSecond, setDirectorEmailSecond] = useState("");
-    const [directorEmailThird, setDirectorEmailThird] = useState("");
-    const [cnumber, setCnumber] = useState(0);
-    const [state, setState] = useState("");
+    
+   
     const [openRemarks, openchangeRemarks] = useState(false);
-    const [city, setCity] = useState("");
-    const [cidate, setCidate] = useState(null);
+   
 
     function closeAddLeadsDialog() {
         setOpenAddLeadsDialog(false)
@@ -439,95 +426,9 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         setErrorDirectorNumberThird("");
     }
 
-    const functionOpenSecondDirector = () => {
-        setOpenSecondDirector(true);
-        setFirstPlus(false);
-        setSecondPlus(true);
-    };
-    const functionOpenThirdDirector = () => {
-        setOpenSecondDirector(true);
-        setOpenThirdDirector(true);
-        setFirstPlus(false);
-        setSecondPlus(false);
-        setOpenThirdMinus(true);
-    };
+    
 
-    const functionCloseSecondDirector = () => {
-        setOpenFirstDirector(false);
-        //setOpenThirdMinus(true);
-        setOpenThirdMinus(false);
-        setOpenSecondDirector(false);
-        setSecondPlus(false);
-        setFirstPlus(true)
-    }
-    const functionCloseThirdDirector = () => {
-        setOpenSecondDirector(true);
-        setOpenThirdDirector(false);
-        setFirstPlus(false);
-        setOpenThirdMinus(false)
-        setSecondPlus(true)
-    }
-
-    const handleSubmitData = (e) => {
-        e.preventDefault();
-
-        if (cname === "") {
-            Swal.fire("Please Enter Company Name");
-        } else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
-            Swal.fire("Company Number is required");
-        } else if (cemail === "") {
-            Swal.fire("Company Email is required");
-        } else if (city === "") {
-            Swal.fire("City is required");
-        } else if (state === "") {
-            Swal.fire("State is required");
-        } else if (directorNumberFirst !== 0 && !/^\d{10}$/.test(directorNumberFirst)) {
-            Swal.fire("First Director Number should be 10 digits");
-        } else if (directorNumberSecond !== 0 && !/^\d{10}$/.test(directorNumberSecond)) {
-            Swal.fire("Second Director Number should be 10 digits");
-        } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
-            Swal.fire("Third Director Number should be 10 digits");
-        } else {
-            const adminName = localStorage.getItem("adminName")
-            axios
-                .post(`${secretKey}/admin-leads/manual`, {
-                    "Company Name": cname.toUpperCase().trim(),
-                    "Company Number": cnumber,
-                    "Company Email": cemail,
-                    "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
-                    City: city,
-                    State: state,
-                    ename: data.ename,
-                    AssignDate: new Date(),
-                    "Company Address": companyAddress,
-                    "Director Name(First)": directorNameFirst,
-                    "Director Number(First)": directorNumberFirst,
-                    "Director Email(First)": directorEmailFirst,
-                    "Director Name(Second)": directorNameSecond,
-                    "Director Number(Second)": directorNumberSecond,
-                    "Director Email(Second)": directorEmailSecond,
-                    "Director Name(Third)": directorNameThird,
-                    "Director Number(Third)": directorNumberThird,
-                    "Director Email(Third)": directorEmailThird,
-                    UploadedBy: adminName ? adminName : "Admin"
-                })
-                .then((response) => {
-                    //console.log("response", response);
-
-                    Swal.fire({
-                        title: "Data Added!",
-                        text: "Successfully added new Data!",
-                        icon: "success",
-                    });
-                    fetchData(1, latestSortCount);
-                    closeAddLeadsDialog();
-                })
-                .catch((error) => {
-                    console.error("Error sending data:", error);
-                    Swal.fire("An error occurred. Please try again later.");
-                });
-        }
-    };
+  
 
     //------------------------------function add leads through csv-----------------------------------
 
@@ -543,67 +444,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         setCsvData([])
     }
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-
-        if (
-            file &&
-            file.type ===
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ) {
-            const reader = new FileReader();
-
-            reader.onload = (e) => {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: "array" });
-
-                // Assuming there's only one sheet in the XLSX file
-                const sheetName = workbook.SheetNames[0];
-                const sheet = workbook.Sheets[sheetName];
-
-                const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                const adminName = localStorage.getItem("adminName")
-                const formattedJsonData = jsonData
-                    .slice(1) // Exclude the first row (header)
-                    .map((row) => ({
-                        "Sr. No": row[0],
-                        "Company Name": row[1],
-                        "Company Number": row[2],
-                        "Company Email": row[3],
-                        "Company Incorporation Date  ": formatDateFromExcel(row[4]), // Assuming the date is in column 'E' (0-based)
-                        City: row[5],
-                        State: row[6],
-                        "Company Address": row[7],
-                        "Director Name(First)": row[8],
-                        "Director Number(First)": row[9],
-                        "Director Email(First)": row[10],
-                        "Director Name(Second)": row[11],
-                        "Director Number(Second)": row[12],
-                        "Director Email(Second)": row[13],
-                        "Director Name(Third)": row[14],
-                        "Director Number(Third)": row[15],
-                        "Director Email(Third)": row[16],
-                        "UploadedBy": adminName ? adminName : "Admin"
-                    }));
-                setCsvData(formattedJsonData);
-            };
-
-            reader.readAsArrayBuffer(file);
-        } else if (file.type === "text/csv") {
-            // CSV file
-            const parsedCsvData = parseCsv(data);
-            setCsvData(parsedCsvData);
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Something went wrong!",
-                footer: '<a href="#">Why do I have this issue?</a>',
-            });
-
-            console.error("Please upload a valid XLSX file.");
-        }
-    };
+  
 
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
@@ -639,65 +480,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     }
 
 
-    const handleUploadData = async (e) => {
-        const adminName = localStorage.getItem("adminName") || "Admin";
-        const currentDate = new Date().toLocaleDateString();
-        const currentTime = new Date().toLocaleTimeString();
-        const properDate = new Date();
-
-        if (!csvdata.length) {
-            Swal.fire("Please upload data");
-            return;
-        }
-
-        const updatedCsvdata = csvdata.map(data => ({
-            ...data,
-            ename: newemployeeSelection,
-            AssignDate: properDate,
-            // UploadDate:properDate,
-            UploadedBy: adminName
-        }));
-
-        const updatedCsvData2 = csvdata.map(data => ({
-            ...data,
-            UploadDate: properDate
-        }))
-
-        const newArray = updatedCsvdata.map(data => ({
-            date: currentDate,
-            time: currentTime,
-            ename: newemployeeSelection,
-            companyName: data["Company Name"]
-        }));
-
-        setLoading(true);
-        setOpenBacdrop(true);
-        closeBulkLeadsCSVPopup();
-
-
-        try {
-            let response;
-            if (selectedOption === "someoneElse") {
-
-                response = await axios.post(`${secretKey}/company-data/leads`, updatedCsvdata);
-                await axios.post(`${secretKey}/employee/employee-history`, newArray);
-            } else {
-
-                response = await axios.post(`${secretKey}/company-data/leads`, updatedCsvData2);
-            }
-
-            //const response = await axios.post(`${secretKey}/company-data/leads`, selectedOption === "someoneElse" ? updatedCsvdata : csvdata);
-            handleResponse(response, newArray);
-            fetchData(1, latestSortCount);
-            resetForm();
-        } catch (error) {
-            handleError(error);
-        } finally {
-            setLoading(false);
-            setOpenBacdrop(false);
-            setCsvData([]);
-        }
-    };
+  
 
     const handleResponse = (response, newArray) => {
         const counter = response.data.counter;
@@ -1562,11 +1345,31 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             Swal.fire("Company Forwarded", "", "success");
             setBdmName("Not Alloted");
             handleCloseForwardBdmPopup();
-            console.log("response data is:", response);
+            
         } catch (error) {
             console.log("error fetching data", error.message);
         }
     };
+
+    // -----------------DOWNLOAD CSV---------------------------
+
+    const handleDownloadCSV = async () => {
+        try {
+          const response = await axios.get(`${secretKey}/company-data/download-csv`, {
+            responseType: 'blob', // Important for file download
+          });
+    
+          // Create a URL for the file and trigger download
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'companies.csv'); // Specify the file name
+          document.body.appendChild(link);
+          link.click();
+        } catch (error) {
+          console.error('Error downloading the CSV:', error);
+        }
+      };
 
 
     return (
@@ -1592,6 +1395,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                     onClick={() => setOpenAssignToBdm(true)}
                                 >
                                     <RiShareForwardFill className='mr-1' /> Forward to BDM
+                                </button>
+                                <button type="button" className="btn mybtn"
+                                  onClick={handleDownloadCSV} 
+                                >
+                                    <RiShareForwardFill className='mr-1' /> Download CSV
                                 </button>
 
                             </div>
