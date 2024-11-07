@@ -89,21 +89,11 @@ function EmployeeGeneralLeads({
     //-------------------filter method-------------------------------
 
     const handleFilter = (newData) => {
+        console.log("newData", newData)
         setFilteredData(newData)
         setGeneralData(newData);
         setGeneralDataCount(newData.length);
     };
-
-    // useEffect(() => {
-    //     if (noOfAvailableData) {
-    //         showingFilterIcon(true)
-    //         totalFilteredData(noOfAvailableData)
-    //     } else {
-    //         showingFilterIcon(false)
-    //         totalFilteredData(0)
-    //     }
-
-    // }, [noOfAvailableData, activeTab])
 
 
     const handleFilterClick = (field) => {
@@ -139,6 +129,7 @@ function EmployeeGeneralLeads({
     }, []);
 
     console.log("activeFilterFieldsGeneral", activeFilterFields)
+    console.log("generalData" , generalData)
 
 
     return (
