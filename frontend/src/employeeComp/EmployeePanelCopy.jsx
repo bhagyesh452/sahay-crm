@@ -318,15 +318,14 @@ function EmployeePanelCopy({ fordesignation }) {
         refetch(); // Refetch the data
     };
 
-    const handlnewEmpDataStatusChange = useCallback((status, tabRef) => {
+    const handlnewEmpDataStatusChange = (status, tabRef) => {
         setdataStatus(status);
         setCurrentPage(0); // Reset to the first page
-
         setActiveTabId(status)
         if (tabRef && tabRef.current) {
             tabRef.current.click(); // Programmatically click the anchor tag to trigger Bootstrap tab switch
         }
-    }, [refetch]);
+    };
 
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
@@ -722,6 +721,8 @@ function EmployeePanelCopy({ fordesignation }) {
     //         setInterestedDataCount(newData.length)
     //     }
     //     };
+
+    console.log("maturedData" , maturedData)
 
 
         return (

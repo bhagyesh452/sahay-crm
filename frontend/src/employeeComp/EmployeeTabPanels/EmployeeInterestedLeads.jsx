@@ -154,6 +154,8 @@ function EmployeeInterestedLeads({
     }
   }, []);
 
+  console.log("interestedData" , interestedData)
+
   return (
     <div className="sales-panels-main" onMouseUp={handleMouseUp}>
       <>
@@ -488,13 +490,13 @@ function EmployeeInterestedLeads({
                                 setViewProjection(false); // Ensure view mode is off when editing
                                 setShowNewAddProjection(true);  // Open new projection dialog
                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
-                                console.log("Projection data to be updated :", matchedItem);
+                                // console.log("Projection data to be updated :", matchedItem);
                               } else {
                                 setIsProjectionEditable(false); // Disable edit mode
                                 setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                 setShowNewAddProjection(true);  // Open new projection dialog
                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
-                                console.log("Projection data to be viewed :", matchedItem);
+                                // console.log("Projection data to be viewed :", matchedItem);
                               }
                             }}
                           >
@@ -515,7 +517,7 @@ function EmployeeInterestedLeads({
                               setShowNewAddProjection(true);  // Open new projection dialog
                               setViewProjection(false); // Open new projection dialog with enabled fields
                               setProjectionDataToBeFilled(company); // Send whole company data when no match found
-                              console.log("Projection data to be added :", company);
+                              // console.log("Projection data to be added :", company);
                             }}
                           >
                             <RiEditCircleFill

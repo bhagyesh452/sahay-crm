@@ -161,7 +161,7 @@ function Header({ name, id, designation, empProfile, gender }) {
           autoHideDuration: 5000
         });
         const audioplayer = new Audio(notification_audio);
-        audioplayer.play(); 
+        audioplayer.play();
       }
     });
 

@@ -2121,19 +2121,28 @@ router.get("/employees-new/:ename", async (req, res) => {
       ]
     };
 
-    // Apply searching for company name
+     // Apply searching for company name
     if (search !== '') {
-      if (!isNaN(search)) {
-        baseQuery['Company Number'] = search;
-      } else {
-        const escapedSearch = escapeRegex(search);
-        baseQuery = {
-          $or: [
-            { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
-            { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } }
-          ]
-        };
-      }
+      const escapedSearch = escapeRegex(search);
+
+      // Combine search conditions with existing baseQuery
+      baseQuery = {
+        $and: [
+          {
+            $or: [
+              { ename: employeeName },
+              { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+              { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+            ]
+          },
+          {
+            $or: [
+              { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
+              { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } }
+            ]
+          }
+        ]
+      };
     }
 
     // Fetch data for each status category
