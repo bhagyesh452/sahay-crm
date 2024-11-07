@@ -31,9 +31,9 @@ const FilterableComponentEmployee = ({
         }
     };
 
-    useEffect(() => {
-        applyFilters(selectedFilters, filterField);
-    }, [sortOrder]);
+    // useEffect(() => {
+    //     applyFilters(selectedFilters, filterField);
+    // }, [sortOrder]);
 
 
     useEffect(() => {
@@ -64,7 +64,7 @@ const FilterableComponentEmployee = ({
             }).filter(Boolean);
             setColumnValues([...new Set(values)]); // Ensure unique values
         }
-    }, [filterField, data]);
+    }, [filterField]);
 
     const handleCheckboxChange = (e) => {
         const value = e.target.value; // Checkbox value

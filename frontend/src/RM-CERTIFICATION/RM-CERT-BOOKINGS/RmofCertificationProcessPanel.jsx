@@ -488,7 +488,7 @@ function RmofCertificationProcessPanel({
     //-------------------filter method-------------------------------
 
     const handleFilter = (newData) => {
-        console.log("newData", newData)
+       
         setFilteredData(newData)
         setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Process"));
     };

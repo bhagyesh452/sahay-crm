@@ -768,6 +768,116 @@ router.get('/new-leads/interested-followup', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+function timePassedSince(dateTimeString) {
+  const entryTime = new Date(dateTimeString);
+  const now = new Date();
+
+  // Calculate difference in milliseconds
+  const diffMs = now - entryTime;
+
+  // Convert milliseconds to minutes and hours
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  // Format the difference
+  if (diffDays > 0) {
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  } else if (diffHours > 0) {
+      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  } else {
+      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+  }
+}
+
+// CSV Download Route
+router.get('/download-csv', async (req, res) => {
+  try {
+    // Query to find distinct company names in lead history
+    const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name');
+
+    // Main query to fetch companies with specific status
+    const query = {
+      $and: [
+        { Status: { $in: ["Interested", "FollowUp"] } },
+        { "Company Name": { $in: leadHistoryCompany } }
+      ]
+    };
+
+    // Fetch employees based on the query
+    const employees = await CompanyModel.find(query)
+      .sort({ AssignDate: -1 }) // Sort by AssignDate
+      .lean();
+
+    // Check if there are any employees to download
+    if (!employees || employees.length === 0) {
+      return res.status(404).json({ error: 'No data available for CSV download' });
+    }
+
+    // Fetch lead history data for the matched companies
+    const leadHistoryData = await LeadHistoryForInterestedandFollowModel.find({
+      'Company Name': { $in: leadHistoryCompany }
+    }).lean(); // Adjust field selection based on your model
+
+    // Create a map for quick access to lead history dates
+    const leadHistoryMap = leadHistoryData.reduce((acc, item) => {
+      acc[item['Company Name']] = item.date; // Assuming 'date' is the correct field name
+      return acc;
+    }, {});
+
+    // Format the data (e.g., format dates and include leadHistoryDate and Age)
+    const formattedEmployees = employees.map(emp => {
+      const statusModificationDate = leadHistoryMap[emp["Company Name"]];
+      return {
+        ...emp,
+        "Company Incorporation Date": emp["Company Incorporation Date  "] ? new Date(emp["Company Incorporation Date  "]).toLocaleDateString() : '',
+        "AssignDate": emp.AssignDate ? new Date(emp.AssignDate).toLocaleDateString() : '',
+        "Status Modification Date": statusModificationDate ? new Date(statusModificationDate).toLocaleDateString() : '', // Include leadHistoryDate
+        "Age": statusModificationDate ? timePassedSince(statusModificationDate) : '' ,// Calculate Age,
+        "BDM Forwarded" :(emp.bdmAcceptStatus === "Pending" || emp.bdmAcceptStatus === "Forwarded" || emp.bdmAcceptStatus === "Accept") ?
+          "Yes" : "No",
+          "BDM Name": emp.bdmName ? emp.bdmName : "-",
+          "BDE Forward Date" : emp.bdeForwardDate ? new Date(emp.bdeForwardDate).toLocaleDateString() : "-",
+          'Forwarded Age': (emp.bdmAcceptStatus === "Pending" || emp.bdmAcceptStatus === "Forwarded" || emp.bdmAcceptStatus === "Accept") ? timePassedSince(emp.bdeForwardDate) : "-",
+      };
+    });
+
+    // Transform the data into a format suitable for CSV
+    const fields = [
+      'Company Name',
+      'Company Number',
+      'Company Email',
+      'Company Incorporation Date', // Adjust header name if needed
+      'City',
+      'State',
+      'ename',
+      'Status',
+      'UploadedBy',
+      'AssignDate',
+      'Status Modification Date', // Change to match the new field name
+      'Age', // Add Age to the fields
+      'BDM Forwarded',
+      'BDM Name',
+      'BDE Forward Date',
+      'Forwarded Age'
+    ];
+
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(formattedEmployees);
+
+    // Set headers to prompt for download
+    res.header('Content-Type', 'text/csv');
+    res.attachment('companies.csv'); // The file will be downloaded as 'companies.csv'
+    res.send(csv);
+  } catch (error) {
+    console.error('Error generating CSV:', error);
+    res.status(500).json({ error: 'Failed to generate CSV' });
+  }
+});
+
+
+
+
 
 //-------------------api to filter leads-----------------------------------
 // router.get('/filter-leads', async (req, res) => {
@@ -2123,17 +2233,26 @@ router.get("/employees-new/:ename", async (req, res) => {
 
     // Apply searching for company name
     if (search !== '') {
-      if (!isNaN(search)) {
-        baseQuery['Company Number'] = search;
-      } else {
-        const escapedSearch = escapeRegex(search);
-        baseQuery = {
-          $or: [
-            { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
-            { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } }
-          ]
-        };
-      }
+      const escapedSearch = escapeRegex(search);
+
+      // Combine search conditions with existing baseQuery
+      baseQuery = {
+        $and: [
+          {
+            $or: [
+              { ename: employeeName },
+              { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+              { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+            ]
+          },
+          {
+            $or: [
+              { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
+              { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } }
+            ]
+          }
+        ]
+      };
     }
 
     // Fetch data for each status category
@@ -3078,9 +3197,9 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
       const { bdeName, bdmName, totalPayment, estPaymentDate, history, _id } = projection;
 
       // Check main entry for employee relevance and date range
-      if ((bdeName === employeeName || bdmName === employeeName) && 
-          estPaymentDate >= startOfDay && estPaymentDate <= endOfDay) {
-        
+      if ((bdeName === employeeName || bdmName === employeeName) &&
+        estPaymentDate >= startOfDay && estPaymentDate <= endOfDay) {
+
         let mainEmployeePayment = 0;
         if (bdeName === bdmName && bdeName === employeeName) {
           mainEmployeePayment = totalPayment;
@@ -3110,8 +3229,8 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
         const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
 
         if ((historyBde === employeeName || historyBdm === employeeName) &&
-            historyPaymentDate >= startOfDay && historyPaymentDate <= endOfDay) {
-          
+          historyPaymentDate >= startOfDay && historyPaymentDate <= endOfDay) {
+
           let historyEmployeePayment = 0;
           if (historyBde === historyBdm && historyBde === employeeName) {
             historyEmployeePayment = historyTotal;
@@ -3163,7 +3282,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
     // Add company name filter if provided
     if (companyName) {
       query.companyName = { $regex: companyName, $options: 'i' }; // 'i' for case-insensitive search
-    }    
+    }
 
     // Fetch data from the database
     const projections = await ProjectionModel.find(query);
@@ -3181,8 +3300,8 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 
       // Check main entry for employee relevance and date range
       if ((bdeName === employeeName || bdmName === employeeName) &&
-          (!start || !end || (new Date(estPaymentDate) >= start && new Date(estPaymentDate) <= end))) {
-        
+        (!start || !end || (new Date(estPaymentDate) >= start && new Date(estPaymentDate) <= end))) {
+
         let mainEmployeePayment = 0;
         if (bdeName === bdmName && bdeName === employeeName) {
           mainEmployeePayment = totalPayment;
@@ -3210,9 +3329,9 @@ router.get('/getProjection/:employeeName', async (req, res) => {
       // Process each history entry relevant to the employee and date range
       history.forEach(entry => {
         const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
-        
+
         if ((historyBde === employeeName || historyBdm === employeeName) &&
-            (!start || !end || (new Date(historyPaymentDate) >= start && new Date(historyPaymentDate) <= end))) {
+          (!start || !end || (new Date(historyPaymentDate) >= start && new Date(historyPaymentDate) <= end))) {
 
           let historyEmployeePayment = 0;
           if (historyBde === historyBdm && historyBde === employeeName) {
@@ -3268,8 +3387,8 @@ router.put('/updateProjection/:id', async (req, res) => {
     if (projection) {
       // If found, update the main document fields
       projection.companyName = companyName,
-      projection.bdeName = bdeName,
-      projection.bdmName = bdmName;
+        projection.bdeName = bdeName,
+        projection.bdmName = bdmName;
       projection.offeredServices = offeredServices;
       projection.offeredPrice = offeredPrice;
       projection.totalPayment = totalPayment;

@@ -260,6 +260,9 @@ function EmployeePanelCopy({ fordesignation }) {
     const [completeInterestedData, setCompleteInterestedData] = useState([]);
     const [dataToFilterInterested, setDataToFilterInterested] = useState([]);
     const [maturedData, setMaturedData] = useState([]);
+    const [maturedDataCount, setMaturedDataCount] = useState(0);
+    const [completeMaturedData, setCompleteMaturedData] = useState([]);
+    const [dataToFilterMatured, setDataToFilterMatured] = useState([]);
     const [notInterestedData, setNotInterestedData] = useState([]);
     const [forwardedData, setForwardedData] = useState([]);
 
@@ -300,6 +303,9 @@ function EmployeePanelCopy({ fordesignation }) {
             setInterestedData(queryData?.interestedData);
             setInterestedDataCount(queryData?.totalCounts.interested)
             setMaturedData(queryData?.maturedData);
+            setDataToFilterMatured(queryData?.maturedData);
+            setCompleteMaturedData(queryData?.maturedData);
+            setMaturedDataCount(queryData?.totalCounts.matured);
             setNotInterestedData(queryData?.notInterestedData);
             setForwardedData(queryData?.forwardedData);
         }
@@ -318,15 +324,14 @@ function EmployeePanelCopy({ fordesignation }) {
         refetch(); // Refetch the data
     };
 
-    const handlnewEmpDataStatusChange = useCallback((status, tabRef) => {
+    const handlnewEmpDataStatusChange = (status, tabRef) => {
         setdataStatus(status);
         setCurrentPage(0); // Reset to the first page
-
         setActiveTabId(status)
         if (tabRef && tabRef.current) {
             tabRef.current.click(); // Programmatically click the anchor tag to trigger Bootstrap tab switch
         }
-    }, [refetch]);
+    };
 
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
@@ -723,6 +728,8 @@ function EmployeePanelCopy({ fordesignation }) {
     //     }
     //     };
 
+    
+
 
         return (
             <div>
@@ -988,7 +995,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 >
                                                     Matured
                                                     <span className="no_badge">
-                                                        {queryData?.totalCounts.matured}
+                                                        {maturedDataCount}
                                                     </span>
                                                 </a>
                                             </li>
@@ -1138,6 +1145,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
+                                                    //filteredData={filteredData}
+                                                    //filterMethod={handleFilter}
+                                                    dataToFilter={dataToFilterMatured}
+                                                    completeGeneralData={completeGeneralData}
+                                                    setMaturedData={setMaturedData}
+                                                    setMaturedDataCount={setMaturedDataCount}
+                                                    //setFilteredData={setFilteredData}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
