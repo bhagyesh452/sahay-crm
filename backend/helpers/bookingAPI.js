@@ -25,6 +25,7 @@ const FollowUpModel = require('../models/FollowUp.js');
 const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
 const ObjectId = mongoose.Types.ObjectId;
 const ExpenseReportModel = require("../models/ExpenseReportModel");
+const ProjectionModel = require("../models/NewProjections.js");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -1100,8 +1101,7 @@ router.post("/redesigned-importData", async (req, res) => {
   }
 });
 //----------------------------------------------------------  Main Method for submitting Draft Form  ----------------------------------------------------------
-router.post(
-  "/redesigned-leadData/:CompanyName/:step",
+router.post("/redesigned-leadData/:CompanyName/:step",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 2 },
@@ -1312,6 +1312,7 @@ router.post(
     }
   }
 );
+
 // Main Method for Multi bookings 
 router.post(
   "/redesigned-addmore-booking/:CompanyName/:step",
@@ -3840,11 +3841,11 @@ router.post(
 // Main API to upload the data
 router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
+    const {CompanyName} = req.params;
     const newData = req.body;
     const boomDate = new Date();
     const io = req.io;
     const ename = newData.bdeName;
-
 
     const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
     appendDataToSheet(sheetData);
@@ -5994,7 +5995,29 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
 
 
     // Send success response
-    res.status(201).send("Data sent");
+    // res.status(201).send("Data sent");
+
+    // Logic to update the `isPreviousMaturedCase` field for the Projection collection
+    const projection = await ProjectionModel.findOne({ companyName : CompanyName });
+    // console.log("Projection data :", projection);
+
+    if (projection) {
+      // Set isPreviousMaturedCase to true in the main document data
+      projection.isPreviousMaturedCase = true;
+    
+      // Check if the history array exists and has entries
+      if (projection.history && projection.history.length > 0) {
+        // Update every entry in the history array
+        projection.history.forEach((historyEntry) => {
+          historyEntry.data.isPreviousMaturedCase = true;
+        });
+      }
+    
+      // Save the updated projection document
+      await projection.save();
+    }
+
+    res.status(200).json({ result: true, message: "Data processed and matured case status updated successfully" });
   } catch (error) {
     console.error("Error creating/updating data:", error);
     res.status(500).send("Error creating/updating data"); // Send an error response
@@ -7495,7 +7518,7 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
 
     const deletedCompanyNames = deletedCompanies.map(company => company.companyName);
     // console.log("Company name array :", deletedCompanyNames);
-    
+
     const deletedCompanyServiveName = deletedCompanies.map(company => company.serviceName);
     // console.log("Service name array :", deletedCompanyServiveName);
 
@@ -7504,7 +7527,7 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
 
       const servicesData = item.services?.map((service) => service.serviceName);
       // console.log("Item service is:", servicesData);
-      
+
       const moreBookingsServices = item.moreBookings?.map((booking) =>
         booking.services?.map((service) => service.serviceName)
       );
@@ -7537,7 +7560,7 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
           }
         }
       }
-    
+
       // Process moreBookings services, skipping deleted companies/services
       if (item.moreBookings && item.moreBookings.length > 0) {
         for (const booking of item.moreBookings) {
