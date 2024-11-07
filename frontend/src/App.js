@@ -332,6 +332,7 @@ function App() {
           <Route element={<RecruiterLayout />}>
             <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
             <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} />
+            <Route path="/recruiter-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
 

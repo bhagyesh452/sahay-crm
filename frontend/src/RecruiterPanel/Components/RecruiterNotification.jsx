@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState , useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -18,58 +18,54 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from "react-router-dom";
 
-export default function RecruiterNotification({name , designation}) {
+export default function RecruiterNotification({ name, designation }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  
-  
+
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const { userId } = useParams();
+  const navigate = useNavigate();
 
-const navigate = useNavigate();
-const [data, setdata] = useState([])
-const [employeeData, setEmployeeData] = useState([])
-const { recruiterUserId } = useParams();
-const { recruiterToken } = useParams();
+  const [data, setdata] = useState([])
+  const [employeeData, setEmployeeData] = useState([])
+  const { recruiterUserId } = useParams();
+  const { recruiterToken } = useParams();
 
-const fetchEmployeeData =async()=>{
-  
-  try{
-    const response = await axios.get(`${secretKey}/employee/einfo`)
-    const data = response.data.filter(item=>item.ename === name)
-    setEmployeeData(data)
+  const fetchEmployeeData = async () => {
 
-
-  }catch(error){
-    console.error("Error fetching employee data" , error)
-
+    try {
+      const response = await axios.get(`${secretKey}/employee/einfo`);
+      const data = response.data.filter(item => item.ename === name);
+      setEmployeeData(data);
+    } catch (error) {
+      console.error("Error fetching employee data", error);
+    }
   }
-}
-React.useEffect(()=>{
-  fetchEmployeeData()
-},[recruiterUserId])
+
+  React.useEffect(() => {
+    fetchEmployeeData();
+  }, [recruiterUserId]);
 
 
 
   const handleLogout = () => {
     const currentPage = window.location.pathname;
-
     // Clear the token from local storage based on the current page
-    
-      localStorage.removeItem("recuiterToken");
-      
-      navigate("/recruiter/login");
-    
+    localStorage.removeItem("recuiterToken");
+    navigate("/recruiter/login");
+
   };
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-       
+
         <Tooltip title="Account settings">
           <IconButton
             onClick={handleClick}
@@ -79,7 +75,7 @@ React.useEffect(()=>{
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <MoreVertIcon/>
+            <MoreVertIcon />
           </IconButton>
         </Tooltip>
       </Box>
@@ -118,27 +114,33 @@ React.useEffect(()=>{
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={()=>(
-          //window.location.replace(`/employee-profile-details/${userId}`),
-          handleClose)}>
+        <MenuItem onClick={() => {
+          navigate(`/recruiter-profile-details/${userId}`);
+          handleClose();
+        }}>
           <Avatar /> Profile
         </MenuItem>
+
         {/* <MenuItem onClick={handleClose}>
           <Avatar /> My account
         </MenuItem> */}
-        <Divider />
+
+        {/* <Divider /> */}
+
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem  onClick={handleLogout}>
+
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
           Logout
         </MenuItem>
+
       </Menu>
     </React.Fragment>
   );

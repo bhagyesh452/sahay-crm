@@ -3099,7 +3099,9 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
           bdmName,
           lastFollowUpdate: projection.lastFollowUpdate,
           estPaymentDate: projection.estPaymentDate,
-          remarks: projection.remarks
+          remarks: projection.remarks,
+          caseType: projection.caseType,
+          isPreviousMaturedCase: projection.isPreviousMaturedCase
         });
       }
 
@@ -3129,10 +3131,8 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
             lastFollowUpdate: entry.data.lastFollowUpdate,
             estPaymentDate: entry.data.estPaymentDate,
             remarks: entry.data.remarks,
-            modifiedAt: entry.modifiedAt,
             caseType: entry.data.caseType,
             isPreviousMaturedCase: entry.data.isPreviousMaturedCase,
-            editCount: entry.data.editCount
           });
         }
       });
@@ -3201,7 +3201,9 @@ router.get('/getProjection/:employeeName', async (req, res) => {
           bdmName,
           lastFollowUpdate: projection.lastFollowUpdate,
           estPaymentDate: projection.estPaymentDate,
-          remarks: projection.remarks
+          remarks: projection.remarks,
+          caseType: projection.caseType,
+          isPreviousMaturedCase: projection.isPreviousMaturedCase
         });
       }
 
@@ -3231,10 +3233,8 @@ router.get('/getProjection/:employeeName', async (req, res) => {
             lastFollowUpdate: entry.data.lastFollowUpdate,
             estPaymentDate: entry.data.estPaymentDate,
             remarks: entry.data.remarks,
-            modifiedAt: entry.modifiedAt,
             caseType: entry.data.caseType,
-            isPreviousMaturedCase: entry.data.isPreviousMaturedCase,
-            editCount: entry.data.editCount
+            isPreviousMaturedCase: entry.data.isPreviousMaturedCase
           });
         }
       });
