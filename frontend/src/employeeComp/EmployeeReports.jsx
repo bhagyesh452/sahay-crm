@@ -38,12 +38,7 @@ import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePi
 import dayjs from "dayjs";
 import { GoDatabase } from "react-icons/go";
 import { ChartContainer } from '@mui/x-charts';
-import {
-  LinePlot,
-  MarkPlot,
-  lineElementClasses,
-  markElementClasses,
-} from '@mui/x-charts/LineChart';
+import { LinePlot, MarkPlot, lineElementClasses, markElementClasses } from '@mui/x-charts/LineChart';
 import successImg from "../static/my-images/success.png"
 import TotalAmount from "../static/my-images/salary.png"
 import advance from "../static/my-images/advance.png"
@@ -53,6 +48,8 @@ import target from "../static/my-images/target.png"
 import booking_date from "../static/my-images/booking_date.png"
 import achivement from "../static/my-images/achivement.png"
 import ratio from "../static/my-images/ratio.png"
+import NewProjectionReport from "./NewProjectionReport.jsx";
+import TodaysProjectionReport from "./TodaysProjectionReport.jsx";
 import { set } from "date-fns";
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
@@ -73,7 +70,6 @@ import EmployeeSalesReport from "./EmployeeDashboardComponents/EmployeeSalesRepo
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 import { styled } from '@mui/material/styles';
-
 //SPEDOMETER IMPORT
 import GaugeComponent from 'react-gauge-component'
 
@@ -3517,7 +3513,7 @@ function EmployeeReports() {
         <div className="container-xl mt-4">
           <div className="row">
             <div className="col-12" id="projectiontotalsummary">
-              <div className="card">
+              <div className="card d-none">
                 <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                   <div className="dashboard-title pl-1"  >
                     <h2 className="m-0">
@@ -3711,13 +3707,19 @@ function EmployeeReports() {
                 </div>
               </div>
             </div>
+            
+            {/* Today's Projection Summary Report From New Database */}
+            <TodaysProjectionReport />
+
+            {/* New Projection Summary Report From New Database */}
+            <NewProjectionReport />
 
             <div className="col-12 mt-2" id="projectiondashboardemployee">
-              <div className="card">
+              <div className="card d-none">
                 <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                   <div className="dashboard-title pl-1">
                     <h2 className="m-0">
-                      Todays's Projection Summary
+                      Today's Projection Summary
                     </h2>
                   </div>
                   <div className="d-flex align-items-center pr-1">
@@ -3755,9 +3757,7 @@ function EmployeeReports() {
                             fontWeight: "bold",
                           }}
                         >
-                          <th>
-                            Sr. No
-                          </th>
+                          <th>Sr. No</th>
                           <th>Company Name</th>
                           <th>Contact Number</th>
                           <th>Offered Services</th>

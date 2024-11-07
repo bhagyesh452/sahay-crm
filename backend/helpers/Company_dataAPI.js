@@ -2961,7 +2961,7 @@ router.get('/companies/searchforTeamLeads/:employeeName', async (req, res) => {
   }
 });
 
-
+// Add projection :
 router.post('/addProjection/:companyId', async (req, res) => {
   const { companyId } = req.params;
   const payload = req.body;
@@ -3029,20 +3029,289 @@ router.post('/addProjection/:companyId', async (req, res) => {
   }
 });
 
+// Fetch all the projections :
 router.get('/getProjection', async (req, res) => {
   try {
     const data = await ProjectionModel.find();
     res.json({ result: true, message: "Projection fetched successfully", data: data });
   } catch (error) {
     res.status(500).json({ result: false, message: "Error fetching projection", error: error });
-  }  
+  }
 });
 
-router.get('/getProjection/:bdmName', async (req, res) => {
-  const { bdmName } = req.params;
+// Fetching projection data for current date :
+router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
+  const { employeeName } = req.params;
+  const { companyName } = req.query;
+
   try {
+    // Get the start and end of the current day
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Build the query with dynamic filtering
+    const query = {
+      $or: [
+        { bdeName: employeeName },
+        { bdmName: employeeName },
+        { "history.data.bdeName": employeeName },
+        { "history.data.bdmName": employeeName }
+      ],
+      estPaymentDate: { $gte: startOfDay, $lte: endOfDay }
+    };
+
+    // Add company name filter if provided
+    if (companyName) {
+      query.companyName = { $regex: companyName, $options: 'i' }; // 'i' for case-insensitive search
+    }
+
+    // Fetch data from the database
+    const projections = await ProjectionModel.find(query);
+
+    // Array to hold filtered results for the specific employee
+    const projectionSummary = [];
+
+    // Process each projection document
+    projections.forEach(projection => {
+      const { bdeName, bdmName, totalPayment, estPaymentDate, history, _id } = projection;
+
+      // Check main entry for employee relevance and date range
+      if ((bdeName === employeeName || bdmName === employeeName) && 
+          estPaymentDate >= startOfDay && estPaymentDate <= endOfDay) {
+        
+        let mainEmployeePayment = 0;
+        if (bdeName === bdmName && bdeName === employeeName) {
+          mainEmployeePayment = totalPayment;
+        } else if (bdeName === employeeName || bdmName === employeeName) {
+          mainEmployeePayment = totalPayment / 2;
+        }
+
+        projectionSummary.push({
+          _id,
+          companyName: projection.companyName,
+          offeredServices: projection.offeredServices,
+          offeredPrice: projection.offeredPrice,
+          totalPayment: projection.totalPayment,
+          employeePayment: mainEmployeePayment,
+          bdeName,
+          bdmName,
+          lastFollowUpdate: projection.lastFollowUpdate,
+          estPaymentDate: projection.estPaymentDate,
+          remarks: projection.remarks
+        });
+      }
+
+      // Process each history entry relevant to the employee and date range
+      history.forEach(entry => {
+        const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
+
+        if ((historyBde === employeeName || historyBdm === employeeName) &&
+            historyPaymentDate >= startOfDay && historyPaymentDate <= endOfDay) {
+          
+          let historyEmployeePayment = 0;
+          if (historyBde === historyBdm && historyBde === employeeName) {
+            historyEmployeePayment = historyTotal;
+          } else if (historyBde === employeeName || historyBdm === employeeName) {
+            historyEmployeePayment = historyTotal / 2;
+          }
+
+          projectionSummary.push({
+            _id: entry._id || _id,
+            companyName: projection.companyName,
+            offeredServices: entry.data.offeredServices,
+            offeredPrice: entry.data.offeredPrice,
+            totalPayment: entry.data.totalPayment,
+            employeePayment: historyEmployeePayment,
+            bdeName: entry.data.bdeName,
+            bdmName: entry.data.bdmName,
+            lastFollowUpdate: entry.data.lastFollowUpdate,
+            estPaymentDate: entry.data.estPaymentDate,
+            remarks: entry.data.remarks,
+            modifiedAt: entry.modifiedAt,
+            caseType: entry.data.caseType,
+            isPreviousMaturedCase: entry.data.isPreviousMaturedCase,
+            editCount: entry.data.editCount
+          });
+        }
+      });
+    });
+
+    res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
   } catch (error) {
-    res.status(500).json({ result: false, message: "Error fetching projection", error: error });
+    res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
+  }
+});
+
+// Fetch projections for a specific employee :
+router.get('/getProjection/:employeeName', async (req, res) => {
+  const { employeeName } = req.params;
+  const { companyName, startDate, endDate } = req.query;
+
+  try {
+    // Build the query with dynamic filtering
+    const query = {
+      $or: [
+        { bdeName: employeeName },
+        { bdmName: employeeName },
+        { "history.data.bdeName": employeeName },
+        { "history.data.bdmName": employeeName }
+      ]
+    };
+
+    // Add company name filter if provided
+    if (companyName) {
+      query.companyName = { $regex: companyName, $options: 'i' }; // 'i' for case-insensitive search
+    }    
+
+    // Fetch data from the database
+    const projections = await ProjectionModel.find(query);
+
+    // Array to hold filtered results for the specific employee
+    const projectionSummary = [];
+
+    // Define date range filter if startDate and endDate are provided
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+
+    // Process each projection document
+    projections.forEach(projection => {
+      const { bdeName, bdmName, totalPayment, estPaymentDate, history, _id } = projection;
+
+      // Check main entry for employee relevance and date range
+      if ((bdeName === employeeName || bdmName === employeeName) &&
+          (!start || !end || (new Date(estPaymentDate) >= start && new Date(estPaymentDate) <= end))) {
+        
+        let mainEmployeePayment = 0;
+        if (bdeName === bdmName && bdeName === employeeName) {
+          mainEmployeePayment = totalPayment;
+        } else if (bdeName === employeeName || bdmName === employeeName) {
+          mainEmployeePayment = totalPayment / 2;
+        }
+
+        projectionSummary.push({
+          _id,  // Use main document ID here
+          companyName: projection.companyName,
+          offeredServices: projection.offeredServices,
+          offeredPrice: projection.offeredPrice,
+          totalPayment: projection.totalPayment,
+          employeePayment: mainEmployeePayment,
+          bdeName,
+          bdmName,
+          lastFollowUpdate: projection.lastFollowUpdate,
+          estPaymentDate: projection.estPaymentDate,
+          remarks: projection.remarks
+        });
+      }
+
+      // Process each history entry relevant to the employee and date range
+      history.forEach(entry => {
+        const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
+        
+        if ((historyBde === employeeName || historyBdm === employeeName) &&
+            (!start || !end || (new Date(historyPaymentDate) >= start && new Date(historyPaymentDate) <= end))) {
+
+          let historyEmployeePayment = 0;
+          if (historyBde === historyBdm && historyBde === employeeName) {
+            historyEmployeePayment = historyTotal;
+          } else if (historyBde === employeeName || historyBdm === employeeName) {
+            historyEmployeePayment = historyTotal / 2;
+          }
+
+          projectionSummary.push({
+            _id: entry._id || _id, // Use history entry's _id if it exists, otherwise main _id
+            companyName: projection.companyName,
+            offeredServices: entry.data.offeredServices,
+            offeredPrice: entry.data.offeredPrice,
+            totalPayment: entry.data.totalPayment,
+            employeePayment: historyEmployeePayment,
+            bdeName: entry.data.bdeName,
+            bdmName: entry.data.bdmName,
+            lastFollowUpdate: entry.data.lastFollowUpdate,
+            estPaymentDate: entry.data.estPaymentDate,
+            remarks: entry.data.remarks,
+            modifiedAt: entry.modifiedAt,
+            caseType: entry.data.caseType,
+            isPreviousMaturedCase: entry.data.isPreviousMaturedCase,
+            editCount: entry.data.editCount
+          });
+        }
+      });
+    });
+
+    res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
+  }
+});
+
+router.put('/updateProjection/:id', async (req, res) => {
+  const { id } = req.params;
+  const {
+    companyName,
+    bdeName,
+    bdmName,
+    offeredServices,
+    offeredPrice,
+    totalPayment,
+    lastFollowUpdate,
+    estPaymentDate,
+    remarks,
+    modifiedAt
+  } = req.body;
+
+  try {
+    // First, check if the provided _id matches a main document's _id
+    let projection = await ProjectionModel.findOne({ _id: id });
+
+    if (projection) {
+      // If found, update the main document fields
+      projection.companyName = companyName,
+      projection.bdeName = bdeName,
+      projection.bdmName = bdmName;
+      projection.offeredServices = offeredServices;
+      projection.offeredPrice = offeredPrice;
+      projection.totalPayment = totalPayment;
+      projection.lastFollowUpdate = lastFollowUpdate;
+      projection.estPaymentDate = estPaymentDate;
+      projection.remarks = remarks;
+      projection.modifiedAt = modifiedAt
+
+      await projection.save();
+      return res.status(200).json({ result: true, message: "Projection data updated successfully", data: projection });
+    }
+
+    // If not found, look for the _id within the history array
+    projection = await ProjectionModel.findOne({ "history._id": id });
+
+    if (projection) {
+      // Update the specific history entry by finding the relevant history item
+      const historyEntry = projection.history.find(entry => entry._id.toString() === id);
+
+      if (historyEntry) {
+        // Update the fields in the history entry
+        historyEntry.data.companyName = companyName;
+        historyEntry.data.bdeName = bdmName;
+        historyEntry.data.bdmName = bdeName;
+        historyEntry.data.offeredServices = offeredServices;
+        historyEntry.data.offeredPrice = offeredPrice;
+        historyEntry.data.totalPayment = totalPayment;
+        historyEntry.data.lastFollowUpdate = lastFollowUpdate;
+        historyEntry.data.estPaymentDate = estPaymentDate;
+        historyEntry.data.remarks = remarks;
+        historyEntry.data.modifiedAt = modifiedAt;
+
+        await projection.save();
+        return res.status(200).json({ result: true, message: "History entry updated successfully", data: historyEntry });
+      }
+    }
+
+    // If no document or history entry is found, return an error
+    res.status(404).json({ result: false, message: "Projection or history entry not found" });
+
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error updating projection", error: error.message });
   }
 });
 

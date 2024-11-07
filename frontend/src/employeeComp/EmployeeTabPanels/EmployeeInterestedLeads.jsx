@@ -9,6 +9,7 @@ import RemarksDialog from "../ExtraComponents/RemarksDialog";
 import EmployeeStatusChange from "../ExtraComponents/EmployeeStatusChange";
 import RedesignedForm from "../../admin/RedesignedForm";
 import AddLeadForm from "../../admin/AddLeadForm";
+import NewProjectionDialog from "../ExtraComponents/NewProjectionDialog";
 import EmployeeNextFollowDate from "../ExtraComponents/EmployeeNextFollowUpDate";
 import CallHistory from "../CallHistory";
 import ProjectionDialog from "../ExtraComponents/ProjectionDialog";
@@ -17,7 +18,8 @@ import { MdOutlineWorkHistory } from "react-icons/md";
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import { FaEye } from "react-icons/fa";
 import AdminRemarksDialog from "../../admin/ExtraComponent/AdminRemarksDialog";
-import { width } from "@mui/system";
+import { IconButton } from "@mui/material";
+import { RiEditCircleFill } from "react-icons/ri";
 
 
 function EmployeeInterestedLeads({
@@ -62,6 +64,14 @@ function EmployeeInterestedLeads({
   const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false);
   const [newBdeName, setNewBdeName] = useState("");
   const [nowToFetch, setNowToFetch] = useState(false);
+  const [showNewAddProjection, setShowNewAddProjection] = useState(false);
+  const [viewProjection, setViewProjection] = useState(false);
+  const [isProjectionEditable, setIsProjectionEditable] = useState(false);
+  const [projectionDataToBeFilled, setProjectionDataToBeFilled] = useState({});
+
+  const handleCloseNewProjection = () => {
+    setShowNewAddProjection(false);
+  };
 
   const nextPage = () => {
     if (currentPage < totalPages - 1) {
@@ -78,7 +88,6 @@ function EmployeeInterestedLeads({
   };
 
   const modalId = `modal-${companyName.replace(/\s+/g, '')}`; // Generate a unique modal ID
-
 
   return (
     <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -156,6 +165,7 @@ function EmployeeInterestedLeads({
             ) : (
               <tbody>
                 {interestedData && interestedData.map((company, index) => (
+
                   <tr
                     key={company._id}
                     style={{ border: "1px solid #ddd" }}
@@ -365,7 +375,59 @@ function EmployeeInterestedLeads({
                     <td>{formatDateNew(company["AssignDate"])}</td>
                     <td>
                       <div className="d-flex align-items-center justify-content-between">
-                        <ProjectionDialog
+                        {projectionData && projectionData.some((item) => item.companyName === company["Company Name"]) ? (
+                          <IconButton
+                            onClick={() => {
+                              const matchedItem = projectionData.find((item) => item.companyName === company["Company Name"]);
+                              const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
+                              const currentDate = new Date().setHours(0, 0, 0, 0);
+                              
+                              // Check if payment date is before the current date
+                              if (paymentDate >= currentDate) {
+                                setIsProjectionEditable(true);  // Enable edit mode
+                                setViewProjection(false); // Ensure view mode is off when editing
+                                setShowNewAddProjection(true);  // Open new projection dialog
+                                setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                console.log("Projection data to be updated :", matchedItem);
+                              } else {
+                                setIsProjectionEditable(false); // Disable edit mode
+                                setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                setShowNewAddProjection(true);  // Open new projection dialog
+                                setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                console.log("Projection data to be viewed :", matchedItem);
+                              }
+                            }}
+                          >
+                            <RiEditCircleFill
+                              color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                ? "#fbb900"
+                                : "lightgrey"}
+                              style={{
+                                width: "17px",
+                                height: "17px",
+                              }}
+                            />
+                          </IconButton>
+                        ) : (
+                          <IconButton
+                            onClick={() => {
+                              setIsProjectionEditable(false); // Not opened in editing mode
+                              setShowNewAddProjection(true);  // Open new projection dialog
+                              setViewProjection(false); // Open new projection dialog with enabled fields
+                              setProjectionDataToBeFilled(company); // Send whole company data when no match found
+                              console.log("Projection data to be added :", company);
+                            }}
+                          >
+                            <RiEditCircleFill
+                              color="grey"
+                              style={{
+                                width: "17px",
+                                height: "17px",
+                              }}
+                            />
+                          </IconButton>
+                        )}
+                        {/* <ProjectionDialog
                           key={company._id}
                           projectionCompanyName={company["Company Name"]}
                           projectionData={projectionData}
@@ -379,7 +441,7 @@ function EmployeeInterestedLeads({
                           )}
                           userId={userId}
                           fordesignation={fordesignation}
-                        />
+                        /> */}
                         {
                           ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (
                             <BdmMaturedCasesDialogBox
@@ -394,7 +456,6 @@ function EmployeeInterestedLeads({
                               fetchNewData={refetch}
                             />
                           )}
-
                       </div>
                     </td>
                   </tr>
@@ -436,6 +497,17 @@ function EmployeeInterestedLeads({
                 <GoArrowRight />
               </button>
             </div>
+
+            {showNewAddProjection && (
+              <NewProjectionDialog
+                open={showNewAddProjection}
+                closepopup={handleCloseNewProjection}
+                projectionData={projectionDataToBeFilled}
+                isProjectionEditable={isProjectionEditable}
+                viewProjection={viewProjection}
+                fetchNewProjection={fetchProjections}
+              />
+            )}
           </div>
         )}
       </>
