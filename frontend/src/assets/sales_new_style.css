@@ -37,21 +37,25 @@
 }
 .e-Leadtable-style table 
 {       
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0px;
 }
 .e-Leadtable-style table thead tr th
 {
     background: #43474c !important;
     color: #e4e4e4;
-    border: 1px solid #43474c;
+    border: none;
     position: sticky;
     top: 0;
 }
+.e-Leadtable-style td{
+    border: none !important;
+}
 .e-Leadtable-style table tbody tr td {
-    padding: 5px 8px 5px 8px !important;
+    padding: 4px 8px 4px 8px !important;
     transition: .5s;
-    border-top: 1px solid #eee !important;
-    border-bottom: 1px solid #eee !important;
+    border-right: 1px solid #eee !important;;
+    border-bottom: 1px solid #eee !important;;
 }
 .e-Leadtable-style .status__btn {
     border: none;
@@ -120,6 +124,7 @@
     font-size: 10px;
     box-shadow: 0px 2px 5px #0000001A;
     font-weight: 600;
+    line-height: 16px;
 }
 .sales-panels-main .dfault_approved-status
 {
@@ -130,6 +135,18 @@
     font-size: 10px;
     box-shadow: 0px 2px 5px #0000001A;
     font-weight: 600;
+    line-height: 16px;
+}
+.sales-panels-main .dfault_followup-status
+{
+    background-color: #ffe1ed;
+    border: 1px solid #f393ba;
+    padding: 3px 8px 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    box-shadow: 0px 2px 5px #0000001A;
+    font-weight: 600;
+    line-height: 16px;
 }
 .int-accordion-item
 {
@@ -145,4 +162,8 @@
 .int-accordion-item .form-group label
 {
     text-align: left;
+}
+.class
+{
+    position: relative;
 }

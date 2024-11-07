@@ -4526,6 +4526,7 @@ div#table-default td {
   margin-left: 8px;
   font-size: 11px;
   color: #6f6f6f;
+  cursor:pointer;
 }
 .followup-history-btn {
   width: 24px;
@@ -4538,6 +4539,7 @@ div#table-default td {
   margin-left: 8px;
   font-size: 11px;
   color: #6f6f6f;
+  cursor: pointer;
 }
 
 .int-sub-que {

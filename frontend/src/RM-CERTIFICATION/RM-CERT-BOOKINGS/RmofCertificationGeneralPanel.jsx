@@ -44,7 +44,6 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
     const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
     const [error, setError] = useState('');
     const [noOfAvailableData, setnoOfAvailableData] = useState(0);
-    const [filterField, setFilterField] = useState("")
     const [activeFilterField, setActiveFilterField] = useState(null);
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});

@@ -497,7 +497,7 @@ router.get("/remarks-history-complete/:id", async (req, res) => {
 
   try {
     const remarksHistory = await CompleteRemarksHistoryLeads.find({ companyID: id });
-    console.log("id", id, remarksHistory)
+    //console.log("id", id, remarksHistory)
     res.json(remarksHistory);
   } catch (error) {
     console.error("Error fetching remarks history:", error);

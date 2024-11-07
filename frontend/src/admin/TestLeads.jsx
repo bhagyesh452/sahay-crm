@@ -1760,8 +1760,10 @@ function TestLeads() {
                                                     <th>Uploaded By</th>
                                                     <th>Uploaded On</th>
                                                     {dataStatus === 'Extracted' && <th>Last Assigned To</th>}
+                                                    {(dataStatus === "Extracted") && <th>BDM Name</th>}
                                                     {dataStatus === "Extracted" && <th>Extracted Date</th>}
                                                     {dataStatus === "Assigned" && <th>Assigned to</th>}
+                                                    {(dataStatus === "Assigned") && <th>BDM Name</th>}
                                                     {dataStatus === "Assigned" && (<th style={{ cursor: "pointer" }}>
                                                         <div className="d-flex align-items-center justify-content-between">
                                                             {/* <div>{dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}</div> */}
@@ -1893,34 +1895,16 @@ function TestLeads() {
                                                                         secretKey={secretKey}
 
                                                                     />
-                                                                    {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                    <p className="rematkText text-wrap m-0">
-                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                    </p>
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            functionopenpopupremarks(company._id, company.Status);
-                                                                        }}
-                                                                        style={{ cursor: "pointer" }}>
-                                                                        <IconEye
-
-                                                                            style={{
-                                                                                width: "14px",
-                                                                                height: "14px",
-                                                                                color: "#d6a10c",
-                                                                                cursor: "pointer",
-                                                                                marginLeft: "4px",
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                </div> */}
+                                                                    
                                                                 </td>}
 
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
                                                             {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                            {(dataStatus === "Extracted") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
                                                             <td>
                                                                 <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
@@ -2015,34 +1999,15 @@ function TestLeads() {
                                                                     secretKey={secretKey}
 
                                                                 />
-                                                                {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                    <p className="rematkText text-wrap m-0">
-                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                    </p>
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            functionopenpopupremarks(company._id, company.Status);
-                                                                        }}
-                                                                        style={{ cursor: "pointer" }}>
-                                                                        <IconEye
-
-                                                                            style={{
-                                                                                width: "14px",
-                                                                                height: "14px",
-                                                                                color: "#d6a10c",
-                                                                                cursor: "pointer",
-                                                                                marginLeft: "4px",
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                </div> */}
+                                                                
                                                             </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
-
                                                             {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                            {(dataStatus === "Extracted") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
                                                             <td>
                                                                 <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
@@ -2138,13 +2103,15 @@ function TestLeads() {
                                                                     secretKey={secretKey}
 
                                                                 />
-                                                                
+
                                                             </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
                                                             {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                            {(dataStatus === "Extracted") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
                                                             <td>
                                                                 <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
@@ -2265,9 +2232,12 @@ function TestLeads() {
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
                                                             {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                            {(dataStatus === "Extracted") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                            
                                                             <td>
                                                                 <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
                                                                     <MdDeleteOutline
@@ -3606,8 +3576,8 @@ function TestLeads() {
                 </button>
             </Dialog>
 
-            
-            
+
+
 
             {/* ---------------------------drawer for filter----------------------------- */}
             <Drawer
