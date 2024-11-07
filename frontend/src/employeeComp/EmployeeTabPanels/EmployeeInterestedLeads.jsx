@@ -281,7 +281,7 @@ function EmployeeInterestedLeads({
                     >
                       {startIndex + index + 1}
                     </td>
-                    <td
+                    <td style={{width:'fit-content'}}
                       className={
                         (fordesignation === "admin" || fordesignation === "datamanager")
                           ? "AEP-sticky-left-3"
