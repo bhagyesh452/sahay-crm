@@ -768,22 +768,45 @@ router.get('/new-leads/interested-followup', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+function timePassedSince(dateTimeString) {
+  const entryTime = new Date(dateTimeString);
+  const now = new Date();
+
+  // Calculate difference in milliseconds
+  const diffMs = now - entryTime;
+
+  // Convert milliseconds to minutes and hours
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  // Format the difference
+  if (diffDays > 0) {
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  } else if (diffHours > 0) {
+      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  } else {
+      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+  }
+}
 
 // CSV Download Route
 router.get('/download-csv', async (req, res) => {
   try {
-    let query = {};
+    // Query to find distinct company names in lead history
     const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name');
 
-    query = {
+    // Main query to fetch companies with specific status
+    const query = {
       $and: [
         { Status: { $in: ["Interested", "FollowUp"] } },
         { "Company Name": { $in: leadHistoryCompany } }
       ]
     };
 
+    // Fetch employees based on the query
     const employees = await CompanyModel.find(query)
-      .sort({ AssignDate: -1 }) // Default sorting in descending order by AssignDate
+      .sort({ AssignDate: -1 }) // Sort by AssignDate
       .lean();
 
     // Check if there are any employees to download
@@ -791,12 +814,33 @@ router.get('/download-csv', async (req, res) => {
       return res.status(404).json({ error: 'No data available for CSV download' });
     }
 
-    // Format the data (e.g., format dates)
-    const formattedEmployees = employees.map(emp => ({
-      ...emp,
-      "Company Incorporation Date": emp["Company Incorporation Date  "] ? new Date(emp["Company Incorporation Date  "]).toLocaleDateString() : '',
-      "AssignDate": emp.AssignDate ? new Date(emp.AssignDate).toLocaleDateString() : '',
-    }));
+    // Fetch lead history data for the matched companies
+    const leadHistoryData = await LeadHistoryForInterestedandFollowModel.find({
+      'Company Name': { $in: leadHistoryCompany }
+    }).lean(); // Adjust field selection based on your model
+
+    // Create a map for quick access to lead history dates
+    const leadHistoryMap = leadHistoryData.reduce((acc, item) => {
+      acc[item['Company Name']] = item.date; // Assuming 'date' is the correct field name
+      return acc;
+    }, {});
+
+    // Format the data (e.g., format dates and include leadHistoryDate and Age)
+    const formattedEmployees = employees.map(emp => {
+      const statusModificationDate = leadHistoryMap[emp["Company Name"]];
+      return {
+        ...emp,
+        "Company Incorporation Date": emp["Company Incorporation Date  "] ? new Date(emp["Company Incorporation Date  "]).toLocaleDateString() : '',
+        "AssignDate": emp.AssignDate ? new Date(emp.AssignDate).toLocaleDateString() : '',
+        "Status Modification Date": statusModificationDate ? new Date(statusModificationDate).toLocaleDateString() : '', // Include leadHistoryDate
+        "Age": statusModificationDate ? timePassedSince(statusModificationDate) : '' ,// Calculate Age,
+        "BDM Forwarded" :(emp.bdmAcceptStatus === "Pending" || emp.bdmAcceptStatus === "Forwarded" || emp.bdmAcceptStatus === "Accept") ?
+          "Yes" : "No",
+          "BDM Name": emp.bdmName ? emp.bdmName : "-",
+          "BDE Forward Date" : emp.bdeForwardDate ? new Date(emp.bdeForwardDate).toLocaleDateString() : "-",
+          'Forwarded Age': (emp.bdmAcceptStatus === "Pending" || emp.bdmAcceptStatus === "Forwarded" || emp.bdmAcceptStatus === "Accept") ? timePassedSince(emp.bdeForwardDate) : "-",
+      };
+    });
 
     // Transform the data into a format suitable for CSV
     const fields = [
@@ -808,8 +852,14 @@ router.get('/download-csv', async (req, res) => {
       'State',
       'ename',
       'Status',
+      'UploadedBy',
       'AssignDate',
-      'bdeNextFollowUpDate'
+      'Status Modification Date', // Change to match the new field name
+      'Age', // Add Age to the fields
+      'BDM Forwarded',
+      'BDM Name',
+      'BDE Forward Date',
+      'Forwarded Age'
     ];
 
     const json2csvParser = new Parser({ fields });
@@ -824,6 +874,9 @@ router.get('/download-csv', async (req, res) => {
     res.status(500).json({ error: 'Failed to generate CSV' });
   }
 });
+
+
+
 
 
 //-------------------api to filter leads-----------------------------------

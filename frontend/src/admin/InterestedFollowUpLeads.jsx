@@ -51,7 +51,7 @@ import { LiaPagerSolid } from "react-icons/lia";
 import { TbArrowBackUp } from "react-icons/tb";
 import { RiShareForwardFill } from "react-icons/ri";
 import EmployeeInterestedInformationDialog from '../employeeComp/ExtraComponents/EmployeeInterestedInformationDialog';
-import { FaEye } from "react-icons/fa";
+import { MdDownload } from "react-icons/md";
 
 function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -1399,7 +1399,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                 <button type="button" className="btn mybtn"
                                   onClick={handleDownloadCSV} 
                                 >
-                                    <RiShareForwardFill className='mr-1' /> Download CSV
+                                    <MdDownload className='mr-1' /> Download CSV
                                 </button>
 
                             </div>
