@@ -154,7 +154,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     });
 
     socket.on("expanse-added", (res) => {
-      //console.log("Expanse Added", "response :" + res.name, "Name" + name)
+      console.log("Expanse Added", "response :" + res.name, "Name" + name)
       if (name === res.name) {
         enqueueSnackbar(`Expanse Added in ${res.companyName} `, {
           variant: 'info',
@@ -221,12 +221,12 @@ function Header({ name, id, designation, empProfile, gender }) {
     });
 
     socket.on("todays-projection-submmited", (res) => {
-      //console.log("res", res)
+      console.log("res", res)
       if (name === res.name) {
         // Set count to 3 and dismissed to true, ensuring no further popups
         const newStoredData = JSON.parse(localStorage.getItem(userId))
 
-        //console.log("kyaidharchala", newStoredData)
+        console.log("kyaidharchala", newStoredData)
         // Update component state
         setPopupCount(newStoredData.count || 0);
         setLastPopupTime(new Date(newStoredData.lastShown) || null);
@@ -239,7 +239,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     };
   }, [name]);
 
-  //console.log("popupcount", popupCount)
+  console.log("popupcount", popupCount)
 
   useEffect(() => {
     const checkAndRunActiveStatus = () => {
@@ -272,7 +272,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     if (userId && socketID) {
       try {
 
-        //console.log("Request is sending for" + socketID + " " + userId)
+        console.log("Request is sending for" + socketID + " " + userId)
         const response = await axios.put(
           `${secretKey}/employee/online-status/${userId}/${socketID}`
         );
@@ -305,8 +305,6 @@ function Header({ name, id, designation, empProfile, gender }) {
       "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
       "emp_numbers": [employeeNumber]
     };
-    console.log("start", startTimestamp)
-    console.log("end", endTimestamp)
 
     try {
       const response = await fetch(url, {
@@ -324,13 +322,12 @@ function Header({ name, id, designation, empProfile, gender }) {
       }
 
       const data = await response.json();
-      console.log("data" , data)
-      //const dateString = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+      const dateString = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
 
       // Append the date field to each result
       return data.result.map((entry) => ({
         ...entry,
-        date: date // Add the date field
+        date: dateString // Add the date field
       }));
     } catch (err) {
       console.error(err);
@@ -345,7 +342,6 @@ function Header({ name, id, designation, empProfile, gender }) {
 
     while (currentDate <= endDate) {
       const dateString = currentDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
-      console.log("dateString" , dateString)
 
       const dailyResult = await fetchDailyData(dateString, employeeNumber);
       if (dailyResult) {
@@ -359,84 +355,38 @@ function Header({ name, id, designation, empProfile, gender }) {
     return data;
   };
 
-  // const saveMonthlyDataToDatabase = async (employeeNumber, dailyData) => {
-  //   try {
-  //     const response = await axios.post(`${secretKey}/employee/employee-calling/save`, {
-  //       emp_number: employeeNumber,
-  //       monthly_data: dailyData,  // This will now only include the previous day's data
-  //       emp_code: dailyData[0].emp_code,
-  //       emp_country_code: dailyData[0].emp_country_code,
-  //       emp_name: dailyData[0].emp_name,
-  //       emp_tags: dailyData[0].emp_tags,
-  //     });
-
-  //     if (response.status !== 200) {
-  //       throw new Error(`Error: ${response.status} - ${response.statusText}`);
-  //     }
-
-  //     //console.log('Previous day data saved successfully');
-  //   } catch (err) {
-  //     console.error('Error saving data:', err.message);
-  //   }
-  // };
-
-  
-  
- 
-
-
-  
-  const saveMonthlyDataToDatabase = async (employeeNumber, monthlyData) => {
+  const saveMonthlyDataToDatabase = async (employeeNumber, dailyData) => {
     try {
       const response = await axios.post(`${secretKey}/employee/employee-calling/save`, {
         emp_number: employeeNumber,
-        monthly_data: monthlyData,
-        emp_code: monthlyData[0].emp_code,
-        emp_country_code: monthlyData[0].emp_country_code,
-        emp_name: monthlyData[0].emp_name,
-        emp_tags: monthlyData[0].emp_tags,
+        monthly_data: dailyData,  // This will now only include the previous day's data
+        emp_code: dailyData[0].emp_code,
+        emp_country_code: dailyData[0].emp_country_code,
+        emp_name: dailyData[0].emp_name,
+        emp_tags: dailyData[0].emp_tags,
       });
 
-      // Check the HTTP status for success
       if (response.status !== 200) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
 
-      console.log('Data saved successfully');
+      console.log('Previous day data saved successfully');
     } catch (err) {
       console.error('Error saving data:', err.message);
-    }  
+    }
   };
 
-  
-
-// Adjust your router logic for saving as needed.
-
-
-// Your router post logic remains the same but ensure the incomingYear and incomingMonth are correctly used to update data.
-
-
-
-
   useEffect(() => {
-    if (data.number) {
-      // const startDate = new Date();
-      // startDate.setDate(1); // Set to the first day of the month
-      // const endDate = new Date(startDate);
-      // endDate.setMonth(endDate.getMonth());
-      // endDate.setDate(new Date().getDate() - 2); // Set to the last day of the month
-      //Get the current date
-      const currentDate = new Date();
-
-      // Set to the start of the previous month
-      const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-
-      // Set to the end of the previous month
-      const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+    if (data?.number) {
+      // Calculate the previous day
+      const previousDay = new Date();
+      previousDay.setDate(previousDay.getDate() - 1);
 
       const fetchAndSaveData = async () => {
-        const monthlyData = await fetchMonthlyData(data.number, startDate, endDate);
-        await saveMonthlyDataToDatabase(data.number, monthlyData);
+        const dailyData = await fetchDailyData(previousDay, data.number); // Fetch only for the previous day
+        if (dailyData) {
+          await saveMonthlyDataToDatabase(data.number, dailyData); // Save only the previous day's data
+        }
       };
 
       fetchAndSaveData();
@@ -444,26 +394,176 @@ function Header({ name, id, designation, empProfile, gender }) {
   }, [data]);
 
 
+  //const [dialogCount, setDialogCount] = useState(0); // Count of how many times dialog has shown
+
+  // Utility function to get the current date in 'YYYY-MM-DD' format
+  const getTodayDate = () => new Date().toISOString().split("T")[0];
+
+  // // Load state from localStorage when the component mounts
   // useEffect(() => {
-  //   if (data?.number) {
-  //     // Calculate the previous day
-  //     const previousDay = new Date();
-  //     previousDay.setDate(previousDay.getDate() - 1);
+  //   const storedData = JSON.parse(localStorage.getItem(userId)) || {};
+  //   const today = getTodayDate();
+  //   console.log("here", storedData)
 
-  //     const fetchAndSaveData = async () => {
-  //       const dailyData = await fetchDailyData(previousDay, data.number); // Fetch only for the previous day
-  //       if (dailyData) {
-  //         await saveMonthlyDataToDatabase(data.number, dailyData); // Save only the previous day's data
-  //       }
-  //     };
-
-  //     fetchAndSaveData();
+  //   // Reset if it's a new day
+  //   if (storedData.date !== today) {
+  //     localStorage.setItem(
+  //       userId,
+  //       JSON.stringify({ date: today, count: 0, lastShown: null, dismissed: false })
+  //     );
+  //     setPopupCount(0);
+  //     setLastPopupTime(null);
+  //   } else {
+  //     setPopupCount(storedData.count || 0);
+  //     setLastPopupTime(new Date(storedData.lastShown) || null);
   //   }
-  // }, [data]);
+  // }, [userId]);
+
+  // // Control when the popup is shown
+  // // useEffect(() => {
+  // //   const storedData = JSON.parse(localStorage.getItem(userId));
+  // //   const now = Date.now();
+  // //   const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
+  // //   if (!storedData || storedData.dismissed || storedData.popupCount >= 3) {
+  // //     console.log("1 yahan chala" , storedData , popupCount , lastPopupTime)
+  // //     return;  // Exit early if popup is dismissed
+  // //   }
 
 
+  // //   // Show the popup if 15 minutes have passed since the last popup and the count is < 3
+  // //   if (!storedData.dismissed && storedData.count < 3 && timeSinceLastPopup >= 1 * 60 * 1000) {
+  // //     console.log("2 yahan chala" , storedData , popupCount , lastPopupTime)
+  // //     setShowPopup(true);
+  // //   }
+  // // }, [lastPopupTime, popupCount]);
+
+  // useEffect(() => {
+  //   const storedData = JSON.parse(localStorage.getItem(userId));
+  //   const now = Date.now();
+  //   const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
+
+  //   console.log("Stored Data:", storedData);
+  //   console.log("Current Time:", now);
+  //   console.log("Last Popup Time:", lastPopupTime);
+  //   console.log("Time Since Last Popup:", timeSinceLastPopup);
+  //   console.log("Popup Count:", storedData?.count);
+
+  //   // Check if storedData is null or if popup is dismissed
+  //   if (!storedData && storedData.dismissed && storedData.count >= 3) {
+  //     console.log("Condition 1 met, exiting:", {
+  //       dismissed: storedData?.dismissed,
+  //       popupCount: storedData?.count,
+  //     });
+  //     setShowPopup(false)
+  //     return;  // Exit early if popup is dismissed or count is 3 or more
+  //   }
+
+  //   // Show the popup if 15 minutes have passed since the last popup and the count is < 3
+  //   if (!storedData.dismissed && storedData.count < 3 && timeSinceLastPopup >= 15 * 60 * 1000) {
+  //     console.log("Condition 2 met, showing popup:", {
+  //       dismissed: storedData.dismissed,
+  //       popupCount: storedData.count,
+  //       timeSinceLastPopup: timeSinceLastPopup,
+  //     });
+  //     setShowPopup(true);
+  //   } else {
+  //     console.log("Popup not shown. Conditions not met:", {
+  //       dismissed: storedData.dismissed,
+  //       count: storedData.count,
+  //       timeSinceLastPopup: timeSinceLastPopup,
+  //     });
+  //   }
+  // }, [lastPopupTime, popupCount, userId]);
 
 
+  // // Set the next popup to appear 15 minutes after the current one closes
+  // useEffect(() => {
+  //   const storedData = JSON.parse(localStorage.getItem(userId));
+  //   console.log("Stored Data:", storedData);
+
+  //   const now = new Date();
+  //   const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
+  //   if (!storedData.dismissed && storedData.count < 3) {
+  //     const timer = setTimeout(() => {
+  //       console.log("Condition 2 met, showing popup:", {
+  //         dismissed: storedData.dismissed,
+  //         popupCount: storedData.count,
+  //         timeSinceLastPopup: timeSinceLastPopup,
+  //       });
+  //       setShowPopup(true);
+  //     }, 15 * 60 * 1000); // 15 minutes from now
+
+  //     return () => clearTimeout(timer); // Clean up the timer on component unmount
+  //   }
+  // }, [popupCount, lastPopupTime]);
+
+  // // Handle the "Yes" button
+  // const handleYesClick = async () => {
+  //   const storedData = JSON.parse(localStorage.getItem(userId));
+  //   const newCount = storedData.count + 1;
+  //   const now = new Date();
+
+
+  //   // Update localStorage with new count and last shown time
+  //   localStorage.setItem(
+  //     userId,
+  //     JSON.stringify({ ...storedData, count: newCount, lastShown: now })
+  //   );
+  //   setPopupCount(newCount);
+  //   setLastPopupTime(now);
+  //   setShowPopup(false);
+  //   try {
+  //     await axios.post(`${secretKey}/employee/projectionstatustoday/${userId}`, {
+  //       projectionStatusForToday: "Pending",
+  //       projectionDate: now // Use the current date directly
+  //     });
+
+  //     // If the new count is 3, set a timer for 15 minutes
+  //     if (newCount === 3) {
+  //       setTimeout(() => {
+  //         setpopupMessage("Today's projection count is zero, strict actions will be taken!");
+  //         setNoPopup(true);
+  //       }, 15 * 60 * 1000); // 15 minutes in milliseconds
+  //     }
+
+  //     // Update component state
+
+  //     navigate(`/employee-data/${userId}`);
+  //   } catch (error) {
+  //     console.error("Error updating projection status:", error);
+  //     // Handle error (e.g., show a notification or alert)
+  //   }
+  // };
+
+  // // Handle the "No" button to disable popups for the rest of the day
+  // const handleNoClick = async () => {
+  //   const storedData = JSON.parse(localStorage.getItem(userId)) || {};
+
+  //   // Set count to 3 and dismissed to true, ensuring no further popups
+  //   localStorage.setItem(userId, JSON.stringify({
+  //     ...storedData,
+  //     count: 3,  // Set count to maximum to prevent further popups
+  //     dismissed: true,  // Mark dismissed as true
+  //     lastShown: new Date(),  // Optionally set the lastShown timestamp
+  //   }));
+  //   // Update component state
+  //   setPopupCount(3);
+  //   setShowPopup(false);
+  //   setNoPopup(true)
+  //   setpopupMessage("Today's projection count is zero, strict actions will be taken!")
+  //   try {
+  //     await axios.post(`${secretKey}/employee/projectionstatustoday-no/${userId}`, {
+  //       projectionStatusForToday: "Not Submitted",
+  //       projectionDate: new Date() // Use the current date directly
+  //     });
+
+
+  //   } catch (error) {
+  //     console.error("Error updating projection status:", error);
+  //     // Handle error (e.g., show a notification or alert)
+  //   }
+  //   ;
+  // };
 
 
   return (
