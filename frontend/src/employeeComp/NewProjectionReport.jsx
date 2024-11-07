@@ -221,6 +221,7 @@ function NewProjectionReport() {
                                         <th>Last FollowUp Date</th>
                                         <th>Estimated Payment Date</th>
                                         <th>Remarks</th>
+                                        <th>Is Matured Case</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -255,6 +256,7 @@ function NewProjectionReport() {
                                                 <td>{formatDate(data.lastFollowUpdate)}</td>
                                                 <td>{formatDate(data.estPaymentDate)}</td>
                                                 <td>{data.remarks}</td>
+                                                <td>{data.isPreviousMaturedCase === "true" ? "Yes" : "No" }</td>
                                                 <td style={{ padding: '0px !important' }}>
                                                 {new Date(new Date(data.estPaymentDate).setHours(0, 0, 0, 0)) >= new Date(new Date().setHours(0, 0, 0, 0)) ? (
                                                         <IconButton
@@ -304,6 +306,7 @@ function NewProjectionReport() {
                                         <td>₹ {formatAmount(projection.reduce((a, b) => a + b.offeredPrice, 0))}</td>
                                         <td>₹ {formatAmount(projection.reduce((a, b) => a + b.totalPayment, 0))}</td>
                                         <td>₹ {formatAmount(projection.reduce((a, b) => a + b.employeePayment, 0))}</td>
+                                        <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
