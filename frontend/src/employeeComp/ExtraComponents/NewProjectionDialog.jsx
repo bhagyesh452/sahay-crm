@@ -167,7 +167,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             // console.log("Projection submitted :", res.data.data);
             Swal.fire("Success", "Projection submitted successfully.", "success");
             handleClosePopup();
-            fetchNewProjection();
+            fetchNewProjection && fetchNewProjection();
         } catch (error) {
             console.log("Error submitting projection", error);
             Swal.fire("Error", "Failed to submit projection.", "error");
@@ -216,7 +216,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             // console.log("Projection updated :", res.data.data);
             Swal.fire("Success", "Projection updated successfully.", "success");
             handleClosePopup();
-            fetchNewProjection();
+            fetchNewProjection && fetchNewProjection();
         } catch (error) {
             console.log("Error updating projection", error);
             Swal.fire("Error", "Failed to update projection.", "error");

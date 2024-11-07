@@ -54,7 +54,7 @@ function TodaysProjectionReport() {
             // console.log("Projection data is :", res.data.data);
             setProjection(res.data.data);
         } catch (error) {
-            console.log("Error to fetch new projection :", error);
+            console.log("Error to fetch today's projection :", error);
             setIsLoading(false);
         } finally {
             setIsLoading(false);

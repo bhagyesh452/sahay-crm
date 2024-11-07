@@ -10,7 +10,10 @@ import RedesignedForm from '../../admin/RedesignedForm';
 import AddLeadForm from '../../admin/AddLeadForm';
 import RemarksDialog from '../ExtraComponents/RemarksDialog';
 import ProjectionDialog from '../ExtraComponents/ProjectionDialog';
+import NewProjectionDialog from "../ExtraComponents/NewProjectionDialog";
 import AdminRemarksDialog from '../../admin/ExtraComponent/AdminRemarksDialog';
+import { IconButton } from "@mui/material";
+import { RiEditCircleFill } from "react-icons/ri";
 
 
 function EmployeeMaturedLeads({
@@ -54,6 +57,15 @@ function EmployeeMaturedLeads({
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
     const [nowToFetch, setNowToFetch] = useState(false);
+    const [showNewAddProjection, setShowNewAddProjection] = useState(false);
+    const [viewProjection, setViewProjection] = useState(false);
+    const [isProjectionEditable, setIsProjectionEditable] = useState(false);
+    const [projectionDataToBeFilled, setProjectionDataToBeFilled] = useState({});
+
+    const handleCloseNewProjection = () => {
+        setShowNewAddProjection(false);
+    };
+
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
             setCurrentPage((prevPage) => prevPage + 1);
@@ -257,7 +269,59 @@ function EmployeeMaturedLeads({
                                             <td>{formatDateNew(company.bookingDate)}</td>
                                             <td>{formatDateNew(company.bookingPublishDate)}</td>
                                             <td className="rm-sticky-action">
-                                                <ProjectionDialog
+                                                {projectionData && projectionData.some((item) => item.companyName === company["Company Name"]) ? (
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            const matchedItem = projectionData.find((item) => item.companyName === company["Company Name"]);
+                                                            const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
+                                                            const currentDate = new Date().setHours(0, 0, 0, 0);
+
+                                                            // Check if payment date is before the current date
+                                                            if (paymentDate >= currentDate) {
+                                                                setIsProjectionEditable(true);  // Enable edit mode
+                                                                setViewProjection(false); // Ensure view mode is off when editing
+                                                                setShowNewAddProjection(true);  // Open new projection dialog
+                                                                setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                                                // console.log("Projection data to be updated :", matchedItem);
+                                                            } else {
+                                                                setIsProjectionEditable(false); // Disable edit mode
+                                                                setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                                                setShowNewAddProjection(true);  // Open new projection dialog
+                                                                setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                                                // console.log("Projection data to be viewed :", matchedItem);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <RiEditCircleFill
+                                                            color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                                                ? "#fbb900"
+                                                                : "lightgrey"}
+                                                            style={{
+                                                                width: "17px",
+                                                                height: "17px",
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                ) : (
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            setIsProjectionEditable(false); // Not opened in editing mode
+                                                            setShowNewAddProjection(true);  // Open new projection dialog
+                                                            setViewProjection(false); // Open new projection dialog with enabled fields
+                                                            setProjectionDataToBeFilled(company); // Send whole company data when no match found
+                                                            // console.log("Projection data to be added :", company);
+                                                        }}
+                                                    >
+                                                        <RiEditCircleFill
+                                                            color="grey"
+                                                            style={{
+                                                                width: "17px",
+                                                                height: "17px",
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                )}
+                                                {/* <ProjectionDialog
                                                     key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                                                     projectionCompanyName={company["Company Name"]}
                                                     projectionData={projectionData}
@@ -271,7 +335,7 @@ function EmployeeMaturedLeads({
                                                     )}
                                                     userId={userId}
                                                     fordesignation={fordesignation}
-                                                />
+                                                /> */}
                                             </td>
                                         </tr>
                                     ))}
@@ -344,6 +408,17 @@ function EmployeeMaturedLeads({
                     </>
                 )
             }
+
+            {showNewAddProjection && (
+                <NewProjectionDialog
+                    open={showNewAddProjection}
+                    closepopup={handleCloseNewProjection}
+                    projectionData={projectionDataToBeFilled}
+                    isProjectionEditable={isProjectionEditable}
+                    viewProjection={viewProjection}
+                    fetchNewProjection={fetchProjections}
+                />
+            )}
         </div >
     );
 }
