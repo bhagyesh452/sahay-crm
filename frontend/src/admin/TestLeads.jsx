@@ -606,7 +606,8 @@ function TestLeads() {
 
         const updatedCsvData2 = csvdata.map(data => ({
             ...data,
-            UploadDate: properDate
+            UploadDate: properDate,
+            AssignDate: properDate,
         }))
 
         const newArray = updatedCsvdata.map(data => ({
@@ -740,7 +741,7 @@ function TestLeads() {
             }
             // Process response
             const { data } = response;
-            console.log(data)
+            console.log("data" , data)
             // Handle response data as needed
             setAllIds(data.allIds);
             setSelectedRows((prevSelectedRows) =>

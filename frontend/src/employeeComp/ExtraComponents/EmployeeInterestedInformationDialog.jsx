@@ -7,6 +7,7 @@ import axios from 'axios';
 import Swal from "sweetalert2";
 import { FaChevronUp } from "react-icons/fa6";
 import { FaChevronDown } from "react-icons/fa";
+import { moment } from 'moment';
 
 function EmployeeInterestedInformationDialog({
     modalId,
@@ -21,7 +22,8 @@ function EmployeeInterestedInformationDialog({
     interestedInformation = [], // Existing interested information
     forView,
     fordesignation,
-    id
+    id,
+   
 
 }) {
 
@@ -31,7 +33,13 @@ function EmployeeInterestedInformationDialog({
     // Function to handle Yes click (show options)
     // Pre-fill form data with existing interested information
     const prefilledData = interestedInformation.length > 0 ? interestedInformation[0] : {};
-
+    function formatDatePro(inputDate) {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    }
 
 
     useEffect(() => {
@@ -298,6 +306,8 @@ function EmployeeInterestedInformationDialog({
         }
         return !fieldData;
     };
+
+    console.log("prefilledData" , prefilledData)
     // console.log("visiblequestions" , visibleQuestions)
     return (<>
         <div className="modal fade" id={modalId} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -312,9 +322,15 @@ function EmployeeInterestedInformationDialog({
                         ></button>
                     </div>
                     <div className="modal-body">
+                        <div className = 'd-flex align-items-center justify-content-between'>
                         <div className="company_name_int-_mod">
                             {companyName}
                         </div>
+                        <div className="company_name_int-_mod">
+                            {prefilledData?.updatedAt ? formatDatePro(prefilledData?.updatedAt) : ""}
+                        </div>
+                            </div>
+                        
                         <div className="accordion" id="accordionQue">
                             {(!forView || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) && (<div className="accordion-item int-accordion-item">
                                 <div className="accordion-header p-2" id="accordionQueOne">

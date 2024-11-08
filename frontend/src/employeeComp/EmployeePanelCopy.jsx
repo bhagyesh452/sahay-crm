@@ -41,6 +41,7 @@ import { useNavigate } from 'react-router-dom';
 import NewProjectionDialog from "./ExtraComponents/NewProjectionDialog.jsx";
 import { filter } from "lodash";
 
+
 function EmployeePanelCopy({ fordesignation }) {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
     //const [maturedID, setMaturedID] = useState("");
@@ -265,6 +266,9 @@ function EmployeePanelCopy({ fordesignation }) {
     const [dataToFilterMatured, setDataToFilterMatured] = useState([]);
     const [notInterestedData, setNotInterestedData] = useState([]);
     const [forwardedData, setForwardedData] = useState([]);
+    const [forwardedDataCount, setForwardedDataCount] = useState(0);
+    const [completeForwardedData, setCompleteForwardedData] = useState([]);
+    const [dataToFilterForwarded, setDataToFilterForwarded] = useState([]);
 
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
@@ -308,6 +312,7 @@ function EmployeePanelCopy({ fordesignation }) {
             setMaturedDataCount(queryData?.totalCounts.matured);
             setNotInterestedData(queryData?.notInterestedData);
             setForwardedData(queryData?.forwardedData);
+            setCompleteForwardedData(queryData?.forwardedData);
         }
     }, [queryData, searchQuery]);
 
@@ -1148,7 +1153,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     //filteredData={filteredData}
                                                     //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterMatured}
-                                                    completeGeneralData={completeGeneralData}
+                                                    completeGeneralData={completeMaturedData}
                                                     setMaturedData={setMaturedData}
                                                     setMaturedDataCount={setMaturedDataCount}
                                                     //setFilteredData={setFilteredData}

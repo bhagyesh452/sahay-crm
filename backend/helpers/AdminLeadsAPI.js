@@ -189,7 +189,7 @@ router.get('/', async function (req, res) {
 //       // Check if the company exists, if not, create a new entry
 //       await CompanyModel.updateOne(
 //         { "Company Name": companyName }, // Condition to find the company
-        
+
 //         {
 //           $set: {
 //             ename: item['ename'] || '', // Default ename or update from data
@@ -210,7 +210,7 @@ router.get('/', async function (req, res) {
 
 //     // Wait for all updates or inserts to complete
 //     await Promise.all(updates);
-   
+
 
 //     res.status(200).json({ message: 'Ename updated or inserted successfully' });
 //   } catch (error) {
@@ -249,7 +249,7 @@ router.post('/update-ename', async (req, res) => {
         : new Date(); // Default to current date if not provided
 
       // Logging the incoming item for debugging
-     
+
 
       // Update or insert the company
       const updateResult = await CompanyModel.findOneAndUpdate(
@@ -265,16 +265,16 @@ router.post('/update-ename', async (req, res) => {
             Status: item["Status"] || '',
             Remarks: item["Remarks"] || '',
             AssignDate: new Date(),
-            UploadDate:new Date(),
+            UploadDate: new Date(),
             isUploadedManually: true,
-            UploadedBy:"Ronak Kumar"
+            UploadedBy: "Ronak Kumar"
           }
         },
         { upsert: true, new: true } // Insert a new document if no match is found and return the updated/new doc
       );
 
       // After updating/creating the company, log it
-      
+
 
       // Create a new entry in RemarksHistory for this company
       const newRemark = new RemarksHistory({
@@ -284,13 +284,13 @@ router.post('/update-ename', async (req, res) => {
         companyName: companyName, // Save the company name
         remarks: item["Remarks"] || '', // Remarks from the input data
         bdmName: item["bdmName"] || '', // Example, you can include more data if needed
-        bdmRemarks: item["bdmRemarks"] || '', 
+        bdmRemarks: item["bdmRemarks"] || '',
         bdeName: item["ename"] || '',
       });
 
       // Save the remarks history entry
       await newRemark.save();
-     
+
     });
 
     // Wait for all updates and remarks to complete
@@ -455,12 +455,12 @@ router.post('/exportLeads', async (req, res) => {
       }
 
       if (selectedCompanyIncoDate) {
-       
+
         const selectedDate = new Date(selectedCompanyIncoDate);
         const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
 
         if (isEpochDate) {
-      
+
           // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
           query["Company Incorporation Date  "] = null;
         } else {
@@ -552,7 +552,7 @@ router.post('/exportLeads', async (req, res) => {
 
 router.post("/manual", async (req, res) => {
   const receivedData = req.body;
- 
+
 
   try {
     const employee = new CompanyModel(receivedData);
@@ -667,179 +667,6 @@ function escapeRegex(string) {
   return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
 
-router.get('/getIds', async (req, res) => {
-  try {
-    const {
-      dataStatus,
-      selectedStatus,
-      selectedState,
-      selectedNewCity,
-      selectedBDEName,
-      selectedAssignDate,
-      selectedUploadedDate,
-      selectedAdminName,
-      selectedYear,
-      monthIndex,
-      selectedCompanyIncoDate,
-      isFilter,
-      isSearching,
-      searchText
-    } = req.query;
-
-    let query = {};
-
-    // Construct query object based on filters
-    if (selectedStatus) query.Status = selectedStatus;
-    if (selectedState) query.State = selectedState;
-    if (selectedNewCity) query.City = selectedNewCity;
-    if (selectedAssignDate) {
-      query.AssignDate = {
-        $gte: new Date(selectedAssignDate).toISOString(),
-        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-      };
-    }
-    if (selectedAdminName && selectedAdminName.trim() !== '') {
-      query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
-    }
-    if (selectedUploadedDate) {
-      query.UploadDate = {
-        $gte: new Date(selectedUploadedDate).toISOString(),
-        $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
-      };
-    }
-    if (selectedYear) {
-      if (monthIndex !== '0') {
-        const year = parseInt(selectedYear);
-        const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
-        const monthStartDate = new Date(year, month, 1);
-        const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
-        query["Company Incorporation Date  "] = {
-          $gte: monthStartDate,
-          $lt: monthEndDate
-        };
-      } else {
-        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
-        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-        query["Company Incorporation Date  "] = {
-          $gte: yearStartDate,
-          $lt: yearEndDate
-        };
-      }
-    }
-    if (selectedCompanyIncoDate) {
-
-      const selectedDate = new Date(selectedCompanyIncoDate);
-      const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
-
-      if (isEpochDate) {
-     
-        // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
-        query["Company Incorporation Date  "] = null;
-      } else {
-        // Otherwise, use the selected date to find documents within that day
-        query["Company Incorporation Date  "] = {
-          $gte: new Date(selectedDate).toISOString(),
-          $lt: new Date(new Date(selectedDate).setDate(selectedDate.getDate() + 1)).toISOString()
-        };
-      }
-    }
-
-    // Apply data status filters based on isFilter and isSearching
-    if (isFilter && dataStatus) {
-      if (dataStatus === 'Unassigned') {
-        query.ename = 'Not Alloted';
-      } else if (dataStatus === 'Assigned') {
-        query.ename = { $nin: ['Not Alloted', "Extracted"] };
-      } else if (dataStatus === "Extracted") {
-        query.ename = "Extracted"
-      }
-    }
-
-    // Apply search query if isSearching is true
-    if (isSearching && searchText) {
-      const searchTerm = searchText.trim();
-      if (!isNaN(searchTerm)) {
-        // Search by companyNumber if the query is a number
-        query['Company Number'] = searchTerm;
-      } else {
-        // Escape special characters for regex search
-        const escapedSearchTerm = escapeRegex(searchTerm);
-
-        // Otherwise, perform a regex search on specified fields
-        query.$or = [
-          { 'Company Name': { $regex: new RegExp(escapedSearchTerm, 'i') } },
-          { 'Company Email': { $regex: new RegExp(escapedSearchTerm, 'i') } }
-          // Add other fields you want to search with the query here
-          // For example: { anotherField: { $regex: new RegExp(escapedSearchTerm, 'i') } }
-        ];
-      }
-    }
-
-    // Add selectedBDEName filter
-    if (selectedBDEName && selectedBDEName.trim() !== '') {
-      query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
-    }
-
-    // Query the collection to get only the _id fields
-    const getId = await CompanyModel.find(query, '_id');
-    //console.log("getId", getId)
-
-    // Extract the _id values into an array
-    const allIds = getId.map(doc => doc._id);
-
-    // If there's no search or filter query, send all IDs
-    if (!isFilter && !isSearching) {
-      res.status(200).json(allIds);
-      return;
-    }
-
-    // Fetch assigned and unassigned data if search or filter query exists
-    let assignedData = [];
-    let assignedCount = 0;
-    let unassignedData = [];
-    let unassignedCount = 0;
-    let extractedData = [];
-    let extractedDataCount = 0;
-    const limit = 500;
-
-    if (isFilter || isSearching) {
-
-      let extractedQuery = { ...query, ename: "Extracted" }
-      extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
-      extractedData = await CompanyModel.find(extractedQuery).lean();
-
-      // Fetch assigned data
-      let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
-      assignedCount = await CompanyModel.countDocuments(assignedQuery);
-      assignedData = await CompanyModel.find(assignedQuery).lean();
-
-      // Fetch unassigned data
-      if (!selectedBDEName || selectedBDEName.trim() === '') {
-        let unassignedQuery = { ...query, ename: 'Not Alloted' };
-        unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
-        unassignedData = await CompanyModel.find(unassignedQuery).lean();
-      }
-    }
-
-    // console.log("query", query)
-    // console.log(allIds)
-
-    res.status(200).json({
-      allIds,
-      assigned: assignedData,
-      unassigned: unassignedData,
-      extracted: extractedData,
-      totalAssigned: assignedCount,
-      totalUnassigned: unassignedCount,
-      extractedDataCount: extractedDataCount,
-      totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
-    });
-  } catch (error) {
-    console.error('Error fetching IDs:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
 // router.get('/getIds', async (req, res) => {
 //   try {
 //     const {
@@ -847,11 +674,12 @@ router.get('/getIds', async (req, res) => {
 //       selectedStatus,
 //       selectedState,
 //       selectedNewCity,
-//       selectedBDEName,<th?
+//       selectedBDEName,
 //       selectedAssignDate,
 //       selectedUploadedDate,
 //       selectedAdminName,
 //       selectedYear,
+//       monthIndex,
 //       selectedCompanyIncoDate,
 //       isFilter,
 //       isSearching,
@@ -874,7 +702,7 @@ router.get('/getIds', async (req, res) => {
 //       query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
 //     }
 //     if (selectedUploadedDate) {
-//       query.UploadedDate = {
+//       query.UploadDate = {
 //         $gte: new Date(selectedUploadedDate).toISOString(),
 //         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
 //       };
@@ -885,32 +713,45 @@ router.get('/getIds', async (req, res) => {
 //         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
 //         const monthStartDate = new Date(year, month, 1);
 //         const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
-//         baseQuery["Company Incorporation Date  "] = {
+//         query["Company Incorporation Date  "] = {
 //           $gte: monthStartDate,
 //           $lt: monthEndDate
 //         };
 //       } else {
 //         const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
 //         const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
-//         baseQuery["Company Incorporation Date  "] = {
+//         query["Company Incorporation Date  "] = {
 //           $gte: yearStartDate,
 //           $lt: yearEndDate
 //         };
 //       }
 //     }
-
 //     if (selectedCompanyIncoDate) {
-//       query["Company Incorporation Date"] = {
-//         $gte: new Date(selectedCompanyIncoDate).toISOString(),
-//         $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
-//       };
+
+//       const selectedDate = new Date(selectedCompanyIncoDate);
+//       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
+
+//       if (isEpochDate) {
+
+//         // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
+//         query["Company Incorporation Date  "] = null;
+//       } else {
+//         // Otherwise, use the selected date to find documents within that day
+//         query["Company Incorporation Date  "] = {
+//           $gte: new Date(selectedDate).toISOString(),
+//           $lt: new Date(new Date(selectedDate).setDate(selectedDate.getDate() + 1)).toISOString()
+//         };
+//       }
 //     }
+
 //     // Apply data status filters based on isFilter and isSearching
 //     if (isFilter && dataStatus) {
 //       if (dataStatus === 'Unassigned') {
 //         query.ename = 'Not Alloted';
 //       } else if (dataStatus === 'Assigned') {
-//         query.ename = { $ne: 'Not Alloted' };
+//         query.ename = { $nin: ['Not Alloted', "Extracted"] };
+//       } else if (dataStatus === "Extracted") {
+//         query.ename = "Extracted"
 //       }
 //     }
 
@@ -934,8 +775,14 @@ router.get('/getIds', async (req, res) => {
 //       }
 //     }
 
+//     // Add selectedBDEName filter
+//     if (selectedBDEName && selectedBDEName.trim() !== '') {
+//       query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+//     }
+
 //     // Query the collection to get only the _id fields
 //     const getId = await CompanyModel.find(query, '_id');
+//     //console.log("getId", getId)
 
 //     // Extract the _id values into an array
 //     const allIds = getId.map(doc => doc._id);
@@ -951,26 +798,40 @@ router.get('/getIds', async (req, res) => {
 //     let assignedCount = 0;
 //     let unassignedData = [];
 //     let unassignedCount = 0;
+//     let extractedData = [];
+//     let extractedDataCount = 0;
 //     const limit = 500;
 
 //     if (isFilter || isSearching) {
+
+//       let extractedQuery = { ...query, ename: "Extracted" }
+//       extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
+//       extractedData = await CompanyModel.find(extractedQuery).lean();
+
 //       // Fetch assigned data
 //       let assignedQuery = { ...query, ename: { $ne: "Not Alloted" } };
 //       assignedCount = await CompanyModel.countDocuments(assignedQuery);
 //       assignedData = await CompanyModel.find(assignedQuery).lean();
 
 //       // Fetch unassigned data
-//       let unassignedQuery = { ...query, ename: 'Not Alloted' };
-//       unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
-//       unassignedData = await CompanyModel.find(unassignedQuery).lean();
+//       if (!selectedBDEName || selectedBDEName.trim() === '') {
+//         let unassignedQuery = { ...query, ename: 'Not Alloted' };
+//         unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+//         unassignedData = await CompanyModel.find(unassignedQuery).lean();
+//       }
 //     }
+
+//     // console.log("query", query)
+//     // console.log(allIds)
 
 //     res.status(200).json({
 //       allIds,
 //       assigned: assignedData,
 //       unassigned: unassignedData,
+//       extracted: extractedData,
 //       totalAssigned: assignedCount,
 //       totalUnassigned: unassignedCount,
+//       extractedDataCount: extractedDataCount,
 //       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
 //     });
 //   } catch (error) {
@@ -978,6 +839,299 @@ router.get('/getIds', async (req, res) => {
 //     res.status(500).json({ error: 'Internal server error' });
 //   }
 // });
+
+router.get('/getIds', async (req, res) => {
+  try {
+    const {
+      dataStatus,
+      selectedStatus,
+      selectedState,
+      selectedNewCity,
+      selectedBDEName,
+      selectedAssignDate,
+      selectedUploadedDate,
+      selectedAdminName,
+      selectedYear,
+      monthIndex,
+      selectedCompanyIncoDate,
+      isFilter,
+      isSearching,
+      searchText
+    } = req.query;
+
+    // Construct the main query object
+    let query = {};
+
+    // Apply filters if specified
+    if (selectedStatus) query.Status = selectedStatus;
+    if (selectedState) query.State = selectedState;
+    if (selectedNewCity) query.City = selectedNewCity;
+    if (selectedAssignDate) {
+      const assignDate = new Date(selectedAssignDate);
+      query.AssignDate = {
+        $gte: assignDate.toISOString(),
+        $lt: new Date(assignDate.setDate(assignDate.getDate() + 1)).toISOString(),
+      };
+    }
+    if (selectedAdminName && selectedAdminName.trim() !== '') {
+      query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
+    }
+    if (selectedUploadedDate) {
+      const uploadDate = new Date(selectedUploadedDate);
+      query.UploadDate = {
+        $gte: uploadDate.toISOString(),
+        $lt: new Date(uploadDate.setDate(uploadDate.getDate() + 1)).toISOString(),
+      };
+    }
+    if (selectedYear) {
+      if (monthIndex !== '0') {
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex) - 1;
+        query["Company Incorporation Date  "] = {
+          $gte: new Date(year, month, 1),
+          $lt: new Date(year, month + 1, 0, 23, 59, 59, 999),
+        };
+      } else {
+        query["Company Incorporation Date  "] = {
+          $gte: new Date(`${selectedYear}-01-01T00:00:00.000Z`),
+          $lt: new Date(`${selectedYear}-12-31T23:59:59.999Z`),
+        };
+      }
+    }
+    if (selectedCompanyIncoDate) {
+      const selectedDate = new Date(selectedCompanyIncoDate);
+      const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
+      query["Company Incorporation Date  "] = isEpochDate
+        ? null
+        : {
+          $gte: selectedDate.toISOString(),
+          $lt: new Date(selectedDate.setDate(selectedDate.getDate() + 1)).toISOString(),
+        };
+    }
+
+    // Apply data status filters
+    if (isFilter && dataStatus) {
+      query.ename = dataStatus === 'Unassigned'
+        ? 'Not Alloted'
+        : dataStatus === 'Assigned'
+          ? { $nin: ['Not Alloted', 'Extracted'] }
+          : 'Extracted';
+    }
+
+    // Search query if searching is true
+    if (isSearching && searchText) {
+      const searchTerm = searchText.trim();
+      if (!isNaN(searchTerm)) {
+        query['Company Number'] = searchTerm;
+      } else {
+        const escapedSearchTerm = escapeRegex(searchTerm);
+        query.$or = [
+          { 'Company Name': { $regex: new RegExp(escapedSearchTerm, 'i') } },
+          { 'Company Email': { $regex: new RegExp(escapedSearchTerm, 'i') } },
+        ];
+      }
+    }
+
+    // Filter by BDE Name if specified
+    if (selectedBDEName && selectedBDEName.trim() !== '') {
+      query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+    }
+
+    // Query for just the _id field initially for all IDs
+    const getId = await CompanyModel.find(query, '_id').lean();
+    const allIds = getId.map(doc => doc._id);
+
+    // Return all IDs if no search or filter applied
+    if (!isFilter && !isSearching) {
+      return res.status(200).json(allIds);
+    }
+
+    // Fetch assigned, unassigned, and extracted data with counts
+    const fetchDataByType = async (additionalQuery) =>
+      CompanyModel.find({ ...query, ...additionalQuery }).limit(500).lean();
+
+    const countDocumentsByType = async (additionalQuery) =>
+      CompanyModel.countDocuments({ ...query, ...additionalQuery });
+
+    const [extractedData, assignedData, unassignedData] = await Promise.all([
+      fetchDataByType({ ename: 'Extracted' }),
+      fetchDataByType({ ename: { $ne: 'Not Alloted' } }),
+      fetchDataByType(!selectedBDEName ? { ename: 'Not Alloted' } : {}),
+    ]);
+
+    const [extractedDataCount, assignedCount, unassignedCount] = await Promise.all([
+      countDocumentsByType({ ename: 'Extracted' }),
+      countDocumentsByType({ ename: { $ne: 'Not Alloted' } }),
+      countDocumentsByType(!selectedBDEName ? { ename: 'Not Alloted' } : {}),
+    ]);
+
+    res.status(200).json({
+      allIds,
+      assigned: assignedData,
+      unassigned: unassignedData,
+      extracted: extractedData,
+      totalAssigned: assignedCount,
+      totalUnassigned: unassignedCount,
+      extractedDataCount: extractedDataCount,
+      totalPages: Math.ceil((assignedCount + unassignedCount) / 500),
+    });
+  } catch (error) {
+    console.error('Error fetching IDs:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/getIdsleadinterestedleads', async (req, res) => {
+  try {
+    const {
+      dataStatus,
+      selectedStatus,
+      selectedState,
+      selectedNewCity,
+      selectedBDEName,
+      selectedAssignDate,
+      selectedUploadedDate,
+      selectedAdminName,
+      selectedYear,
+      monthIndex,
+      selectedCompanyIncoDate,
+      isFilter,
+      isSearching,
+      searchText
+    } = req.query;
+
+    // Construct the main query object
+    let query = {};
+    const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name');
+
+    // Apply filters if specified
+    if (selectedStatus) query.Status = selectedStatus;
+    if (selectedState) query.State = selectedState;
+    if (selectedNewCity) query.City = selectedNewCity;
+    if (selectedAssignDate) {
+      const assignDate = new Date(selectedAssignDate);
+      query.AssignDate = {
+        $gte: assignDate.toISOString(),
+        $lt: new Date(assignDate.setDate(assignDate.getDate() + 1)).toISOString(),
+      };
+    }
+    if (selectedAdminName && selectedAdminName.trim() !== '') {
+      query.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
+    }
+    if (selectedUploadedDate) {
+      const uploadDate = new Date(selectedUploadedDate);
+      query.UploadDate = {
+        $gte: uploadDate.toISOString(),
+        $lt: new Date(uploadDate.setDate(uploadDate.getDate() + 1)).toISOString(),
+      };
+    }
+    if (selectedYear) {
+      if (monthIndex !== '0') {
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex) - 1;
+        query["Company Incorporation Date  "] = {
+          $gte: new Date(year, month, 1),
+          $lt: new Date(year, month + 1, 0, 23, 59, 59, 999),
+        };
+      } else {
+        query["Company Incorporation Date  "] = {
+          $gte: new Date(`${selectedYear}-01-01T00:00:00.000Z`),
+          $lt: new Date(`${selectedYear}-12-31T23:59:59.999Z`),
+        };
+      }
+    }
+    if (selectedCompanyIncoDate) {
+      const selectedDate = new Date(selectedCompanyIncoDate);
+      const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
+      query["Company Incorporation Date  "] = isEpochDate
+        ? null
+        : {
+          $gte: selectedDate.toISOString(),
+          $lt: new Date(selectedDate.setDate(selectedDate.getDate() + 1)).toISOString(),
+        };
+    }
+
+    // Apply data status filters
+    if (isFilter && dataStatus) {
+      query.ename = dataStatus === 'Unassigned'
+        ? 'Not Alloted'
+        : dataStatus === 'Assigned'
+          ? { $nin: ['Not Alloted', 'Extracted'] }
+          : 'Extracted';
+    }
+
+    // Search query if searching is true
+    if (isSearching && searchText) {
+      const searchTerm = searchText.trim();
+      if (!isNaN(searchTerm)) {
+        query['Company Number'] = searchTerm;
+      } else {
+        const escapedSearchTerm = escapeRegex(searchTerm);
+        query.$or = [
+          { 'Company Name': { $regex: new RegExp(escapedSearchTerm, 'i') } },
+          { 'Company Email': { $regex: new RegExp(escapedSearchTerm, 'i') } },
+        ];
+      }
+    }
+
+    // Filter by BDE Name if specified
+    if (selectedBDEName && selectedBDEName.trim() !== '') {
+      query.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+    }
+
+    // Add assignedData condition to the getId query
+    const assignedDataCondition = {
+      $and: [
+        { ename: { $ne: 'Not Alloted' } },
+        { ename: { $ne: 'Extracted' } },
+        { Status: { $in: ['Interested', 'FollowUp'] } },
+        { 'Company Name': { $in: leadHistoryCompany } }
+      ]
+    };
+
+    // Query for just the _id field with the assignedData condition
+    const getId = await CompanyModel.find({ ...query, ...assignedDataCondition }, '_id').lean();
+    const allIds = getId.map(doc => doc._id);
+
+    // Return all IDs if no search or filter applied
+    if (!isFilter && !isSearching) {
+      return res.status(200).json(allIds);
+    }
+
+    // Fetch assigned, unassigned, and extracted data with counts
+    const fetchDataByType = async (additionalQuery) =>
+      CompanyModel.find({ ...query, ...additionalQuery }).limit(500).lean();
+
+    const countDocumentsByType = async (additionalQuery) =>
+      CompanyModel.countDocuments({ ...query, ...additionalQuery });
+
+    const [extractedData, assignedData, unassignedData] = await Promise.all([
+      fetchDataByType({ ename: 'Extracted' }),
+      fetchDataByType(assignedDataCondition),
+      fetchDataByType(!selectedBDEName ? { ename: 'Not Alloted' } : {}),
+    ]);
+
+    const [extractedDataCount, assignedCount, unassignedCount] = await Promise.all([
+      countDocumentsByType({ ename: 'Extracted' }),
+      countDocumentsByType(assignedDataCondition),
+      countDocumentsByType(!selectedBDEName ? { ename: 'Not Alloted' } : {}),
+    ]);
+
+    res.status(200).json({
+      allIds,
+      assigned: assignedData,
+      unassigned: unassignedData,
+      extracted: extractedData,
+      totalAssigned: assignedCount,
+      totalUnassigned: unassignedCount,
+      extractedDataCount: extractedDataCount,
+      totalPages: Math.ceil((assignedCount + unassignedCount) / 500),
+    });
+  } catch (error) {
+    console.error('Error fetching IDs:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 router.post("/fetch-by-ids", async (req, res) => {
   const { ids } = req.body;
@@ -1069,15 +1223,15 @@ router.post("/postAssignData", async (req, res) => {
         },
       },
     };
-  
+
     // Conditionally set `isDeletedEmployeeCompany` only if `obj.Status` is "Matured"
     if (obj.Status === "Matured") {
       updateOperation.updateOne.update.$set.isDeletedEmployeeCompany = true;
     }
-  
+
     return updateOperation;
   });
-  
+
 
 
 
@@ -1152,7 +1306,7 @@ router.post("/postAssignData", async (req, res) => {
     });
 
     await Promise.all(updatePromises);
-  
+
     res.json({ message: "Data posted successfully" });
   } catch (error) {
     console.error("Error posting assign data:", error);
@@ -1328,7 +1482,7 @@ router.post("/postExtractedData", async (req, res) => {
 // });
 router.delete("/deleteAdminSelectedLeads", async (req, res) => {
   const { selectedRows } = req.body;
- 
+
 
   try {
     // Step 1: Find the documents to be deleted

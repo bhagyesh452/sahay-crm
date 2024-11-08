@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const DeletedLeadsSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
-    unique:true,
   },
   "Company Number": {
     type: Number,
