@@ -803,7 +803,7 @@ function EmployeeInterestedLeads({
                                 setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                 setShowNewAddProjection(true);  // Open new projection dialog
                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
-                                console.log("Projection data to be viewed :", matchedItem);
+                                // console.log("Projection data to be viewed :", matchedItem);
                               }
                             }}
                           >

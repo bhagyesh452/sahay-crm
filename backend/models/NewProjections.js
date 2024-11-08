@@ -73,10 +73,6 @@ const CompanySchema = new mongoose.Schema({
       default: Date.now() 
     },
     data: {
-      companyName: {
-        type: String,
-        required: true
-      },
       ename: {
         type: String,
         required: true
