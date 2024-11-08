@@ -22,7 +22,6 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
 
     const [companyName, setCompanyName] = useState(projectionData ? (projectionData.companyName || projectionData["Company Name"]) : '');
     const [companyId, setCompanyId] = useState(projectionData ? projectionData._id : '');
-    const [projectionId, setProjectionId] = useState(projectionData ? projectionData._id : '');
     const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
     const [selectedBdm, setSelectedBdm] = useState(projectionData ? projectionData.bdmName : '');
     const [selectedBde, setSelectedBde] = useState(projectionData ? (projectionData.bdeName || projectionData.ename) : '');
@@ -134,7 +133,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                 }
             });
             const projectionData = res.data.data;
-            // console.log("Fetched projection is :", projectionData);
+            console.log("Fetched projection is :", projectionData);
 
             if (projectionData) {
                 const futureProjections = projectionData.filter(p => new Date(p.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0));
@@ -145,7 +144,6 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
 
                     // Fill the form with latest future projection
                     setIsProjectionAvailable(true);
-                    setProjectionId(latestProjection._id);
                     setCompanyName(latestProjection.companyName);
                     setCompanyId(latestProjection.companyId);
                     setSelectedBdm(latestProjection.bdmName);
@@ -227,7 +225,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         }
 
         try {
-            const res = await axios.post(`${secretKey}/company-data/addProjection/${companyId}`, payload);
+            const res = await axios.post(`${secretKey}/company-data/addProjection/${companyName}`, payload);
             // console.log("Projection submitted :", res.data.data);
             Swal.fire("Success", "Projection submitted successfully.", "success");
             handleClosePopup();
@@ -240,16 +238,19 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
 
     const handleUpdateProjection = async () => {
         const payload = {
-            companyName: companyName,
+            ename: isFilledFromTeamLeads ? selectedBdm : selectedBde,
+            date: new Date(),
+            time: new Date().toLocaleTimeString(),
             offeredServices: offeredServices,
             offeredPrice: offeredPrice,
-            bdeName: isProjectionAvailable ? selectedBde : projectionData.bdeName,
-            bdmName: !selectedBdm ? projectionData.bdmName : selectedBdm,
             totalPayment: expectedPrice,
             lastFollowUpdate: new Date(followupDate),
             estPaymentDate: new Date(paymentDate),
+            bdeName: isProjectionAvailable ? selectedBde : projectionData.bdeName,
+            bdmName: !selectedBdm ? projectionData.bdmName : selectedBdm,
             remarks: remarks,
-            modifiedAt: new Date()
+            caseType: isFilledFromTeamLeads ? "Received" : "NotForwarded",
+            isPreviousMaturedCase: companyStatus === "Matured" ? true : false
         };
 
         if (offeredServices.length === 0) {
@@ -276,7 +277,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         }
 
         try {
-            const res = await axios.put(`${secretKey}/company-data/updateProjection/${projectionId}`, payload);
+            const res = await axios.put(`${secretKey}/company-data/updateProjection/${companyName}`, payload);
             // console.log("Projection updated :", res.data.data);
             Swal.fire("Success", "Projection updated successfully.", "success");
             handleClosePopup();

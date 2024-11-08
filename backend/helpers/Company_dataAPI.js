@@ -899,7 +899,7 @@ router.get('/download-csv', async (req, res) => {
     }).lean();
 
     const leadHistoryMap = leadHistoryData.reduce((acc, item) => {
-      acc[item['Company Name']] = item.date; 
+      acc[item['Company Name']] = item.date;
       return acc;
     }, {});
 
@@ -907,27 +907,27 @@ router.get('/download-csv', async (req, res) => {
       const statusModificationDate = leadHistoryMap[emp["Company Name"]];
       return {
         ...emp,
-        "Company Incorporation Date": emp["Company Incorporation Date  "] 
-          ? new Date(emp["Company Incorporation Date  "]).toISOString().split('T')[0] 
+        "Company Incorporation Date": emp["Company Incorporation Date  "]
+          ? new Date(emp["Company Incorporation Date  "]).toISOString().split('T')[0]
           : '',
-        "AssignDate": emp.AssignDate 
-          ? new Date(emp.AssignDate).toISOString().split('T')[0] 
+        "AssignDate": emp.AssignDate
+          ? new Date(emp.AssignDate).toISOString().split('T')[0]
           : '',
-        "Status Modification Date": statusModificationDate 
-          ? new Date(statusModificationDate).toISOString().split('T')[0] 
+        "Status Modification Date": statusModificationDate
+          ? new Date(statusModificationDate).toISOString().split('T')[0]
           : '',
-        "Age": statusModificationDate 
-          ? timePassedSince(statusModificationDate) 
+        "Age": statusModificationDate
+          ? timePassedSince(statusModificationDate)
           : '',
-        "BDM Forwarded": (emp.bdmAcceptStatus === "Pending" || emp.bdmAcceptStatus === "Forwarded" || emp.bdmAcceptStatus === "Accept") 
-          ? "Yes" 
+        "BDM Forwarded": (emp.bdmAcceptStatus === "Pending" || emp.bdmAcceptStatus === "Forwarded" || emp.bdmAcceptStatus === "Accept")
+          ? "Yes"
           : "No",
         "BDM Name": emp.bdmName || "-",
-        "BDE Forward Date": emp.bdeForwardDate 
-          ? new Date(emp.bdeForwardDate).toISOString().split('T')[0] 
+        "BDE Forward Date": emp.bdeForwardDate
+          ? new Date(emp.bdeForwardDate).toISOString().split('T')[0]
           : "-",
-        'Forwarded Age': (emp.bdmAcceptStatus === "Pending" || emp.bdmAcceptStatus === "Forwarded" || emp.bdmAcceptStatus === "Accept") 
-          ? timePassedSince(emp.bdeForwardDate) 
+        'Forwarded Age': (emp.bdmAcceptStatus === "Pending" || emp.bdmAcceptStatus === "Forwarded" || emp.bdmAcceptStatus === "Accept")
+          ? timePassedSince(emp.bdeForwardDate)
           : "-",
       };
     });
@@ -3168,18 +3168,40 @@ router.get('/companies/searchforTeamLeads/:employeeName', async (req, res) => {
 });
 
 // Add projection :
-router.post('/addProjection/:companyId', async (req, res) => {
-  const { companyId } = req.params;
+router.post('/addProjection/:companyName', async (req, res) => {
+  const { companyName } = req.params;
   const payload = req.body;
 
   try {
-    // Check if the company exists
-    let existingCompany = await ProjectionModel.findOne({ companyId });
+    // Check if a projection entry exists for the company
+    let existingCompany = await ProjectionModel.findOne({ companyName });
 
     if (existingCompany) {
-      // Company exists, add new projection data to the history array only
+      // Add the existing main data to the history array
       const newHistoryEntry = {
         data: {
+          ename: existingCompany.ename,
+          date: existingCompany.date,
+          time: existingCompany.time,
+          offeredServices: existingCompany.offeredServices,
+          offeredPrice: existingCompany.offeredPrice,
+          totalPayment: existingCompany.totalPayment,
+          lastFollowUpdate: existingCompany.lastFollowUpdate,
+          estPaymentDate: existingCompany.estPaymentDate,
+          remarks: existingCompany.remarks,
+          bdeName: existingCompany.bdeName,
+          bdmName: existingCompany.bdmName,
+          caseType: existingCompany.caseType,
+          isPreviousMaturedCase: existingCompany.isPreviousMaturedCase,
+          updatedAt: new Date()  // Optional timestamp for the history entry
+        }
+      };
+
+      // Update the history array and replace main data with new data
+      const updatedCompany = await ProjectionModel.findByIdAndUpdate(
+        existingCompany._id,
+        {
+          $push: { history: newHistoryEntry },
           ename: payload.ename,
           date: payload.date,
           time: payload.time,
@@ -3192,24 +3214,16 @@ router.post('/addProjection/:companyId', async (req, res) => {
           bdeName: payload.bdeName,
           bdmName: payload.bdmName,
           caseType: payload.caseType,
-          isPreviousMaturedCase: payload.isPreviousMaturedCase,
-        }
-      };
-
-      // Add the new entry to the history array without updating the original fields
-      const updatedCompany = await ProjectionModel.findByIdAndUpdate(
-        existingCompany._id,
-        { $push: { history: newHistoryEntry } },
+          isPreviousMaturedCase: payload.isPreviousMaturedCase
+        },
         { new: true }
       );
 
-      res.json({ result: true, message: "Projection added to history", data: updatedCompany });
-
+      res.json({ result: true, message: "Projection updated and added to history", data: updatedCompany });
     } else {
-      // Company does not exist, create a new entry with the initial data and add the first history entry
+      // Create a new entry if the company doesn't exist
       const newCompany = new ProjectionModel({
         companyName: payload.companyName,
-        companyId: payload.companyId,
         ename: payload.ename,
         date: payload.date,
         time: payload.time,
@@ -3231,7 +3245,7 @@ router.post('/addProjection/:companyId', async (req, res) => {
     }
 
   } catch (error) {
-    res.status(500).json({ result: false, message: "Internal server error", error: error });
+    res.status(500).json({ result: false, message: "Internal server error", error: error.message });
   }
 });
 
@@ -3312,36 +3326,36 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
       }
 
       // Process each history entry relevant to the employee and date range
-      history.forEach(entry => {
-        const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
+      // history.forEach(entry => {
+      //   const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
 
-        if ((historyBde === employeeName || historyBdm === employeeName) &&
-          historyPaymentDate >= startOfDay && historyPaymentDate <= endOfDay) {
+      //   if ((historyBde === employeeName || historyBdm === employeeName) &&
+      //     historyPaymentDate >= startOfDay && historyPaymentDate <= endOfDay) {
 
-          let historyEmployeePayment = 0;
-          if (historyBde === historyBdm && historyBde === employeeName) {
-            historyEmployeePayment = historyTotal;
-          } else if (historyBde === employeeName || historyBdm === employeeName) {
-            historyEmployeePayment = historyTotal / 2;
-          }
+      //     let historyEmployeePayment = 0;
+      //     if (historyBde === historyBdm && historyBde === employeeName) {
+      //       historyEmployeePayment = historyTotal;
+      //     } else if (historyBde === employeeName || historyBdm === employeeName) {
+      //       historyEmployeePayment = historyTotal / 2;
+      //     }
 
-          projectionSummary.push({
-            _id: entry._id || _id,
-            companyName: projection.companyName,
-            offeredServices: entry.data.offeredServices,
-            offeredPrice: entry.data.offeredPrice,
-            totalPayment: entry.data.totalPayment,
-            employeePayment: historyEmployeePayment,
-            bdeName: entry.data.bdeName,
-            bdmName: entry.data.bdmName,
-            lastFollowUpdate: entry.data.lastFollowUpdate,
-            estPaymentDate: entry.data.estPaymentDate,
-            remarks: entry.data.remarks,
-            caseType: entry.data.caseType,
-            isPreviousMaturedCase: entry.data.isPreviousMaturedCase,
-          });
-        }
-      });
+      //     projectionSummary.push({
+      //       _id: entry._id || _id,
+      //       companyName: projection.companyName,
+      //       offeredServices: entry.data.offeredServices,
+      //       offeredPrice: entry.data.offeredPrice,
+      //       totalPayment: entry.data.totalPayment,
+      //       employeePayment: historyEmployeePayment,
+      //       bdeName: entry.data.bdeName,
+      //       bdmName: entry.data.bdmName,
+      //       lastFollowUpdate: entry.data.lastFollowUpdate,
+      //       estPaymentDate: entry.data.estPaymentDate,
+      //       remarks: entry.data.remarks,
+      //       caseType: entry.data.caseType,
+      //       isPreviousMaturedCase: entry.data.isPreviousMaturedCase,
+      //     });
+      //   }
+      // });
     });
 
     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
@@ -3400,6 +3414,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
           _id,  // Use main document ID here
           projectionDate: projection.date,
           companyName: projection.companyName,
+          companyId: projection.companyId,
           offeredServices: projection.offeredServices,
           offeredPrice: projection.offeredPrice,
           totalPayment: projection.totalPayment,
@@ -3415,37 +3430,38 @@ router.get('/getProjection/:employeeName', async (req, res) => {
       }
 
       // Process each history entry relevant to the employee and date range
-      history.forEach(entry => {
-        const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
+      // history.forEach(entry => {
+      //   const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
 
-        if ((historyBde === employeeName || historyBdm === employeeName) &&
-          (!start || !end || (new Date(historyPaymentDate) >= start && new Date(historyPaymentDate) <= end))) {
+      //   if ((historyBde === employeeName || historyBdm === employeeName) &&
+      //     (!start || !end || (new Date(historyPaymentDate) >= start && new Date(historyPaymentDate) <= end))) {
 
-          let historyEmployeePayment = 0;
-          if (historyBde === historyBdm && historyBde === employeeName) {
-            historyEmployeePayment = historyTotal;
-          } else if (historyBde === employeeName || historyBdm === employeeName) {
-            historyEmployeePayment = historyTotal / 2;
-          }
-
-          projectionSummary.push({
-            _id: entry._id || _id, // Use history entry's _id if it exists, otherwise main _id
-            projectionDate: entry.data.date,
-            companyName: projection.companyName,
-            offeredServices: entry.data.offeredServices,
-            offeredPrice: entry.data.offeredPrice,
-            totalPayment: entry.data.totalPayment,
-            employeePayment: historyEmployeePayment,
-            bdeName: entry.data.bdeName,
-            bdmName: entry.data.bdmName,
-            lastFollowUpdate: entry.data.lastFollowUpdate,
-            estPaymentDate: entry.data.estPaymentDate,
-            remarks: entry.data.remarks,
-            caseType: entry.data.caseType,
-            isPreviousMaturedCase: entry.data.isPreviousMaturedCase
-          });
-        }
-      });
+      //     let historyEmployeePayment = 0;
+      //     if (historyBde === historyBdm && historyBde === employeeName) {
+      //       historyEmployeePayment = historyTotal;
+      //     } else if (historyBde === employeeName || historyBdm === employeeName) {
+      //       historyEmployeePayment = historyTotal / 2;
+      //     }
+          
+      //     projectionSummary.push({
+      //       _id: entry._id || _id, // Use history entry's _id if it exists, otherwise main _id
+      //       projectionDate: entry.data.date,
+      //       companyName: projection.companyName,
+      //       companyId: projection.companyId,
+      //       offeredServices: entry.data.offeredServices,
+      //       offeredPrice: entry.data.offeredPrice,
+      //       totalPayment: entry.data.totalPayment,
+      //       employeePayment: historyEmployeePayment,
+      //       bdeName: entry.data.bdeName,
+      //       bdmName: entry.data.bdmName,
+      //       lastFollowUpdate: entry.data.lastFollowUpdate,
+      //       estPaymentDate: entry.data.estPaymentDate,
+      //       remarks: entry.data.remarks,
+      //       caseType: entry.data.caseType,
+      //       isPreviousMaturedCase: entry.data.isPreviousMaturedCase
+      //     });
+      //   }
+      // });
     });
 
     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
@@ -3454,10 +3470,13 @@ router.get('/getProjection/:employeeName', async (req, res) => {
   }
 });
 
-router.put('/updateProjection/:id', async (req, res) => {
-  const { id } = req.params;
+// Update projection and add to history :
+router.put('/updateProjection/:companyName', async (req, res) => {  
+  const { companyName } = req.params;
   const {
-    companyName,
+    date,
+    time,
+    ename,
     bdeName,
     bdmName,
     offeredServices,
@@ -3466,58 +3485,57 @@ router.put('/updateProjection/:id', async (req, res) => {
     lastFollowUpdate,
     estPaymentDate,
     remarks,
-    modifiedAt
+    caseType,
+    isPreviousMaturedCase,
   } = req.body;
 
   try {
-    // First, check if the provided _id matches a main document's _id
-    let projection = await ProjectionModel.findOne({ _id: id });
+    // Find the main projection document by companyId
+    let projection = await ProjectionModel.findOne({ companyName: companyName });
 
     if (projection) {
-      // If found, update the main document fields
-      projection.companyName = companyName,
-      projection.bdeName = bdeName,
-      projection.bdmName = bdmName;
+      // Push current main data to the history array before replacing it
+      projection.history.push({
+        data: {
+          ename: projection.ename,
+          date: projection.date,
+          time: projection.time,
+          offeredServices: projection.offeredServices,
+          offeredPrice: projection.offeredPrice,
+          totalPayment: projection.totalPayment,
+          lastFollowUpdate: projection.lastFollowUpdate,
+          estPaymentDate: projection.estPaymentDate,
+          bdeName: projection.bdeName,
+          bdmName: projection.bdmName,
+          remarks: projection.remarks,
+          caseType: projection.caseType,
+          isPreviousMaturedCase: projection.isPreviousMaturedCase,
+          updatedAt: new Date()  // Optional timestamp for history entry
+        },
+      });
+
+      // Update the main projection data with new values from the request
+      projection.ename = ename;
+      projection.date = date;
+      projection.time = time;
       projection.offeredServices = offeredServices;
       projection.offeredPrice = offeredPrice;
       projection.totalPayment = totalPayment;
       projection.lastFollowUpdate = lastFollowUpdate;
       projection.estPaymentDate = estPaymentDate;
+      projection.bdeName = bdeName;
+      projection.bdmName = bdmName;
       projection.remarks = remarks;
-      projection.modifiedAt = modifiedAt
+      projection.caseType = caseType;
+      projection.isPreviousMaturedCase = isPreviousMaturedCase;
 
+      // Save the updated projection document
       await projection.save();
-      return res.status(200).json({ result: true, message: "Projection data updated successfully", data: projection });
+      return res.status(200).json({ result: true, message: "Projection updated and added to history", data: projection });
     }
 
-    // If not found, look for the _id within the history array
-    projection = await ProjectionModel.findOne({ "history._id": id });
-
-    if (projection) {
-      // Update the specific history entry by finding the relevant history item
-      const historyEntry = projection.history.find(entry => entry._id.toString() === id);
-
-      if (historyEntry) {
-        // Update the fields in the history entry
-        historyEntry.data.companyName = companyName;
-        historyEntry.data.bdeName = bdeName;
-        historyEntry.data.bdmName = bdmName;
-        historyEntry.data.offeredServices = offeredServices;
-        historyEntry.data.offeredPrice = offeredPrice;
-        historyEntry.data.totalPayment = totalPayment;
-        historyEntry.data.lastFollowUpdate = lastFollowUpdate;
-        historyEntry.data.estPaymentDate = estPaymentDate;
-        historyEntry.data.remarks = remarks;
-        historyEntry.data.modifiedAt = modifiedAt;
-
-        await projection.save();
-        return res.status(200).json({ result: true, message: "History entry updated successfully", data: historyEntry });
-      }
-    }
-
-    // If no document or history entry is found, return an error
-    res.status(404).json({ result: false, message: "Projection or history entry not found" });
-
+    // If no document is found, return an error
+    res.status(404).json({ result: false, message: "Projection not found" });
   } catch (error) {
     res.status(500).json({ result: false, message: "Error updating projection", error: error.message });
   }
