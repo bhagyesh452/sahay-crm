@@ -34,6 +34,8 @@ import ServiceAnalysis from "./ServiceAnalysis.jsx";
 import { MdOutlineWeb } from "react-icons/md";
 import InterestedFollowLeadReport from "./InterestedFollowLeadReport.jsx";
 import EmployeesForwardedDataReportFromBackend from "./EmployeesForwardedDataReportFromBackend.jsx";
+import EmployeesNewProjectionSummary from "./EmployeesNewProjectionSummary.jsx";
+import EmployeesTodayProjectionSummary from "./EmployeesTodayProjectionSummary.jsx";
 
 
 
@@ -172,6 +174,8 @@ function Dashboard() {
                             <EmployeesForwardedDataReportFromBackend />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
+                           <EmployeesTodayProjectionSummary/>
+                            <EmployeesNewProjectionSummary/>
                             <EmployeesProjectionSummary />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
