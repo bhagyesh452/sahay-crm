@@ -3364,6 +3364,47 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
   }
 });
 
+router.get('/getCurrentDayProjection', async (req, res) => {
+  const { companyName } = req.query;
+
+  try {
+    // Define the start and end of the current day
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Initialize the query to filter by today's date range
+    const query = {
+      estPaymentDate: { $gte: startOfDay, $lte: endOfDay }
+    };
+
+    // Add company name filter if provided in the query parameters
+    if (companyName) {
+      query.companyName = { $regex: companyName, $options: 'i' }; // Case-insensitive match
+    }
+
+    // Execute the query on the ProjectionModel
+    const projections = await ProjectionModel.find(query);
+
+    // Send a success response with the fetched data
+    res.status(200).json({
+      result: true,
+      message: "Projection data fetched successfully",
+      data: projections
+    });
+  } catch (error) {
+    // Handle any errors that occur during the query
+    res.status(500).json({
+      result: false,
+      message: "Error fetching projection",
+      error: error.message
+    });
+  }
+});
+
+
 // Fetch projections for a specific employee :
 router.get('/getProjection/:employeeName', async (req, res) => {
   const { employeeName } = req.params;

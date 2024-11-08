@@ -1240,7 +1240,7 @@ function EmployeesProjectionSummary() {
 
 
         {/* Today's Collection */}
-        <div className="card mt-2">
+        {/* <div className="card mt-2">
           <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
             <div className="dashboard-title pl-1"  >
               <h2 className="m-0">
@@ -1531,7 +1531,7 @@ function EmployeesProjectionSummary() {
               </table>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* -------------------------------------projection-dashboard--------------------------------------------- */}

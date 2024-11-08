@@ -160,9 +160,9 @@ function TodaysProjectionReport() {
                                                 <td>{formatDate(data.lastFollowUpdate)}</td>
                                                 <td>{formatDate(data.estPaymentDate)}</td>
                                                 <td>{data.remarks}</td>
-                                                <td>{data.isPreviousMaturedCase === "true" ? "Yes" : "No" }</td>
+                                                <td>{data.isPreviousMaturedCase === "true" ? "Yes" : "No"}</td>
                                                 <td style={{ padding: '0px !important' }}>
-                                                {new Date(new Date(data.estPaymentDate).setHours(0, 0, 0, 0)) >= new Date(new Date().setHours(0, 0, 0, 0)) ? (
+                                                    {new Date(new Date(data.estPaymentDate).setHours(0, 0, 0, 0)) >= new Date(new Date().setHours(0, 0, 0, 0)) ? (
                                                         <IconButton
                                                             onClick={() => {
                                                                 setShowProjectionDialog(true);
