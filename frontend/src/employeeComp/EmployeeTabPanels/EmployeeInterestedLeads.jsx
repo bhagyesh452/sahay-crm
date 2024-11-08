@@ -678,11 +678,17 @@ function EmployeeInterestedLeads({
                             handleFormOpen={handleOpenFormOpen}
                           />
                         )}
-                        <div className={company.Status === "Interested" && company.interestedInformation ?
-                          "intersted-history-btn"
-                          : company.Status === "FollowUp" && company.interestedInformation ? "followup-history-btn" :
-                            company.Status === "FollowUp" && !company.interestedInformation ? "followup-history-btn disabled" :
-                              "intersted-history-btn disabled"}>
+                        <div
+                          className={
+                            company.Status === "Interested" && company.interestedInformation
+                              ? "intersted-history-btn"
+                              : company.Status === "FollowUp" && company.interestedInformation
+                                ? "followup-history-btn"
+                                : company.Status === "FollowUp" && !company.interestedInformation
+                                  ? "followup-history-btn disabled"
+                                  : "intersted-history-btn disabled"
+                          }
+                        >
                           <FaEye
                             key={company._id}
                             style={{ border: "transparent", background: "none" }}

@@ -606,7 +606,8 @@ function TestLeads() {
 
         const updatedCsvData2 = csvdata.map(data => ({
             ...data,
-            UploadDate: properDate
+            UploadDate: properDate,
+            AssignDate: properDate,
         }))
 
         const newArray = updatedCsvdata.map(data => ({
