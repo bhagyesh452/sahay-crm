@@ -22,9 +22,10 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
 
     const [companyName, setCompanyName] = useState(projectionData ? (projectionData.companyName || projectionData["Company Name"]) : '');
     const [companyId, setCompanyId] = useState(projectionData ? projectionData._id : '');
+    const [projectionId, setProjectionId] = useState(projectionData ? projectionData._id : '');
     const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
     const [selectedBdm, setSelectedBdm] = useState(projectionData ? projectionData.bdmName : '');
-    const [selectedBde, setSelectedBde] = useState(projectionData ? (projectionData.bdeName || projectionData.ename)  : '');
+    const [selectedBde, setSelectedBde] = useState(projectionData ? (projectionData.bdeName || projectionData.ename) : '');
     const [offeredServices, setOfferedServices] = useState(projectionData ? projectionData.offeredServices : []);
     const [offeredPrice, setOfferedPrice] = useState(projectionData ? projectionData.offeredPrice : null);
     const [expectedPrice, setExpectedPrice] = useState(projectionData ? projectionData.totalPayment : null);
@@ -36,6 +37,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [companyNotFound, setCompanyNotFound] = useState(false);
     const [showAddLeadsPopup, setShowAddLeadsPopup] = useState(false);
+    const [isProjectionAvailable, setIsProjectionAvailable] = useState(false);
 
     const handleInputChange = (event) => {
         const name = event.target.value;
@@ -111,7 +113,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         try {
             const res = await axios.get(`${secretKey}/employee/einfo`);
             const data = res.data
-                .filter(employee => (employee.newDesignation === "Business Development Manager" || employee.newDesignation === "Floor Manager") && employee.ename !== employeeName)
+                .filter(employee => (employee.newDesignation === "Business Development Manager" || employee.newDesignation === "Floor Manager"))
                 .map(employee => employee.ename);
             setBdmName(data);
             // console.log("Bdm Names :", data);
@@ -119,6 +121,68 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             console.log("Error fetching bdm names", error);
         }
     };
+
+    useEffect(() => {
+        fetchBdmNames();
+    }, []);
+
+    const fetchSelectedCompanyProjection = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getProjection/${employeeName}`, {
+                params: {
+                    companyName: selectedCompany["Company Name"],
+                }
+            });
+            const projectionData = res.data.data;
+            // console.log("Fetched projection is :", projectionData);
+
+            if (projectionData) {
+                const futureProjections = projectionData.filter(p => new Date(p.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0));
+
+                if (futureProjections.length > 0) {
+                    // Sort future projections by estPaymentDate in descending order
+                    const latestProjection = futureProjections.sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))[0];
+
+                    // Fill the form with latest future projection
+                    setIsProjectionAvailable(true);
+                    setProjectionId(latestProjection._id);
+                    setCompanyName(latestProjection.companyName);
+                    setCompanyId(latestProjection.companyId);
+                    setSelectedBdm(latestProjection.bdmName);
+                    setSelectedBde(latestProjection.bdeName);
+                    setOfferedServices(latestProjection.offeredServices);
+                    setOfferedPrice(latestProjection.offeredPrice);
+                    setExpectedPrice(latestProjection.totalPayment);
+                    setFollowupDate(formatDate(latestProjection.lastFollowUpdate));
+                    setPaymentDate(formatDate(latestProjection.estPaymentDate));
+                    setRemarks(latestProjection.remarks);
+                }
+            }
+        } catch (error) {
+            console.log("Error fetching projection for selected company :", error);
+            setIsProjectionAvailable(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedCompany) {
+            setCompanyName(selectedCompany["Company Name"]);
+            fetchSelectedCompanyProjection();
+        } else if (!projectionData) {
+            // Clear fields only if there's no projection data available (i.e., not in edit mode)
+            setIsProjectionAvailable(false);
+            setCompanyId('');
+            setCompanyName('');
+            setSelectedBdm('');
+            setSelectedBde('');
+            setOfferedServices([]);
+            setOfferedPrice('');
+            setExpectedPrice('');
+            setFollowupDate('');
+            setPaymentDate('');
+            setRemarks('');
+        }
+    }, [selectedCompany, projectionData]);
 
     const handleAddProjection = async () => {
         const payload = {
@@ -179,7 +243,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             companyName: companyName,
             offeredServices: offeredServices,
             offeredPrice: offeredPrice,
-            bdeName: projectionData.bdeName,
+            bdeName: isProjectionAvailable ? selectedBde : projectionData.bdeName,
             bdmName: !selectedBdm ? projectionData.bdmName : selectedBdm,
             totalPayment: expectedPrice,
             lastFollowUpdate: new Date(followupDate),
@@ -212,7 +276,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         }
 
         try {
-            const res = await axios.put(`${secretKey}/company-data/updateProjection/${projectionData._id}`, payload);
+            const res = await axios.put(`${secretKey}/company-data/updateProjection/${projectionId}`, payload);
             // console.log("Projection updated :", res.data.data);
             Swal.fire("Success", "Projection updated successfully.", "success");
             handleClosePopup();
@@ -223,16 +287,14 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         }
     };
 
-    useEffect(() => {
-        fetchBdmNames();
-    }, []);
+    
 
     return (
         <div>
             <Dialog className='My_Mat_Dialog' open={open} fullWidth maxWidth="sm">
 
                 <DialogTitle>
-                    {viewProjection ? "View Projection" : isProjectionEditable ? "Update Projection" : "Add Projection"}
+                    {viewProjection ? "View Projection" : (isProjectionEditable || isProjectionAvailable) ? "Update Projection" : "Add Projection"}
                     <button onClick={handleClosePopup} style={{ backgroundColor: "transparent", border: "none", float: "right" }}>
                         <IoClose color="primary"></IoClose>
                     </button>{" "}
@@ -376,8 +438,8 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                 {!viewProjection && <div className="card-footer">
                     {/* {selectedCompany && ( */}
                     <button style={{ width: "100%" }} className="btn btn-success bdr-radius-none cursor-pointer"
-                        onClick={isProjectionEditable ? handleUpdateProjection : handleAddProjection} disabled={companyNotFound && !selectedCompany}>
-                        <MdOutlinePostAdd /> {isProjectionEditable ? "Update Projection" : "Add Projection"}
+                        onClick={(isProjectionEditable || isProjectionAvailable) ? handleUpdateProjection : handleAddProjection} disabled={companyNotFound && !selectedCompany}>
+                        <MdOutlinePostAdd /> {(isProjectionEditable || isProjectionAvailable) ? "Update Projection" : "Add Projection"}
                     </button>
                     {/* )} */}
 

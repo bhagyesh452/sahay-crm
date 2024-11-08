@@ -779,10 +779,16 @@ function EmployeeInterestedLeads({
                     <td>{formatDateNew(company["AssignDate"])}</td>
                     <td>
                       <div className="d-flex align-items-center justify-content-between">
-                        {projectionData && projectionData.some((item) => item.companyName === company["Company Name"]) ? (
+                        {projectionData && projectionData
+                          .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
+                          .some((item) => item.companyName === company["Company Name"]) ? (
                           <IconButton
                             onClick={() => {
-                              const matchedItem = projectionData.find((item) => item.companyName === company["Company Name"]);
+                              // Find the latest projection for the specified company after sorting
+                              const matchedItem = projectionData
+                                .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))
+                                .find((item) => item.companyName === company["Company Name"]);
+
                               const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
                               const currentDate = new Date().setHours(0, 0, 0, 0);
 
@@ -792,13 +798,13 @@ function EmployeeInterestedLeads({
                                 setViewProjection(false); // Ensure view mode is off when editing
                                 setShowNewAddProjection(true);  // Open new projection dialog
                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
-                                // console.log("Projection data to be updated :", matchedItem);
+                                console.log("Projection data to be updated :", matchedItem);
                               } else {
                                 setIsProjectionEditable(false); // Disable edit mode
                                 setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                 setShowNewAddProjection(true);  // Open new projection dialog
                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
-                                // console.log("Projection data to be viewed :", matchedItem);
+                                console.log("Projection data to be viewed :", matchedItem);
                               }
                             }}
                           >

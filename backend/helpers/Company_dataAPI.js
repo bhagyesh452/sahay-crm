@@ -782,11 +782,11 @@ function timePassedSince(dateTimeString) {
 
   // Format the difference
   if (diffDays > 0) {
-      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
   } else if (diffHours > 0) {
-      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
   } else {
-      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+    return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
   }
 }
 
@@ -3439,6 +3439,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 
         projectionSummary.push({
           _id,  // Use main document ID here
+          projectionDate: projection.date,
           companyName: projection.companyName,
           offeredServices: projection.offeredServices,
           offeredPrice: projection.offeredPrice,
@@ -3470,6 +3471,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 
           projectionSummary.push({
             _id: entry._id || _id, // Use history entry's _id if it exists, otherwise main _id
+            projectionDate: entry.data.date,
             companyName: projection.companyName,
             offeredServices: entry.data.offeredServices,
             offeredPrice: entry.data.offeredPrice,
@@ -3515,8 +3517,8 @@ router.put('/updateProjection/:id', async (req, res) => {
     if (projection) {
       // If found, update the main document fields
       projection.companyName = companyName,
-        projection.bdeName = bdeName,
-        projection.bdmName = bdmName;
+      projection.bdeName = bdeName,
+      projection.bdmName = bdmName;
       projection.offeredServices = offeredServices;
       projection.offeredPrice = offeredPrice;
       projection.totalPayment = totalPayment;
@@ -3539,8 +3541,8 @@ router.put('/updateProjection/:id', async (req, res) => {
       if (historyEntry) {
         // Update the fields in the history entry
         historyEntry.data.companyName = companyName;
-        historyEntry.data.bdeName = bdmName;
-        historyEntry.data.bdmName = bdeName;
+        historyEntry.data.bdeName = bdeName;
+        historyEntry.data.bdmName = bdmName;
         historyEntry.data.offeredServices = offeredServices;
         historyEntry.data.offeredPrice = offeredPrice;
         historyEntry.data.totalPayment = totalPayment;

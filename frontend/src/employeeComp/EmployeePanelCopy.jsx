@@ -205,7 +205,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const fetchNewProjections = async () => {
         try {
             const response = await axios.get(`${secretKey}/company-data/getProjection/${data.ename}`);
-            //console.log("forprojec" , response.data);
+            // console.log("New projection data in leads :" , response.data.data);
             setProjectionData(response.data.data);
         } catch (error) {
             console.error("Error fetching Projection Data:", error.message);

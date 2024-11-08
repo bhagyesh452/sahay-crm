@@ -698,10 +698,16 @@ function EmployeeMaturedLeads({
                                             <td>{formatDateNew(company.bookingDate)}</td>
                                             <td>{formatDateNew(company.bookingPublishDate)}</td>
                                             <td className="rm-sticky-action">
-                                                {projectionData && projectionData.some((item) => item.companyName === company["Company Name"]) ? (
+                                                {projectionData && projectionData
+                                                    .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
+                                                    .some((item) => item.companyName === company["Company Name"]) ? (
                                                     <IconButton
                                                         onClick={() => {
-                                                            const matchedItem = projectionData.find((item) => item.companyName === company["Company Name"]);
+                                                            // Find the latest projection for the specified company after sorting
+                                                            const matchedItem = projectionData
+                                                                .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))
+                                                                .find((item) => item.companyName === company["Company Name"]);
+
                                                             const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
                                                             const currentDate = new Date().setHours(0, 0, 0, 0);
 

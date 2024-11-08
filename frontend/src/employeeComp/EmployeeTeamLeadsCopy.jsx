@@ -119,10 +119,10 @@ function EmployeeTeamLeadsCopy({ designation }) {
         setNewBdeName(ename)
         setbdmName(bdmName)
         if (!isDeletedEmployeeCompany) {
-            console.log("formchal")
+            console.log("formchal");
             setFormOpen(true);
         } else {
-            console.log("addleadfromchal")
+            console.log("addleadfromchal");
             setAddFormOpen(true)
         }
     };
@@ -200,7 +200,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const fetchNewProjections = async () => {
         try {
             const response = await axios.get(`${secretKey}/company-data/getProjection/${employeeName}`);
-            //console.log("forprojec" , response.data);
+            // console.log("New projection data in team leads :" , response.data.data);
             setProjectionData(response.data.data);
         } catch (error) {
             console.error("Error fetching Projection Data:", error.message);
@@ -257,7 +257,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
         fetchData();
         // fetchProjections();
         fetchNewProjections();
-    }, []);
+    }, [employeeName]);
 
     useEffect(() => {
         fetchEmployeeData();
@@ -401,7 +401,9 @@ function EmployeeTeamLeadsCopy({ designation }) {
             }
         }
     };
-    console.log("data", teamLeadsData?.data);
+    
+    // console.log("data", teamLeadsData?.data);
+
     const handleMouseUp = () => {
         // End drag selection
         setStartRowIndex(null);
