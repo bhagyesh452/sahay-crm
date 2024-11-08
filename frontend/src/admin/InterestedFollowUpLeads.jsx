@@ -200,7 +200,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             setCurrentDataLoading(false)
         }
     };
-   
+
     //--------------------function to fetch employee data ------------------------------
     const [newEmpData, setNewEmpData] = useState([])
     const [bdmNames, setbdmNames] = useState([])
@@ -406,10 +406,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     const [firstPlus, setFirstPlus] = useState(true)
     const [secondPlus, setSecondPlus] = useState(false)
     const [openThirdMinus, setOpenThirdMinus] = useState(false)
-    
-   
+
+
     const [openRemarks, openchangeRemarks] = useState(false);
-   
+
 
     function closeAddLeadsDialog() {
         setOpenAddLeadsDialog(false)
@@ -426,9 +426,9 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         setErrorDirectorNumberThird("");
     }
 
-    
 
-  
+
+
 
     //------------------------------function add leads through csv-----------------------------------
 
@@ -444,7 +444,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         setCsvData([])
     }
 
-  
+
 
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
@@ -480,7 +480,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     }
 
 
-  
+
 
     const handleResponse = (response, newArray) => {
         const counter = response.data.counter;
@@ -545,7 +545,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             let response;
             if (id === "all") {
                 setOpenBacdrop(true)
-                response = await axios.get(`${secretKey}/admin-leads/getIds`, {
+                response = await axios.get(`${secretKey}/admin-leads/getIdsleadinterestedleads`, {
                     params: {
                         dataStatus,
                         selectedStatus,
@@ -579,12 +579,12 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             }
             // Process response
             const { data } = response;
-
+            console.log("data", data)
 
             // Handle response data as needed
-            setAllIds(data.allIds);
+            setAllIds(data.assigned);
             setSelectedRows((prevSelectedRows) =>
-                prevSelectedRows.length === data.allIds.length ? [] : data.allIds
+                prevSelectedRows.length === data.assigned.length ? [] : data.allIds
             );
         } catch (error) {
             // Handle errors
@@ -1345,7 +1345,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             Swal.fire("Company Forwarded", "", "success");
             setBdmName("Not Alloted");
             handleCloseForwardBdmPopup();
-            
+
         } catch (error) {
             console.log("error fetching data", error.message);
         }
@@ -1355,21 +1355,21 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
 
     const handleDownloadCSV = async () => {
         try {
-          const response = await axios.get(`${secretKey}/company-data/download-csv`, {
-            responseType: 'blob', // Important for file download
-          });
-    
-          // Create a URL for the file and trigger download
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', 'companies.csv'); // Specify the file name
-          document.body.appendChild(link);
-          link.click();
+            const response = await axios.get(`${secretKey}/company-data/download-csv`, {
+                responseType: 'blob', // Important for file download
+            });
+
+            // Create a URL for the file and trigger download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'companies.csv'); // Specify the file name
+            document.body.appendChild(link);
+            link.click();
         } catch (error) {
-          console.error('Error downloading the CSV:', error);
+            console.error('Error downloading the CSV:', error);
         }
-      };
+    };
 
 
     return (
@@ -1397,7 +1397,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                     <RiShareForwardFill className='mr-1' /> Forward to BDM
                                 </button>
                                 <button type="button" className="btn mybtn"
-                                  onClick={handleDownloadCSV} 
+                                    onClick={handleDownloadCSV}
                                 >
                                     <MdDownload className='mr-1' /> Download CSV
                                 </button>
@@ -1590,6 +1590,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                             {(isFilter || isSearching)
                                                 &&
                                                 (assignedData.map((company, index) => {
+                                                  
                                                     let matchingLeadHistory
                                                     if (Array.isArray(leadHistoryData)) {
                                                         matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
@@ -1615,45 +1616,45 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
-                                                           
-                                                                <td>
-                                                                    <div className='d-flex align-items-center justify-content-between'>
-                                                                        {company["Status"]}
-                                                                        <div>
-                                                                            <IconEye
-                                                                                className={(company.Status === "Interested" || company.Status === "FollowUp") && !company.interestedInformation ? "disabled" : ""}
-                                                                                key={company._id}
-                                                                                style={{
-                                                                                    width: "14px",
-                                                                                    height: "14px",
-                                                                                    color: "#d6a10c",
-                                                                                    cursor: "pointer",
-                                                                                    marginLeft: "4px",
-                                                                                }}
-                                                                                data-bs-toggle="modal"
-                                                                                data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
-                                                                                title="Interested Information"
-                                                                                disabled={!company.interestedInformation}
-                                                                            />
 
-                                                                            <EmployeeInterestedInformationDialog
-                                                                                key={company._id}
-                                                                                modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
-                                                                                companyName={company["Company Name"]}
-                                                                                interestedInformation={company.interestedInformation} // Pass the interested information here
-                                                                                //refetch={fetchData}
-                                                                                ename={company.ename}
-                                                                                secretKey={secretKey}
-                                                                                status={company.Status}
-                                                                                companyStatus={company.Status}
-                                                                                forView={true}
-                                                                                fordesignation={"admin"}
+                                                            <td>
+                                                                <div className='d-flex align-items-center justify-content-between'>
+                                                                    {company["Status"]}
+                                                                    <div>
+                                                                        <IconEye
+                                                                            className={(company.Status === "Interested" || company.Status === "FollowUp") && !company.interestedInformation ? "disabled" : ""}
+                                                                            key={company._id}
+                                                                            style={{
+                                                                                width: "14px",
+                                                                                height: "14px",
+                                                                                color: "#d6a10c",
+                                                                                cursor: "pointer",
+                                                                                marginLeft: "4px",
+                                                                            }}
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                                                                            title="Interested Information"
+                                                                            disabled={!company.interestedInformation}
+                                                                        />
 
-                                                                            />
-                                                                        </div>
+                                                                        <EmployeeInterestedInformationDialog
+                                                                            key={company._id}
+                                                                            modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                                                                            companyName={company["Company Name"]}
+                                                                            interestedInformation={company.interestedInformation} // Pass the interested information here
+                                                                            //refetch={fetchData}
+                                                                            ename={company.ename}
+                                                                            secretKey={secretKey}
+                                                                            status={company.Status}
+                                                                            companyStatus={company.Status}
+                                                                            forView={true}
+                                                                            fordesignation={"admin"}
+
+                                                                        />
                                                                     </div>
-                                                                </td>
-                                                            
+                                                                </div>
+                                                            </td>
+
                                                             {(dataStatus === "Assigned") && <td>
                                                                 <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                     <p className="rematkText text-wrap m-0">
@@ -1704,10 +1705,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                         </tr>
                                                     )
                                                 }))
-                                                }
+                                            }
 
                                             {(!isFilter && !isSearching) &&
                                                 data.map((company, index) => {
+                                                    console.log("selectedRows", selectedRows)
                                                     let matchingLeadHistory
                                                     if (Array.isArray(leadHistoryData)) {
                                                         matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
@@ -1733,51 +1735,51 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                             <td>{startIndex - 500 + index + 1}</td>
                                                             <td>{company["Company Name"]}</td>
                                                             <td>{company["Company Number"]}</td>
-                                                         
-                                                                <td>
-                                                                    <div className='d-flex align-items-center justify-content-between'>
-                                                                        {company["Status"]}
-                                                                        <div
-                                                                        // className={company.Status === "Interested" && company.interestedInformation ?
-                                                                        //     "intersted-history-btn"
-                                                                        //     : company.Status === "FollowUp" && company.interestedInformation ? "followup-history-btn" :
-                                                                        //         company.Status === "FollowUp" && !company.interestedInformation ? "followup-history-btn disabled" :
-                                                                        //             "intersted-history-btn disabled"}
-                                                                        >
-                                                                            <IconEye
-                                                                                className={(company.Status === "Interested" || company.Status === "FollowUp") && !company.interestedInformation ? "disabled" : ""}
-                                                                                key={company._id}
-                                                                                style={{
-                                                                                    width: "14px",
-                                                                                    height: "14px",
-                                                                                    color: "#d6a10c",
-                                                                                    cursor: "pointer",
-                                                                                    marginLeft: "4px",
-                                                                                }}
-                                                                                data-bs-toggle="modal"
-                                                                                data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
-                                                                                title="Interested Information"
-                                                                                disabled={!company.interestedInformation}
-                                                                            />
 
-                                                                            <EmployeeInterestedInformationDialog
-                                                                                key={company._id}
-                                                                                modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
-                                                                                companyName={company["Company Name"]}
-                                                                                interestedInformation={company.interestedInformation} // Pass the interested information here
-                                                                                //refetch={fetchData}
-                                                                                ename={company.ename}
-                                                                                secretKey={secretKey}
-                                                                                status={company.Status}
-                                                                                companyStatus={company.Status}
-                                                                                forView={true}
-                                                                                fordesignation={"admin"}
+                                                            <td>
+                                                                <div className='d-flex align-items-center justify-content-between'>
+                                                                    {company["Status"]}
+                                                                    <div
+                                                                    // className={company.Status === "Interested" && company.interestedInformation ?
+                                                                    //     "intersted-history-btn"
+                                                                    //     : company.Status === "FollowUp" && company.interestedInformation ? "followup-history-btn" :
+                                                                    //         company.Status === "FollowUp" && !company.interestedInformation ? "followup-history-btn disabled" :
+                                                                    //             "intersted-history-btn disabled"}
+                                                                    >
+                                                                        <IconEye
+                                                                            className={(company.Status === "Interested" || company.Status === "FollowUp") && !company.interestedInformation ? "disabled" : ""}
+                                                                            key={company._id}
+                                                                            style={{
+                                                                                width: "14px",
+                                                                                height: "14px",
+                                                                                color: "#d6a10c",
+                                                                                cursor: "pointer",
+                                                                                marginLeft: "4px",
+                                                                            }}
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                                                                            title="Interested Information"
+                                                                            disabled={!company.interestedInformation}
+                                                                        />
 
-                                                                            />
-                                                                        </div>
+                                                                        <EmployeeInterestedInformationDialog
+                                                                            key={company._id}
+                                                                            modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                                                                            companyName={company["Company Name"]}
+                                                                            interestedInformation={company.interestedInformation} // Pass the interested information here
+                                                                            //refetch={fetchData}
+                                                                            ename={company.ename}
+                                                                            secretKey={secretKey}
+                                                                            status={company.Status}
+                                                                            companyStatus={company.Status}
+                                                                            forView={true}
+                                                                            fordesignation={"admin"}
+
+                                                                        />
                                                                     </div>
-                                                                </td>
-                                                            
+                                                                </div>
+                                                            </td>
+
                                                             {(dataStatus === "Assigned") && <td>
                                                                 <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                                                                     <p className="rematkText text-wrap m-0">
@@ -2488,6 +2490,14 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                     Submit
                 </button>
             </Dialog>
+
+            {/* --------------------------------backedrop------------------------- */}
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
 
         </div >
     )

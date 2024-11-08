@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -14,7 +14,9 @@ import NewProjectionDialog from "../ExtraComponents/NewProjectionDialog";
 import AdminRemarksDialog from '../../admin/ExtraComponent/AdminRemarksDialog';
 import { IconButton } from "@mui/material";
 import { RiEditCircleFill } from "react-icons/ri";
-
+import FilterableComponentEmployee from '../ExtraComponents/FilterableComponentEmployee';
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
 
 function EmployeeMaturedLeads({
     maturedLeads,
@@ -47,8 +49,8 @@ function EmployeeMaturedLeads({
     filterMethod,
     completeGeneralData,
     dataToFilter,
-    setInterestedData,
-    setInterestedDataCount,
+    setMaturedData,
+    setMaturedDataCount,
     //setFilteredData
 }) {
 
@@ -101,8 +103,8 @@ function EmployeeMaturedLeads({
 
     const handleFilter = (newData) => {
         setFilteredData(newData)
-        setInterestedData(newData);
-        setInterestedDataCount(newData.length);
+        setMaturedData(newData);
+        setMaturedDataCount(newData.length);
     };
 
     const handleFilterClick = (field) => {
@@ -164,18 +166,388 @@ function EmployeeMaturedLeads({
                                             </th>
                                         )}
                                     <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>Sr. No</th>
-                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>company Name</th>
-                                    <th>company No</th>
+                                    <th className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2 "}>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['Company Name'] = el}>
+                                                Company Name
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('Company Name') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Company Name' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['Company Number'] = el}>
+                                                Company No
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('Company Number') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Company Number' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
                                     <th>Call History</th>
-                                    <th>Status</th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['Status'] = el}>
+                                                Status
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('Status') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Status")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Status")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Status' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
                                     <th>Remarks</th>
-                                    <th>Incorporation Date</th>
-                                    <th>City</th>
-                                    <th>State</th>
-                                    <th>Company Email</th>
-                                    <th>Assign Date</th>
-                                    <th>Booking Date</th>
-                                    <th>Booking Publish Date</th>
+                                    <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['Company Incorporation Date  '] = el}>
+                                                Incorporation Date
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('Company Incorporaton Date  ') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Incorporation Date  ")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Incorporation Date  ")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Company Incorporation Date  ' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
+                                    <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['City'] = el}>
+                                                City
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('City') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("City")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("City")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'City' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
+                                    <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['State'] = el}>
+                                                State
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('State') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("State")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("State")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'State' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
+                                    <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['Company Email'] = el}>
+                                                Company Email
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('Company Email') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Email")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Email")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Company Email' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
+                                    <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['AssignDate'] = el}>
+                                                Assign Date
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('AssignDate') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("AssignDate")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("AssignDate")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'AssignDate' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
+                                    <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['bookingDate'] = el}>
+                                                Booking Date
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('bookingDate') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'bookingDate' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
+                                    <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['bookingPublishDate'] = el}>
+                                                Booking Publish Date
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('bookingPublishDate') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bookingPublishDate")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bookingPublishDate")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'bookingPublishDate' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Matured"}
+                                                        data={maturedLeads}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeGeneralData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
                                     <th className="rm-sticky-action">Add Projections</th>
                                 </tr>
                             </thead>

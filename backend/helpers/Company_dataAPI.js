@@ -875,8 +875,6 @@ function timePassedSince(dateTimeString) {
 //   }
 // });
 
-
-
 router.get('/download-csv', async (req, res) => {
   try {
     const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name');
