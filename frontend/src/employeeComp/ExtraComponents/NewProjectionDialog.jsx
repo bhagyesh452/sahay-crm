@@ -133,7 +133,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                 }
             });
             const projectionData = res.data.data;
-            console.log("Fetched projection is :", projectionData);
+            // console.log("Fetched projection is :", projectionData);
 
             if (projectionData) {
                 const futureProjections = projectionData.filter(p => new Date(p.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0));
@@ -196,11 +196,11 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             estPaymentDate: paymentDate,
             remarks: remarks,
             bdeName: isFilledFromTeamLeads ? selectedBde : (employeeName || projectionData.ename),
-            bdmName: (isFilledFromTeamLeads || !selectedBdm || projectionData) ? (employeeName || projectionData.ename) : selectedBdm,
+            bdmName: selectedBdm ? selectedBdm : (isFilledFromTeamLeads || projectionData) ? (employeeName || projectionData.ename) : employeeName,
             caseType: isFilledFromTeamLeads ? "Received" : "NotForwarded",
             isPreviousMaturedCase: companyStatus === "Matured" ? true : false
         };
-
+        
         if (offeredServices.length === 0) {
             Swal.fire({ title: "Please Select service!", icon: "warning" });
             return;

@@ -304,13 +304,13 @@ function TeamLeadsInterested({
                                         <td>{formatDateNew(company.bdeForwardDate)}</td>
                                         <td>
                                             {projectionData && projectionData
-                                            .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
-                                            .some((item) => item.companyName === company["Company Name"]) ? (
+                                                .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
+                                                .some((item) => item.companyName === company["Company Name"]) ? (
                                                 <IconButton
                                                     onClick={() => {
                                                         const matchedItem = projectionData
-                                                        .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))
-                                                        .find((item) => item.companyName === company["Company Name"]);
+                                                            .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))
+                                                            .find((item) => item.companyName === company["Company Name"]);
 
                                                         const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
                                                         const currentDate = new Date().setHours(0, 0, 0, 0);
@@ -326,9 +326,9 @@ function TeamLeadsInterested({
                                                         } else {
                                                             setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
                                                             setIsProjectionEditable(false); // Disable edit mode
-                                                            setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                                            // setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                                             setShowNewAddProjection(true);  // Open new projection dialog
-                                                            setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                                            setProjectionDataToBeFilled(company); // Set matched item in the state
                                                             // console.log("Projection data to be viewed :", matchedItem);
                                                         }
                                                     }}
@@ -336,7 +336,7 @@ function TeamLeadsInterested({
                                                     <RiEditCircleFill
                                                         color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
                                                             ? "#fbb900"
-                                                            : "lightgrey"}
+                                                            : "grey"}
                                                         style={{
                                                             width: "17px",
                                                             height: "17px",
@@ -438,6 +438,7 @@ function TeamLeadsInterested({
                     fetchNewProjection={fetchProjections}
                     isFilledFromTeamLeads={isFilledFromTeamLeads}
                     employeeName={employeeName}
+                    newDesignation={newDesignation}
                 />
             )}
         </div>
