@@ -265,6 +265,9 @@ function EmployeePanelCopy({ fordesignation }) {
     const [completeMaturedData, setCompleteMaturedData] = useState([]);
     const [dataToFilterMatured, setDataToFilterMatured] = useState([]);
     const [notInterestedData, setNotInterestedData] = useState([]);
+    const [notInterestedDataCount, setNotInterestedDataCount] = useState(0);
+    const [completeNotInterestedData, setCompleteNotInterestedData] = useState([]);
+    const [dataToFilterNotInterested, setDataToFilterNotInterested] = useState([]);
     const [forwardedData, setForwardedData] = useState([]);
     const [forwardedDataCount, setForwardedDataCount] = useState(0);
     const [completeForwardedData, setCompleteForwardedData] = useState([]);
@@ -311,8 +314,14 @@ function EmployeePanelCopy({ fordesignation }) {
             setCompleteMaturedData(queryData?.maturedData);
             setMaturedDataCount(queryData?.totalCounts.matured);
             setNotInterestedData(queryData?.notInterestedData);
+            setCompleteNotInterestedData(queryData?.notInterestedData);
+            setDataToFilterNotInterested(queryData?.notInterestedData);
+            setNotInterestedDataCount(queryData?.totalCounts.notInterested);
             setForwardedData(queryData?.forwardedData);
             setCompleteForwardedData(queryData?.forwardedData);
+            setForwardedData(queryData?.forwardedData);
+            setDataToFilterForwarded(queryData?.forwardedData);
+            setForwardedDataCount(queryData?.totalCounts.forwarded);
         }
     }, [queryData, searchQuery]);
 
@@ -1015,7 +1024,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     >
                                                         Forwarded
                                                         <span className="no_badge">
-                                                            {queryData?.totalCounts.forwarded}
+                                                            {forwardedDataCount}
                                                         </span>
                                                     </a>
                                                 </li>)
@@ -1030,7 +1039,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 >
                                                     Not Interested
                                                     <span className="no_badge">
-                                                        {queryData?.totalCounts.notInterested}
+                                                        {notInterestedDataCount}
                                                     </span>
                                                 </a>
                                             </li>
@@ -1189,6 +1198,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
+                                                    //filteredData={filteredData}
+                                                    //filterMethod={handleFilter}
+                                                    dataToFilter={dataToFilterForwarded}
+                                                    completeGeneralData={completeForwardedData}
+                                                    setForwardedData={setForwardedData}
+                                                    setForwardedDataCount={setForwardedDataCount}
+                                                    //setFilteredData={setFilteredData}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
@@ -1221,6 +1237,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
+                                                    //filteredData={filteredData}
+                                                    //filterMethod={handleFilter}
+                                                    dataToFilter={dataToFilterNotInterested}
+                                                    completeGeneralData={completeNotInterestedData}
+                                                    setNotInterestedData={setNotInterestedData}
+                                                    setNotInterestedDataCount={setNotInterestedDataCount}
+                                                    //setFilteredData={setFilteredData}
                                                 />)}
                                         </div>
                                     </div>

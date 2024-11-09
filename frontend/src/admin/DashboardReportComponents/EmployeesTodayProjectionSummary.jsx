@@ -59,7 +59,7 @@ function EmployeesTodayProjectionSummary() {
             // Transform the data to calculate the required metrics
             const summary = res.data.data.reduce((acc, company) => {
                 const isShared = company.bdeName !== company.bdmName;
-    
+
                 // Initialize each employee's data if not already in summary
                 [company.bdeName, company.bdmName].forEach((employeeName) => {
                     if (!acc[employeeName]) {
@@ -71,36 +71,36 @@ function EmployeesTodayProjectionSummary() {
                         };
                     }
                 });
-    
+
                 const serviceCount = company.offeredServices ? company.offeredServices.length : 0;
-    
+
                 if (isShared) {
                     // For shared companies, add 0.5 to company count for each employee
                     acc[company.bdeName].total_companies += 0.5;
                     acc[company.bdmName].total_companies += 0.5;
-    
+
                     // Add half of the price and payment amounts to each employee
                     acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;
                     acc[company.bdmName].total_offered_price += (company.offeredPrice || 0) * 0.5;
-    
+
                     acc[company.bdeName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
                     acc[company.bdmName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
-    
+
                     // Add full service count to each employee without dividing
                     acc[company.bdeName].total_services += serviceCount;
                     acc[company.bdmName].total_services += serviceCount;
                 } else {
                     // For non-shared companies, add full count to the single employee
                     acc[company.bdeName].total_companies += 1;
-    
+
                     acc[company.bdeName].total_offered_price += company.offeredPrice || 0;
                     acc[company.bdeName].total_estimated_payment += company.totalPayment || 0;
                     acc[company.bdeName].total_services += serviceCount;
                 }
-    
+
                 return acc;
             }, {});
-    
+
             // Convert the summary object to an array for easier display
             const summaryArray = Object.entries(summary).map(([ename, values]) => ({
                 ename,
@@ -109,7 +109,7 @@ function EmployeesTodayProjectionSummary() {
                 total_estimated_payment: values.total_estimated_payment,
                 total_services: values.total_services,
             }));
-    
+
             console.log("Employee Projection Summary:", summaryArray);
             setProjection(summaryArray);
         } catch (error) {
@@ -122,7 +122,10 @@ function EmployeesTodayProjectionSummary() {
 
     const [employeeProjectionData, setEmployeeProjectionData] = useState([])
     const [projectionEname, setProjectionEname] = useState("")
-    const [openProjectionTable, setOpenProjectionTable] = useState(false)
+    const [openProjectionTable, setOpenProjectionTable] = useState(false);
+    const [historyData, setHistoryData] = useState([])
+    const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
+    const [historyCompanyName, setHistoryCompanyName] = useState("")
     const handleOpenProjectionsForEmployee = async (employeeName) => {
         setProjectionEname(employeeName); // Store the employee name for dialog title
         try {
@@ -135,7 +138,7 @@ function EmployeesTodayProjectionSummary() {
             });
             console.log("Projection data is :", res.data.data);
             setEmployeeProjectionData(res.data.data);
-            
+
             setOpenProjectionTable(true); // Open the dialog
         } catch (error) {
             console.log("Error to fetch new projection :", error);
@@ -161,6 +164,29 @@ function EmployeesTodayProjectionSummary() {
             maximumFractionDigits: 0
         }).format(amount);
     };
+
+    // ----------projection history function-----------------------------------
+    const handleViewHistory = (companyId) => {
+        // Find the specific projection that matches the companyId
+        const selectedProjection = employeeProjectionData.find(projection => projection._id === companyId);
+        console.log("selectedProjection", selectedProjection)
+        setHistoryCompanyName(selectedProjection.companyName)
+
+        // Set history data if found; otherwise, set an empty array
+        setHistoryData(selectedProjection ? selectedProjection.history || [] : []);
+
+        // Open the history dialog
+        setOpenHistoryDialog(true);
+        setOpenProjectionTable(false);
+    };
+
+    const handleCloseHistoryDialog = () => {
+        setOpenHistoryDialog(false);
+        setOpenProjectionTable(true);
+    }
+
+    console.log("historyData", historyData)
+
 
     return (
         <div>
@@ -236,7 +262,7 @@ function EmployeesTodayProjectionSummary() {
                                                 <td>
                                                     {data.total_companies}
                                                     <FcDatabase
-                                                    className='ml-1'
+                                                        className='ml-1'
                                                         onClick={() => handleOpenProjectionsForEmployee(data.ename)} />
                                                 </td>
                                                 <td>{data.total_services}</td>
@@ -272,8 +298,8 @@ function EmployeesTodayProjectionSummary() {
                 </div>
             </div>
 
-             {/* -------------------------------------projection-dashboard--------------------------------------------- */}
-             <Dialog
+            {/* -------------------------------------projection-dashboard--------------------------------------------- */}
+            <Dialog
                 open={openProjectionTable}
                 onClose={closeProjectionTable}
                 fullWidth
@@ -329,12 +355,12 @@ function EmployeesTodayProjectionSummary() {
                                     <th>Offered Services</th>
                                     <th>Total Offered Price</th>
                                     <th>Expected Amount</th>
-                                    <th>Employee Payment</th>  
+                                    <th>Employee Payment</th>
                                     <th>Last Follow Up Date</th>
                                     <th>Estimated Payment Date</th>
                                     <th>Remarks</th>
                                     <th>View History</th>
-                                   
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -350,16 +376,16 @@ function EmployeesTodayProjectionSummary() {
                                             <td>{formatCurrency(data.totalPayment)}</td>
                                             <td>{formatCurrency(data.employeePayment)}</td>
                                             <td>{formatDate(new Date(data.lastFollowUpdate))}</td>
-                                            <td>{formatDate(new Date(data.estPaymentDate))}</td>                  
+                                            <td>{formatDate(new Date(data.estPaymentDate))}</td>
                                             <td>{data.remarks}</td>
                                             <td>
                                                 {/* View History button or link (replace with your actual logic) */}
-                                                <MdHistory 
-                                                //onClick={() => handleViewHistory(data.companyId)}
+                                                <MdHistory
+                                                    onClick={() => handleViewHistory(data._id)}
                                                 />
-                                                   
+
                                             </td>
-                                           
+
                                         </tr>
                                     ))
                                 ) : (
@@ -372,6 +398,96 @@ function EmployeesTodayProjectionSummary() {
                     </div>
                 </DialogContent>
             </Dialog>
+            {/* --------------------history dialog---------------------------- */}
+            <Dialog
+                open={openHistoryDialog}
+                onClose={handleCloseHistoryDialog}
+                fullWidth
+                maxWidth="lg"
+
+            >
+                <DialogTitle>
+                    {historyCompanyName}'s History
+                    <IconButton
+                        onClick={handleCloseHistoryDialog}
+                        style={{ float: "right" }}
+                    >
+                        <CloseIcon color="primary" />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <div
+                        id="table-default"
+                        style={{ overflowX: "auto", overflowY: "auto" }}>
+                        <table
+                            style={{
+                                width: "100%",
+                                borderCollapse: "collapse",
+                                border: "1px solid #ddd",
+                                marginBottom: "10px",
+                            }}
+                            className="table-vcenter table-nowrap"
+                        >
+                            <thead
+                                style={{
+                                    position: "sticky",
+                                    top: "-1px",
+                                    backgroundColor: "#ffb900",
+                                    color: "black",
+                                    fontWeight: "bold",
+                                    zIndex: 1,
+                                }}
+                            >
+                                <tr
+                                    style={{
+                                        backgroundColor: "#ffb900",
+                                        color: "white",
+                                        fontWeight: "bold",
+                                    }}
+                                >
+                                    <th>Sr. No</th>
+                                    <th>Modified At</th>
+                                    <th>Company Name</th>
+                                    <th>BDE Name</th>
+                                    <th>BDM Name</th>
+                                    <th>Offered Services</th>
+                                    <th>Total Offered Price</th>
+                                    <th>Expected Amount</th>
+                                    <th>Employee Payment</th>
+                                    <th>Last Follow Up Date</th>
+                                    <th>Estimated Payment Date</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {historyData && historyData.length > 0 ? (
+                                    historyData.map((entry, index) => (
+                                        <tr key={entry._id || index}>
+                                            <td>{index + 1}</td>
+                                            <td>{formatDate(new Date(entry.modifiedAt))}</td>
+                                            <td>{historyCompanyName}</td>
+                                            <td>{entry.data.bdeName}</td>
+                                            <td>{entry.data.bdmName}</td>
+                                            <td>{entry.data.offeredServices.join(', ')}</td>
+                                            <td>{formatCurrency(entry.data.offeredPrice)}</td>
+                                            <td>{formatCurrency(entry.data.totalPayment)}</td>
+                                            <td>{entry.data.bdeName === entry.data.bdmName ? formatCurrency(entry.data.totalPayment) : formatCurrency((entry.data.totalPayment) / 2)}</td>
+                                            <td>{formatDate(new Date(entry.data.lastFollowUpdate))}</td>
+                                            <td>{formatDate(new Date(entry.data.estPaymentDate))}</td>
+                                            <td>{entry.data.remarks}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="8">No history available</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }
