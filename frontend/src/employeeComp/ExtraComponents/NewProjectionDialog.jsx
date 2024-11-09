@@ -23,7 +23,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     const [companyName, setCompanyName] = useState(projectionData ? (projectionData.companyName || projectionData["Company Name"]) : '');
     const [companyId, setCompanyId] = useState(projectionData ? projectionData._id : '');
     const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
-    const [selectedBdm, setSelectedBdm] = useState(projectionData ? projectionData.bdmName : '');
+    const [selectedBdm, setSelectedBdm] = useState('');
     const [selectedBde, setSelectedBde] = useState(projectionData ? (projectionData.bdeName || projectionData.ename) : '');
     const [offeredServices, setOfferedServices] = useState(projectionData ? projectionData.offeredServices : []);
     const [offeredPrice, setOfferedPrice] = useState(projectionData ? projectionData.offeredPrice : null);
@@ -198,9 +198,10 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             bdeName: isFilledFromTeamLeads ? selectedBde : (employeeName || projectionData.ename),
             bdmName: selectedBdm ? selectedBdm : (isFilledFromTeamLeads || projectionData) ? (employeeName || projectionData.ename) : employeeName,
             caseType: isFilledFromTeamLeads ? "Received" : "NotForwarded",
-            isPreviousMaturedCase: companyStatus === "Matured" ? true : false
+            isPreviousMaturedCase: companyStatus === "Matured" ? true : false,
+            addedOnDate: new Date(),
         };
-        
+
         if (offeredServices.length === 0) {
             Swal.fire({ title: "Please Select service!", icon: "warning" });
             return;
@@ -288,7 +289,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         }
     };
 
-    
+
 
     return (
         <div>
