@@ -798,12 +798,12 @@ function EmployeeInterestedLeads({
                                 setViewProjection(false); // Ensure view mode is off when editing
                                 setShowNewAddProjection(true);  // Open new projection dialog
                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
-                                console.log("Projection data to be updated :", matchedItem);
+                                // console.log("Projection data to be updated :", matchedItem);
                               } else {
                                 setIsProjectionEditable(false); // Disable edit mode
-                                setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                // setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                 setShowNewAddProjection(true);  // Open new projection dialog
-                                setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                setProjectionDataToBeFilled(company); // Set matched item in the state
                                 // console.log("Projection data to be viewed :", matchedItem);
                               }
                             }}
@@ -811,7 +811,7 @@ function EmployeeInterestedLeads({
                             <RiEditCircleFill
                               color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
                                 ? "#fbb900"
-                                : "lightgrey"}
+                                : "grey"}
                               style={{
                                 width: "17px",
                                 height: "17px",
