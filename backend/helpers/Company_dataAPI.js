@@ -3468,7 +3468,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
           remarks: projection.remarks,
           caseType: projection.caseType,
           isPreviousMaturedCase: projection.isPreviousMaturedCase,
-          history: projection.history
+          history: history || []
         });
       }
 
