@@ -289,7 +289,7 @@ function EmployeeMaturedLeads({
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                                {isActiveField('Company Incorporaton Date  ') ? (
+                                                {isActiveField('Company Incorporation Date  ') ? (
                                                     <FaFilter onClick={() => handleFilterClick("Company Incorporation Date  ")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("Company Incorporation Date  ")} />

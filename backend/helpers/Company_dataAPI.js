@@ -3321,7 +3321,8 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
           estPaymentDate: projection.estPaymentDate,
           remarks: projection.remarks,
           caseType: projection.caseType,
-          isPreviousMaturedCase: projection.isPreviousMaturedCase
+          isPreviousMaturedCase: projection.isPreviousMaturedCase,
+          history:projection.history
         });
       }
 
@@ -3466,7 +3467,8 @@ router.get('/getProjection/:employeeName', async (req, res) => {
           estPaymentDate: projection.estPaymentDate,
           remarks: projection.remarks,
           caseType: projection.caseType,
-          isPreviousMaturedCase: projection.isPreviousMaturedCase
+          isPreviousMaturedCase: projection.isPreviousMaturedCase,
+          history: projection.history
         });
       }
 
