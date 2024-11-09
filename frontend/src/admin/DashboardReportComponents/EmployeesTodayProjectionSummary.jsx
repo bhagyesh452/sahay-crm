@@ -38,15 +38,104 @@ function EmployeesTodayProjectionSummary() {
     const [projection, setProjection] = useState([]);
     const [companyName, setCompanyName] = useState('');
     const [employeeName, setEmployeeName] = useState('');
+    const [totalEmployees, setTotalEmployees] = useState([])
 
     const fetchEmployee = async () => {
         try {
-            const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
-            setEmployeeName(res.data.data.ename);
+            const res1 = axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            const res2 = axios.get(`${secretKey}/employee/einfo`);
+    
+            const [result1, result2] = await Promise.allSettled([res1, res2]);
+    
+            if (result1.status === 'fulfilled') {
+                setEmployeeName(result1.value.data.data.ename);
+            } else {
+                console.log("Error in fetching employee from ID:", result1.reason);
+            }
+    
+            if (result2.status === 'fulfilled') {
+                setTotalEmployees(result2.value.data);
+            } else {
+                console.log("Error in fetching employee info:", result2.reason);
+            }
         } catch (error) {
-            console.log("Error to fetch employee :", error);
+            console.log("Unexpected error in fetchEmployee:", error);
         }
     };
+    
+
+    // const fetchNewProjection = async (values) => {
+    //     try {
+    //         setIsLoading(true);
+    //         const res = await axios.get(`${secretKey}/company-data/getCurrentDayProjection`, {
+    //             params: {
+    //                 companyName,
+    //             }
+    //         });
+    //         // Transform the data to calculate the required metrics
+    //         const summary = res.data.data.reduce((acc, company) => {
+    //             const isShared = company.bdeName !== company.bdmName;
+
+    //             // Initialize each employee's data if not already in summary
+    //             [company.bdeName, company.bdmName].forEach((employeeName) => {
+    //                 if (!acc[employeeName]) {
+    //                     acc[employeeName] = {
+    //                         total_companies: 0,
+    //                         total_offered_price: 0,
+    //                         total_estimated_payment: 0,
+    //                         total_services: 0,
+    //                     };
+    //                 }
+    //             });
+
+    //             const serviceCount = company.offeredServices ? company.offeredServices.length : 0;
+
+    //             if (isShared) {
+    //                 // For shared companies, add 0.5 to company count for each employee
+    //                 acc[company.bdeName].total_companies += 0.5;
+    //                 acc[company.bdmName].total_companies += 0.5;
+
+    //                 // Add half of the price and payment amounts to each employee
+    //                 acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;
+    //                 acc[company.bdmName].total_offered_price += (company.offeredPrice || 0) * 0.5;
+
+    //                 acc[company.bdeName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
+    //                 acc[company.bdmName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
+
+    //                 // Add full service count to each employee without dividing
+    //                 acc[company.bdeName].total_services += serviceCount;
+    //                 acc[company.bdmName].total_services += serviceCount;
+    //             } else {
+    //                 // For non-shared companies, add full count to the single employee
+    //                 acc[company.bdeName].total_companies += 1;
+
+    //                 acc[company.bdeName].total_offered_price += company.offeredPrice || 0;
+    //                 acc[company.bdeName].total_estimated_payment += company.totalPayment || 0;
+    //                 acc[company.bdeName].total_services += serviceCount;
+    //             }
+
+    //             return acc;
+    //         }, {});
+
+    //         // Convert the summary object to an array for easier display
+    //         const summaryArray = Object.entries(summary).map(([ename, values]) => ({
+    //             ename,
+    //             total_companies: values.total_companies,
+    //             total_offered_price: values.total_offered_price,
+    //             total_estimated_payment: values.total_estimated_payment,
+    //             total_services: values.total_services,
+    //         }));
+
+    //         console.log("Employee Projection Summary:", summaryArray);
+    //         setProjection(summaryArray);
+    //     } catch (error) {
+    //         console.log("Error to fetch today's projection :", error);
+    //         setIsLoading(false);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
+
 
     const fetchNewProjection = async (values) => {
         try {
@@ -56,10 +145,11 @@ function EmployeesTodayProjectionSummary() {
                     companyName,
                 }
             });
+    
             // Transform the data to calculate the required metrics
             const summary = res.data.data.reduce((acc, company) => {
                 const isShared = company.bdeName !== company.bdmName;
-
+    
                 // Initialize each employee's data if not already in summary
                 [company.bdeName, company.bdmName].forEach((employeeName) => {
                     if (!acc[employeeName]) {
@@ -71,37 +161,37 @@ function EmployeesTodayProjectionSummary() {
                         };
                     }
                 });
-
+    
                 const serviceCount = company.offeredServices ? company.offeredServices.length : 0;
-
+    
                 if (isShared) {
                     // For shared companies, add 0.5 to company count for each employee
                     acc[company.bdeName].total_companies += 0.5;
                     acc[company.bdmName].total_companies += 0.5;
-
+    
                     // Add half of the price and payment amounts to each employee
                     acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;
                     acc[company.bdmName].total_offered_price += (company.offeredPrice || 0) * 0.5;
-
+    
                     acc[company.bdeName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
                     acc[company.bdmName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
-
+    
                     // Add full service count to each employee without dividing
                     acc[company.bdeName].total_services += serviceCount;
                     acc[company.bdmName].total_services += serviceCount;
                 } else {
                     // For non-shared companies, add full count to the single employee
                     acc[company.bdeName].total_companies += 1;
-
+    
                     acc[company.bdeName].total_offered_price += company.offeredPrice || 0;
                     acc[company.bdeName].total_estimated_payment += company.totalPayment || 0;
                     acc[company.bdeName].total_services += serviceCount;
                 }
-
+    
                 return acc;
             }, {});
-
-            // Convert the summary object to an array for easier display
+    
+            // Convert the summary object to an array
             const summaryArray = Object.entries(summary).map(([ename, values]) => ({
                 ename,
                 total_companies: values.total_companies,
@@ -109,17 +199,36 @@ function EmployeesTodayProjectionSummary() {
                 total_estimated_payment: values.total_estimated_payment,
                 total_services: values.total_services,
             }));
-
-            console.log("Employee Projection Summary:", summaryArray);
-            setProjection(summaryArray);
+    
+            // Ensure every employee in totalEmployees is represented in the projection summary
+            const completeSummaryArray = totalEmployees.map(employee => {
+                const existingEmployee = summaryArray.find(summary => summary.ename === employee.ename);
+                if (existingEmployee) {
+                    return existingEmployee;
+                } else {
+                    // If employee not found, add a default entry
+                    return {
+                        ename: employee.ename,
+                        total_companies: 0,
+                        total_offered_price: 0,
+                        total_estimated_payment: 0,
+                        total_services: 0,
+                    };
+                }
+            });
+    
+            // Sort so that employees with projections are on top and zero projections at the bottom
+            completeSummaryArray.sort((a, b) => b.total_companies - a.total_companies);
+    
+            console.log("Employee Projection Summary:", completeSummaryArray);
+            setProjection(completeSummaryArray);
         } catch (error) {
             console.log("Error to fetch today's projection :", error);
-            setIsLoading(false);
         } finally {
             setIsLoading(false);
         }
     };
-
+    
     const [employeeProjectionData, setEmployeeProjectionData] = useState([])
     const [projectionEname, setProjectionEname] = useState("")
     const [openProjectionTable, setOpenProjectionTable] = useState(false);
@@ -463,7 +572,7 @@ function EmployeesTodayProjectionSummary() {
                                     <th>Remarks</th>
                                     <th>Added On</th>
                                     <th>Modified On</th>
-                                    
+
                                 </tr>
                             </thead>
                             <tbody>
