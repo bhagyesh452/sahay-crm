@@ -679,22 +679,27 @@ function EmployeeInterestedLeads({
                         )}
                         <div
                           className={
-                            company.Status === "Interested" && company.interestedInformation
-                              ? "intersted-history-btn"
-                              : company.Status === "FollowUp" && company.interestedInformation
-                                ? "followup-history-btn"
-                                : company.Status === "FollowUp" && !company.interestedInformation
+                            (company.interestedInformation === null || company.interestedInformation.length === 0)
+                              ? (company.Status === "Interested"
+                                ? "intersted-history-btn disabled"
+                                : company.Status === "FollowUp"
                                   ? "followup-history-btn disabled"
-                                  : "intersted-history-btn disabled"
+                                  : "")
+                              : (company.Status === "Interested"
+                                ? "intersted-history-btn"
+                                : company.Status === "FollowUp"
+                                  ? "followup-history-btn"
+                                  : "")
                           }
                         >
+
                           <FaEye
                             key={company._id}
                             style={{ border: "transparent", background: "none" }}
                             data-bs-toggle="modal"
                             data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
                             title="Interested Information"
-                            disabled={!company.interestedInformation}
+                          //disabled={!company.interestedInformation}
                           />
 
                           <EmployeeInterestedInformationDialog
