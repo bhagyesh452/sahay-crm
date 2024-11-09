@@ -256,22 +256,46 @@ function EmployeePanelCopy({ fordesignation }) {
     const [generalDataCount, setGeneralDataCount] = useState(0);
     const [completeGeneralData, setCompleteGeneralData] = useState([]);
     const [dataToFilterGeneral, setDataToFilterGeneral] = useState([]);
+    const [filteredDataGeneral, setFilteredDataGeneral] = useState([]);
+    const [activeFilterFieldsGeneral, setActiveFilterFieldsGeneral] = useState([]); // New state for active filter fields
+    const [activeFilterFieldGeneral, setActiveFilterFieldGeneral] = useState(null);
+
+
     const [interestedData, setInterestedData] = useState([]);
     const [interestedDataCount, setInterestedDataCount] = useState(0);
     const [completeInterestedData, setCompleteInterestedData] = useState([]);
     const [dataToFilterInterested, setDataToFilterInterested] = useState([]);
+    const [filteredDataInterested, setFilteredDataInterested] = useState([]);
+    const [activeFilterFieldsInterested, setActiveFilterFieldsInterested] = useState([]); // New state for active filter fields
+    const [activeFilterFieldInterested, setActiveFilterFieldInterested] = useState(null);
+
+
     const [maturedData, setMaturedData] = useState([]);
     const [maturedDataCount, setMaturedDataCount] = useState(0);
     const [completeMaturedData, setCompleteMaturedData] = useState([]);
     const [dataToFilterMatured, setDataToFilterMatured] = useState([]);
+    const [filteredDataMatured, setFilteredDataMatured] = useState([]);
+    const [activeFilterFieldsMatured, setActiveFilterFieldsMatured] = useState([]); // New state for active filter fields
+    const [activeFilterFieldMatured, setActiveFilterFieldMatured] = useState(null);
+
+
     const [notInterestedData, setNotInterestedData] = useState([]);
     const [notInterestedDataCount, setNotInterestedDataCount] = useState(0);
     const [completeNotInterestedData, setCompleteNotInterestedData] = useState([]);
     const [dataToFilterNotInterested, setDataToFilterNotInterested] = useState([]);
+    const [filteredDataNotInterested, setFilteredDataNotInterested] = useState([]);
+    const [activeFilterFieldsNotInterested, setActiveFilterFieldsNotInterested] = useState([]); // New state for active filter fields
+    const [activeFilterFieldNotInterested, setActiveFilterFieldNotInterested] = useState(null);
+
+
+
     const [forwardedData, setForwardedData] = useState([]);
     const [forwardedDataCount, setForwardedDataCount] = useState(0);
     const [completeForwardedData, setCompleteForwardedData] = useState([]);
     const [dataToFilterForwarded, setDataToFilterForwarded] = useState([]);
+    const [filteredDataForwraded, setFilteredDataForwraded] = useState([]);
+    const [activeFilterFieldsForwarded, setActiveFilterFieldsForwraded] = useState([]); // New state for active filter fields
+    const [activeFilterFieldForwarded, setActiveFilterFieldForwarded] = useState(null);
 
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
@@ -347,9 +371,6 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     };
 
-    const handleCloseBackdrop = () => {
-        setOpenBacdrop(false)
-    }
 
     // -------------------------call history functions-------------------------------------
     const interestedTabRef = useRef(null); // Ref for the Interested tab
@@ -899,17 +920,6 @@ function EmployeePanelCopy({ fordesignation }) {
                                                                     id={(fordesignation === "admin" || fordesignation === "datamanager") ? id : userId}
                                                                     branchName={data.branchOffice}
                                                                 />
-                                                                // <BdmMaturedCasesDialogBox
-                                                                //     key={company._id}
-                                                                //     currentData={interestedData}
-                                                                //     forwardedCompany={company["Company Name"]}
-                                                                //     forwardCompanyId={company._id}
-                                                                //     forwardedStatus={company.Status}
-                                                                //     forwardedEName={company.ename}
-                                                                //     bdeOldStatus={company.Status}
-                                                                //     bdmNewAcceptStatus={"Pending"}
-                                                                //     fetchNewData={refetch}
-                                                                // />
                                                             )
                                                         }
                                                         <button type="button" className="btn mybtn"
@@ -1076,13 +1086,16 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
-                                                    //filteredData={filteredData}
-                                                    //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterGeneral}
                                                     completeGeneralData={completeGeneralData}
                                                     setGeneralData={setGeneralData}
                                                     setGeneralDataCount={setGeneralDataCount}
-                                                    //setFilteredData={setFilteredData}
+                                                    filteredData={filteredDataGeneral}
+                                                    setFilteredData={setFilteredDataGeneral}
+                                                    activeFilterField={activeFilterFieldGeneral}
+                                                    setActiveFilterField={setActiveFilterFieldGeneral}
+                                                    activeFilterFields={activeFilterFieldsGeneral}
+                                                    setActiveFilterFields={setActiveFilterFieldsGeneral}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
@@ -1118,13 +1131,16 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
-                                                    //filteredData={filteredData}
-                                                    //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterInterested}
                                                     completeGeneralData={completeInterestedData}
                                                     setInterestedData={setInterestedData}
                                                     setInterestedDataCount={setInterestedDataCount}
-                                                    //setFilteredData={setFilteredData}
+                                                    filteredData={filteredDataInterested}
+                                                    setFilteredData={setFilteredDataInterested}
+                                                    activeFilterField={activeFilterFieldInterested}
+                                                    setActiveFilterField={setActiveFilterFieldInterested}
+                                                    activeFilterFields={activeFilterFieldsInterested}
+                                                    setActiveFilterFields={setActiveFilterFieldsInterested}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
@@ -1159,13 +1175,16 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
-                                                    //filteredData={filteredData}
-                                                    //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterMatured}
                                                     completeGeneralData={completeMaturedData}
                                                     setMaturedData={setMaturedData}
                                                     setMaturedDataCount={setMaturedDataCount}
-                                                    //setFilteredData={setFilteredData}
+                                                    filteredData={filteredDataMatured}
+                                                    setFilteredData={setFilteredDataMatured}
+                                                    activeFilterField={activeFilterFieldMatured}
+                                                    setActiveFilterField={setActiveFilterFieldMatured}
+                                                    activeFilterFields={activeFilterFieldsMatured}
+                                                    setActiveFilterFields={setActiveFilterFieldsMatured}
                                                 />)}
                                         </div>
                                         <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
@@ -1204,6 +1223,12 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     completeGeneralData={completeForwardedData}
                                                     setForwardedData={setForwardedData}
                                                     setForwardedDataCount={setForwardedDataCount}
+                                                    filteredData={filteredDataForwraded}
+                                                    setFilteredData={setFilteredDataForwraded}
+                                                    activeFilterField={activeFilterFieldForwarded}
+                                                    setActiveFilterField={setActiveFilterFieldForwarded}
+                                                    activeFilterFields={activeFilterFieldsForwarded}
+                                                    setActiveFilterFields={setActiveFilterFieldsForwraded}
                                                     //setFilteredData={setFilteredData}
                                                 />)}
                                         </div>
@@ -1237,13 +1262,17 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     bdenumber={data.number}
                                                     openCompanyProfile={handleOpenCompanyProfile}
                                                     closeCompanyProfile={handleCloseCompanyProfile}
-                                                    //filteredData={filteredData}
-                                                    //filterMethod={handleFilter}
                                                     dataToFilter={dataToFilterNotInterested}
                                                     completeGeneralData={completeNotInterestedData}
                                                     setNotInterestedData={setNotInterestedData}
                                                     setNotInterestedDataCount={setNotInterestedDataCount}
-                                                    //setFilteredData={setFilteredData}
+                                                    filteredData={filteredDataNotInterested}
+                                                    setFilteredData={setFilteredDataNotInterested}
+                                                    activeFilterField={activeFilterFieldNotInterested}
+                                                    setActiveFilterField={setActiveFilterFieldNotInterested}
+                                                    activeFilterFields={activeFilterFieldsNotInterested}
+                                                    setActiveFilterFields={setActiveFilterFieldsNotInterested}
+                                                    
                                                 />)}
                                         </div>
                                     </div>

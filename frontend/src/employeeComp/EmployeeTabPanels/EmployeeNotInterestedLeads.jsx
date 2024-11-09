@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -39,13 +39,17 @@ function EmployeeNotInterestedLeads({
     handleMouseUp,
     selectedRows,
     bdenumber,
-    //filteredData,
+    filteredData,
     filterMethod,
     completeGeneralData,
     dataToFilter,
     setNotInterestedData,
     setNotInterestedDataCount,
-    //setFilteredData
+    setFilteredData,
+    activeFilterField,
+    setActiveFilterField,
+    activeFilterFields,
+    setActiveFilterFields,
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -77,15 +81,15 @@ function EmployeeNotInterestedLeads({
 
     // ----------------filter component----------------------
     const [showFilterMenu, setShowFilterMenu] = useState(false);
-    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    // const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    // const [activeFilterField, setActiveFilterField] = useState(null);
     const [error, setError] = useState('');
     const [noOfAvailableData, setnoOfAvailableData] = useState(0);
-    const [activeFilterField, setActiveFilterField] = useState(null);
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const [isScrollLocked, setIsScrollLocked] = useState(false)
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
-    const [filteredData, setFilteredData] = useState([]);
+    // const [filteredData, setFilteredData] = useState([]);
 
     const handleFilter = (newData) => {
         setFilteredData(newData)
@@ -102,13 +106,18 @@ function EmployeeNotInterestedLeads({
             setShowFilterMenu(true);
             setIsScrollLocked(true);
 
-            const rect = fieldRefs.current[field].getBoundingClientRect();
-            setFilterPosition({ top: rect.bottom, left: rect.left });
+            // const rect = fieldRefs.current[field].getBoundingClientRect();
+            // setFilterPosition({ top: rect.bottom, left: rect.left });
         }
     };
     const isActiveField = (field) => activeFilterFields.includes(field);
 
     console.log("activeFilterFieldsInterested", activeFilterFields)
+    console.log("filterField" , activeFilterField)
+    console.log("notInterestedLeads", notInterestedLeads)
+    console.log("filteredData", filteredData)
+    console.log("dataToFilter", dataToFilter)
+    console.log("completeGeneralData", completeGeneralData)
 
     useEffect(() => {
         if (typeof document !== 'undefined') {
@@ -268,7 +277,44 @@ function EmployeeNotInterestedLeads({
                                     <th>BDE Remarks</th>
                                     {designation !== "Sales Manager" && (
                                         <>
-                                            <th>BDM FORWARDED</th>
+                                            <th>
+                                                <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                    <div ref={el => fieldRefs.current['bdmAcceptStatus'] = el}>
+                                                        BDM Forwarded
+                                                    </div>
+
+                                                    <div className='RM_filter_icon'>
+                                                        {isActiveField('bdmAcceptStatus') ? (
+                                                            <FaFilter onClick={() => handleFilterClick("bdmAcceptStatus")} />
+                                                        ) : (
+                                                            <BsFilter onClick={() => handleFilterClick("bdmAcceptStatus")} />
+                                                        )}
+                                                    </div>
+
+                                                    {/* ---------------------filter component--------------------------- */}
+                                                    {showFilterMenu && activeFilterField === 'bdmAcceptStatus' && (
+                                                        <div
+                                                            ref={filterMenuRef}
+                                                            className="filter-menu"
+                                                            style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                        >
+                                                            <FilterableComponentEmployee
+                                                                noofItems={setnoOfAvailableData}
+                                                                allFilterFields={setActiveFilterFields}
+                                                                filteredData={filteredData}
+                                                                activeTab={"NotInterested"}
+                                                                data={notInterestedLeads}
+                                                                filterField={activeFilterField}
+                                                                onFilter={handleFilter}
+                                                                completeData={completeGeneralData}
+                                                                showingMenu={setShowFilterMenu}
+                                                                dataForFilter={dataToFilter}
+                                                                refetch={refetch}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </th>
                                             <th>
                                                 <div className='d-flex align-items-center justify-content-center position-relative'>
                                                     <div ref={el => fieldRefs.current['bdmName'] = el}>

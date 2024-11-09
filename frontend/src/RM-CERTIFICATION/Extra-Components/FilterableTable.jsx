@@ -124,11 +124,6 @@ const FilterableTable = ({
         });
     };
 
-    // useEffect(() => {
-    //     if (filterField) {
-    //         applyFilters(selectedFilters, filterField);
-    //     }
-    // }, [selectedFilters, filterField, sortOrder]);
 
     const applyFilters = (filters, column) => {
         // Ensure filters is always an object
