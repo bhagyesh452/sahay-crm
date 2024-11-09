@@ -3193,7 +3193,6 @@ router.post('/addProjection/:companyName', async (req, res) => {
           bdmName: existingCompany.bdmName,
           caseType: existingCompany.caseType,
           isPreviousMaturedCase: existingCompany.isPreviousMaturedCase,
-          updatedAt: new Date()  // Optional timestamp for the history entry
         }
       };
 
@@ -3214,7 +3213,8 @@ router.post('/addProjection/:companyName', async (req, res) => {
           bdeName: payload.bdeName,
           bdmName: payload.bdmName,
           caseType: payload.caseType,
-          isPreviousMaturedCase: payload.isPreviousMaturedCase
+          isPreviousMaturedCase: payload.isPreviousMaturedCase,
+          addedOnDate: payload.addedOnDate,
         },
         { new: true }
       );
@@ -3237,6 +3237,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
         bdmName: payload.bdmName,
         caseType: payload.caseType,
         isPreviousMaturedCase: payload.isPreviousMaturedCase,
+        addedOnDate: payload.addedOnDate,
         history: []
       });
 
@@ -3259,7 +3260,7 @@ router.get('/getProjection', async (req, res) => {
   }
 });
 
-// Fetching projection data for current date :
+// Fetching projection data for current date for a specific employee :
 // router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
 //   const { employeeName } = req.params;
 //   const { companyName } = req.query;
@@ -3308,8 +3309,6 @@ router.get('/getProjection', async (req, res) => {
 //           mainEmployeePayment = totalPayment / 2;
 //         }
 
-        
-
 //         projectionSummary.push({
 //           _id,
 //           companyName: projection.companyName,
@@ -3327,8 +3326,6 @@ router.get('/getProjection', async (req, res) => {
 //           history:projection.history
 //         });
 //       }
-
-      
 //     });
 
 //     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
@@ -3426,7 +3423,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
   }
 });
 
-
+// Fetching all projections for current day :
 router.get('/getCurrentDayProjection', async (req, res) => {
   const { companyName } = req.query;
 
@@ -3530,7 +3527,7 @@ router.get('/getCurrentDayProjection', async (req, res) => {
 //           remarks: projection.remarks,
 //           caseType: projection.caseType,
 //           isPreviousMaturedCase: projection.isPreviousMaturedCase,
-//           history: history || []
+//           // history: history || []
 //         });
 //       }
 
@@ -3547,7 +3544,7 @@ router.get('/getCurrentDayProjection', async (req, res) => {
 //       //     } else if (historyBde === employeeName || historyBdm === employeeName) {
 //       //       historyEmployeePayment = historyTotal / 2;
 //       //     }
-          
+
 //       //     projectionSummary.push({
 //       //       _id: entry._id || _id, // Use history entry's _id if it exists, otherwise main _id
 //       //       projectionDate: entry.data.date,
@@ -3662,9 +3659,8 @@ router.get('/getProjection/:employeeName', async (req, res) => {
   }
 });
 
-
 // Update projection and add to history :
-router.put('/updateProjection/:companyName', async (req, res) => {  
+router.put('/updateProjection/:companyName', async (req, res) => {
   const { companyName } = req.params;
   const {
     date,

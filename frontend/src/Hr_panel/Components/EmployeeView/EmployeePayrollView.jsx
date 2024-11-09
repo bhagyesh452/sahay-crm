@@ -9,13 +9,9 @@ import { GoCreditCard } from "react-icons/go";
 import { BsCardHeading } from "react-icons/bs";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaRegSave } from "react-icons/fa";
-import { h } from "@fullcalendar/core/preact.js";
 
 
-
-
-
-function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManagerUserId }) {
+function EmployeeViewPayrollView({ editField, setEditField, hrUserId, employeeUserId }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
@@ -37,20 +33,21 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
     const fetchEmployeeData = async () => {
         try {
             let response;
-            if (path === `/hr-employee-profile-details/${userId}` || 
-                path === `/managing-director/employeeProfileView/${userId}`||
+            if (path === `/hr-employee-profile-details/${userId}` ||
+                path === `/managing-director/employeeProfileView/${userId}` ||
                 path === `/employee-profile-details/${userId}`
             ) {
                 response = await axios.get(`${secretKey}/employee/einfo`);
-            } else {
+            } else if (employeeUserId) {
+                response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${employeeUserId}`);
+            }
+            else {
                 response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             }
 
-           
-            const tempData = response.data;
-           
-            const data = tempData.find((item) => item._id === userId);
-            // }
+
+            const tempData = employeeUserId ? response.data.data : response.data;
+            const data = employeeUserId ? tempData : tempData.find((item) => item._id === userId);
             // console.log("Payroll Info is :", data);
 
             setData(data);
@@ -70,7 +67,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManage
         }
     };
 
-    console.log("data" , data)
+    console.log("data :", data)
 
     const formatSalary = (amount) => {
         return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);

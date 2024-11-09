@@ -143,7 +143,7 @@ function NewProjectionReport() {
                     <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1">
                             <h2 className="m-0">
-                                New Projection Summary
+                                Total Projection Summary
                             </h2>
                         </div>
 
@@ -290,7 +290,7 @@ function NewProjectionReport() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td className="particular" colSpan="12">
+                                            <td className="particular" colSpan="13">
                                                 <Nodata />
                                             </td>
                                         </tr>
