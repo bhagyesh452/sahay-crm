@@ -176,7 +176,7 @@ function Dashboard() {
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
                            <EmployeesTodayProjectionSummary/>
                             <EmployeesNewProjectionSummary/>
-                            <EmployeesProjectionSummary />
+                            {/* <EmployeesProjectionSummary /> */}
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
                             <AdminEmployeePerformanceReport />

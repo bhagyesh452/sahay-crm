@@ -359,6 +359,8 @@ function EmployeesTodayProjectionSummary() {
                                     <th>Last Follow Up Date</th>
                                     <th>Estimated Payment Date</th>
                                     <th>Remarks</th>
+                                    <th>Added On</th>
+                                    <th>Modified On</th>
                                     <th>View History</th>
 
                                 </tr>
@@ -378,6 +380,8 @@ function EmployeesTodayProjectionSummary() {
                                             <td>{formatDate(new Date(data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(data.estPaymentDate))}</td>
                                             <td>{data.remarks}</td>
+                                            <td>{formatDate(new Date(data.addedOnDate))}</td>
+                                            <td>{formatDate(new Date(data.projectionDate))}</td>
                                             <td>
                                                 {/* View History button or link (replace with your actual logic) */}
                                                 <MdHistory

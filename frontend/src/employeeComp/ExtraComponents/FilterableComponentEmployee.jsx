@@ -66,6 +66,11 @@ const FilterableComponentEmployee = ({
         }
     }, [filterField]);
 
+    console.log("selectedFilters", selectedFilters);
+    console.log("columnValues", columnValues);
+
+
+
     const handleCheckboxChange = (e) => {
         const value = e.target.value; // Checkbox value
         const valueAsString = String(value); // Convert to string for consistent comparison

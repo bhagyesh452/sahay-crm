@@ -235,6 +235,7 @@ function EmployeesNewProjectionSummary() {
     const handleViewHistory = (companyId) => {
         // Find the specific projection that matches the companyId
         const selectedProjection = employeeProjectionData.find(projection => projection._id === companyId);
+        console.log("selectedProjection", selectedProjection)
         setHistoryCompanyName(selectedProjection.companyName)
 
         // Set history data if found; otherwise, set an empty array
@@ -456,6 +457,8 @@ function EmployeesNewProjectionSummary() {
                                     <th>Last Follow Up Date</th>
                                     <th>Estimated Payment Date</th>
                                     <th>Remarks</th>
+                                    <th>Added On</th>
+                                    <th>Modified On</th>
                                     <th>View History</th>
 
                                 </tr>
@@ -475,6 +478,8 @@ function EmployeesNewProjectionSummary() {
                                             <td>{formatDate(new Date(data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(data.estPaymentDate))}</td>
                                             <td>{data.remarks}</td>
+                                            <td>{formatDate(new Date(data.addedOnDate))}</td>
+                                            <td>{formatDate(new Date(data.projectionDate))}</td>
                                             <td>
                                                 {/* View History button or link (replace with your actual logic) */}
                                                 <MdHistory
