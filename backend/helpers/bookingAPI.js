@@ -3841,7 +3841,7 @@ router.post(
 // Main API to upload the data
 router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
-    const {CompanyName} = req.params;
+    const { CompanyName } = req.params;
     const newData = req.body;
     const boomDate = new Date();
     const io = req.io;
@@ -5998,21 +5998,27 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
     // res.status(201).send("Data sent");
 
     // Logic to update the `isPreviousMaturedCase` field for the Projection collection
-    const projection = await ProjectionModel.findOne({ companyName : CompanyName });
-    // console.log("Projection data :", projection);
+    const projection = await ProjectionModel.findOne({ companyName: CompanyName });
+    const services = newData.services.map((service) => service.serviceName);
+    // console.log("Services are:", services);
 
     if (projection) {
-      // Set isPreviousMaturedCase to true in the main document data
-      projection.isPreviousMaturedCase = true;
-    
-      // Check if the history array exists and has entries
+      // Check if any service is found in the main offeredServices array
+      const mainServiceMatch = services.some((service) => projection.offeredServices.includes(service));
+      if (mainServiceMatch) {
+        projection.isPreviousMaturedCase = true; // Set in main document
+      }
+
+      // Check for each history entry if a service matches in the offeredServices array of history data
       if (projection.history && projection.history.length > 0) {
-        // Update every entry in the history array
         projection.history.forEach((historyEntry) => {
-          historyEntry.data.isPreviousMaturedCase = true;
+          const historyServiceMatch = services.some((service) => historyEntry.data.offeredServices.includes(service));
+          if (historyServiceMatch) {
+            historyEntry.data.isPreviousMaturedCase = true; // Set in history entry
+          }
         });
       }
-    
+
       // Save the updated projection document
       await projection.save();
     }
