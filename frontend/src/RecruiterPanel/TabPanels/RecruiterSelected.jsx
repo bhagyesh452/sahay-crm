@@ -319,7 +319,7 @@ function RecruiterSelected({
     //-------------------filter method-------------------------------
 
     const handleFilter = (newData) => {
-        console.log("newData", newData)
+       
         setFilteredData(newData)
         setRecruiterData(newData.filter(obj => obj.mainCategoryStatus === "Selected"));
     };
@@ -380,6 +380,9 @@ function RecruiterSelected({
         // Construct the URL and open the file in a new tab
         window.open(`${secretKey}/recruiter/uploads/${empFullName}/${filename}`, "_blank");
     }
+
+console.log("recruiterData", recruiterData)
+
 
     return (
         <div>
@@ -998,20 +1001,20 @@ function RecruiterSelected({
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['allocatedBranch'] = el}>
+                                            <div ref={el => fieldRefs.current['branchOffice'] = el}>
                                                 Allocated Branch
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                                {isActiveField('allocatedBranch') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("allocatedBranch")} />
+                                                {isActiveField('branchOffice') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("branchOffice")} />
                                                 ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("allocatedBranch")} />
+                                                    <BsFilter onClick={() => handleFilterClick("branchOffice")} />
                                                 )}
                                             </div>
 
                                             {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'allocatedBranch' && (
+                                            {showFilterMenu && activeFilterField === 'branchOffice' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -1035,20 +1038,20 @@ function RecruiterSelected({
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['offeredLetterStatus'] = el}>
+                                            <div ref={el => fieldRefs.current['offerLetterStatus'] = el}>
                                                 Offer Letter Status
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                                {isActiveField('offeredLetterStatus') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("offeredLetterStatus")} />
+                                                {isActiveField('offerLetterStatus') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("offerLetterStatus")} />
                                                 ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("offeredLetterStatus")} />
+                                                    <BsFilter onClick={() => handleFilterClick("offerLetterStatus")} />
                                                 )}
                                             </div>
 
                                             {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'offeredLetterStatus' && (
+                                            {showFilterMenu && activeFilterField === 'offerLetterStatus' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -1077,15 +1080,15 @@ function RecruiterSelected({
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                                {isActiveField('documentSubmitted') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("documentSubmitted")} />
+                                                {isActiveField('documentsSubmitted') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("documentsSubmitted")} />
                                                 ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("documentSubmitted")} />
+                                                    <BsFilter onClick={() => handleFilterClick("documentsSubmitted")} />
                                                 )}
                                             </div>
 
                                             {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'documentSubmitted' && (
+                                            {showFilterMenu && activeFilterField === 'documentsSubmitted' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
