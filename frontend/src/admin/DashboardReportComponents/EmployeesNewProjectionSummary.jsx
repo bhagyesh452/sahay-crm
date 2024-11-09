@@ -191,7 +191,9 @@ function EmployeesNewProjectionSummary() {
     const [openProjectionTable, setOpenProjectionTable] = useState(false);
     const [historyData, setHistoryData] = useState([])
     const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
-    const [historyCompanyName, setHistoryCompanyName] = useState("")
+    const [historyCompanyName, setHistoryCompanyName] = useState("");
+    const [addedOnDate, setAddedOnDate] = useState(null)
+
     const handleOpenProjectionsForEmployee = async (employeeName) => {
         setProjectionEname(employeeName); // Store the employee name for dialog title
         try {
@@ -237,6 +239,7 @@ function EmployeesNewProjectionSummary() {
         const selectedProjection = employeeProjectionData.find(projection => projection._id === companyId);
         console.log("selectedProjection", selectedProjection)
         setHistoryCompanyName(selectedProjection.companyName)
+        setAddedOnDate(selectedProjection.addedOnDate)
 
         // Set history data if found; otherwise, set an empty array
         setHistoryData(selectedProjection ? selectedProjection.history || [] : []);
@@ -549,7 +552,7 @@ function EmployeesNewProjectionSummary() {
                                     }}
                                 >
                                     <th>Sr. No</th>
-                                    <th>Modified At</th>
+                                   
                                     <th>Company Name</th>
                                     <th>BDE Name</th>
                                     <th>BDM Name</th>
@@ -560,6 +563,8 @@ function EmployeesNewProjectionSummary() {
                                     <th>Last Follow Up Date</th>
                                     <th>Estimated Payment Date</th>
                                     <th>Remarks</th>
+                                    <th>Added On</th>
+                                    <th>Modified On</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -567,7 +572,6 @@ function EmployeesNewProjectionSummary() {
                                     historyData.map((entry, index) => (
                                         <tr key={entry._id || index}>
                                             <td>{index + 1}</td>
-                                            <td>{formatDate(new Date(entry.modifiedAt))}</td>
                                             <td>{historyCompanyName}</td>
                                             <td>{entry.data.bdeName}</td>
                                             <td>{entry.data.bdmName}</td>
@@ -578,6 +582,8 @@ function EmployeesNewProjectionSummary() {
                                             <td>{formatDate(new Date(entry.data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(entry.data.estPaymentDate))}</td>
                                             <td>{entry.data.remarks}</td>
+                                            <td>{formatDate(addedOnDate)}</td>
+                                            <td>{formatDate(new Date(entry.modifiedAt))}</td>
                                         </tr>
                                     ))
                                 ) : (

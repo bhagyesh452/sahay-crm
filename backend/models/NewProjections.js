@@ -67,6 +67,10 @@ const CompanySchema = new mongoose.Schema({
     type: Date, 
     default: Date.now() 
   },
+  addedOnDate:{
+    type: Date,
+    // default: Date.now()
+  },
   history: [{
     modifiedAt: { 
       type: Date, 
