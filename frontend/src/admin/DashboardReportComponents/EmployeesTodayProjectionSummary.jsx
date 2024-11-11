@@ -53,7 +53,7 @@ function EmployeesTodayProjectionSummary() {
            
             const res2 = await axios.get(`${secretKey}/employee/einfo`);
             console.log("res" , res2);
-                setTotalEmployees(res2.data);
+                setTotalEmployees(res2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
         } catch (error) {
             console.log("Unexpected error in fetchEmployee:", error);
         }
