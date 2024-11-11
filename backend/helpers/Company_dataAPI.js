@@ -20,7 +20,7 @@ const RMCertificationModel = require('../models/RMCertificationServices.js');
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const RedesignedLeadModel = require('../models/RedesignedLeadform.js');
 const ForwardedLeadsModel = require('../models/FollowUp.js');
-
+const DailyEmployeeProjection = require('../models/DailyEmployeeProjection.js');
 
 
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
@@ -3251,6 +3251,266 @@ router.post('/addProjection/:companyName', async (req, res) => {
   }
 });
 
+router.post('/addDailyProjection/:ename', async (req, res) => {
+  const { ename } = req.params;
+  const {
+    companyId,
+    companyName,
+    bdeName,
+    bdmName,
+    offeredServices,
+    estimatedPaymentDate,
+    offeredPrice,
+    expectedPrice,
+    remarks,
+  } = req.body.projectionData;
+
+  try {
+    // Normalize the estimatedPaymentDate
+    const normalizedDate = new Date(estimatedPaymentDate);
+    normalizedDate.setHours(0, 0, 0, 0);
+
+    // Find or create the employee's daily projection
+    let dailyProjection = await DailyEmployeeProjection.findOne({ ename });
+
+    if (!dailyProjection) {
+      // Create a new document with the projection if none exists for the employee
+      dailyProjection = new DailyEmployeeProjection({
+        ename,
+        projectionsByDate: [
+          {
+            estimatedPaymentDate: normalizedDate,
+            projections: [
+              {
+                companyId,
+                companyName,
+                bdeName,
+                bdmName,
+                offeredServices,
+                offeredPrice,
+                expectedPrice,
+                remarks,
+              },
+            ],
+          },
+        ],
+      });
+    } else {
+      // Find any existing date entry for this estimatedPaymentDate
+      let dateEntry = dailyProjection.projectionsByDate.find(
+        (entry) => entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
+      );
+
+      // Remove the company from any existing date entries to prevent duplicates
+      dailyProjection.projectionsByDate.forEach((entry) => {
+        entry.projections = entry.projections.filter(
+          (proj) => proj.companyId.toString() !== companyId.toString()
+        );
+      });
+
+      // Remove any date entries that no longer have projections
+      dailyProjection.projectionsByDate = dailyProjection.projectionsByDate.filter(
+        (entry) => entry.projections.length > 0
+      );
+
+      if (dateEntry) {
+        // If a date entry exists for the target date, update or add the projection
+        dateEntry.projections.push({
+          companyId,
+          companyName,
+          bdeName,
+          bdmName,
+          offeredServices,
+          offeredPrice,
+          expectedPrice,
+          remarks,
+        });
+      } else {
+        // Otherwise, create a new date entry with the projection
+        dailyProjection.projectionsByDate.push({
+          estimatedPaymentDate: normalizedDate,
+          projections: [
+            {
+              companyId,
+              companyName,
+              bdeName,
+              bdmName,
+              offeredServices,
+              offeredPrice,
+              expectedPrice,
+              remarks,
+            },
+          ],
+        });
+      }
+    }
+
+    await dailyProjection.save();
+    res.json({ result: true, message: "Daily projection updated successfully", data: dailyProjection });
+  } catch (error) {
+    console.error("Error updating daily projection:", error);
+    res.status(500).json({ result: false, message: "Internal server error", error: error.message });
+  }
+});
+
+
+router.post('/updateDailyProjection/:ename', async (req, res) => {
+  const { ename } = req.params;
+  const { companyId, companyName,
+    bdeName,
+    bdmName,
+    offeredServices,
+    estimatedPaymentDate,
+    offeredPrice,
+    expectedPrice,
+    remarks } = req.body.projectionData;
+
+  try {
+    // Normalize the estimatedPaymentDate
+    const normalizedDate = new Date(estimatedPaymentDate);
+    // normalizedDate.setHours(0, 0, 0, 0);
+
+    // Find the employee's daily projection or create it if not found
+    let dailyProjection = await DailyEmployeeProjection.findOne({ ename });
+    if (!dailyProjection) {
+      dailyProjection = new DailyEmployeeProjection({
+        ename,
+        projectionsByDate: [{
+          estimatedPaymentDate: normalizedDate,
+          projections: [{
+            companyId, companyName,
+            bdeName,
+            bdmName,
+            offeredServices, offeredPrice, expectedPrice, remarks
+          }]
+        }]
+      });
+    } else {
+      // Check if the company already exists in any date's projections
+      let existingDateEntry;
+      let existingProjectionIndex;
+
+      dailyProjection.projectionsByDate.forEach((dateEntry, dateIndex) => {
+        dateEntry.projections.forEach((proj, projIndex) => {
+          if (proj.companyId.toString() === companyId.toString()) {
+            existingDateEntry = dateIndex;
+            existingProjectionIndex = projIndex;
+          }
+        });
+      });
+
+      if (existingDateEntry !== undefined) {
+        // Get the existing projection's date
+        const existingEntryDate = dailyProjection.projectionsByDate[existingDateEntry].estimatedPaymentDate;
+
+        if (existingEntryDate.getTime() !== normalizedDate.getTime()) {
+          // If the date has changed, remove the projection from the old date
+          dailyProjection.projectionsByDate[existingDateEntry].projections.splice(existingProjectionIndex, 1);
+
+          // Remove the date entry if no projections are left for that date
+          if (dailyProjection.projectionsByDate[existingDateEntry].projections.length === 0) {
+            dailyProjection.projectionsByDate.splice(existingDateEntry, 1);
+          }
+
+          // Add a new entry for the updated date
+          const newDateEntry = dailyProjection.projectionsByDate.find(entry =>
+            entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
+          );
+
+          if (newDateEntry) {
+            newDateEntry.projections.push({
+              companyId, companyName,
+              bdeName,
+              bdmName,
+              offeredServices, offeredPrice, expectedPrice, remarks
+            });
+          } else {
+            dailyProjection.projectionsByDate.push({
+              estimatedPaymentDate: normalizedDate,
+              projections: [{
+                companyId, companyName,
+                bdeName,
+                bdmName,
+                offeredServices, offeredPrice, expectedPrice, remarks
+              }]
+            });
+          }
+        } else {
+          // If the date hasn't changed, update the existing projection details
+          dailyProjection.projectionsByDate[existingDateEntry].projections[existingProjectionIndex] = {
+            companyId, companyName,
+            bdeName,
+            bdmName,
+            offeredServices, offeredPrice, expectedPrice, remarks
+          };
+        }
+      } else {
+        // If it's a new projection for this estimatedPaymentDate
+        const dateEntry = dailyProjection.projectionsByDate.find(entry =>
+          entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
+        );
+
+        if (dateEntry) {
+          dateEntry.projections.push({
+            companyId, companyName,
+            bdeName,
+            bdmName,
+            offeredServices, offeredPrice, expectedPrice, remarks
+          });
+        } else {
+          dailyProjection.projectionsByDate.push({
+            estimatedPaymentDate: normalizedDate,
+            projections: [{
+              companyId, companyName,
+              bdeName,
+              bdmName,
+              offeredServices, offeredPrice, expectedPrice, remarks
+            }]
+          });
+        }
+      }
+    }
+
+    await dailyProjection.save();
+    res.json({ result: true, message: "Daily projection updated successfully", data: dailyProjection });
+  } catch (error) {
+    console.error("Error updating daily projection:", error);
+    res.status(500).json({ result: false, message: "Internal server error", error: error.message });
+  }
+});
+// Endpoint to set projection count to zero for an employee on a specific date
+router.post('/setProjectionCountToZero', async (req, res) => {
+  const { employeeName, date } = req.body;
+
+  try {
+    // Parse the date to ensure we get the start of the day
+    const projectionDate = new Date(date);
+    projectionDate.setHours(0, 0, 0, 0);
+
+    // Check if an entry already exists for the employee and date
+    let dailyProjection = await DailyEmployeeProjection.findOne({ employeeId: employeeName, date: projectionDate });
+
+    if (!dailyProjection) {
+      // If no projection exists for the day, create a new entry with zero count
+      dailyProjection = new DailyEmployeeProjection({
+        employeeId: employeeName,
+        date: projectionDate,
+        totalProjectionsFed: 0,
+        totalEstimatedPayment: 0,
+        projections: []
+      });
+      await dailyProjection.save();
+      return res.status(200).json({ result: true, message: "Projection count set to 0 for today", data: dailyProjection });
+    } else {
+      // If an entry exists, return an error indicating projections are already recorded
+      return res.status(400).json({ result: false, message: "Projections already recorded for today" });
+    }
+  } catch (error) {
+    console.error("Error setting projection count to zero:", error);
+    return res.status(500).json({ result: false, message: "Internal server error", error: error.message });
+  }
+});
+
 // Fetch all the projections :
 router.get('/getProjection', async (req, res) => {
   try {
@@ -3773,7 +4033,70 @@ router.get('/getProjection/:employeeName', async (req, res) => {
   }
 });
 
+// router.post('/employee-projection/:employeeId', async (req, res) => {
+//   const { employeeId } = req.params;
+//   const { addProjection, projectionData } = req.body;
+
+//   try {
+//     const { companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks } = projectionData || {};
+
+//     if (!projectionData.date) {
+//       return res.status(400).json({ success: false, message: 'Projection date is required' });
+//     }
+
+//     // Set the provided date to the start of the day for consistency
+//     const date = new Date(projectionData.date);
+//     date.setHours(0, 0, 0, 0);
+
+//     // Find or create a daily projection report for the employee on the specific date
+//     let report = await DailyEmployeeProjection.findOne({ employeeId, date });
+
+//     if (addProjection) {
+//       if (!report) {
+//         // Create new report for the specified date if none exists
+//         report = new DailyEmployeeProjection({
+//           employeeId,
+//           date,
+//           totalProjectionsFed: 1,
+//           totalEstimatedPayment: expectedPrice,
+//           projections: [{ companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks }]
+//         });
+//       } else {
+//         // Update existing report for the specified date
+//         report.totalProjectionsFed += 1;
+//         report.totalEstimatedPayment += expectedPrice;
+//         report.projections.push({ companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks });
+//       }
+
+//       await report.save();
+//       return res.status(200).json({ success: true, message: 'Projection data recorded', report });
+
+//     } else {
+//       // Handle the case when the employee chooses to set projections to zero for the day
+//       if (!report) {
+//         // Create new report with zero projection count if none exists for the date
+//         report = new DailyEmployeeProjection({
+//           employeeId,
+//           date,
+//           totalProjectionsFed: 0,
+//           totalEstimatedPayment: 0,
+//           projections: []
+//         });
+//         await report.save();
+//         return res.status(200).json({ success: true, message: 'No projections set for this date', report });
+//       } else {
+//         // If projections already exist, return an error indicating projections already set for this date
+//         return res.status(400).json({ success: false, message: 'Projections already exist for this date' });
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error handling projection data:", error);
+//     return res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// });
+
 // Update projection and add to history :
+
 router.put('/updateProjection/:companyName', async (req, res) => {
   const { companyName } = req.params;
   const {
