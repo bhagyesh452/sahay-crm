@@ -32,6 +32,8 @@ import InterestedFollowLeadReport from "../../../admin/DashboardReportComponents
 import EmployeeCompleteCallingReport from "../../../admin/DashboardReportComponents/EmployeeCompleteCallingReport.jsx";
 import ServiceAnalysis from "../../../admin/DashboardReportComponents/ServiceAnalysis.jsx";
 import { MdAddCall } from "react-icons/md";
+import EmployeesTodayProjectionSummary from "../../../admin/DashboardReportComponents/EmployeesTodayProjectionSummary.jsx";
+import EmployeesNewProjectionSummary from "../../../admin/DashboardReportComponents/EmployeesNewProjectionSummary.jsx";
 
 
 
@@ -180,7 +182,9 @@ function DatamanagerDashboard() {
                             <EmployeesForwardedDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
-                            <EmployeesProjectionSummary />
+                            <EmployeesTodayProjectionSummary/>
+                            <EmployeesNewProjectionSummary/>
+                            {/* <EmployeesProjectionSummary /> */}
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
                             <ServiceAnalysis />
