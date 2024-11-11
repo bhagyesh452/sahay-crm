@@ -26,6 +26,8 @@ import { IoIosArrowDropleft } from "react-icons/io";
 
 function EmployeeTeamLeadsCopy({ designation }) {
 
+    console.log("Designation is :", designation);
+
     const { userId } = useParams();
     const navigate = useNavigate();
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -309,6 +311,10 @@ function EmployeeTeamLeadsCopy({ designation }) {
     useEffect(() => {
         if (designation === "admin") {
             document.title = `Admin-Sahay-CRM`;
+        } else if (designation === "datamanager") {
+            document.title = `Data-Analyst-Sahay-CRM`
+        } else if (data.newDesignation === "Floor Manager") {
+            document.title = `Floor-Manager-Sahay-CRM`;
         } else {
             document.title = `Employee-Sahay-CRM`;
         }
@@ -506,7 +512,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                 Swal.fire('Deleted!', 'The selected companies have been deleted.', 'success');
                 setSelectedRows([]);
                 refetchTeamLeads();
-                console.log("Companies updated and deleted successfully", response.data);
+                // console.log("Companies updated and deleted successfully", response.data);
             } catch (error) {
                 console.error("Error deleting companies:", error);
                 Swal.fire('Error!', 'There was an error deleting the companies.', 'error');
@@ -627,7 +633,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                                 type="button"
                                                                 className={
                                                                     (designation === "admin" && window.location.pathname === `/managing-director/employeeleads/${userId}`) ||
-                                                                        (designation === "datamanager" && window.location.pathname === `/datamanager/datamanagerside-employeeteamleads/${userId}`)
+                                                                        (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${userId}`)
                                                                         ? "btn mybtn active"
                                                                         : "btn mybtn"
                                                                 }
@@ -635,7 +641,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                                     if (designation === "admin") {
                                                                         navigate(`/managing-director/employeeleads/${userId}`);
                                                                     } else if (designation === "datamanager") {
-                                                                        navigate(`/datamanager/datamanagerside-employeeteamleads/${userId}`);
+                                                                        navigate(`/dataanalyst/employeeteamleads/${userId}`);
                                                                     }
                                                                 }}
                                                             >
@@ -647,7 +653,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             )}
                                         </div>
 
-                                        {designation !== "admin" && <div className="btn-group" role="group" aria-label="Basic example">
+                                        {designation !== "admin" && designation !== "datamanager" && <div className="btn-group" role="group" aria-label="Basic example">
                                             <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
                                             // onClick={() => setOpenFilterDrawer(true)}
                                             >

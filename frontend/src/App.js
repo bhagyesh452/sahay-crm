@@ -272,12 +272,13 @@ function App() {
             <Route path="/dataanalyst/newEmployees" element={<DatamanagerNewEmployee />} />
             {/* <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeeLeads />} /> */}
             <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeePanelCopy fordesignation="datamanager" />} />
+            {/* <Route path="/dataanalyst/employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} /> */}
+            <Route path="/dataanalyst/employeeteamleads/:id" element={<EmployeeTeamLeadsCopy designation="datamanager" />} />
             <Route path="/dataanalyst/bookings" element={<ManagerBookings />} />
             <Route path="/dataanalyst/expensereport" element={<ExpenseReport />} />
             <Route path="/dataanalyst-profile-details/" element={<DataAnalystProfile />} />
             <Route path="/dataanalyst/notification" element={<NotificationDM />} />
             <Route path="/employeereportdatamanager/:ename/:status" element={<EmployeeStatusInfo />} />
-            <Route path="/datamanager/datamanagerside-employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} />
           </Route>
 
           {/* ---------------------------------------admin  components--------------------------------------- */}

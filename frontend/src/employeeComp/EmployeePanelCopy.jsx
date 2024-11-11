@@ -145,7 +145,7 @@ function EmployeePanelCopy({ fordesignation }) {
         } else if (fordesignation === "admin") {
             document.title = `Admin-Sahay-CRM`;
         } else if (fordesignation === "datamanager") {
-            document.title = `Datamanager-Sahay-CRM`;
+            document.title = `Data-Analyst-Sahay-CRM`;
         } else {
             document.title = `Employee-Sahay-CRM`;
         }
@@ -822,7 +822,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                                     type="button"
                                                                     className={
                                                                         (fordesignation === "admin" && window.location.pathname === `/managing-director/employeeleads/${id}`) ||
-                                                                            (fordesignation === "datamanager" && window.location.pathname === `/datamanager/datamanagerside-employeeteamleads/${id}`)
+                                                                            (fordesignation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${id}`)
                                                                             ? "btn mybtn active"
                                                                             : "btn mybtn"
                                                                     }
@@ -830,7 +830,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                                         if (fordesignation === "admin") {
                                                                             navigate(`/managing-director/employeeleads/${id}`);
                                                                         } else if (fordesignation === "datamanager") {
-                                                                            navigate(`/datamanager/datamanagerside-employeeteamleads/${id}`);
+                                                                            navigate(`/dataanalyst/employeeteamleads/${id}`);
                                                                         }
                                                                     }}
                                                                 >
