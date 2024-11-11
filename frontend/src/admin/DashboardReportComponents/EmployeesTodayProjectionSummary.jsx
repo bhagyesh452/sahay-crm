@@ -16,6 +16,21 @@ function EmployeesTodayProjectionSummary() {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
+    const [isLoading, setIsLoading] = useState(false);
+    const [showProjectionDialog, setShowProjectionDialog] = useState(false);
+    const [isProjectionEditable, setIsProjectionEditable] = useState(false);
+    const [editableProjectionData, setEditableProjectionData] = useState({});
+    const [projection, setProjection] = useState([]);
+    const [companyName, setCompanyName] = useState('');
+    const [employeeName, setEmployeeName] = useState('');
+    const [totalEmployees, setTotalEmployees] = useState([]);
+    const [employeeProjectionData, setEmployeeProjectionData] = useState([])
+    const [projectionEname, setProjectionEname] = useState("")
+    const [openProjectionTable, setOpenProjectionTable] = useState(false);
+    const [historyData, setHistoryData] = useState([])
+    const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
+    const [historyCompanyName, setHistoryCompanyName] = useState("");
+    const [addedOnDate, setAddedOnDate] = useState(null)
 
     const formatDate = (dateString) => {
         if (!dateString) return "N/A"; // Handle undefined or null dates
@@ -31,113 +46,19 @@ function EmployeesTodayProjectionSummary() {
         return new Intl.NumberFormat('en-IN').format(amount);
     };
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [showProjectionDialog, setShowProjectionDialog] = useState(false);
-    const [isProjectionEditable, setIsProjectionEditable] = useState(false);
-    const [editableProjectionData, setEditableProjectionData] = useState({});
-    const [projection, setProjection] = useState([]);
-    const [companyName, setCompanyName] = useState('');
-    const [employeeName, setEmployeeName] = useState('');
-    const [totalEmployees, setTotalEmployees] = useState([])
+    
 
     const fetchEmployee = async () => {
         try {
-            //const res1 = axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
-            const res2 = axios.get(`${secretKey}/employee/einfo`);
-    
-            //const [result1, result2] = await Promise.allSettled([res1, res2]);
-    
-            // if (result1.status === 'fulfilled') {
-            //     setEmployeeName(result1.value.data.data.ename);
-            // } else {
-            //     console.log("Error in fetching employee from ID:", result1.reason);
-            // }
-    
-            //if (result2.status === 'fulfilled') {
-            console.log("res2.data", res2);
-                setTotalEmployees(res2.data);
-            // } else {
-            //     console.log("Error in fetching employee info:", result2.reason);
-            // }
+           
+            const res2 = await axios.get(`${secretKey}/employee/einfo`);
+            console.log("res" , res2);
+                setTotalEmployees(res2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
         } catch (error) {
             console.log("Unexpected error in fetchEmployee:", error);
         }
     };
 
-    console.log("totak employees", totalEmployees);
-    
-
-    // const fetchNewProjection = async (values) => {
-    //     try {
-    //         setIsLoading(true);
-    //         const res = await axios.get(`${secretKey}/company-data/getCurrentDayProjection`, {
-    //             params: {
-    //                 companyName,
-    //             }
-    //         });
-    //         // Transform the data to calculate the required metrics
-    //         const summary = res.data.data.reduce((acc, company) => {
-    //             const isShared = company.bdeName !== company.bdmName;
-
-    //             // Initialize each employee's data if not already in summary
-    //             [company.bdeName, company.bdmName].forEach((employeeName) => {
-    //                 if (!acc[employeeName]) {
-    //                     acc[employeeName] = {
-    //                         total_companies: 0,
-    //                         total_offered_price: 0,
-    //                         total_estimated_payment: 0,
-    //                         total_services: 0,
-    //                     };
-    //                 }
-    //             });
-
-    //             const serviceCount = company.offeredServices ? company.offeredServices.length : 0;
-
-    //             if (isShared) {
-    //                 // For shared companies, add 0.5 to company count for each employee
-    //                 acc[company.bdeName].total_companies += 0.5;
-    //                 acc[company.bdmName].total_companies += 0.5;
-
-    //                 // Add half of the price and payment amounts to each employee
-    //                 acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;
-    //                 acc[company.bdmName].total_offered_price += (company.offeredPrice || 0) * 0.5;
-
-    //                 acc[company.bdeName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
-    //                 acc[company.bdmName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
-
-    //                 // Add full service count to each employee without dividing
-    //                 acc[company.bdeName].total_services += serviceCount;
-    //                 acc[company.bdmName].total_services += serviceCount;
-    //             } else {
-    //                 // For non-shared companies, add full count to the single employee
-    //                 acc[company.bdeName].total_companies += 1;
-
-    //                 acc[company.bdeName].total_offered_price += company.offeredPrice || 0;
-    //                 acc[company.bdeName].total_estimated_payment += company.totalPayment || 0;
-    //                 acc[company.bdeName].total_services += serviceCount;
-    //             }
-
-    //             return acc;
-    //         }, {});
-
-    //         // Convert the summary object to an array for easier display
-    //         const summaryArray = Object.entries(summary).map(([ename, values]) => ({
-    //             ename,
-    //             total_companies: values.total_companies,
-    //             total_offered_price: values.total_offered_price,
-    //             total_estimated_payment: values.total_estimated_payment,
-    //             total_services: values.total_services,
-    //         }));
-
-    //         console.log("Employee Projection Summary:", summaryArray);
-    //         setProjection(summaryArray);
-    //     } catch (error) {
-    //         console.log("Error to fetch today's projection :", error);
-    //         setIsLoading(false);
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
 
 
     const fetchNewProjection = async (values) => {
@@ -232,13 +153,7 @@ function EmployeesTodayProjectionSummary() {
         }
     };
     
-    const [employeeProjectionData, setEmployeeProjectionData] = useState([])
-    const [projectionEname, setProjectionEname] = useState("")
-    const [openProjectionTable, setOpenProjectionTable] = useState(false);
-    const [historyData, setHistoryData] = useState([])
-    const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
-    const [historyCompanyName, setHistoryCompanyName] = useState("");
-    const [addedOnDate, setAddedOnDate] = useState(null)
+    
     const handleOpenProjectionsForEmployee = async (employeeName) => {
         setProjectionEname(employeeName); // Store the employee name for dialog title
         try {
@@ -262,11 +177,15 @@ function EmployeesTodayProjectionSummary() {
     const closeProjectionTable = () => setOpenProjectionTable(false);
 
     useEffect(() => {
+        // Fetch employees on component mount
         fetchEmployee();
     }, []);
-
+    
     useEffect(() => {
-        fetchNewProjection();
+        // Fetch projections only when totalEmployees has data
+        if (totalEmployees && totalEmployees.length > 0) {
+            fetchNewProjection();
+        }
     }, [totalEmployees]);
 
     const formatCurrency = (amount) => {
@@ -299,6 +218,7 @@ function EmployeesTodayProjectionSummary() {
     }
 
     console.log("historyData", historyData)
+    console.log("totalEmployees", totalEmployees)
 
 
     return (
