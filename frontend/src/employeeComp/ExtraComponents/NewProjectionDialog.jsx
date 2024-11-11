@@ -14,15 +14,8 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     // New state for enabling/disabling fields based on user selection
-    const [addProjectionToday, setAddProjectionToday] = useState(true); // null initially, true for adding, false for skipping
+    const [addProjectionToday, setAddProjectionToday] = useState(null); // null initially, true for adding, false for skipping
     const [fieldsDisabled, setFieldsDisabled] = useState(true);
-
-    // Convert the date to a valid "YYYY-MM-DD" format for input fields
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
-    };
-
     const [companyName, setCompanyName] = useState(projectionData ? (projectionData.companyName || projectionData["Company Name"]) : '');
     const [companyId, setCompanyId] = useState(projectionData ? projectionData._id : '');
     const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
@@ -41,6 +34,13 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     const [showAddLeadsPopup, setShowAddLeadsPopup] = useState(false);
     const [isProjectionAvailable, setIsProjectionAvailable] = useState(false);
 
+
+    // Convert the date to a valid "YYYY-MM-DD" format for input fields
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
+    };
+
     // Handle radio button selection
     const handleRadioChange = (event) => {
         const value = event.target.value;
@@ -50,7 +50,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         } else {
             setAddProjectionToday(false);
             setFieldsDisabled(true);
-            
+
             //handleSkipProjection();
         }
     };
@@ -58,10 +58,12 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     // Handle skipping the projection by setting projection count to 0
     const handleSkipProjection = async () => {
         try {
-            await axios.post(`${secretKey}/company-data/setProjectionCountToZero`, {
+            // Make a request to set projection count to zero for the employee and date
+            await axios.post(`${secretKey}/employee-projection/setProjectionCountToZero`, {
                 employeeName,
-                date: new Date().toISOString().split("T")[0] // current date
+                date: new Date().toISOString().split("T")[0] // Current date in YYYY-MM-DD format
             });
+    
             Swal.fire("Success", "Projection count set to 0 for today.", "success");
             closepopup();
             fetchNewProjection && fetchNewProjection();
@@ -146,7 +148,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         setFollowupDate('');
         setPaymentDate('');
         setRemarks('');
-        setAddProjectionToday(true);
+        setAddProjectionToday(null);
         setFieldsDisabled(true);
     };
 
@@ -168,7 +170,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             caseType: isFilledFromTeamLeads ? "Received" : "NotForwarded",
             isPreviousMaturedCase: companyStatus === "Matured" ? true : false
         };
-        
+
         if (offeredServices.length === 0) {
             Swal.fire({ title: "Please Select service!", icon: "warning" });
             return;
@@ -195,6 +197,24 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         try {
             const res = await axios.post(`${secretKey}/company-data/addProjection/${companyName}`, payload);
             // console.log("Projection submitted :", res.data.data);
+            // Now send the daily projection update separately
+            const dailyPayload = {
+                projectionData: {
+                    date: payload.date,
+                    companyId: payload.companyId,
+                    companyName : payload.companyName,
+                    bdeName : payload.bdeName,
+                    bdmName:payload.bdmName,
+                    offeredServices: payload.offeredServices,
+                    estimatedPaymentDate: payload.estPaymentDate,
+                    offeredPrice: payload.offeredPrice,
+                    expectedPrice: payload.totalPayment,
+                    remarks: payload.remarks
+                }
+            };
+
+            const response = await axios.post(`${secretKey}/company-data/addDailyProjection/${employeeName}`, dailyPayload);
+
             Swal.fire("Success", "Projection submitted successfully.", "success");
             handleClosePopup();
             fetchNewProjection && fetchNewProjection();
@@ -246,7 +266,24 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
 
         try {
             const res = await axios.put(`${secretKey}/company-data/updateProjection/${companyName}`, payload);
-            // console.log("Projection updated :", res.data.data);
+            // Step 2: Update or add projection in DailyEmployeeProjection
+            const dailyProjectionPayload = {
+                projectionData: {
+                    ename: payload.ename,
+                    companyId: res.data.data.companyId,
+                    companyName : payload.companyName,
+                    bdeName : payload.bdeName,
+                    bdmName:payload.bdmName,
+                    offeredServices: payload.offeredServices,
+                    estimatedPaymentDate: payload.estPaymentDate.toISOString().split('T')[0], // send in "YYYY-MM-DD" format
+                    offeredPrice: payload.offeredPrice,
+                    expectedPrice: payload.totalPayment,
+                    remarks: payload.remarks,
+                }
+            };
+
+            // Call the API to update the daily projection
+            await axios.post(`${secretKey}/company-data/updateDailyProjection/${payload.ename}`, dailyProjectionPayload);
             Swal.fire("Success", "Projection updated successfully.", "success");
             handleClosePopup();
             fetchNewProjection && fetchNewProjection();
@@ -480,7 +517,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                 style={{ width: "100%" }}
                                 className="btn btn-success bdr-radius-none cursor-pointer"
                                 onClick={handleSkipProjection}
-                                // disabled={companyNotFound && !selectedCompany}
+                            // disabled={companyNotFound && !selectedCompany}
                             >
                                 <MdOutlinePostAdd /> {"Submit No Projection"}
                             </button>
