@@ -20,7 +20,7 @@ const RMCertificationModel = require('../models/RMCertificationServices.js');
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const RedesignedLeadModel = require('../models/RedesignedLeadform.js');
 const ForwardedLeadsModel = require('../models/FollowUp.js');
-
+const DailyEmployeeProjection = require('../models/DailyEmployeeProjection.js');
 
 
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
@@ -3656,6 +3656,68 @@ router.get('/getProjection/:employeeName', async (req, res) => {
     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
   } catch (error) {
     res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
+  }
+});
+
+router.post('/employee-projection/:employeeId', async (req, res) => {
+  const { employeeId } = req.params;
+  const { addProjection, projectionData } = req.body;
+
+  try {
+      const { companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks } = projectionData || {};
+      
+      if (!projectionData.date) {
+          return res.status(400).json({ success: false, message: 'Projection date is required' });
+      }
+
+      // Set the provided date to the start of the day for consistency
+      const date = new Date(projectionData.date);
+      date.setHours(0, 0, 0, 0);
+
+      // Find or create a daily projection report for the employee on the specific date
+      let report = await DailyEmployeeProjection.findOne({ employeeId, date });
+
+      if (addProjection) {
+          if (!report) {
+              // Create new report for the specified date if none exists
+              report = new DailyEmployeeProjection({
+                  employeeId,
+                  date,
+                  totalProjectionsFed: 1,
+                  totalEstimatedPayment: expectedPrice,
+                  projections: [{ companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks }]
+              });
+          } else {
+              // Update existing report for the specified date
+              report.totalProjectionsFed += 1;
+              report.totalEstimatedPayment += expectedPrice;
+              report.projections.push({ companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks });
+          }
+
+          await report.save();
+          return res.status(200).json({ success: true, message: 'Projection data recorded', report });
+          
+      } else {
+          // Handle the case when the employee chooses to set projections to zero for the day
+          if (!report) {
+              // Create new report with zero projection count if none exists for the date
+              report = new DailyEmployeeProjection({
+                  employeeId,
+                  date,
+                  totalProjectionsFed: 0,
+                  totalEstimatedPayment: 0,
+                  projections: []
+              });
+              await report.save();
+              return res.status(200).json({ success: true, message: 'No projections set for this date', report });
+          } else {
+              // If projections already exist, return an error indicating projections already set for this date
+              return res.status(400).json({ success: false, message: 'Projections already exist for this date' });
+          }
+      }
+  } catch (error) {
+      console.error("Error handling projection data:", error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 
