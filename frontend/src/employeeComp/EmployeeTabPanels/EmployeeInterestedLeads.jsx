@@ -55,13 +55,17 @@ function EmployeeInterestedLeads({
   selectedRows,
   userId,
   bdenumber,
-  //filteredData,
+  filteredData,
   filterMethod,
   completeGeneralData,
   dataToFilter,
   setInterestedData,
   setInterestedDataCount,
-  //setFilteredData
+  setFilteredData,
+  activeFilterField,
+  setActiveFilterField,
+  activeFilterFields,
+  setActiveFilterFields,
 }) {
   const [companyName, setCompanyName] = useState("");
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
@@ -104,15 +108,15 @@ function EmployeeInterestedLeads({
 
   // ----------------filter component----------------------
   const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+  //const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
   const [error, setError] = useState('');
   const [noOfAvailableData, setnoOfAvailableData] = useState(0);
-  const [activeFilterField, setActiveFilterField] = useState(null);
+  //const [activeFilterField, setActiveFilterField] = useState(null);
   const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
   const [isScrollLocked, setIsScrollLocked] = useState(false)
   const fieldRefs = useRef({});
   const filterMenuRef = useRef(null); // Ref for the filter menu container
-  const [filteredData, setFilteredData] = useState([]);
+  //const [filteredData, setFilteredData] = useState([]);
 
   const handleFilter = (newData) => {
     setFilteredData(newData)
@@ -155,6 +159,9 @@ function EmployeeInterestedLeads({
   }, []);
 
   console.log("interestedData", interestedData)
+  console.log("filterField" , activeFilterField)
+  console.log("activeFilterFieldsInterested", activeFilterFields)
+
 
   return (
     <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -228,6 +235,7 @@ function EmployeeInterestedLeads({
                           showingMenu={setShowFilterMenu}
                           dataForFilter={dataToFilter}
                           refetch={refetch}
+                          
                         />
                       </div>
                     )}

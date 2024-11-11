@@ -28,6 +28,7 @@ const FilterableComponentEmployee = ({
             applyFilters(selectedFilters, filterField); // Reapply filters without sorting
         } else {
             setSortOrder(order);
+            applyFilters(selectedFilters, filterField);
         }
     };
 
@@ -36,35 +37,47 @@ const FilterableComponentEmployee = ({
     // }, [sortOrder]);
 
 
+
+
     useEffect(() => {
         if (filteredData && filteredData.length !== 0) {
+            
             const values = filteredData.map(item => {
-                // Handle 'submittedOn' field by removing time part and just considering the date
-                if (filterField === 'AssignDate' || filterField === "Company Incorporation Date  ") {
-                    const submittedDate = formatDatePro(item[filterField]) // Convert date to string (ignoring time)
+                if (filterField === 'AssignDate' ||
+                    filterField === "Company Incorporation Date  " ||
+                    filterField === "bookingPublishDate" ||
+                    filterField === "bdeForwardDate"
+                ) {
+                    const submittedDate = formatDatePro(item[filterField]); // Convert date to string (ignoring time)
                     return submittedDate;
+                } else if (filterField === "bdmAcceptStatus") {
+                    return item[filterField] === "NotForwarded" ? "No" : "Yes";
                 }
-               
-                
-               
+
                 return item[filterField];
             }).filter(Boolean);
             setColumnValues([...new Set(values)]); // Ensure unique values
         } else {
+            
             const values = dataForFilter.map(item => {
-                // Handle 'submittedOn' field by removing time part and just considering the date
-
-                const submittedDate = item[filterField] ? new Date(item[filterField]).toLocaleDateString('en-IN') : ''; // Convert date to string (ignoring time)
-                if (filterField === 'AssignDate' || filterField === "Company Incorporation Date  ") {
-                    const submittedDate = formatDatePro(item[filterField]) // Convert date to string (ignoring time)
+                if (
+                    filterField === 'AssignDate' ||
+                    filterField === "Company Incorporation Date  " ||
+                    filterField === "bookingPublishDate" ||
+                    filterField === "bdeForwardDate"
+                ) {
+                    const submittedDate = formatDatePro(item[filterField]); // Convert date to string (ignoring time)
                     return submittedDate;
-                }                
-                
+                } else if (filterField === "bdmAcceptStatus") {
+                    return item[filterField] === "NotForwarded" ? "No" : "Yes";
+                }
+
                 return item[filterField];
             }).filter(Boolean);
             setColumnValues([...new Set(values)]); // Ensure unique values
         }
-    }, [filterField]);
+    }, [filterField, filteredData]);
+
 
     console.log("selectedFilters", selectedFilters);
     console.log("columnValues", columnValues);
@@ -101,14 +114,15 @@ const FilterableComponentEmployee = ({
         // Start with the data to be filtered
         if (filteredData && filteredData.length !== 0) {
             dataToSort = filteredData.map(item => {
-                
+
 
                 return {
                     ...item,
-                   
-                    companyInco : formatDatePro(item["Company Incorporation Date  "]),
-                    submittedDate: formatDatePro(item.AssignDate)
 
+                    companyInco: formatDatePro(item["Company Incorporation Date  "]),
+                    submittedDate: formatDatePro(item.AssignDate),
+                    bookingPublishDate: formatDatePro(item.bookingPublishDate),
+                    bdeForwardDate: formatDatePro(item.bdeForwardDate)
                 };
             });
 
@@ -124,7 +138,12 @@ const FilterableComponentEmployee = ({
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-                        
+                        // Handle bdmAcceptStatus with custom logic
+                        if (column === 'bdmAcceptStatus') {
+                            return columnFilters.includes('No')
+                                ? item[column] === "NotForwarded"
+                                : item[column] !== "NotForwarded";
+                        }
                         // For 'submittedOn', only compare date without time
                         if (column === 'AssignDate') {
                             const submittedDate = formatDatePro(item.AssignDate)
@@ -132,6 +151,14 @@ const FilterableComponentEmployee = ({
                         }
                         if (column === 'Company Incorporation Date  ') {
                             const submittedDate = formatDatePro(item["Company Incorporation Date  "])
+                            return columnFilters.includes(submittedDate);
+                        }
+                        if (column === 'bookingPublishDate') {
+                            const submittedDate = formatDatePro(item["bookingPublishDate"])
+                            return columnFilters.includes(submittedDate);
+                        }
+                        if (column === 'bdeForwardDate') {
+                            const submittedDate = formatDatePro(item["bdeForwardDate"])
                             return columnFilters.includes(submittedDate);
                         }
                         return columnFilters.includes(String(item[column]));
@@ -150,7 +177,11 @@ const FilterableComponentEmployee = ({
                     let valueB = b[column];
 
                     // Handle date sorting
-                    if (column === 'AssignDate' || column === "Company Incorporation Date  ") {
+                    if (column === 'AssignDate' ||
+                        column === "Company Incorporation Date  " ||
+                        column === "bookingPublishDate" ||
+                        column === "bdeForwardDate"
+                    ) {
                         const dateA = new Date(valueA);
                         const dateB = new Date(valueB);
                         if (sortOrder === 'oldest') {
@@ -184,21 +215,23 @@ const FilterableComponentEmployee = ({
             }
         } else {
             dataToSort = dataForFilter.map(item => {
-                
+
 
                 return {
                     ...item,
-                   
+
                     // Add submittedOn without time for comparison
-                    companyInco:formatDatePro(item["Company Incorporation Date  "]),
-                    submittedDate: formatDatePro(item.AssignDate)
+                    companyInco: formatDatePro(item["Company Incorporation Date  "]),
+                    submittedDate: formatDatePro(item.AssignDate),
+                    bookingPublishDate: formatDatePro(item.bookingPublishDate),
+                    bdeForwardDate: formatDatePro(item.bdeForwardDate)
+
                 };
             });
 
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
                 allFilterFields(prevFields => {
-
                     // Add the field if it's not active
                     return [...prevFields, column];
 
@@ -206,7 +239,12 @@ const FilterableComponentEmployee = ({
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-                        
+                        // Handle bdmAcceptStatus with custom logic
+                        if (column === 'bdmAcceptStatus') {
+                            return columnFilters.includes('No')
+                                ? item[column] === "NotForwarded"
+                                : item[column] !== "NotForwarded";
+                        }
                         // For 'submittedOn', only compare date without time
                         if (column === 'AssignDate') {
                             const submittedDate = formatDatePro(item.AssignDate)
@@ -214,6 +252,14 @@ const FilterableComponentEmployee = ({
                         }
                         if (column === 'Company Incorporation Date  ') {
                             const submittedDate = formatDatePro(item["Company Incorporation Date  "])
+                            return columnFilters.includes(submittedDate);
+                        }
+                        if (column === 'bookingPublishDate') {
+                            const submittedDate = formatDatePro(item["bookingPublishDate"])
+                            return columnFilters.includes(submittedDate);
+                        }
+                        if (column === 'bdeForwardDate') {
+                            const submittedDate = formatDatePro(item["bdeForwardDate"])
                             return columnFilters.includes(submittedDate);
                         }
                         return columnFilters.includes(String(item[column]));
@@ -231,7 +277,10 @@ const FilterableComponentEmployee = ({
                     let valueB = b[column];
 
                     // Handle date sorting
-                    if (column === 'AssignDate' || column === "Company Incorporation Date  ") {
+                    if (column === 'AssignDate' ||
+                        column === "Company Incorporation Date  " ||
+                        column === "bookingPublishDate" ||
+                        column === "bdeForwardDate") {
                         const dateA = new Date(valueA);
                         const dateB = new Date(valueB);
                         if (sortOrder === 'oldest') {
@@ -282,7 +331,7 @@ const FilterableComponentEmployee = ({
     // Example of logging the length of the selected filters for a specific field
     //console.log(selectedFilters[filterField]?.length, columnValues.length);
 
-    
+
     const handleClearAll = async () => {
         setSelectedFilters(prevFilters => ({
             ...prevFilters,
@@ -291,26 +340,6 @@ const FilterableComponentEmployee = ({
         onFilter(completeData);
         showingMenu(false);
         allFilterFields([]);
-
-        // try {
-        //     // Fetch the complete dataset from the API
-        //     const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest-complete`, {
-        //         params: {
-        //             search: "",           // Clear search query
-        //             page: 1,              // Reset to first page
-        //             limit: 50,            // Adjust limit as needed
-        //             activeTab: activeTab  // Adjust as needed
-        //         }
-        //     });
-
-        //     const { data, totalPages } = response.data;
-        //     onFilter(data);
-        //     allFilterFields([])
-        //     showingMenu(false)
-        //     noofItems(0)
-        // } catch (error) {
-        //     console.error("Error fetching complete data", error.message);
-        // }
     };
 
     function formatDatePro(inputDate) {
@@ -346,8 +375,8 @@ const FilterableComponentEmployee = ({
                     {filterField === "AssignDate" ||
                         filterField === "Company Number" ||
                         filterField === "Company Incorporation Date  " ||
-                        filterField === "totalPaymentWGST" ||
-                        filterField === "receivedPayment" ||
+                        filterField === "bookingPublishDate" ||
+                        filterField === "bdeForwardDate" ||
                         filterField === "pendingPayment" ? "Ascending" : "Sort A TO Z"}
                 </div>
 
@@ -359,8 +388,8 @@ const FilterableComponentEmployee = ({
                     {filterField === "AssignDate" ||
                         filterField === "Company Number" ||
                         filterField === "Company Incorporation Date  " ||
-                        filterField === "totalPaymentWGST" ||
-                        filterField === "receivedPayment" ||
+                        filterField === "bookingPublishDate" ||
+                        filterField === "bdeForwardDate" ||
                         filterField === "pendingPayment" ? "Descending" : "Sort Z TO A"}
                 </div>
                 <div className='w-100'>
