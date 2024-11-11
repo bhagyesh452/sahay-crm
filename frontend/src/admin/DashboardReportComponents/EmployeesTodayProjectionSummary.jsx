@@ -42,26 +42,29 @@ function EmployeesTodayProjectionSummary() {
 
     const fetchEmployee = async () => {
         try {
-            const res1 = axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            //const res1 = axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
             const res2 = axios.get(`${secretKey}/employee/einfo`);
     
-            const [result1, result2] = await Promise.allSettled([res1, res2]);
+            //const [result1, result2] = await Promise.allSettled([res1, res2]);
     
-            if (result1.status === 'fulfilled') {
-                setEmployeeName(result1.value.data.data.ename);
-            } else {
-                console.log("Error in fetching employee from ID:", result1.reason);
-            }
+            // if (result1.status === 'fulfilled') {
+            //     setEmployeeName(result1.value.data.data.ename);
+            // } else {
+            //     console.log("Error in fetching employee from ID:", result1.reason);
+            // }
     
-            if (result2.status === 'fulfilled') {
-                setTotalEmployees(result2.value.data);
-            } else {
-                console.log("Error in fetching employee info:", result2.reason);
-            }
+            //if (result2.status === 'fulfilled') {
+            console.log("res2.data", res2);
+                setTotalEmployees(res2.data);
+            // } else {
+            //     console.log("Error in fetching employee info:", result2.reason);
+            // }
         } catch (error) {
             console.log("Unexpected error in fetchEmployee:", error);
         }
     };
+
+    console.log("totak employees", totalEmployees);
     
 
     // const fetchNewProjection = async (values) => {
@@ -264,7 +267,7 @@ function EmployeesTodayProjectionSummary() {
 
     useEffect(() => {
         fetchNewProjection();
-    }, [employeeName, companyName]);
+    }, [totalEmployees]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-IN', {

@@ -131,6 +131,10 @@ const CompanySchema = new mongoose.Schema({
         type: String,
         default: false,
       },
+      lastAddedOnDate:{
+        type: Date,
+        // default: Date.now()
+      },
     },
   }],
 });

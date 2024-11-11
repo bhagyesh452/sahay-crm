@@ -274,7 +274,7 @@ function App() {
             <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeePanelCopy fordesignation="datamanager" />} />
             <Route path="/dataanalyst/bookings" element={<ManagerBookings />} />
             <Route path="/dataanalyst/expensereport" element={<ExpenseReport />} />
-            <Route path="/dataanalyst-profile-details" element={<DataAnalystProfile />} />
+            <Route path="/dataanalyst-profile-details/" element={<DataAnalystProfile />} />
             <Route path="/dataanalyst/notification" element={<NotificationDM />} />
             <Route path="/employeereportdatamanager/:ename/:status" element={<EmployeeStatusInfo />} />
             <Route path="/datamanager/datamanagerside-employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} />
