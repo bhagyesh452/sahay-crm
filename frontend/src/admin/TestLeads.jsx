@@ -2208,27 +2208,7 @@ function TestLeads() {
                                                                         secretKey={secretKey}
 
                                                                     />
-                                                                    {/* <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                    <p className="rematkText text-wrap m-0">
-                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                    </p>
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            functionopenpopupremarks(company._id, company.Status);
-                                                                        }}
-                                                                        style={{ cursor: "pointer" }}>
-                                                                        <IconEye
-
-                                                                            style={{
-                                                                                width: "14px",
-                                                                                height: "14px",
-                                                                                color: "#d6a10c",
-                                                                                cursor: "pointer",
-                                                                                marginLeft: "4px",
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                </div> */}
+                                                                    
                                                                 </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>

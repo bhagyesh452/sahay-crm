@@ -890,7 +890,7 @@ function DataAnalystProfile() {
 
                     {/* Payroll Information Component */}
                     <div class="tab-pane fade" id="PayrollInformation">
-                      <EmployeeViewPayrollView editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData} dataManagerUserId={userId} />
+                      <EmployeeViewPayrollView editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData} employeeUserId={userId} />
                     </div>
 
                     <div class="tab-pane fade" id="Emergency_Contact">

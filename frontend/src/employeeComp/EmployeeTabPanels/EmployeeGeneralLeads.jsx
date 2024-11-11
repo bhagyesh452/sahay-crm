@@ -41,12 +41,16 @@ function EmployeeGeneralLeads({
     handleMouseUp,
     selectedRows,
     bdenumber,
-    //filteredData,
+    filteredData,
     //handleFilter,
     completeGeneralData,
     dataToFilter,
     setGeneralData,
-    //setFilteredData,
+    setFilteredData,
+    activeFilterField,
+    setActiveFilterField,
+    activeFilterFields,
+    setActiveFilterFields,
     setGeneralDataCount
 }) {
 
@@ -64,14 +68,14 @@ function EmployeeGeneralLeads({
     const [nowToFetch, setNowToFetch] = useState(false);
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [isScrollLocked, setIsScrollLocked] = useState(false)
-    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    //const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
     const [error, setError] = useState('');
     const [noOfAvailableData, setnoOfAvailableData] = useState(0);
-    const [activeFilterField, setActiveFilterField] = useState(null);
+    //const [activeFilterField, setActiveFilterField] = useState(null);
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
-    const [filteredData, setFilteredData] = useState([]);
+    //const [filteredData, setFilteredData] = useState([]);
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
             setCurrentPage((prevPage) => prevPage + 1);

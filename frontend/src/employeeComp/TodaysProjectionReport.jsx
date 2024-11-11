@@ -194,7 +194,7 @@ function TodaysProjectionReport() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td className="particular" colSpan="12">
+                                            <td className="particular" colSpan="13">
                                                 <Nodata />
                                             </td>
                                         </tr>

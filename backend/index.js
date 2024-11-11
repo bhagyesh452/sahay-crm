@@ -84,7 +84,7 @@ const htmlDocx = require('html-docx-js');
 const RMServicesAPI = require("./helpers/RMServicesApi.js")
 const CustomerAPI = require("./helpers/CustomerApi.js")
 const RecruiterAPI = require("./helpers/recruitmentAPI.js")
-
+// const DailyEmployeeProjection = require('../models/DailyEmployeeProjection.js');
 const { MongoClient } = require('mongodb');
 // const { Cashfree } = require('cashfree-pg');
 
