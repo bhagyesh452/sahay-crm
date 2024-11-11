@@ -4,10 +4,11 @@ const DailyEmployeeProjectionSchema = new mongoose.Schema({
     ename: { type: String, required: true, unique: true }, // Unique across the entire model
     projectionsByDate: [
         {
-            estimatedPaymentDate: { type: Date, required: true }, // Date when payment is expected
+            estimatedPaymentDate: { type: Date }, // Date when payment is expected
+            result: { type: String, default:"Not Added Yet" },
             projections: [
                 {
-                    companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'newcdatas', required: true },
+                    companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'newcdatas' },
                     companyName : {type : String},
                     bdeName : {type : String},
                     bdmName : {type : String},

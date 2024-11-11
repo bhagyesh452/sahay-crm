@@ -3274,12 +3274,13 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
     let dailyProjection = await DailyEmployeeProjection.findOne({ ename });
 
     if (!dailyProjection) {
-      // Create a new document with the projection if none exists for the employee
+      // If no record exists, create a new document for the employee with the projection
       dailyProjection = new DailyEmployeeProjection({
         ename,
         projectionsByDate: [
           {
             estimatedPaymentDate: normalizedDate,
+            result: "Added", // Set result to "Added" since we are adding a projection
             projections: [
               {
                 companyId,
@@ -3296,11 +3297,6 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
         ],
       });
     } else {
-      // Find any existing date entry for this estimatedPaymentDate
-      let dateEntry = dailyProjection.projectionsByDate.find(
-        (entry) => entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
-      );
-
       // Remove the company from any existing date entries to prevent duplicates
       dailyProjection.projectionsByDate.forEach((entry) => {
         entry.projections = entry.projections.filter(
@@ -3313,8 +3309,13 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
         (entry) => entry.projections.length > 0
       );
 
+      // Find any existing date entry for this estimatedPaymentDate
+      let dateEntry = dailyProjection.projectionsByDate.find(
+        (entry) => entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
+      );
+
       if (dateEntry) {
-        // If a date entry exists for the target date, update or add the projection
+        // If a date entry exists, update the projection and set result to "Added"
         dateEntry.projections.push({
           companyId,
           companyName,
@@ -3325,10 +3326,12 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
           expectedPrice,
           remarks,
         });
+        dateEntry.result = "Added"; // Update result to "Added"
       } else {
-        // Otherwise, create a new date entry with the projection
+        // Otherwise, create a new date entry with the projection and result
         dailyProjection.projectionsByDate.push({
           estimatedPaymentDate: normalizedDate,
+          result: "Added",
           projections: [
             {
               companyId,
@@ -3354,117 +3357,114 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
 });
 
 
+
 router.post('/updateDailyProjection/:ename', async (req, res) => {
   const { ename } = req.params;
-  const { companyId, companyName,
+  const {
+    companyId,
+    companyName,
     bdeName,
     bdmName,
     offeredServices,
     estimatedPaymentDate,
     offeredPrice,
     expectedPrice,
-    remarks } = req.body.projectionData;
-
+    remarks
+  } = req.body.projectionData;
+  console.log("companyId", companyId)
   try {
     // Normalize the estimatedPaymentDate
     const normalizedDate = new Date(estimatedPaymentDate);
-    // normalizedDate.setHours(0, 0, 0, 0);
+    // normalizedDate.setHours(0, 0, 0, 0); // Ensure date normalization
 
-    // Find the employee's daily projection or create it if not found
+    // Find the employee's daily projection or create a new one if not found
     let dailyProjection = await DailyEmployeeProjection.findOne({ ename });
     if (!dailyProjection) {
       dailyProjection = new DailyEmployeeProjection({
         ename,
         projectionsByDate: [{
           estimatedPaymentDate: normalizedDate,
+          result: "Added", // Set result to "Added" since we are adding a projection
           projections: [{
-            companyId, companyName,
-            bdeName,
-            bdmName,
-            offeredServices, offeredPrice, expectedPrice, remarks
+            companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
           }]
         }]
       });
     } else {
-      // Check if the company already exists in any date's projections
-      let existingDateEntry;
+      // Find any existing projection with the same companyId
+      let existingDateIndex;
       let existingProjectionIndex;
+      let existingEntryDate;
 
       dailyProjection.projectionsByDate.forEach((dateEntry, dateIndex) => {
         dateEntry.projections.forEach((proj, projIndex) => {
+          console.log(proj.companyId.toString(), companyId.toString())
           if (proj.companyId.toString() === companyId.toString()) {
-            existingDateEntry = dateIndex;
+            existingDateIndex = dateIndex;
             existingProjectionIndex = projIndex;
+            existingEntryDate = dateEntry.estimatedPaymentDate;
           }
         });
       });
 
-      if (existingDateEntry !== undefined) {
-        // Get the existing projection's date
-        const existingEntryDate = dailyProjection.projectionsByDate[existingDateEntry].estimatedPaymentDate;
-
+      if (existingDateIndex !== undefined) {
+        // The projection exists, check if the date has changed
         if (existingEntryDate.getTime() !== normalizedDate.getTime()) {
-          // If the date has changed, remove the projection from the old date
-          dailyProjection.projectionsByDate[existingDateEntry].projections.splice(existingProjectionIndex, 1);
+          // Remove the projection from the old date entry
+          dailyProjection.projectionsByDate[existingDateIndex].projections.splice(existingProjectionIndex, 1);
 
-          // Remove the date entry if no projections are left for that date
-          if (dailyProjection.projectionsByDate[existingDateEntry].projections.length === 0) {
-            dailyProjection.projectionsByDate.splice(existingDateEntry, 1);
+          // If no projections are left for this date, update `result` to "Not Added Yet"
+          if (dailyProjection.projectionsByDate[existingDateIndex].projections.length === 0) {
+            dailyProjection.projectionsByDate[existingDateIndex].result = "Not Added Yet";
           }
+          // // Remove the date entry if no projections are left for that date
+          // if (dailyProjection.projectionsByDate[existingDateIndex].projections.length === 0) {
+          //   dailyProjection.projectionsByDate.splice(existingDateIndex, 1);
+          // }
 
           // Add a new entry for the updated date
-          const newDateEntry = dailyProjection.projectionsByDate.find(entry =>
+          let newDateEntry = dailyProjection.projectionsByDate.find(entry =>
             entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
           );
 
           if (newDateEntry) {
             newDateEntry.projections.push({
-              companyId, companyName,
-              bdeName,
-              bdmName,
-              offeredServices, offeredPrice, expectedPrice, remarks
+              companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
             });
+            newDateEntry.result = "Added"; // Set result to "Added" for the new date entry
           } else {
             dailyProjection.projectionsByDate.push({
               estimatedPaymentDate: normalizedDate,
+              result: "Added",
               projections: [{
-                companyId, companyName,
-                bdeName,
-                bdmName,
-                offeredServices, offeredPrice, expectedPrice, remarks
+                companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
               }]
             });
           }
         } else {
           // If the date hasn't changed, update the existing projection details
-          dailyProjection.projectionsByDate[existingDateEntry].projections[existingProjectionIndex] = {
-            companyId, companyName,
-            bdeName,
-            bdmName,
-            offeredServices, offeredPrice, expectedPrice, remarks
+          dailyProjection.projectionsByDate[existingDateIndex].projections[existingProjectionIndex] = {
+            companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
           };
+          dailyProjection.projectionsByDate[existingDateIndex].result = "Added"; // Ensure result is "Added"
         }
       } else {
-        // If it's a new projection for this estimatedPaymentDate
+        // If no existing projection is found for this companyId, add a new one for the specified date
         const dateEntry = dailyProjection.projectionsByDate.find(entry =>
           entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
         );
 
         if (dateEntry) {
           dateEntry.projections.push({
-            companyId, companyName,
-            bdeName,
-            bdmName,
-            offeredServices, offeredPrice, expectedPrice, remarks
+            companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
           });
+          dateEntry.result = "Added"; // Set result to "Added" for this date entry
         } else {
           dailyProjection.projectionsByDate.push({
             estimatedPaymentDate: normalizedDate,
+            result: "Added",
             projections: [{
-              companyId, companyName,
-              bdeName,
-              bdmName,
-              offeredServices, offeredPrice, expectedPrice, remarks
+              companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
             }]
           });
         }
@@ -3478,38 +3478,59 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
     res.status(500).json({ result: false, message: "Internal server error", error: error.message });
   }
 });
+
 // Endpoint to set projection count to zero for an employee on a specific date
 router.post('/setProjectionCountToZero', async (req, res) => {
   const { employeeName, date } = req.body;
 
   try {
-    // Parse the date to ensure we get the start of the day
-    const projectionDate = new Date(date);
-    projectionDate.setHours(0, 0, 0, 0);
+    // Normalize the date to check only for the day, ignoring the time
+    const normalizedDate = new Date(date);
+    // normalizedDate.setHours(0, 0, 0, 0);
 
-    // Check if an entry already exists for the employee and date
-    let dailyProjection = await DailyEmployeeProjection.findOne({ employeeId: employeeName, date: projectionDate });
+    // Find the employee's daily projection data
+    let dailyProjection = await DailyEmployeeProjection.findOne({ ename: employeeName });
 
     if (!dailyProjection) {
-      // If no projection exists for the day, create a new entry with zero count
+      // If no record exists for the employee, create it with a "Not Added Yet" result
       dailyProjection = new DailyEmployeeProjection({
-        employeeId: employeeName,
-        date: projectionDate,
-        totalProjectionsFed: 0,
-        totalEstimatedPayment: 0,
-        projections: []
+        ename: employeeName,
+        projectionsByDate: [
+          {
+            estimatedPaymentDate: normalizedDate,
+            result: "Not Added Yet",
+            projections: [] // Empty array as no projections are added
+          }
+        ]
       });
-      await dailyProjection.save();
-      return res.status(200).json({ result: true, message: "Projection count set to 0 for today", data: dailyProjection });
     } else {
-      // If an entry exists, return an error indicating projections are already recorded
-      return res.status(400).json({ result: false, message: "Projections already recorded for today" });
+      // Check if there’s already an entry for the given date
+      const dateEntry = dailyProjection.projectionsByDate.find(
+        entry => entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
+      );
+
+      if (dateEntry) {
+        // If an entry exists, set result to "Added" if there are projections, otherwise "Not Added Yet"
+        dateEntry.result = dateEntry.projections.length > 0 ? "Added" : "Not Added Yet";
+      } else {
+        // Add a new date entry with "Not Added Yet" if no entry exists for the date
+        dailyProjection.projectionsByDate.push({
+          estimatedPaymentDate: normalizedDate,
+          result: "Not Added Yet",
+          projections: []
+        });
+      }
     }
+
+    await dailyProjection.save();
+    res.json({ result: true, message: "Projection status updated for today", data: dailyProjection });
   } catch (error) {
     console.error("Error setting projection count to zero:", error);
-    return res.status(500).json({ result: false, message: "Internal server error", error: error.message });
+    res.status(500).json({ result: false, message: "Internal server error", error: error.message });
+    console.log(error)
   }
 });
+
 
 // Fetch all the projections :
 router.get('/getProjection', async (req, res) => {
@@ -3681,6 +3702,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
   } catch (error) {
     res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
+    console.log(error);
   }
 });
 
@@ -3722,6 +3744,55 @@ router.get('/getCurrentDayProjection', async (req, res) => {
       message: "Error fetching projection",
       error: error.message
     });
+  }
+});
+
+// Endpoint to fetch today's projections for all employees
+router.get('/getDailyEmployeeProjections', async (req, res) => {
+  try {
+      // Get today's date with time set to midnight for comparison
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Fetch all employees' projections from DailyEmployeeProjection
+      const dailyProjections = await DailyEmployeeProjection.find({});
+
+      // Structure the response to include data or "Not Added Yet" for today
+      const response = dailyProjections.map(employeeProjection => {
+          const { ename, projectionsByDate } = employeeProjection;
+
+          // Check if there’s an entry for today
+          const todayProjection = projectionsByDate.find(dateEntry =>
+              new Date(dateEntry.estimatedPaymentDate).getTime() === today.getTime()
+          );
+
+          if (todayProjection) {
+              // If projections exist for today, return details
+              return {
+                  ename,
+                  total_companies: todayProjection.projections.length,
+                  total_offered_price: todayProjection.projections.reduce((sum, proj) => sum + proj.offeredPrice, 0),
+                  total_estimated_payment: todayProjection.projections.reduce((sum, proj) => sum + proj.expectedPrice, 0),
+                  total_services: todayProjection.projections.reduce((sum, proj) => sum + (proj.offeredServices.length || 0), 0),
+                  result: todayProjection.result || "Added",
+              };
+          } else {
+              // If no data for today, set default fields
+              return {
+                  ename,
+                  total_companies: 0,
+                  total_offered_price: 0,
+                  total_estimated_payment: 0,
+                  total_services: 0,
+                  result: "Not Added Yet",
+              };
+          }
+      });
+
+      res.status(200).json({ result: true, message: "Daily employee projections fetched successfully", data: response });
+  } catch (error) {
+      console.error("Error fetching daily employee projections:", error);
+      res.status(500).json({ result: false, message: "Internal server error", error: error.message });
   }
 });
 
@@ -3922,116 +3993,117 @@ router.get('/getCurrentDayProjection', async (req, res) => {
 //   }
 // });
 
-router.get('/getProjection/:employeeName', async (req, res) => {
-  const { employeeName } = req.params;
-  const { companyName } = req.query;
+// router.get('/getProjection/:employeeName', async (req, res) => {
+//   const { employeeName } = req.params;
+//   const { companyName } = req.query;
 
-  try {
-    const query = {
-      $or: [
-        { bdeName: employeeName },
-        { bdmName: employeeName },
-        { "history.data.bdeName": employeeName },
-        { "history.data.bdmName": employeeName }
-      ]
-    };
+//   try {
+//     const query = {
+//       $or: [
+//         { bdeName: employeeName },
+//         { bdmName: employeeName },
+//         { "history.data.bdeName": employeeName },
+//         { "history.data.bdmName": employeeName }
+//       ]
+//     };
 
-    if (companyName) {
-      query.companyName = { $regex: companyName, $options: 'i' };
-    }
+//     if (companyName) {
+//       query.companyName = { $regex: companyName, $options: 'i' };
+//     }
 
-    const projections = await ProjectionModel.find(query);
-    const projectionSummary = [];
+//     const projections = await ProjectionModel.find(query);
+//     const projectionSummary = [];
 
-    projections.forEach(projection => {
-      const { bdeName, bdmName, totalPayment, history, _id, addedOnDate, companyName } = projection;
+//     projections.forEach(projection => {
+//       const { bdeName, bdmName, totalPayment, history, _id, addedOnDate, companyName } = projection;
 
-      // Set employee payment calculation for main object
-      let mainEmployeePayment = 0;
-      if (bdeName === bdmName && bdeName === employeeName) {
-        mainEmployeePayment = totalPayment;
-      } else if (bdeName === employeeName || bdmName === employeeName) {
-        mainEmployeePayment = totalPayment / 2;
-      }
+//       // Set employee payment calculation for main object
+//       let mainEmployeePayment = 0;
+//       if (bdeName === bdmName && bdeName === employeeName) {
+//         mainEmployeePayment = totalPayment;
+//       } else if (bdeName === employeeName || bdmName === employeeName) {
+//         mainEmployeePayment = totalPayment / 2;
+//       }
 
-      // Normalize addedOnDate to 00:00:00
-      const addedOnDateOnly = new Date(addedOnDate);
-      addedOnDateOnly.setHours(0, 0, 0, 0);
+//       // Normalize addedOnDate to 00:00:00
+//       const addedOnDateOnly = new Date(addedOnDate);
+//       addedOnDateOnly.setHours(0, 0, 0, 0);
 
-      // Main data
-      const mainData = {
-        _id,
-        projectionDate: projection.date,
-        companyName,
-        offeredServices: projection.offeredServices,
-        offeredPrice: projection.offeredPrice,
-        totalPayment: projection.totalPayment,
-        employeePayment: mainEmployeePayment,
-        bdeName,
-        bdmName,
-        lastFollowUpdate: projection.lastFollowUpdate,
-        estPaymentDate: projection.estPaymentDate,
-        remarks: projection.remarks,
-        caseType: projection.caseType,
-        isPreviousMaturedCase: projection.isPreviousMaturedCase,
-        addedOnDate: projection.addedOnDate,
-      };
+//       // Main data
+//       const mainData = {
+//         _id,
+//         projectionDate: projection.date,
+//         companyName,
+//         offeredServices: projection.offeredServices,
+//         offeredPrice: projection.offeredPrice,
+//         totalPayment: projection.totalPayment,
+//         employeePayment: mainEmployeePayment,
+//         bdeName,
+//         bdmName,
+//         lastFollowUpdate: projection.lastFollowUpdate,
+//         estPaymentDate: projection.estPaymentDate,
+//         remarks: projection.remarks,
+//         caseType: projection.caseType,
+//         isPreviousMaturedCase: projection.isPreviousMaturedCase,
+//         addedOnDate: projection.addedOnDate,
+//       };
 
-      // Group history records by lastAddedOnDate
-      const historyByDate = history.reduce((acc, entry) => {
-        const lastAddedOnDateOnly = new Date(entry.data.lastAddedOnDate);
-        lastAddedOnDateOnly.setHours(0, 0, 0, 0);
-        const dateKey = lastAddedOnDateOnly.toISOString();
+//       // Group history records by lastAddedOnDate
+//       const historyByDate = history.reduce((acc, entry) => {
+//         const lastAddedOnDateOnly = new Date(entry.data.lastAddedOnDate);
+//         lastAddedOnDateOnly.setHours(0, 0, 0, 0);
+//         const dateKey = lastAddedOnDateOnly.toISOString();
 
-        if (!acc[dateKey]) {
-          acc[dateKey] = [];
-        }
-        acc[dateKey].push(entry.data);
-        return acc;
-      }, {});
+//         if (!acc[dateKey]) {
+//           acc[dateKey] = [];
+//         }
+//         acc[dateKey].push(entry.data);
+//         return acc;
+//       }, {});
 
-      // Add main data first if there's no exact match in history for addedOnDate
-      const mainDateKey = addedOnDateOnly.toISOString();
-      projectionSummary.push(mainData);
+//       // Add main data first if there's no exact match in history for addedOnDate
+//       const mainDateKey = addedOnDateOnly.toISOString();
+//       projectionSummary.push(mainData);
 
-      // Add only the latest history record for each unique lastAddedOnDate, skipping if it matches addedOnDate
-      Object.entries(historyByDate).forEach(([dateKey, records]) => {
-        if (dateKey !== mainDateKey) { // Skip history if date matches main data's addedOnDate
-          const latestRecord = records.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+//       // Add only the latest history record for each unique lastAddedOnDate, skipping if it matches addedOnDate
+//       Object.entries(historyByDate).forEach(([dateKey, records]) => {
+//         if (dateKey !== mainDateKey) { // Skip history if date matches main data's addedOnDate
+//           const latestRecord = records.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 
-          let historyEmployeePayment = 0;
-          if (latestRecord.bdeName === latestRecord.bdmName && latestRecord.bdeName === employeeName) {
-            historyEmployeePayment = latestRecord.totalPayment;
-          } else if (latestRecord.bdeName === employeeName || latestRecord.bdmName === employeeName) {
-            historyEmployeePayment = latestRecord.totalPayment / 2;
-          }
+//           let historyEmployeePayment = 0;
+//           if (latestRecord.bdeName === latestRecord.bdmName && latestRecord.bdeName === employeeName) {
+//             historyEmployeePayment = latestRecord.totalPayment;
+//           } else if (latestRecord.bdeName === employeeName || latestRecord.bdmName === employeeName) {
+//             historyEmployeePayment = latestRecord.totalPayment / 2;
+//           }
 
-          projectionSummary.push({
-            _id: latestRecord._id || _id,
-            projectionDate: latestRecord.date,
-            companyName,
-            offeredServices: latestRecord.offeredServices,
-            offeredPrice: latestRecord.offeredPrice,
-            totalPayment: latestRecord.totalPayment,
-            employeePayment: historyEmployeePayment,
-            bdeName: latestRecord.bdeName,
-            bdmName: latestRecord.bdmName,
-            lastFollowUpdate: latestRecord.lastFollowUpdate,
-            estPaymentDate: latestRecord.estPaymentDate,
-            remarks: latestRecord.remarks,
-            caseType: latestRecord.caseType,
-            isPreviousMaturedCase: latestRecord.isPreviousMaturedCase,
-            addedOnDate: latestRecord.lastAddedOnDate,
-          });
-        }
-      });
-    });
+//           projectionSummary.push({
+//             _id: latestRecord._id || _id,
+//             projectionDate: latestRecord.date,
+//             companyName,
+//             offeredServices: latestRecord.offeredServices,
+//             offeredPrice: latestRecord.offeredPrice,
+//             totalPayment: latestRecord.totalPayment,
+//             employeePayment: historyEmployeePayment,
+//             bdeName: latestRecord.bdeName,
+//             bdmName: latestRecord.bdmName,
+//             lastFollowUpdate: latestRecord.lastFollowUpdate,
+//             estPaymentDate: latestRecord.estPaymentDate,
+//             remarks: latestRecord.remarks,
+//             caseType: latestRecord.caseType,
+//             isPreviousMaturedCase: latestRecord.isPreviousMaturedCase,
+//             addedOnDate: latestRecord.lastAddedOnDate,
+//           });
+//         }
+//       });
+//     });
 
-    res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
-  } catch (error) {
-    res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
-  }
-});
+//     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
+//   } catch (error) {
+//     res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
+//     console.log(error)
+//   }
+// });
 
 // router.post('/employee-projection/:employeeId', async (req, res) => {
 //   const { employeeId } = req.params;
@@ -4096,6 +4168,130 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 // });
 
 // Update projection and add to history :
+
+router.get('/getProjection/:employeeName', async (req, res) => {
+  const { employeeName } = req.params;
+  const { companyName } = req.query;
+
+  try {
+    const query = {
+      $or: [
+        { bdeName: employeeName },
+        { bdmName: employeeName },
+        { "history.data.bdeName": employeeName },
+        { "history.data.bdmName": employeeName }
+      ]
+    };
+
+    if (companyName) {
+      query.companyName = { $regex: companyName, $options: 'i' };
+    }
+
+    const projections = await ProjectionModel.find(query);
+    const projectionSummary = [];
+
+    projections.forEach(projection => {
+      const { bdeName, bdmName, totalPayment, history, _id, addedOnDate, companyName } = projection;
+
+      // Set employee payment calculation for main object
+      let mainEmployeePayment = 0;
+      if (bdeName === bdmName && bdeName === employeeName) {
+        mainEmployeePayment = totalPayment;
+      } else if (bdeName === employeeName || bdmName === employeeName) {
+        mainEmployeePayment = totalPayment / 2;
+      }
+
+      // Normalize addedOnDate if it exists
+      let addedOnDateOnly = null;
+      if (addedOnDate) {
+        addedOnDateOnly = new Date(addedOnDate);
+        addedOnDateOnly.setHours(0, 0, 0, 0);
+      }
+
+      // Main data
+      const mainData = {
+        _id,
+        projectionDate: projection.date,
+        companyName,
+        offeredServices: projection.offeredServices,
+        offeredPrice: projection.offeredPrice,
+        totalPayment: projection.totalPayment,
+        employeePayment: mainEmployeePayment,
+        bdeName,
+        bdmName,
+        lastFollowUpdate: projection.lastFollowUpdate,
+        estPaymentDate: projection.estPaymentDate,
+        remarks: projection.remarks,
+        caseType: projection.caseType,
+        isPreviousMaturedCase: projection.isPreviousMaturedCase,
+        addedOnDate: addedOnDateOnly,
+      };
+
+      // Group history records by lastAddedOnDate
+      const historyByDate = history.reduce((acc, entry) => {
+        // Normalize lastAddedOnDate if it exists
+        const lastAddedOnDateOnly = entry.data.lastAddedOnDate ? new Date(entry.data.lastAddedOnDate) : null;
+        if (lastAddedOnDateOnly) {
+          lastAddedOnDateOnly.setHours(0, 0, 0, 0);
+          const dateKey = lastAddedOnDateOnly.toISOString();
+
+          if (!acc[dateKey]) {
+            acc[dateKey] = [];
+          }
+          acc[dateKey].push(entry.data);
+        }
+        return acc;
+      }, {});
+
+      // Add main data first if there's no exact match in history for addedOnDate
+      if (addedOnDateOnly) {
+        const mainDateKey = addedOnDateOnly.toISOString();
+        projectionSummary.push(mainData);
+
+        // Add only the latest history record for each unique lastAddedOnDate, skipping if it matches addedOnDate
+        Object.entries(historyByDate).forEach(([dateKey, records]) => {
+          if (dateKey !== mainDateKey) {
+            const latestRecord = records.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+
+            let historyEmployeePayment = 0;
+            if (latestRecord.bdeName === latestRecord.bdmName && latestRecord.bdeName === employeeName) {
+              historyEmployeePayment = latestRecord.totalPayment;
+            } else if (latestRecord.bdeName === employeeName || latestRecord.bdmName === employeeName) {
+              historyEmployeePayment = latestRecord.totalPayment / 2;
+            }
+
+            projectionSummary.push({
+              _id: latestRecord._id || _id,
+              projectionDate: latestRecord.date,
+              companyName,
+              offeredServices: latestRecord.offeredServices,
+              offeredPrice: latestRecord.offeredPrice,
+              totalPayment: latestRecord.totalPayment,
+              employeePayment: historyEmployeePayment,
+              bdeName: latestRecord.bdeName,
+              bdmName: latestRecord.bdmName,
+              lastFollowUpdate: latestRecord.lastFollowUpdate,
+              estPaymentDate: latestRecord.estPaymentDate,
+              remarks: latestRecord.remarks,
+              caseType: latestRecord.caseType,
+              isPreviousMaturedCase: latestRecord.isPreviousMaturedCase,
+              addedOnDate: latestRecord.lastAddedOnDate,
+            });
+          }
+        });
+      } else {
+        // If addedOnDateOnly is invalid, just push the main data as-is
+        projectionSummary.push(mainData);
+      }
+    });
+
+    res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
+    console.log(error)
+  }
+});
+
 
 router.put('/updateProjection/:companyName', async (req, res) => {
   const { companyName } = req.params;

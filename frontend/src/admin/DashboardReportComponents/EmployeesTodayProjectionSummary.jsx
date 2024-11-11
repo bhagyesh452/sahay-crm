@@ -46,14 +46,14 @@ function EmployeesTodayProjectionSummary() {
         return new Intl.NumberFormat('en-IN').format(amount);
     };
 
-    
+
 
     const fetchEmployee = async () => {
         try {
-           
+
             const res2 = await axios.get(`${secretKey}/employee/einfo`);
-            console.log("res" , res2);
-                setTotalEmployees(res2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            console.log("res", res2);
+            setTotalEmployees(res2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
         } catch (error) {
             console.log("Unexpected error in fetchEmployee:", error);
         }
@@ -64,16 +64,19 @@ function EmployeesTodayProjectionSummary() {
     const fetchNewProjection = async (values) => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`${secretKey}/company-data/getCurrentDayProjection`, {
-                params: {
-                    companyName,
-                }
+
+            // Call the first API to get current day projections
+            const currentDayProjectionRes = await axios.get(`${secretKey}/company-data/getCurrentDayProjection`, {
+                params: { companyName },
             });
-    
-            // Transform the data to calculate the required metrics
-            const summary = res.data.data.reduce((acc, company) => {
+
+            // Call the new API to get daily employee projections including result status
+            const dailyEmployeeProjectionRes = await axios.get(`${secretKey}/company-data/getDailyEmployeeProjections`);
+            console.log("dailyEmployeeProjectionRes", dailyEmployeeProjectionRes);
+            // Transform the data from the first API to calculate the required metrics
+            const summary = currentDayProjectionRes.data.data.reduce((acc, company) => {
                 const isShared = company.bdeName !== company.bdmName;
-    
+
                 // Initialize each employee's data if not already in summary
                 [company.bdeName, company.bdmName].forEach((employeeName) => {
                     if (!acc[employeeName]) {
@@ -85,36 +88,28 @@ function EmployeesTodayProjectionSummary() {
                         };
                     }
                 });
-    
+
                 const serviceCount = company.offeredServices ? company.offeredServices.length : 0;
-    
+
                 if (isShared) {
-                    // For shared companies, add 0.5 to company count for each employee
                     acc[company.bdeName].total_companies += 0.5;
                     acc[company.bdmName].total_companies += 0.5;
-    
-                    // Add half of the price and payment amounts to each employee
                     acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;
                     acc[company.bdmName].total_offered_price += (company.offeredPrice || 0) * 0.5;
-    
                     acc[company.bdeName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
                     acc[company.bdmName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
-    
-                    // Add full service count to each employee without dividing
                     acc[company.bdeName].total_services += serviceCount;
                     acc[company.bdmName].total_services += serviceCount;
                 } else {
-                    // For non-shared companies, add full count to the single employee
                     acc[company.bdeName].total_companies += 1;
-    
                     acc[company.bdeName].total_offered_price += company.offeredPrice || 0;
                     acc[company.bdeName].total_estimated_payment += company.totalPayment || 0;
                     acc[company.bdeName].total_services += serviceCount;
                 }
-    
+
                 return acc;
             }, {});
-    
+
             // Convert the summary object to an array
             const summaryArray = Object.entries(summary).map(([ename, values]) => ({
                 ename,
@@ -123,37 +118,56 @@ function EmployeesTodayProjectionSummary() {
                 total_estimated_payment: values.total_estimated_payment,
                 total_services: values.total_services,
             }));
-    
-            // Ensure every employee in totalEmployees is represented in the projection summary
-            const completeSummaryArray = totalEmployees.map(employee => {
+
+            // Process daily employee projections to incorporate "Not Added Yet" status
+            const dailyEmployeeProjections = dailyEmployeeProjectionRes.data.data;
+            const combinedSummaryArray = totalEmployees.map(employee => {
                 const existingEmployee = summaryArray.find(summary => summary.ename === employee.ename);
+                const dailyProjection = dailyEmployeeProjections.find(daily => daily.ename === employee.ename);
+
+                // If the employee exists in both summaries, use existing data; otherwise, default values
                 if (existingEmployee) {
-                    return existingEmployee;
-                } else {
-                    // If employee not found, add a default entry
+                    return {
+                        ...existingEmployee,
+                        result: dailyProjection?.result || "Added",  // Add result status if available
+                    };
+                } else if (dailyProjection) {
+                    // If only found in daily projections, default counts with "Not Added Yet" as result
                     return {
                         ename: employee.ename,
                         total_companies: 0,
                         total_offered_price: 0,
                         total_estimated_payment: 0,
                         total_services: 0,
+                        result: dailyProjection.result || "Not Added Yet",
+                    };
+                } else {
+                    // If not found in either source, default values
+                    return {
+                        ename: employee.ename,
+                        total_companies: 0,
+                        total_offered_price: 0,
+                        total_estimated_payment: 0,
+                        total_services: 0,
+                        result: 0,
                     };
                 }
             });
-    
+
             // Sort so that employees with projections are on top and zero projections at the bottom
-            completeSummaryArray.sort((a, b) => b.total_companies - a.total_companies);
-    
-            console.log("Employee Projection Summary:", completeSummaryArray);
-            setProjection(completeSummaryArray);
+            combinedSummaryArray.sort((a, b) => b.total_companies - a.total_companies);
+
+            console.log("Employee Projection Summary:", combinedSummaryArray);
+            setProjection(combinedSummaryArray);
         } catch (error) {
-            console.log("Error to fetch today's projection :", error);
+            console.log("Error fetching today's projection:", error);
         } finally {
             setIsLoading(false);
         }
     };
-    
-    
+
+
+
     const handleOpenProjectionsForEmployee = async (employeeName) => {
         setProjectionEname(employeeName); // Store the employee name for dialog title
         try {
@@ -180,7 +194,7 @@ function EmployeesTodayProjectionSummary() {
         // Fetch employees on component mount
         fetchEmployee();
     }, []);
-    
+
     useEffect(() => {
         // Fetch projections only when totalEmployees has data
         if (totalEmployees && totalEmployees.length > 0) {
@@ -293,15 +307,15 @@ function EmployeesTodayProjectionSummary() {
                                                 <td>{index + 1}</td>
                                                 <td>{data.ename}</td>
                                                 <td>
-                                                    {data.total_companies}
-                                                    <FcDatabase
+                                                    {data.result === "Not Added Yet" ? "Not Added Yet" :data.total_companies}
+                                                    {data.result !== "Not Added Yet" && <FcDatabase
                                                         className='ml-1'
-                                                        onClick={() => handleOpenProjectionsForEmployee(data.ename)} />
+                                                        onClick={() => handleOpenProjectionsForEmployee(data.ename)} />}
                                                 </td>
-                                                <td>{data.total_services}</td>
-                                                <td>{formatCurrency(data.total_offered_price)}
+                                                <td>{data.result === "Not Added Yet" ? "Not Added Yet" :data.total_services}</td>
+                                                <td>{data.result === "Not Added Yet" ? "Not Added Yet" :formatCurrency(data.total_offered_price)}
                                                 </td>
-                                                <td>{formatCurrency(data.total_estimated_payment)}</td>
+                                                <td>{data.result === "Not Added Yet" ? "Not Added Yet" :formatCurrency(data.total_estimated_payment)}</td>
                                             </tr>
                                         ))
                                     ) : (
