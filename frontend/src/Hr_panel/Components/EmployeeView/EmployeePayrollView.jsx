@@ -11,12 +11,12 @@ import { MdOutlineEdit } from "react-icons/md";
 import { FaRegSave } from "react-icons/fa";
 
 
-function EmployeeViewPayrollView({ editField, setEditField, hrUserId, employeeUserId }) {
+function EmployeeViewPayrollView({ editField, setEditField, employeeUserId }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
     const path = window.location.pathname;
-    console.log("Full url path is :", path);
+    // console.log("Full url path is :", path);
 
     const [data, setData] = useState([]);
     const [accountNo, setAccountNo] = useState("");
@@ -45,7 +45,6 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, employeeUs
                 response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             }
 
-
             const tempData = employeeUserId ? response.data.data : response.data;
             const data = employeeUserId ? tempData : tempData.find((item) => item._id === userId);
             // console.log("Payroll Info is :", data);
@@ -67,7 +66,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, employeeUs
         }
     };
 
-    console.log("data :", data)
+    // console.log("data :", data);
 
     const formatSalary = (amount) => {
         return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
@@ -106,7 +105,7 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId, employeeUs
         };
         try {
             const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${userId}`, payload);
-            console.log("Updated details is :", res.data.data);
+            // console.log("Updated details is :", res.data.data);
             fetchEmployeeData();
             Swal.fire("Success", "Employee details updated successfully", "success");
         } catch (error) {
