@@ -752,8 +752,8 @@ function TeamLeadsInterested({
                                                         // Check if payment date is before the current date
                                                         if (paymentDate >= currentDate) {
                                                             setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
-                                                            setIsProjectionEditable(true);  // Enable edit mode
-                                                            newDesignation ? setViewProjection(true) : setViewProjection(false); // Open new projection dialog with enabled fields
+                                                            setIsProjectionEditable(newDesignation ? false : true);  // Enable edit mode
+                                                            setViewProjection(newDesignation ? true : false); // Open new projection dialog with disabled fields when new designation is admin or data manager
                                                             setShowNewAddProjection(true);  // Open new projection dialog
                                                             setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
                                                             // console.log("Projection data to be updated :", matchedItem);
@@ -762,7 +762,7 @@ function TeamLeadsInterested({
                                                             setIsProjectionEditable(false); // Disable edit mode
                                                             newDesignation && setViewProjection(true); // Open new projection dialog with disabled fields when new designation is admin or data manager
                                                             setShowNewAddProjection(true);  // Open new projection dialog
-                                                            setProjectionDataToBeFilled(company); // Set matched item in the state
+                                                            setProjectionDataToBeFilled(newDesignation ? matchedItem : company); // Set matched item in the state
                                                             // console.log("Projection data to be viewed :", matchedItem);
                                                         }
                                                     }}
@@ -783,7 +783,7 @@ function TeamLeadsInterested({
                                                         setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
                                                         setIsProjectionEditable(false); // Not opened in editing mode
                                                         setShowNewAddProjection(true);  // Open new projection dialog
-                                                        newDesignation ? setViewProjection(true) : setViewProjection(false); // Open new projection dialog with enabled fields
+                                                        setViewProjection(false); // Open new projection dialog with enabled fields
                                                         setProjectionDataToBeFilled(company); // Send whole company data when no match found
                                                         // console.log("Projection data to be added :", company);
                                                     }}

@@ -718,7 +718,7 @@ function EmployeeMaturedLeads({
                                                             // Check if payment date is before the current date
                                                             if (paymentDate >= currentDate) {
                                                                 setIsProjectionEditable(true);  // Enable edit mode
-                                                                (fordesignation === "admin" || fordesignation === "datamanager") ? setViewProjection(true) : setViewProjection(false); // Open new projection dialog with enabled fields
+                                                                setViewProjection((fordesignation === "admin" || fordesignation === "datamanager") ? true : false); // Open new projection dialog with disabled fields when designation is admin or datamanager
                                                                 setShowNewAddProjection(true);  // Open new projection dialog
                                                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
                                                                 // console.log("Projection data to be updated :", matchedItem);
@@ -726,7 +726,7 @@ function EmployeeMaturedLeads({
                                                                 setIsProjectionEditable(false); // Disable edit mode
                                                                 (fordesignation === "admin" || fordesignation === "datamanager") && setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                                                 setShowNewAddProjection(true);  // Open new projection dialog
-                                                                setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                                                setProjectionDataToBeFilled(fordesignation === "admin" || fordesignation === "datamanager" ? matchedItem : company); // Set matched item in the state
                                                                 // console.log("Projection data to be viewed :", matchedItem);
                                                             }
                                                         }}
