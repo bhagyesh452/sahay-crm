@@ -12,11 +12,11 @@ import EmployeeAddLeadDialog from './EmployeeAddLeadDialog';
 function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, refetch, isFilledFromTeamLeads, isProjectionEditable, projectionData, fetchNewProjection }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-// Convert the date to a valid "YYYY-MM-DD" format for input fields
-const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
-};
+    // Convert the date to a valid "YYYY-MM-DD" format for input fields
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
+    };
     // New state for enabling/disabling fields based on user selection
     const [addProjectionToday, setAddProjectionToday] = useState(null); // null initially, true for adding, false for skipping
     const [fieldsDisabled, setFieldsDisabled] = useState(true);
@@ -60,7 +60,7 @@ const formatDate = (dateString) => {
                 employeeName,
                 date: new Date().toISOString().split("T")[0] // Current date in YYYY-MM-DD format
             });
-    
+
             Swal.fire("Success", "Projection count set to 0 for today.", "success");
             closepopup();
             fetchNewProjection && fetchNewProjection();
@@ -212,6 +212,7 @@ const formatDate = (dateString) => {
             companyId: companyId,
             ename: employeeName ? employeeName : projectionData.ename,
             date: new Date(),
+            addedOnDate: new Date(),
             time: new Date().toLocaleTimeString(),
             offeredServices: offeredServices,
             offeredPrice: offeredPrice,
@@ -256,9 +257,9 @@ const formatDate = (dateString) => {
                 projectionData: {
                     date: payload.date,
                     companyId: payload.companyId,
-                    companyName : payload.companyName,
-                    bdeName : payload.bdeName,
-                    bdmName:payload.bdmName,
+                    companyName: payload.companyName,
+                    bdeName: payload.bdeName,
+                    bdmName: payload.bdmName,
                     offeredServices: payload.offeredServices,
                     estimatedPaymentDate: payload.estPaymentDate,
                     offeredPrice: payload.offeredPrice,
@@ -279,7 +280,7 @@ const formatDate = (dateString) => {
     };
 
     const handleUpdateProjection = async () => {
-        console.log("projectionData" , projectionData)
+        console.log("projectionData", projectionData)
         const payload = {
             ename: isFilledFromTeamLeads ? selectedBdm : selectedBde,
             date: new Date(),
@@ -326,9 +327,9 @@ const formatDate = (dateString) => {
                 projectionData: {
                     ename: payload.ename,
                     companyId: selectedCompany ? selectedCompany._id : "",
-                    companyName : payload.companyName,
-                    bdeName : payload.bdeName,
-                    bdmName:payload.bdmName,
+                    companyName: payload.companyName,
+                    bdeName: payload.bdeName,
+                    bdmName: payload.bdmName,
                     offeredServices: payload.offeredServices,
                     estimatedPaymentDate: payload.estPaymentDate.toISOString().split('T')[0], // send in "YYYY-MM-DD" format
                     offeredPrice: payload.offeredPrice,
@@ -358,35 +359,35 @@ const formatDate = (dateString) => {
                         <IoClose color="primary"></IoClose>
                     </button>{" "}
                 </DialogTitle>
-
                 <DialogContent>
-                    {/* Radio buttons to decide whether to add a projection or skip */}
-                    <div className="form-group mb-2">
-                        <label>Do you want to add projection for the day?</label>
-                        <div className='mb-2 mt-1'>
-                            <label>
-                                <input
-                                    type="radio"
-                                    value="add"
-                                    checked={addProjectionToday === true}
-                                    onChange={handleRadioChange}
-                                />{" "}
-                                
-                                Yes, I want to add.
-                            </label>
-                            <label style={{ marginLeft: "10px" }}>
-                                <input
-                                    type="radio"
-                                    value="skip"
-                                    checked={addProjectionToday === false}
-                                    onChange={handleRadioChange}
-                                />{" "}
-                                I want to add projection for the day as 0.
-                            </label>
+                    {/* Conditionally render radio buttons if neither isProjectionEditable nor isProjectionAvailable are true */}
+                    {!(isProjectionEditable || isProjectionAvailable) && (
+                        <div className="form-group mb-2">
+                            <label>Do you want to add projection for the day?</label>
+                            <div className='mb-2 mt-1'>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        value="add"
+                                        checked={addProjectionToday === true}
+                                        onChange={handleRadioChange}
+                                    />{" "}
+                                    Yes, I want to add.
+                                </label>
+                                <label style={{ marginLeft: "10px" }}>
+                                    <input
+                                        type="radio"
+                                        value="skip"
+                                        checked={addProjectionToday === false}
+                                        onChange={handleRadioChange}
+                                    />{" "}
+                                    I want to add projection for the day as 0.
+                                </label>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Form fields with conditional disabling */}
+                    {/* Company Name field remains disabled if either isProjectionEditable or isProjectionAvailable is true */}
                     <label htmlFor="companyName">Company Name</label>
                     <input
                         id="companyName"
@@ -454,7 +455,7 @@ const formatDate = (dateString) => {
                                             className="form-select mt-1"
                                             name="bdmName"
                                             id="bdmName"
-                                            disabled={fieldsDisabled || (!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData))}
+                                            disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                             value={selectedBdm}
                                             onChange={(e) => setSelectedBdm(e.target.value)}
                                         >
@@ -476,7 +477,7 @@ const formatDate = (dateString) => {
                                     className="mt-1"
                                     options={options}
                                     placeholder="Select Services..."
-                                    isDisabled={fieldsDisabled || (!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData))}
+                                    isDisabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     onChange={(selectedOptions) => setOfferedServices(selectedOptions.map((option) => option.value))}
                                     value={offeredServices && offeredServices.map((value) => ({
                                         value,
@@ -495,7 +496,7 @@ const formatDate = (dateString) => {
                                     type="number"
                                     className="form-control mt-1"
                                     placeholder="Please Enter Offered Price"
-                                    disabled={fieldsDisabled || (!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData))}
+                                    disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     value={offeredPrice}
                                     onChange={(e) => setOfferedPrice(e.target.value)}
                                 />
@@ -509,7 +510,7 @@ const formatDate = (dateString) => {
                                     type="number"
                                     className="form-control mt-1"
                                     placeholder="Please Enter Expected Price"
-                                    disabled={fieldsDisabled || (!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData))}
+                                    disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     value={expectedPrice}
                                     onChange={(e) => setExpectedPrice(e.target.value)}
                                 />
@@ -524,7 +525,7 @@ const formatDate = (dateString) => {
                                 <input
                                     type="date"
                                     className="form-control mt-1"
-                                    disabled={fieldsDisabled || (!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData))}
+                                    disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     value={followupDate}
                                     onChange={(e) => setFollowupDate(e.target.value)}
                                 />
@@ -537,7 +538,7 @@ const formatDate = (dateString) => {
                                 <input
                                     type="date"
                                     className="form-control mt-1"
-                                    disabled={fieldsDisabled || (!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData))}
+                                    disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     value={paymentDate}
                                     onChange={(e) => setPaymentDate(e.target.value)}
                                 />
@@ -550,37 +551,52 @@ const formatDate = (dateString) => {
                         <textarea
                             className="form-control mt-1"
                             placeholder="Enter Remarks Here"
-                            disabled={fieldsDisabled || (!selectedCompany && !isProjectionEditable && (viewProjection || !projectionData))}
+                            disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                             value={remarks}
                             onChange={(e) => setRemarks(e.target.value)}
                         />
                     </div>
 
-                    {!viewProjection && addProjectionToday && addProjectionToday ? (
-                        <div className="card-footer">
-                            <button
-                                style={{ width: "100%" }}
-                                className="btn btn-success bdr-radius-none cursor-pointer"
-                                onClick={(isProjectionEditable || isProjectionAvailable) ? handleUpdateProjection : handleAddProjection}
-                                disabled={companyNotFound && !selectedCompany}
-                            >
-                                <MdOutlinePostAdd /> {(isProjectionEditable || isProjectionAvailable) ? "Update Projection" : "Add Projection"}
-                            </button>
-                        </div>
+                    {/* Conditional footer buttons */}
+                    {!(isProjectionEditable || isProjectionAvailable) ? (
+                        addProjectionToday ? (
+                            <div className="card-footer">
+                                <button
+                                    style={{ width: "100%" }}
+                                    className="btn btn-success bdr-radius-none cursor-pointer"
+                                    onClick={handleAddProjection}
+                                    disabled={companyNotFound && !selectedCompany}
+                                >
+                                    <MdOutlinePostAdd /> Add Projection
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="card-footer">
+                                <button
+                                    style={{ width: "100%" }}
+                                    className="btn btn-success bdr-radius-none cursor-pointer"
+                                    onClick={handleSkipProjection}
+                                >
+                                    <MdOutlinePostAdd /> Submit No Projection
+                                </button>
+                            </div>
+                        )
                     ) : (
                         <div className="card-footer">
                             <button
                                 style={{ width: "100%" }}
                                 className="btn btn-success bdr-radius-none cursor-pointer"
-                                onClick={handleSkipProjection}
-                            // disabled={companyNotFound && !selectedCompany}
+                                onClick={handleUpdateProjection}
+                                disabled={companyNotFound && !selectedCompany}
                             >
-                                <MdOutlinePostAdd /> {"Submit No Projection"}
+                                <MdOutlinePostAdd /> Update Projection
                             </button>
                         </div>
-                    )
-                    }
+                    )}
                 </DialogContent>
+
+
+
 
                 {showAddLeadsPopup && (
                     <EmployeeAddLeadDialog
