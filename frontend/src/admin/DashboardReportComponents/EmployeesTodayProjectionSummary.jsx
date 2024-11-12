@@ -307,8 +307,8 @@ function EmployeesTodayProjectionSummary() {
                                                 <td>{index + 1}</td>
                                                 <td>{data.ename}</td>
                                                 <td>
-                                                {data.result ? (data.result === "Not Added Yet" ? 0 : data.total_companies) : "Not Added Yet"}
-                                                    {data.result !== "Not Added Yet" && <FcDatabase
+                                                    {data.result ? (data.result === "Not Added Yet" ? 0 : data.total_companies) : "Not Added Yet"}
+                                                    {data.result !== "Not Added Yet" && data.result && <FcDatabase
                                                         className='ml-1'
                                                         onClick={() => handleOpenProjectionsForEmployee(data.ename)} />}
                                                 </td>
