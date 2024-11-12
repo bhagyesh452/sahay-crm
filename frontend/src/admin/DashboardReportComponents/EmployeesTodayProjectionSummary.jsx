@@ -14,8 +14,8 @@ import { MdHistory } from "react-icons/md";
 
 function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranch }) {
 
-    console.log("Is floor manager view :", isFloorManagerView);
-    console.log("Floor manager branch :", floorManagerBranch);
+    // console.log("Is floor manager view :", isFloorManagerView);
+    // console.log("Floor manager branch :", floorManagerBranch);
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
