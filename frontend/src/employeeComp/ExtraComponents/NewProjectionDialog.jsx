@@ -362,7 +362,7 @@ const formatDate = (dateString) => {
                 <DialogContent>
                     {/* Radio buttons to decide whether to add a projection or skip */}
                     <div className="form-group mb-2">
-                        <label>Add Projection for Today?</label>
+                        <label>Do you want to add projection for the day?</label>
                         <div className='mb-2 mt-1'>
                             <label>
                                 <input
@@ -371,7 +371,8 @@ const formatDate = (dateString) => {
                                     checked={addProjectionToday === true}
                                     onChange={handleRadioChange}
                                 />{" "}
-                                You want to add projections today?
+                                
+                                Yes, I want to add.
                             </label>
                             <label style={{ marginLeft: "10px" }}>
                                 <input
@@ -380,7 +381,7 @@ const formatDate = (dateString) => {
                                     checked={addProjectionToday === false}
                                     onChange={handleRadioChange}
                                 />{" "}
-                                You don't want to add any projections today?
+                                I want to add projection for the day as 0.
                             </label>
                         </div>
                     </div>

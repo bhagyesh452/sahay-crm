@@ -139,7 +139,7 @@ function EmployeesTodayProjectionSummary() {
                         total_offered_price: 0,
                         total_estimated_payment: 0,
                         total_services: 0,
-                        result: dailyProjection.result || "Not Added Yet",
+                        result: dailyProjection.result === "Not Added Yet" ? 0   : "Not Added Yet",
                     };
                 } else {
                     // If not found in either source, default values
