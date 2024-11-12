@@ -90,7 +90,7 @@ function ManageLeads() {
 
 
     useEffect(() => {
-        document.title = `Dataanalyst-Sahay-CRM`;
+        document.title = `Data-Analyst-Sahay-CRM`;
     }, []);
 
     const fetchTotalLeads = async () => {

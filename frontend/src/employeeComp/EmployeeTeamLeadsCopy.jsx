@@ -65,6 +65,35 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [bdmName, setbdmName] = useState("");
     const [showProjection, setShowProjection] = useState(false);
 
+    // Filter States
+    const [generalDataCount, setGeneralDataCount] = useState(0);
+    const [completeGeneralData, setCompleteGeneralData] = useState([]);
+    const [dataToFilterGeneral, setDataToFilterGeneral] = useState([]);
+    const [filteredDataGeneral, setFilteredDataGeneral] = useState([]);
+    const [activeFilterFieldsGeneral, setActiveFilterFieldsGeneral] = useState([]); // New state for active filter fields
+    const [activeFilterFieldGeneral, setActiveFilterFieldGeneral] = useState(null);
+
+    const [interestedDataCount, setInterestedDataCount] = useState(0);
+    const [completeInterestedData, setCompleteInterestedData] = useState([]);
+    const [dataToFilterInterested, setDataToFilterInterested] = useState([]);
+    const [filteredDataInterested, setFilteredDataInterested] = useState([]);
+    const [activeFilterFieldsInterested, setActiveFilterFieldsInterested] = useState([]); // New state for active filter fields
+    const [activeFilterFieldInterested, setActiveFilterFieldInterested] = useState(null);
+
+    const [maturedDataCount, setMaturedDataCount] = useState(0);
+    const [completeMaturedData, setCompleteMaturedData] = useState([]);
+    const [dataToFilterMatured, setDataToFilterMatured] = useState([]);
+    const [filteredDataMatured, setFilteredDataMatured] = useState([]);
+    const [activeFilterFieldsMatured, setActiveFilterFieldsMatured] = useState([]); // New state for active filter fields
+    const [activeFilterFieldMatured, setActiveFilterFieldMatured] = useState(null);
+
+    const [notInterestedDataCount, setNotInterestedDataCount] = useState(0);
+    const [completeNotInterestedData, setCompleteNotInterestedData] = useState([]);
+    const [dataToFilterNotInterested, setDataToFilterNotInterested] = useState([]);
+    const [filteredDataNotInterested, setFilteredDataNotInterested] = useState([]);
+    const [activeFilterFieldsNotInterested, setActiveFilterFieldsNotInterested] = useState([]); // New state for active filter fields
+    const [activeFilterFieldNotInterested, setActiveFilterFieldNotInterested] = useState(null);
+
     const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -247,8 +276,21 @@ function EmployeeTeamLeadsCopy({ designation }) {
     useEffect(() => {
         if (teamLeadsData?.data) {
             setGeneralData(teamLeadsData?.data?.generalData);
+            // setGeneralDataCount(queryData?.totalCounts.untouched)
+            // setCompleteGeneralData(queryData?.generalData);
+            // setDataToFilterGeneral(queryData?.generalData);
+
             setInterestedData(teamLeadsData?.data?.interestedData);
+            // setCompleteInterestedData(queryData?.interestedData);
+            // setDataToFilterInterested(queryData?.interestedData);
+            // setInterestedData(queryData?.interestedData);
+            // setInterestedDataCount(queryData?.totalCounts.interested)
+
             setMaturedData(teamLeadsData?.data?.maturedData);
+            // setDataToFilterMatured(queryData?.maturedData);
+            // setCompleteMaturedData(queryData?.maturedData);
+            // setMaturedDataCount(queryData?.totalCounts.matured);
+
             setNotInterestedData(teamLeadsData?.data?.notInterestedData);
         }
     }, [teamLeadsData?.data, searchQuery]);
@@ -309,10 +351,14 @@ function EmployeeTeamLeadsCopy({ designation }) {
     useEffect(() => {
         if (designation === "admin") {
             document.title = `Admin-Sahay-CRM`;
+        } else if (designation === "datamanager") {
+            document.title = `Data-Analyst-Sahay-CRM`
+        } else if (data.newDesignation === "Floor Manager") {
+            document.title = `Floor-Manager-Sahay-CRM`;
         } else {
             document.title = `Employee-Sahay-CRM`;
         }
-    }, [designation]);
+    }, [data.ename]);
 
     const handleCheckboxChange = (id, event) => {
         // If the id is 'all', toggle all checkboxes
@@ -373,7 +419,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
             });
         }
     };
-
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
@@ -506,7 +551,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                 Swal.fire('Deleted!', 'The selected companies have been deleted.', 'success');
                 setSelectedRows([]);
                 refetchTeamLeads();
-                console.log("Companies updated and deleted successfully", response.data);
+                // console.log("Companies updated and deleted successfully", response.data);
             } catch (error) {
                 console.error("Error deleting companies:", error);
                 Swal.fire('Error!', 'There was an error deleting the companies.', 'error');
@@ -572,7 +617,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
                 navigate(`/managing-director/employees/${nextId}`);
             } else {
                 navigate(`/dataanalyst/employeeLeads/${nextId}`);
-
             }
             //setBackButton(nextId !== 0);
         } else {
@@ -627,7 +671,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                                 type="button"
                                                                 className={
                                                                     (designation === "admin" && window.location.pathname === `/managing-director/employeeleads/${userId}`) ||
-                                                                        (designation === "datamanager" && window.location.pathname === `/datamanager/datamanagerside-employeeteamleads/${userId}`)
+                                                                        (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${userId}`)
                                                                         ? "btn mybtn active"
                                                                         : "btn mybtn"
                                                                 }
@@ -635,7 +679,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                                     if (designation === "admin") {
                                                                         navigate(`/managing-director/employeeleads/${userId}`);
                                                                     } else if (designation === "datamanager") {
-                                                                        navigate(`/datamanager/datamanagerside-employeeteamleads/${userId}`);
+                                                                        navigate(`/dataanalyst/employeeteamleads/${userId}`);
                                                                     }
                                                                 }}
                                                             >
@@ -647,7 +691,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             )}
                                         </div>
 
-                                        {designation !== "admin" && <div className="btn-group" role="group" aria-label="Basic example">
+                                        {designation !== "admin" && designation !== "datamanager" && <div className="btn-group" role="group" aria-label="Basic example">
                                             <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
                                             // onClick={() => setOpenFilterDrawer(true)}
                                             >

@@ -70,7 +70,7 @@ function DataAnalystProfile() {
   );
 
   useEffect(() => {
-    document.title = `Dataanalyst-Sahay-CRM`;
+    document.title = `Data-Analyst-Sahay-CRM`;
   }, []);
 
   const [selectedFile, setSelectedFile] = useState(null);

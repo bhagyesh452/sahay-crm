@@ -139,7 +139,7 @@ function EmployeeInterestedLeads({
   };
   const isActiveField = (field) => activeFilterFields.includes(field);
 
-  console.log("activeFilterFieldsInterested", activeFilterFields)
+  console.log("activeFilterFieldsInterested", activeFilterFields);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -158,9 +158,9 @@ function EmployeeInterestedLeads({
     }
   }, []);
 
-  console.log("interestedData", interestedData)
-  console.log("filterField" , activeFilterField)
-  console.log("activeFilterFieldsInterested", activeFilterFields)
+  console.log("interestedData", interestedData);
+  console.log("filterField" , activeFilterField);
+  console.log("activeFilterFieldsInterested", activeFilterFields);
 
 
   return (
@@ -807,13 +807,13 @@ function EmployeeInterestedLeads({
                               // Check if payment date is before the current date
                               if (paymentDate >= currentDate) {
                                 setIsProjectionEditable(true);  // Enable edit mode
-                                setViewProjection(false); // Ensure view mode is off when editing
+                                (fordesignation === "admin" || fordesignation === "datamanager") ? setViewProjection(true) : setViewProjection(false); // Open new projection dialog with enabled fields
                                 setShowNewAddProjection(true);  // Open new projection dialog
                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
                                 // console.log("Projection data to be updated :", matchedItem);
                               } else {
                                 setIsProjectionEditable(false); // Disable edit mode
-                                // setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                (fordesignation === "admin" || fordesignation === "datamanager") && setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                 setShowNewAddProjection(true);  // Open new projection dialog
                                 setProjectionDataToBeFilled(company); // Set matched item in the state
                                 // console.log("Projection data to be viewed :", matchedItem);
@@ -823,7 +823,7 @@ function EmployeeInterestedLeads({
                             <RiEditCircleFill
                               color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
                                 ? "#fbb900"
-                                : "grey"}
+                                : (fordesignation === "admin" || fordesignation === "datamanager") ? "#fbb900" : "grey"}
                               style={{
                                 width: "17px",
                                 height: "17px",
@@ -839,9 +839,10 @@ function EmployeeInterestedLeads({
                               setProjectionDataToBeFilled(company); // Send whole company data when no match found
                               // console.log("Projection data to be added :", company);
                             }}
+                            disabled={fordesignation === "admin" || fordesignation === "datamanager"}
                           >
                             <RiEditCircleFill
-                              color="grey"
+                              color={(fordesignation === "admin" || fordesignation === "datamanager") ? "lightgrey" : "grey"}
                               style={{
                                 width: "17px",
                                 height: "17px",
@@ -849,6 +850,7 @@ function EmployeeInterestedLeads({
                             />
                           </IconButton>
                         )}
+                        
                         {/* <ProjectionDialog
                           key={company._id}
                           projectionCompanyName={company["Company Name"]}

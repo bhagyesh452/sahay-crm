@@ -112,7 +112,7 @@ function Datamanager_DeletedEmployeePanel({ searchValue }) {
   };
 
   useEffect(() => {
-    document.title = `Dataanalyst-Sahay-CRM`;
+    document.title = `Data-Analyst-Sahay-CRM`;
   }, []);
 
   const adminName = localStorage.getItem("adminName")

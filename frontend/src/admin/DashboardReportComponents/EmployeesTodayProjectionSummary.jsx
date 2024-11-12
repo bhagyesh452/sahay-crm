@@ -12,10 +12,19 @@ import { MdHistory } from "react-icons/md";
 
 
 
-function EmployeesTodayProjectionSummary() {
+function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranch }) {
+
+    // console.log("Is floor manager view :", isFloorManagerView);
+    // console.log("Floor manager branch :", floorManagerBranch);
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
+
+    const excludedEmployees = [
+        "Vishnu Suthar", "Vandit Shah", "Khushi Gandhi",
+        "Yashesh Gajjar", "Ravi Prajapati", "Yash Goswami"
+    ];
+
     const [isLoading, setIsLoading] = useState(false);
     const [showProjectionDialog, setShowProjectionDialog] = useState(false);
     const [isProjectionEditable, setIsProjectionEditable] = useState(false);
@@ -46,20 +55,37 @@ function EmployeesTodayProjectionSummary() {
         return new Intl.NumberFormat('en-IN').format(amount);
     };
 
+    // const fetchEmployee = async () => {
+    //     try {
 
+    //         const res2 = await axios.get(`${secretKey}/employee/einfo`);
+    //         console.log("res", res2);
+    //         setTotalEmployees(res2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+    //     } catch (error) {
+    //         console.log("Unexpected error in fetchEmployee:", error);
+    //     }
+    // };
 
     const fetchEmployee = async () => {
         try {
-
             const res2 = await axios.get(`${secretKey}/employee/einfo`);
-            console.log("res", res2);
-            setTotalEmployees(res2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            let employees = res2.data.filter(
+                (employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
+            );
+
+            if (isFloorManagerView) {
+                employees = employees.filter(
+                    (employee) =>
+                        !excludedEmployees.includes(employee.ename) &&
+                        employee.branchOffice === floorManagerBranch
+                );
+            }
+
+            setTotalEmployees(employees);
         } catch (error) {
             console.log("Unexpected error in fetchEmployee:", error);
         }
     };
-
-
 
     const fetchNewProjection = async (values) => {
         try {
@@ -72,7 +98,7 @@ function EmployeesTodayProjectionSummary() {
 
             // Call the new API to get daily employee projections including result status
             const dailyEmployeeProjectionRes = await axios.get(`${secretKey}/company-data/getDailyEmployeeProjections`);
-            console.log("dailyEmployeeProjectionRes", dailyEmployeeProjectionRes);
+            // console.log("dailyEmployeeProjectionRes", dailyEmployeeProjectionRes);
             // Transform the data from the first API to calculate the required metrics
             const summary = currentDayProjectionRes.data.data.reduce((acc, company) => {
                 const isShared = company.bdeName !== company.bdmName;
@@ -156,8 +182,7 @@ function EmployeesTodayProjectionSummary() {
 
             // Sort so that employees with projections are on top and zero projections at the bottom
             combinedSummaryArray.sort((a, b) => b.total_companies - a.total_companies);
-
-            console.log("Employee Projection Summary:", combinedSummaryArray);
+            // console.log("Employee Projection Summary:", combinedSummaryArray);
             setProjection(combinedSummaryArray);
         } catch (error) {
             console.log("Error fetching today's projection:", error);
@@ -166,8 +191,6 @@ function EmployeesTodayProjectionSummary() {
         }
     };
 
-
-
     const handleOpenProjectionsForEmployee = async (employeeName) => {
         setProjectionEname(employeeName); // Store the employee name for dialog title
         try {
@@ -175,10 +198,9 @@ function EmployeesTodayProjectionSummary() {
             const res = await axios.get(`${secretKey}/company-data/getCurrentDayProjection/${employeeName}`, {
                 params: {
                     companyName,
-
                 }
             });
-            console.log("Projection data is :", res.data.data);
+            // console.log("Projection data is :", res.data.data);
             setEmployeeProjectionData(res.data.data);
             setOpenProjectionTable(true); // Open the dialog
         } catch (error) {
@@ -214,7 +236,7 @@ function EmployeesTodayProjectionSummary() {
     const handleViewHistory = (companyId) => {
         // Find the specific projection that matches the companyId
         const selectedProjection = employeeProjectionData.find(projection => projection._id === companyId);
-        console.log("selectedProjection", selectedProjection)
+        // console.log("selectedProjection", selectedProjection)
         setHistoryCompanyName(selectedProjection.companyName)
         setAddedOnDate(selectedProjection.addedOnDate)
 
@@ -231,8 +253,8 @@ function EmployeesTodayProjectionSummary() {
         setOpenProjectionTable(true);
     }
 
-    console.log("historyData", historyData)
-    console.log("totalEmployees", totalEmployees)
+    // console.log("historyData", historyData);
+    // console.log("totalEmployees", totalEmployees);
 
 
     return (
@@ -281,6 +303,7 @@ function EmployeesTodayProjectionSummary() {
                                         }}>
                                         <th>Sr. No</th>
                                         <th>Employee Name</th>
+                                        <th>Branch</th>
                                         <th>Total Companies</th>
                                         <th>Offered Services</th>
                                         <th>Total Offered Price</th>
@@ -288,7 +311,7 @@ function EmployeesTodayProjectionSummary() {
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                {/* <tbody>
                                     {isLoading && <tr>
                                         <td colSpan="11" className="LoaderTDSatyle">
                                             <ClipLoader
@@ -337,7 +360,59 @@ function EmployeesTodayProjectionSummary() {
                                             <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_estimated_payment, 0))}</td>
                                         </tr>
                                     </tfoot>
-                                }
+                                } */}
+
+                                {/* New code with branch office */}
+                                <tbody>
+                                    {isLoading && (
+                                        <tr>
+                                            <td colSpan="7" className="LoaderTDSatyle">
+                                                <ClipLoader color="lightgrey" loading size={30} aria-label="Loading Spinner" data-testid="loader" />
+                                            </td>
+                                        </tr>
+                                    )}
+
+                                    {projection && projection.length > 0 ? (
+                                        projection.map((data, index) => {
+                                            // Find the branch office for each employee in totalEmployees
+                                            const employee = totalEmployees.find((emp) => emp.ename === data.ename);
+                                            const branchOffice = employee ? employee.branchOffice : '-';
+
+                                            return (
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{data.ename}</td>
+                                                    <td>{branchOffice}</td>
+                                                    <td>
+                                                        {data.total_companies}
+                                                        <FcDatabase className='ml-1' onClick={() => handleOpenProjectionsForEmployee(data.ename)} />
+                                                    </td>
+                                                    <td>{data.total_services}</td>
+                                                    <td>{formatCurrency(data.total_offered_price)}</td>
+                                                    <td>{formatCurrency(data.total_estimated_payment)}</td>
+                                                </tr>
+                                            );
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td className="particular" colSpan="7">
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+
+                                {projection && projection.length > 0 && (
+                                    <tfoot className="admin-dash-tbl-tfoot">
+                                        <tr style={{ fontWeight: 500 }} className="tf-sticky">
+                                            <td colSpan="3">Total</td>
+                                            <td>{projection.reduce((total, item) => total + item.total_companies, 0)}</td>
+                                            <td>{projection.reduce((total, item) => total + item.total_services, 0)}</td>
+                                            <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_offered_price, 0))}</td>
+                                            <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_estimated_payment, 0))}</td>
+                                        </tr>
+                                    </tfoot>
+                                )}
 
                             </table>
                         </div>

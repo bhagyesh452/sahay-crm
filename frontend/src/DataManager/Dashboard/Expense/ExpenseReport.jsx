@@ -31,7 +31,7 @@ function ExpenseReport() {
     const [dateRange, setDateRange] = useState([null, null]);
 
     useEffect(() => {
-        document.title = `Dataanalyst-Sahay-CRM`;
+        document.title = `Data-Analyst-Sahay-CRM`;
     }, []);
 
     const formatSalary = (amount) => {

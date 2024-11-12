@@ -116,7 +116,7 @@ function ManagerBookings() {
   }, [leadFormData]);
 
   useEffect(() => {
-    document.title = `Dataanalyst-Sahay-CRM`;
+    document.title = `Data-Analyst-Sahay-CRM`;
   }, []);
 
   useEffect(() => {
