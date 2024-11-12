@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -7,11 +7,24 @@ import { GoArrowRight } from "react-icons/go";
 import Nodata from '../../components/Nodata';
 import TeamLeadsRemarksDialog from '../ExtraComponents/TeamLeadsRemarksDialog';
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
+import FilterableComponentEmployee from '../ExtraComponents/FilterableComponentEmployee';
 import { FaEye } from "react-icons/fa";
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
 
 function TeamLeadsNotInterested({
     secretKey,
     notInterestedData,
+    setNotInterestedData,
+    setNotInterestedDataCount,
+    dataToFilterNotInterested,
+    completeNotInterestedData,
+    filteredDataNotInterested,
+    setFilteredDataNotInterested,
+    activeFilterFieldNotInterested,
+    setActiveFilterFieldNotInterested,
+    activeFilterFieldsNotInterested,
+    setActiveFilterFieldsNotInterested,
     isLoading,
     refetchTeamLeads,
     formatDateNew,
@@ -34,6 +47,57 @@ function TeamLeadsNotInterested({
     handleMouseEnter,
     handleMouseUp
 }) {
+
+    // Team Leads Not Interested Filtered States :
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [isScrollLocked, setIsScrollLocked] = useState(false)
+    //const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [error, setError] = useState('');
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+    //const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+
+    const handleFilter = (newData) => {
+        // console.log("newData", newData);
+        setFilteredDataNotInterested(newData);
+        setNotInterestedData(newData);
+        setNotInterestedDataCount(newData.length);
+    };
+
+    const handleFilterClick = (field) => {
+        if (activeFilterFieldNotInterested === field) {
+            setShowFilterMenu(!showFilterMenu);
+            setIsScrollLocked(!showFilterMenu);
+        } else {
+            setActiveFilterFieldNotInterested(field);
+            setShowFilterMenu(true);
+            setIsScrollLocked(true);
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+
+    const isActiveField = (field) => activeFilterFieldsNotInterested.includes(field);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+                    setIsScrollLocked(false);
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+
+    // console.log("activeFilterFieldsNotInterested :", activeFilterFieldsNotInterested);
+    // console.log("notInterestedData :" , notInterestedData);
 
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -72,19 +136,352 @@ function TeamLeadsNotInterested({
                                         </th>
                                     )}
                                 <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1"}>Sr. No</th>
-                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2"}>Compnay Name</th>
-                                <th>BDE Name</th>
-                                <th>Company Number</th>
+                                <th className={(newDesignation === "admin" || newDesignation === "datamanager") ? "AEP-sticky-left-3" : "rm-sticky-left-2"}>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['Company Name'] = el}>
+                                            Company Name
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('Company Name') ? (
+                                                <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'Company Name' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['ename'] = el}>
+                                            BDE Name
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('ename') ? (
+                                                <FaFilter onClick={() => handleFilterClick("ename")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("ename")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'ename' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['Company Number'] = el}>
+                                            Company Number
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('Company Number') ? (
+                                                <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'Company Number' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
                                 <th>Call History</th>
-                                <th>BDE Status</th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['bdeOldStatus'] = el}>
+                                            BDE Status
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('bdeOldStatus') ? (
+                                                <FaFilter onClick={() => handleFilterClick("bdeOldStatus")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("bdeOldStatus")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'bdeOldStatus' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
                                 <th>BDE Remarks</th>
                                 <th>BDM Status</th>
                                 <th>BDM Remarks</th>
-                                <th>Incorporation Date</th>
-                                <th>City</th>
-                                <th>State</th>
-                                <th>Compnay Email</th>
-                                <th>BDE Forwarded Date</th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['Company Incorporation Date  '] = el}>
+                                            Incorporation Date
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('Company Incorporation Date  ') ? (
+                                                <FaFilter onClick={() => handleFilterClick("Company Incorporation Date  ")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("Company Incorporation Date  ")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'Company Incorporation Date  ' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['City'] = el}>
+                                            City
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('City') ? (
+                                                <FaFilter onClick={() => handleFilterClick("City")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("City")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'City' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['State'] = el}>
+                                            State
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('State') ? (
+                                                <FaFilter onClick={() => handleFilterClick("State")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("State")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'State' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['Company Email'] = el}>
+                                            Company Email
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('Company Email') ? (
+                                                <FaFilter onClick={() => handleFilterClick("Company Email")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("Company Email")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'Company Email' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['bdeForwardDate'] = el}>
+                                            BDE Forwarded Date
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('bdeForwardDate') ? (
+                                                <FaFilter onClick={() => handleFilterClick("bdeForwardDate")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("bdeForwardDate")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterFieldNotInterested === 'bdeForwardDate' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFieldsNotInterested}
+                                                    filteredData={filteredDataNotInterested}
+                                                    activeTab={"notInterested"}
+                                                    data={notInterestedData}
+                                                    filterField={activeFilterFieldNotInterested}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeNotInterestedData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilterNotInterested}
+                                                    refetch={refetchTeamLeads}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
 

@@ -276,22 +276,24 @@ function EmployeeTeamLeadsCopy({ designation }) {
     useEffect(() => {
         if (teamLeadsData?.data) {
             setGeneralData(teamLeadsData?.data?.generalData);
-            // setGeneralDataCount(queryData?.totalCounts.untouched)
-            // setCompleteGeneralData(queryData?.generalData);
-            // setDataToFilterGeneral(queryData?.generalData);
+            setGeneralDataCount(teamLeadsData?.data?.totalGeneral);
+            setCompleteGeneralData(teamLeadsData?.data?.generalData);
+            setDataToFilterGeneral(teamLeadsData?.data?.generalData);
 
             setInterestedData(teamLeadsData?.data?.interestedData);
-            // setCompleteInterestedData(queryData?.interestedData);
-            // setDataToFilterInterested(queryData?.interestedData);
-            // setInterestedData(queryData?.interestedData);
-            // setInterestedDataCount(queryData?.totalCounts.interested)
+            setInterestedDataCount(teamLeadsData?.data?.totalInterested);
+            setCompleteInterestedData(teamLeadsData?.data?.interestedData);
+            setDataToFilterInterested(teamLeadsData?.data?.interestedData);
 
             setMaturedData(teamLeadsData?.data?.maturedData);
-            // setDataToFilterMatured(queryData?.maturedData);
-            // setCompleteMaturedData(queryData?.maturedData);
-            // setMaturedDataCount(queryData?.totalCounts.matured);
+            setMaturedDataCount(teamLeadsData?.data?.totalMatured);
+            setCompleteMaturedData(teamLeadsData?.data?.maturedData);
+            setDataToFilterMatured(teamLeadsData?.data?.maturedData);
 
             setNotInterestedData(teamLeadsData?.data?.notInterestedData);
+            setNotInterestedDataCount(teamLeadsData?.data?.totalNotInterested);
+            setCompleteNotInterestedData(teamLeadsData?.data?.notInterestedData);
+            setDataToFilterNotInterested(teamLeadsData?.data?.notInterestedData);
         }
     }, [teamLeadsData?.data, searchQuery]);
 
@@ -446,7 +448,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
             }
         }
     };
-    
+
     // console.log("data", teamLeadsData?.data);
 
     const handleMouseUp = () => {
@@ -795,7 +797,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             >
                                                 <div>General</div>
                                                 <div className="no_badge">
-                                                    {teamLeadsData?.data?.totalGeneral || 0}
+                                                    {generalDataCount || 0}
                                                 </div>
 
                                             </a>
@@ -817,7 +819,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             >
                                                 Interested
                                                 <span className="no_badge">
-                                                    {teamLeadsData?.data?.totalInterested || 0}
+                                                    {interestedDataCount || 0}
                                                 </span>
                                             </a>
                                         </li>
@@ -838,7 +840,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             >
                                                 Matured
                                                 <span className="no_badge">
-                                                    {teamLeadsData?.data?.totalMatured || 0}
+                                                    {maturedDataCount || 0}
                                                 </span>
                                             </a>
                                         </li>
@@ -859,7 +861,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             >
                                                 Not Interested
                                                 <span className="no_badge">
-                                                    {teamLeadsData?.data?.totalNotInterested || 0}
+                                                    {notInterestedDataCount || 0}
                                                 </span>
                                             </a>
                                         </li>
@@ -872,6 +874,16 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             secretKey={secretKey}
                                             // generalData={teamLeadsData?.data?.data}
                                             generalData={generalData}
+                                            setGeneralData={setGeneralData}
+                                            setGeneralDataCount={setGeneralDataCount}
+                                            dataToFilterGeneral={dataToFilterGeneral}
+                                            completeGeneralData={completeGeneralData}
+                                            filteredDataGeneral={filteredDataGeneral}
+                                            setFilteredDataGeneral={setFilteredDataGeneral}
+                                            activeFilterFieldGeneral={activeFilterFieldGeneral}
+                                            setActiveFilterFieldGeneral={setActiveFilterFieldGeneral}
+                                            activeFilterFieldsGeneral={activeFilterFieldsGeneral}
+                                            setActiveFilterFieldsGeneral={setActiveFilterFieldsGeneral}
                                             isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
@@ -903,6 +915,16 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             employeeName={employeeName}
                                             // interestedData={teamLeadsData?.data?.data}
                                             interestedData={interestedData}
+                                            setInterestedData={setInterestedData}
+                                            setInterestedDataCount={setInterestedDataCount}
+                                            dataToFilterInterested={dataToFilterInterested}
+                                            completeInterestedData={completeInterestedData}
+                                            filteredDataInterested={filteredDataInterested}
+                                            setFilteredDataInterested={setFilteredDataInterested}
+                                            activeFilterFieldInterested={activeFilterFieldInterested}
+                                            setActiveFilterFieldInterested={setActiveFilterFieldInterested}
+                                            activeFilterFieldsInterested={activeFilterFieldsInterested}
+                                            setActiveFilterFieldsInterested={setActiveFilterFieldsInterested}
                                             isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
@@ -936,6 +958,16 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             secretKey={secretKey}
                                             // maturedData={teamLeadsData?.data?.data}
                                             maturedData={maturedData}
+                                            setMaturedData={setMaturedData}
+                                            setMaturedDataCount={setMaturedDataCount}
+                                            dataToFilterMatured={dataToFilterMatured}
+                                            completeMaturedData={completeMaturedData}
+                                            filteredDataMatured={filteredDataMatured}
+                                            setFilteredDataMatured={setFilteredDataMatured}
+                                            activeFilterFieldMatured={activeFilterFieldMatured}
+                                            setActiveFilterFieldMatured={setActiveFilterFieldMatured}
+                                            activeFilterFieldsMatured={activeFilterFieldsMatured}
+                                            setActiveFilterFieldsMatured={setActiveFilterFieldsMatured}
                                             isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
@@ -967,6 +999,16 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             secretKey={secretKey}
                                             // notInterestedData={teamLeadsData?.data?.data}
                                             notInterestedData={notInterestedData}
+                                            setNotInterestedData={setNotInterestedData}
+                                            setNotInterestedDataCount={setNotInterestedDataCount}
+                                            dataToFilterNotInterested={dataToFilterNotInterested}
+                                            completeNotInterestedData={completeNotInterestedData}
+                                            filteredDataNotInterested={filteredDataNotInterested}
+                                            setFilteredDataNotInterested={setFilteredDataNotInterested}
+                                            activeFilterFieldNotInterested={activeFilterFieldNotInterested}
+                                            setActiveFilterFieldNotInterested={setActiveFilterFieldNotInterested}
+                                            activeFilterFieldsNotInterested={activeFilterFieldsNotInterested}
+                                            setActiveFilterFieldsNotInterested={setActiveFilterFieldsNotInterested}
                                             isLoading={isTeamLeadsLoading}
                                             refetchTeamLeads={refetchTeamLeads}
                                             formatDateNew={formatDateNew}
