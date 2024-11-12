@@ -17,13 +17,14 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         const date = new Date(dateString);
         return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
     };
+
     // New state for enabling/disabling fields based on user selection
     const [addProjectionToday, setAddProjectionToday] = useState(null); // null initially, true for adding, false for skipping
     const [fieldsDisabled, setFieldsDisabled] = useState(true);
     const [companyName, setCompanyName] = useState(projectionData ? (projectionData.companyName || projectionData["Company Name"]) : '');
     const [companyId, setCompanyId] = useState(projectionData ? projectionData._id : '');
     const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
-    const [selectedBdm, setSelectedBdm] = useState('');
+    const [selectedBdm, setSelectedBdm] = useState(projectionData ? (projectionData.bdmName || projectionData.ename) : '');
     const [selectedBde, setSelectedBde] = useState(projectionData ? (projectionData.bdeName || projectionData.ename) : '');
     const [offeredServices, setOfferedServices] = useState(projectionData ? projectionData.offeredServices : []);
     const [offeredPrice, setOfferedPrice] = useState(projectionData ? projectionData.offeredPrice : null);
@@ -47,7 +48,6 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         } else {
             setAddProjectionToday(false);
             setFieldsDisabled(true);
-
             //handleSkipProjection();
         }
     };
@@ -361,7 +361,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                 </DialogTitle>
                 <DialogContent>
                     {/* Conditionally render radio buttons if neither isProjectionEditable nor isProjectionAvailable are true */}
-                    {!(isProjectionEditable || isProjectionAvailable) && (
+                    {!(isProjectionEditable || isProjectionAvailable || viewProjection) && (
                         <div className="form-group mb-2">
                             <label>Do you want to add projection for the day?</label>
                             <div className='mb-2 mt-1'>
@@ -558,41 +558,44 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                     </div>
 
                     {/* Conditional footer buttons */}
-                    {!(isProjectionEditable || isProjectionAvailable) ? (
-                        addProjectionToday ? (
-                            <div className="card-footer">
-                                <button
-                                    style={{ width: "100%" }}
-                                    className="btn btn-success bdr-radius-none cursor-pointer"
-                                    onClick={handleAddProjection}
-                                    disabled={companyNotFound && !selectedCompany}
-                                >
-                                    <MdOutlinePostAdd /> Add Projection
-                                </button>
-                            </div>
+                    {!viewProjection && ( // Only render buttons if viewProjection is false
+                        !(isProjectionEditable || isProjectionAvailable) ? (
+                            addProjectionToday ? (
+                                <div className="card-footer">
+                                    <button
+                                        style={{ width: "100%" }}
+                                        className="btn btn-success bdr-radius-none cursor-pointer"
+                                        onClick={handleAddProjection}
+                                        disabled={companyNotFound && !selectedCompany}
+                                    >
+                                        <MdOutlinePostAdd /> Add Projection
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="card-footer">
+                                    <button
+                                        style={{ width: "100%" }}
+                                        className="btn btn-success bdr-radius-none cursor-pointer"
+                                        onClick={handleSkipProjection}
+                                    >
+                                        <MdOutlinePostAdd /> Submit No Projection
+                                    </button>
+                                </div>
+                            )
                         ) : (
                             <div className="card-footer">
                                 <button
                                     style={{ width: "100%" }}
                                     className="btn btn-success bdr-radius-none cursor-pointer"
-                                    onClick={handleSkipProjection}
+                                    onClick={handleUpdateProjection}
+                                    disabled={companyNotFound && !selectedCompany}
                                 >
-                                    <MdOutlinePostAdd /> Submit No Projection
+                                    <MdOutlinePostAdd /> Update Projection
                                 </button>
                             </div>
                         )
-                    ) : (
-                        <div className="card-footer">
-                            <button
-                                style={{ width: "100%" }}
-                                className="btn btn-success bdr-radius-none cursor-pointer"
-                                onClick={handleUpdateProjection}
-                                disabled={companyNotFound && !selectedCompany}
-                            >
-                                <MdOutlinePostAdd /> Update Projection
-                            </button>
-                        </div>
                     )}
+
                 </DialogContent>
 
 
