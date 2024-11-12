@@ -209,13 +209,16 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
         }
     };
 
-    const handleOpenProjectionsForEmployee = async (employeeName) => {
+    const handleOpenProjectionsForEmployee = async (employeeName , date = selectedDate) => {
         setProjectionEname(employeeName); // Store the employee name for dialog title
         try {
             setIsLoading(true);
+            const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+            console.log("formattedDate", selectedDate, formattedDate)
             const res = await axios.get(`${secretKey}/company-data/getCurrentDayProjection/${employeeName}`, {
                 params: {
                     companyName,
+                    date : formattedDate
                 }
             });
             // console.log("Projection data is :", res.data.data);
@@ -228,7 +231,10 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
             setIsLoading(false);
         }
     }
-    const closeProjectionTable = () => setOpenProjectionTable(false);
+    const closeProjectionTable = () => {
+        setOpenProjectionTable(false)
+        // setSelectedDate(selectedDate)
+    };
 
     useEffect(() => {
         // Fetch employees on component mount
@@ -392,6 +398,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                                     onClear: () => {
                                                         setCleared(true);
                                                         fetchNewProjection(new Date()); // Reset to today's date if cleared
+                                                        setSelectedDate(new Date());
                                                     }
                                                 },
                                             }}

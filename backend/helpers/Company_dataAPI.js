@@ -3619,13 +3619,13 @@ router.get('/getProjection', async (req, res) => {
 
 router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
   const { employeeName } = req.params;
-  const { companyName } = req.query;
+  const { companyName, date } = req.query;
 
   try {
-    // Get the start and end of the current day
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date();
+    // If no date is provided, use the current day
+    const targetDate = date ? new Date(date) : new Date();
+    targetDate.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(targetDate);
     endOfDay.setHours(23, 59, 59, 999);
 
     // Build the query with dynamic filtering
@@ -3636,7 +3636,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
         { "history.data.bdeName": employeeName },
         { "history.data.bdmName": employeeName }
       ],
-      estPaymentDate: { $gte: startOfDay, $lte: endOfDay }
+      estPaymentDate: { $gte: targetDate, $lte: endOfDay }
     };
 
     // Add company name filter if provided
@@ -3656,7 +3656,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
 
       // Check main entry for employee relevance and date range
       if ((bdeName === employeeName || bdmName === employeeName) &&
-        estPaymentDate >= startOfDay && estPaymentDate <= endOfDay) {
+        estPaymentDate >= targetDate && estPaymentDate <= endOfDay) {
 
         let mainEmployeePayment = 0;
         if (bdeName === bdmName && bdeName === employeeName) {
@@ -3706,6 +3706,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
     console.log(error);
   }
 });
+
 
 // Fetching all projections for current day :
 router.get('/getCurrentDayProjection', async (req, res) => {

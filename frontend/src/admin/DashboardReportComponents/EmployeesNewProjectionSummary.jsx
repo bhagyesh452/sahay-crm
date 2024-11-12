@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import ClipLoader from "react-spinners/ClipLoader";
 import moment from "moment";
 import { useParams } from "react-router-dom";
@@ -88,7 +88,27 @@ function EmployeesNewProjectionSummary() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [employeeName, setEmployeeName] = useState('');
-
+    const [employeeProjectionData, setEmployeeProjectionData] = useState([])
+    const [projectionEname, setProjectionEname] = useState("")
+    const [openProjectionTable, setOpenProjectionTable] = useState(false);
+    const [historyData, setHistoryData] = useState([])
+    const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
+    const [historyCompanyName, setHistoryCompanyName] = useState("");
+    const [addedOnDate, setAddedOnDate] = useState(null);
+    const [filteredProjection, setFilteredProjection] = useState([]);
+    const [completeProjection, setCompleteProjection] = useState([]);
+    const [filteredData, setFilteredData] = useState([])
+    const [branchSearchTerm, setBranchSearchTerm] = useState(''); // Branch office search term
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [filterField, setFilterField] = useState("")
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const [cleared, setCleared] = useState(false);
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [searchTerm, setSearchTerm] = useState("")
     const fetchEmployee = async () => {
         try {
             const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
@@ -177,6 +197,7 @@ function EmployeesNewProjectionSummary() {
 
             console.log("Employee Projection Summary:", summaryArray);
             setProjection(summaryArray);
+            setFilteredProjection(summaryArray);
         } catch (error) {
             console.log("Error to fetch new projection:", error);
             setIsLoading(false);
@@ -185,14 +206,6 @@ function EmployeesNewProjectionSummary() {
         }
     };
 
-
-    const [employeeProjectionData, setEmployeeProjectionData] = useState([])
-    const [projectionEname, setProjectionEname] = useState("")
-    const [openProjectionTable, setOpenProjectionTable] = useState(false);
-    const [historyData, setHistoryData] = useState([])
-    const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
-    const [historyCompanyName, setHistoryCompanyName] = useState("");
-    const [addedOnDate, setAddedOnDate] = useState(null)
 
     const handleOpenProjectionsForEmployee = async (employeeName) => {
         setProjectionEname(employeeName); // Store the employee name for dialog title
@@ -253,8 +266,15 @@ function EmployeesNewProjectionSummary() {
         setOpenHistoryDialog(false);
         setOpenProjectionTable(true);
     }
-
-    // console.log("historyData", historyData)
+// ----------search function---------------------------------
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+        const searchValue = e.target.value.toLowerCase();
+        const filteredData = filteredProjection.filter((proj) =>
+            proj.ename.toLowerCase().includes(searchValue)
+        );
+        setProjection(filteredData);
+    };
 
     return (
         <div>
@@ -266,8 +286,7 @@ function EmployeesNewProjectionSummary() {
                                 Total Projection Summary
                             </h2>
                         </div>
-
-                        {/* <div className="d-flex align-items-center pr-1">
+                        <div className="d-flex align-items-center pr-1">
                             <div class="input-icon mr-1">
                                 <span class="input-icon-addon">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -276,19 +295,18 @@ function EmployeesNewProjectionSummary() {
                                         <path d="M21 21l-6 -6"></path>
                                     </svg>
                                 </span>
-
                                 <input
                                     className="form-control"
-                                    value={companyName}
-                                    onChange={(e) => setCompanyName(e.target.value)}
-                                    placeholder="Enter Company Name..."
+                                    value={searchTerm} // bind to searchTerm
+                                    onChange={handleSearch} // bind to handleSearch
+                                    placeholder="Search by Employee Name..."
                                     type="text"
-                                    name="company-search"
-                                    id="company-search"
+                                    name="employee-search"
+                                    id="employee-search"
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
                                     <DemoContainer components={["SingleInputDateRangeField"]}>
                                         <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
@@ -315,10 +333,9 @@ function EmployeesNewProjectionSummary() {
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
-                            </div>
-                        </div> */}
+                            </div> */}
+                        </div>
                     </div>
-
                     <div className="card-body">
                         <div id="table-default" className="row tbl-scroll">
                             <table className="table-vcenter table-nowrap admin-dash-tbl">
