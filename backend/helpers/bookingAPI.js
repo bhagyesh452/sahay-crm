@@ -2731,7 +2731,7 @@ router.post(
             const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
             return tempServices.includes(service);
           })
-            ? "Shubhi Banthiya"
+            ? "Nishtha Sharma"
             : "Dhruvi Gohel";
 
 
@@ -3189,12 +3189,12 @@ router.post(
           const tempMailName = newData.services.some((service) => {
             return servicesShubhi.includes(service.serviceName);
           })
-            ? "Shubhi Banthiya"
+            ? "Nishtha Sharma"
             : "Dhruvi Gohel";
 
           const mailName = newData.services.some((service) => {
             return service.serviceName === "Seed Fund Application"
-          }) && tempMailName === "Dhruvi Gohel" ? "Shubhi Banthiya" : tempMailName;
+          }) && tempMailName === "Dhruvi Gohel" ? "Nishtha Sharma" : tempMailName;
 
           const AuthorizedEmail =
             mailName === "Dhruvi Gohel"
@@ -3465,7 +3465,7 @@ router.post(
               "Private Limited Company Incorporation"
               || "OPC Private Limited Company Incorporation"
               || "LLP Company Incorporation" ? 2 : 1)
-            : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
+            : ((newData.services.length === 1 && mailName === "Nishtha Sharma"))
               ? 2
               : 3;
           const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 &&
@@ -3567,7 +3567,7 @@ router.post(
                           <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
                           <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
                          ${draftHtml}
-                          <p>If you face any problem in opening the form link or filling out the form, please get in touch with Shubhi Banthiya - Relationship Manager at +919998992601.</p>
+                          <p>If you face any problem in opening the form link or filling out the form, please get in touch with Nishtha Sharma - Relationship Manager at +919998992601.</p>
                           
                           
                           <div class="signature">
@@ -5110,7 +5110,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
       return tempServices.includes(service);
     })
-      ? "Shubhi Banthiya"
+      ? "Nishtha Sharma"
       : "Dhruvi Gohel";
 
     const newPageDisplay = newData.services.some((service) => {
@@ -5569,12 +5569,12 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const tempMailName = newData.services.some((service) => {
       return servicesShubhi.includes(service.serviceName);
     })
-      ? "Shubhi Banthiya"
+      ? "Nishtha Sharma"
       : "Dhruvi Gohel";
     const mailName = newData.services.some((service) => {
 
       return service.serviceName === "Seed Fund Application"
-    }) && tempMailName === "Dhruvi Gohel" ? "Shubhi Banthiya" : tempMailName;
+    }) && tempMailName === "Dhruvi Gohel" ? "Nishtha Sharma" : tempMailName;
 
     const draftCondition = newData.services.some((service) => {
       return includedServices.includes(service.serviceName);
@@ -5879,7 +5879,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
         "Private Limited Company Incorporation" ||
         "OPC Private Limited Company Incorporation" ||
         "LLP Company Incorporation" ? 2 : 1)
-      : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
+      : ((newData.services.length === 1 && mailName === "Nishtha Sharma"))
         ? 2
         : 3;
     const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
@@ -5942,7 +5942,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
         </li>
         <li>After entering the email ID, an OTP will be sent to you, which you will need to enter to access and fill the business input form.</li>
     </ol>
-    <p>If you face any problem in opening the form link or filling out the form, please get in touch with Shubhi Banthiya - Relationship Manager at +919998992601.</p>` : ``;
+    <p>If you face any problem in opening the form link or filling out the form, please get in touch with Nishtha Sharma - Relationship Manager at +919998992601.</p>` : ``;
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
     //console.log(clientMail)
