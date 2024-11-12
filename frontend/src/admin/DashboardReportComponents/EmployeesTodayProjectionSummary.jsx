@@ -139,7 +139,7 @@ function EmployeesTodayProjectionSummary() {
                         total_offered_price: 0,
                         total_estimated_payment: 0,
                         total_services: 0,
-                        result: dailyProjection.result === "Not Added Yet" ? 0   : "Not Added Yet",
+                        result: dailyProjection.result || "Not Added Yet",
                     };
                 } else {
                     // If not found in either source, default values
@@ -307,15 +307,15 @@ function EmployeesTodayProjectionSummary() {
                                                 <td>{index + 1}</td>
                                                 <td>{data.ename}</td>
                                                 <td>
-                                                    {data.result === "Not Added Yet" ? "Not Added Yet" :data.total_companies}
+                                                {data.result ? (data.result === "Not Added Yet" ? 0 : data.total_companies) : "Not Added Yet"}
                                                     {data.result !== "Not Added Yet" && <FcDatabase
                                                         className='ml-1'
                                                         onClick={() => handleOpenProjectionsForEmployee(data.ename)} />}
                                                 </td>
-                                                <td>{data.result === "Not Added Yet" ? "Not Added Yet" :data.total_services}</td>
-                                                <td>{data.result === "Not Added Yet" ? "Not Added Yet" :formatCurrency(data.total_offered_price)}
+                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : data.total_services) : "Not Added Yet"}</td>
+                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : data.total_offered_price) : "Not Added Yet"}
                                                 </td>
-                                                <td>{data.result === "Not Added Yet" ? "Not Added Yet" :formatCurrency(data.total_estimated_payment)}</td>
+                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : data.total_estimated_payment) : "Not Added Yet"}</td>
                                             </tr>
                                         ))
                                     ) : (
