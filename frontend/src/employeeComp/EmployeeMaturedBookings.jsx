@@ -749,7 +749,11 @@ function EmployeeMaturedBookings() {
                         </div>
                         {((isDeletedStatus === true && currentBdeName === data.ename) ||
                           ((isDeletedStatus === false || isDeletedStatus === undefined) && currentBdeName === data.ename)) && (
-                            <div className="bookings_add_more" title="Add More Booking" onClick={() => setAddFormOpen(true)}>
+                            <div className="bookings_add_more" title="Add More Booking" 
+                            onClick={() => 
+                              setAddFormOpen(true)
+                            }
+                            >
                               <FaPlus />
                             </div>
                           )}
@@ -2663,8 +2667,10 @@ function EmployeeMaturedBookings() {
           setFormOpen={setAddFormOpen}
           companysName={currentLeadform["Company Name"]}
           setNowToFetch={setNowToFetch}
-          employeeName={data.ename}
-          employeeEmail={data.email}
+          employeeName={currentLeadform.bdeName}
+          employeeEmail={currentLeadform.bdeEmail}
+          bdmName={data.ename}
+          bdmEmail={data.email}
         />
       )}
 

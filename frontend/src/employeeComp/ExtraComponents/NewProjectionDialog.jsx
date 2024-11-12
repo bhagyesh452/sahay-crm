@@ -12,7 +12,11 @@ import EmployeeAddLeadDialog from './EmployeeAddLeadDialog';
 function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, refetch, isFilledFromTeamLeads, isProjectionEditable, projectionData, fetchNewProjection }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+// Convert the date to a valid "YYYY-MM-DD" format for input fields
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
+};
     // New state for enabling/disabling fields based on user selection
     const [addProjectionToday, setAddProjectionToday] = useState(null); // null initially, true for adding, false for skipping
     const [fieldsDisabled, setFieldsDisabled] = useState(true);
@@ -34,13 +38,6 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     const [showAddLeadsPopup, setShowAddLeadsPopup] = useState(false);
     const [isProjectionAvailable, setIsProjectionAvailable] = useState(false);
 
-
-    // Convert the date to a valid "YYYY-MM-DD" format for input fields
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
-    };
-
     // Handle radio button selection
     const handleRadioChange = (event) => {
         const value = event.target.value;
@@ -59,7 +56,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     const handleSkipProjection = async () => {
         try {
             // Make a request to set projection count to zero for the employee and date
-            await axios.post(`${secretKey}/employee-projection/setProjectionCountToZero`, {
+            await axios.post(`${secretKey}/company-data/setProjectionCountToZero`, {
                 employeeName,
                 date: new Date().toISOString().split("T")[0] // Current date in YYYY-MM-DD format
             });
@@ -152,6 +149,63 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         setFieldsDisabled(true);
     };
 
+    const fetchSelectedCompanyProjection = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getProjection/${employeeName}`, {
+                params: {
+                    companyName: selectedCompany["Company Name"],
+                }
+            });
+            const projectionData = res.data.data;
+            // console.log("Fetched projection is :", projectionData);
+
+            if (projectionData) {
+                const futureProjections = projectionData.filter(p => new Date(p.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0));
+
+                if (futureProjections.length > 0) {
+                    // Sort future projections by estPaymentDate in descending order
+                    const latestProjection = futureProjections.sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))[0];
+
+                    // Fill the form with latest future projection
+                    setIsProjectionAvailable(true);
+                    setCompanyName(latestProjection.companyName);
+                    setCompanyId(latestProjection.companyId);
+                    setSelectedBdm(latestProjection.bdmName);
+                    setSelectedBde(latestProjection.bdeName);
+                    setOfferedServices(latestProjection.offeredServices);
+                    setOfferedPrice(latestProjection.offeredPrice);
+                    setExpectedPrice(latestProjection.totalPayment);
+                    setFollowupDate(formatDate(latestProjection.lastFollowUpdate));
+                    setPaymentDate(formatDate(latestProjection.estPaymentDate));
+                    setRemarks(latestProjection.remarks);
+                }
+            }
+        } catch (error) {
+            console.log("Error fetching projection for selected company :", error);
+            setIsProjectionAvailable(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedCompany) {
+            setCompanyName(selectedCompany["Company Name"]);
+            fetchSelectedCompanyProjection();
+        } else if (!projectionData) {
+            // Clear fields only if there's no projection data available (i.e., not in edit mode)
+            setIsProjectionAvailable(false);
+            setCompanyId('');
+            setCompanyName('');
+            setSelectedBdm('');
+            setSelectedBde('');
+            setOfferedServices([]);
+            setOfferedPrice('');
+            setExpectedPrice('');
+            setFollowupDate('');
+            setPaymentDate('');
+            setRemarks('');
+        }
+    }, [selectedCompany, projectionData]);
+
     const handleAddProjection = async () => {
         const payload = {
             companyName: companyName,
@@ -225,6 +279,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     };
 
     const handleUpdateProjection = async () => {
+        console.log("projectionData" , projectionData)
         const payload = {
             ename: isFilledFromTeamLeads ? selectedBdm : selectedBde,
             date: new Date(),
@@ -270,7 +325,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             const dailyProjectionPayload = {
                 projectionData: {
                     ename: payload.ename,
-                    companyId: res.data.data.companyId,
+                    companyId: selectedCompany ? selectedCompany._id : "",
                     companyName : payload.companyName,
                     bdeName : payload.bdeName,
                     bdmName:payload.bdmName,
@@ -307,7 +362,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                 <DialogContent>
                     {/* Radio buttons to decide whether to add a projection or skip */}
                     <div className="form-group mb-2">
-                        <label>Add Projection for Today?</label>
+                        <label>Do you want to add projection for the day?</label>
                         <div className='mb-2 mt-1'>
                             <label>
                                 <input
@@ -316,7 +371,8 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                     checked={addProjectionToday === true}
                                     onChange={handleRadioChange}
                                 />{" "}
-                                You want to add projections today?
+                                
+                                Yes, I want to add.
                             </label>
                             <label style={{ marginLeft: "10px" }}>
                                 <input
@@ -325,7 +381,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                     checked={addProjectionToday === false}
                                     onChange={handleRadioChange}
                                 />{" "}
-                                You don't want to add any projections today?
+                                I want to add projection for the day as 0.
                             </label>
                         </div>
                     </div>
