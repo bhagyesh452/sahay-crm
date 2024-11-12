@@ -3709,95 +3709,80 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
 
 // Fetching all projections for current day :
 router.get('/getCurrentDayProjection', async (req, res) => {
-  const { companyName } = req.query;
-
+  const { companyName, date } = req.query;
+  console.log("date", date)
   try {
-    // Define the start and end of the current day
-    const startOfDay = new Date();
+    const targetDate = new Date(date);
+    const startOfDay = new Date(targetDate);
     startOfDay.setHours(0, 0, 0, 0);
 
-    const endOfDay = new Date();
+    const endOfDay = new Date(targetDate);
     endOfDay.setHours(23, 59, 59, 999);
 
-    // Initialize the query to filter by today's date range
     const query = {
-      estPaymentDate: { $gte: startOfDay, $lte: endOfDay }
+      estPaymentDate: { $gte: startOfDay, $lte: endOfDay },
     };
 
-    // Add company name filter if provided in the query parameters
     if (companyName) {
-      query.companyName = { $regex: companyName, $options: 'i' }; // Case-insensitive match
+      query.companyName = { $regex: companyName, $options: 'i' };
     }
 
-    // Execute the query on the ProjectionModel
     const projections = await ProjectionModel.find(query);
-
-    // Send a success response with the fetched data
-    res.status(200).json({
-      result: true,
-      message: "Projection data fetched successfully",
-      data: projections
-    });
+    res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projections });
   } catch (error) {
-    // Handle any errors that occur during the query
-    res.status(500).json({
-      result: false,
-      message: "Error fetching projection",
-      error: error.message
-    });
+    res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
   }
 });
+
 
 // Endpoint to fetch today's projections for all employees
 router.get('/getDailyEmployeeProjections', async (req, res) => {
+  const { date } = req.query;
+  console.log("Requested date:", date);
+
   try {
-      // Get today's date and set time to midnight for comparison
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Ensure time is set to midnight
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0);
 
-      // Fetch all employees' projections from DailyEmployeeProjection
-      const dailyProjections = await DailyEmployeeProjection.find({});
+    const dailyProjections = await DailyEmployeeProjection.find({});
 
-      // Structure the response to include data or "Not Added Yet" for today
-      const response = dailyProjections.map(employeeProjection => {
-          const { ename, projectionsByDate } = employeeProjection;
+    const response = dailyProjections
+      .map(employeeProjection => {
+        const { ename, projectionsByDate } = employeeProjection;
 
-          // Check if there’s an entry for today
-          const todayProjection = projectionsByDate.find(dateEntry => {
-              const entryDate = new Date(dateEntry.estimatedPaymentDate);
-              entryDate.setHours(0, 0, 0, 0); // Ensure entry date is also set to midnight
-              return entryDate.getTime() === today.getTime();
-          });
+        const dateProjection = projectionsByDate.find(dateEntry => {
+          const entryDate = new Date(dateEntry.estimatedPaymentDate);
+          entryDate.setHours(0, 0, 0, 0);
+          return entryDate.getTime() === targetDate.getTime();
+        });
 
-          if (todayProjection) {
-              // If projections exist for today, return details
-              return {
-                  ename,
-                  total_companies: todayProjection.projections.length,
-                  total_offered_price: todayProjection.projections.reduce((sum, proj) => sum + proj.offeredPrice, 0),
-                  total_estimated_payment: todayProjection.projections.reduce((sum, proj) => sum + proj.expectedPrice, 0),
-                  total_services: todayProjection.projections.reduce((sum, proj) => sum + (proj.offeredServices.length || 0), 0),
-                  result: todayProjection.result || "Added",
-              };
-          } else {
-              // If no data for today, set default fields
-              return {
-                  ename,
-                  total_companies: 0,
-                  total_offered_price: 0,
-                  total_estimated_payment: 0,
-                  total_services: 0,
-                  result: "Not Added Yet",
-              };
-          }
-      });
+        if (dateProjection) {
+          return {
+            ename,
+            total_companies: dateProjection.projections.length,
+            total_offered_price: dateProjection.projections.reduce((sum, proj) => sum + proj.offeredPrice, 0),
+            total_estimated_payment: dateProjection.projections.reduce((sum, proj) => sum + proj.expectedPrice, 0),
+            total_services: dateProjection.projections.reduce((sum, proj) => sum + (proj.offeredServices.length || 0), 0),
+            result: dateProjection.result || "Added",
+          };
+        } else {
+          return null; // Return null if no projection found for the date
+        }
+      })
+      .filter(Boolean); // Filter out any null values
 
+    // Only return a response if there are valid projections for the date
+    if (response.length > 0) {
       res.status(200).json({ result: true, message: "Daily employee projections fetched successfully", data: response });
+    } else {
+      res.status(200).json({ result: true, message: "No projections found for the specified date", data: [] });
+    }
   } catch (error) {
-      console.error("Error fetching daily employee projections:", error);
-      res.status(500).json({ result: false, message: "Internal server error", error: error.message });
+    res.status(500).json({ result: false, message: "Internal server error", error: error.message });
   }
 });
+
+
 
 
 

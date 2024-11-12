@@ -16,7 +16,8 @@ const FilterTableCallingReport = ({
     allFilterFields,
     employeeData,
     // noofItems,
-    showingMenu }) => {
+    showingMenu,
+    forProjectionSummary }) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -69,7 +70,7 @@ const FilterTableCallingReport = ({
     useEffect(() => {
         applyFilters(selectedFilters, filterField);
     }, [sortOrder]);
-    console.log("employeeData", employeeData)
+
 
     useEffect(() => {
         const getValues = (dataSource) => {
@@ -83,25 +84,41 @@ const FilterTableCallingReport = ({
                     return employeeExists ? item.emp_name : null; // Return the employee name if exists
                 }
                 // Handle dynamic filtering for 'branchOffice'
-                if (filterField === "branchOffice") {
+                if (filterField === "branchOffice" && !forProjectionSummary) {
                     const employee = employeeData.find(
                         (data) => Number(data.number) === Number(item.emp_number)
                     );
                     return employee ? employee.branchOffice : null; // Return the branchOffice if exists
                 }
+
                 // Handle dynamic filtering for 'total_duration'
                 if (filterField === "total_duration") {
                     const durationInSeconds = item.total_duration; // Assuming duration is in seconds
                     return formatDuration(durationInSeconds); // Convert to hh:mm:ss
                 }
+                // Handle dynamic filtering for 'last_sync_req_at'
                 if (filterField === "last_sync_req_at") {
                     const employeeExists = employeeData.some(
                         (data) => Number(data.number) === Number(item.emp_number)
                     );
                     return employeeExists ? item.last_sync_req_at : null; // Return the employee name if exists
                 }
+                // Handle special fields with display logic for `Not Added Yet` and `0`
+                if (filterField === "total_companies") {
+                    return item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_companies || 0;
+                }
+                if (filterField === "total_services") {
+                    return item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_services || 0;
+                }
+                if (filterField === "total_estimated_payment") {
+                    return item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_estimated_payment || 0;
+                }
+                if (filterField === "total_offered_price") {
+                    return item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_offered_price || 0;
+                }
+
                 return item[filterField]; // Return the filtered field's value
-            }).filter(Boolean); // Filter out any falsy values (e.g., null)
+            }).filter(value => value !== undefined && value !== null); // Filter out any falsy values (e.g., null)
         };
 
         if (filteredData && filteredData.length !== 0) {
@@ -113,6 +130,7 @@ const FilterTableCallingReport = ({
         }
     }, [filterField, filteredData, dataForFilter, employeeData]);
 
+    console.log("columnValues", columnValues)
 
 
     const handleCheckboxChange = (e) => {
@@ -176,7 +194,7 @@ const FilterTableCallingReport = ({
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-                        if (column === 'branchOffice') {
+                        if (column === 'branchOffice' && !forProjectionSummary) {
                             // Get branch office from employeeData based on emp_number
                             const employee = employeeData.find(
                                 (data) => Number(data.number) === Number(item.emp_number)
@@ -194,6 +212,24 @@ const FilterTableCallingReport = ({
                             const formattedDate = formatDateTime(item.last_call_log?.synced_at); // Use your formatting logic
                             return columnFilters.includes(formattedDate);
                         }
+                        // Filter logic for each field based on special display and filter values
+                        if (column === 'total_companies') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_companies || 0;
+                            return columnFilters.includes(String(value));
+                        }
+                        if (column === 'total_services') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_services || 0;
+                            return columnFilters.includes(String(value));
+                        }
+                        if (column === 'total_estimated_payment') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_estimated_payment || 0;
+                            return columnFilters.includes(String(value));
+                        }
+                        if (column === 'total_offered_price') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_offered_price || 0;
+                            return columnFilters.includes(String(value));
+                        }
+
                         return columnFilters.includes(String(item[column]));
                     });
 
@@ -218,10 +254,10 @@ const FilterTableCallingReport = ({
             }
         } else {
             dataToSort = dataForFilter.map(item => {
-               
+
                 return {
                     ...item,
-                   
+
                     parsedSyncedAt: parseSyncedAt(item.last_call_log?.synced_at)
                 };
             });
@@ -237,7 +273,7 @@ const FilterTableCallingReport = ({
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-                        if (column === 'branchOffice') {
+                        if (column === 'branchOffice' && !forProjectionSummary) {
                             // Get branch office from employeeData based on emp_number
                             const employee = employeeData.find(
                                 (data) => Number(data.number) === Number(item.emp_number)
@@ -255,6 +291,25 @@ const FilterTableCallingReport = ({
                             const formattedDate = formatDateTime(item.last_call_log?.synced_at); // Use your formatting logic
                             return columnFilters.includes(formattedDate);
                         }
+                        // Filter logic for each field based on special display and filter values
+                        if (column === 'total_companies') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_companies || 0;
+                            return columnFilters.includes(String(value));
+                        }
+                        if (column === 'total_services') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_services || 0;
+                            return columnFilters.includes(String(value));
+                        }
+                        if (column === 'total_estimated_payment') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_estimated_payment || 0;
+                            return columnFilters.includes(String(value));
+                        }
+                        if (column === 'total_offered_price') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_offered_price || 0;
+                            return columnFilters.includes(String(value));
+                        }
+
+
                         return columnFilters.includes(String(item[column]));
                     });
                     return match;

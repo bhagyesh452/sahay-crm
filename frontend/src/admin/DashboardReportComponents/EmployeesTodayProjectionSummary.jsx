@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ClipLoader from "react-spinners/ClipLoader";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -9,8 +9,18 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { FcDatabase } from "react-icons/fc";
 import { MdHistory } from "react-icons/md";
-
-
+import FilterTableThisMonthBooking from './FilterableTableThisMonthBooking';
+import FilterTableCallingReport from './FilterTableCallingReport';
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from "dayjs";
+import moment from "moment";
 
 function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranch }) {
 
@@ -26,9 +36,6 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
     ];
 
     const [isLoading, setIsLoading] = useState(false);
-    const [showProjectionDialog, setShowProjectionDialog] = useState(false);
-    const [isProjectionEditable, setIsProjectionEditable] = useState(false);
-    const [editableProjectionData, setEditableProjectionData] = useState({});
     const [projection, setProjection] = useState([]);
     const [companyName, setCompanyName] = useState('');
     const [employeeName, setEmployeeName] = useState('');
@@ -39,8 +46,21 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
     const [historyData, setHistoryData] = useState([])
     const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
     const [historyCompanyName, setHistoryCompanyName] = useState("");
-    const [addedOnDate, setAddedOnDate] = useState(null)
-
+    const [addedOnDate, setAddedOnDate] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("")
+    const [filteredProjection, setFilteredProjection] = useState([]);
+    const [completeProjection, setCompleteProjection] = useState([]);
+    const [filteredData, setFilteredData] = useState([])
+    const [branchSearchTerm, setBranchSearchTerm] = useState(''); // Branch office search term
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [filterField, setFilterField] = useState("")
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const [cleared, setCleared] = useState(false);
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const formatDate = (dateString) => {
         if (!dateString) return "N/A"; // Handle undefined or null dates
         const date = new Date(dateString);
@@ -54,17 +74,6 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
     const formatAmount = (amount) => {
         return new Intl.NumberFormat('en-IN').format(amount);
     };
-
-    // const fetchEmployee = async () => {
-    //     try {
-
-    //         const res2 = await axios.get(`${secretKey}/employee/einfo`);
-    //         console.log("res", res2);
-    //         setTotalEmployees(res2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-    //     } catch (error) {
-    //         console.log("Unexpected error in fetchEmployee:", error);
-    //     }
-    // };
 
     const fetchEmployee = async () => {
         try {
@@ -87,18 +96,19 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
         }
     };
 
-    const fetchNewProjection = async (values) => {
+    const fetchNewProjection = async (date = selectedDate) => {
         try {
             setIsLoading(true);
-
-            // Call the first API to get current day projections
+            // Manually format date to YYYY-MM-DD to avoid timezone shifts
+            const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+            console.log("formattedDate", selectedDate, formattedDate)
             const currentDayProjectionRes = await axios.get(`${secretKey}/company-data/getCurrentDayProjection`, {
-                params: { companyName },
+                params: { companyName, date: formattedDate },
             });
 
-            // Call the new API to get daily employee projections including result status
-            const dailyEmployeeProjectionRes = await axios.get(`${secretKey}/company-data/getDailyEmployeeProjections`);
-            // console.log("dailyEmployeeProjectionRes", dailyEmployeeProjectionRes);
+            const dailyEmployeeProjectionRes = await axios.get(`${secretKey}/company-data/getDailyEmployeeProjections`, {
+                params: { date: formattedDate },
+            });
             // Transform the data from the first API to calculate the required metrics
             const summary = currentDayProjectionRes.data.data.reduce((acc, company) => {
                 const isShared = company.bdeName !== company.bdmName;
@@ -144,6 +154,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                 total_estimated_payment: values.total_estimated_payment,
                 total_services: values.total_services,
             }));
+            console.log("summaryArray", summaryArray);
 
             // Process daily employee projections to incorporate "Not Added Yet" status
             const dailyEmployeeProjections = dailyEmployeeProjectionRes.data.data;
@@ -151,12 +162,13 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
             const combinedSummaryArray = totalEmployees.map(employee => {
                 const existingEmployee = summaryArray.find(summary => summary.ename === employee.ename);
                 const dailyProjection = dailyEmployeeProjections.find(daily => daily.ename === employee.ename);
-                console.log("dailyProjection", dailyProjection);
+                //console.log("dailyProjection", dailyProjection);
                 // If the employee exists in both summaries, use existing data; otherwise, default values
                 if (existingEmployee) {
                     return {
                         ...existingEmployee,
                         result: dailyProjection?.result || "Added",  // Add result status if available
+                        branchOffice: employee.branchOffice,  // Add branch office from totalEmployees
                     };
                 } else if (dailyProjection) {
                     // If only found in daily projections, default counts with "Not Added Yet" as result
@@ -167,6 +179,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                         total_estimated_payment: 0,
                         total_services: 0,
                         result: dailyProjection.result || "Not Added Yet",
+                        branchOffice: employee.branchOffice,  // Add branch office from totalEmployees
                     };
                 } else {
                     // If not found in either source, default values
@@ -177,6 +190,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                         total_estimated_payment: 0,
                         total_services: 0,
                         result: 0,
+                        branchOffice: employee.branchOffice,  // Add branch office from totalEmployees
                     };
                 }
             });
@@ -185,6 +199,9 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
             combinedSummaryArray.sort((a, b) => b.total_companies - a.total_companies);
             // console.log("Employee Projection Summary:", combinedSummaryArray);
             setProjection(combinedSummaryArray);
+            setFilteredProjection(combinedSummaryArray);
+            setCompleteProjection(combinedSummaryArray);
+
         } catch (error) {
             console.log("Error fetching today's projection:", error);
         } finally {
@@ -254,13 +271,76 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
         setOpenProjectionTable(true);
     }
 
-    // console.log("historyData", historyData);
-    // console.log("totalEmployees", totalEmployees);
+    // -----------------------search function------------------------
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+        const searchValue = e.target.value.toLowerCase();
+        const filteredData = filteredProjection.filter((proj) =>
+            proj.ename.toLowerCase().includes(searchValue)
+        );
+        setProjection(filteredData);
+    };
 
+    // ---------------------filter functions----------------------------
+
+    const handleFilter = (newData) => {
+        setFilteredData(newData)
+        setProjection(newData);
+    };
+
+
+    const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+
+        } else {
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+
+    // -----------------------date filter functions----------------------
+
+
+    useEffect(() => {
+        if (cleared) {
+            const timeout = setTimeout(() => {
+                setCleared(false);
+            }, 1500);
+
+            return () => clearTimeout(timeout);
+        }
+        return () => { };
+    }, [cleared]);
+
+    const handleSingleDateSelection = async (formattedDate) => {
+        const selected = new Date(formattedDate);
+        setSelectedDate(selected); // Update selected date
+        await fetchNewProjection(selected); // Fetch data for the selected date
+    };
 
     return (
         <div>
-            <div className="col-12 mt-2" id="projectiondashboardemployee">
+            <div className="employee-dashboard">
                 <div className="card">
                     <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1">
@@ -269,7 +349,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                             </h2>
                         </div>
 
-                        {/* <div className="d-flex align-items-center pr-1">
+                        <div className="d-flex align-items-center pr-1">
                             <div class="input-icon mr-1">
                                 <span class="input-icon-addon">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -278,23 +358,53 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                         <path d="M21 21l-6 -6"></path>
                                     </svg>
                                 </span>
-
                                 <input
                                     className="form-control"
-                                    value={companyName}
-                                    onChange={(e) => setCompanyName(e.target.value)}
-                                    placeholder="Enter Company Name..."
+                                    value={searchTerm} // bind to searchTerm
+                                    onChange={handleSearch} // bind to handleSearch
+                                    placeholder="Search by Employee Name..."
                                     type="text"
-                                    name="company-search"
-                                    id="company-search"
+                                    name="employee-search"
+                                    id="employee-search"
                                 />
                             </div>
-                        </div> */}
+                            <div className="data-filter">
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DemoContainer components={['DatePicker']} sx={{ padding: '0px', width: '220px' }}>
+                                        <DatePicker
+                                            className="form-control my-date-picker form-control-sm p-0"
+                                            format="DD/MM/YYYY" // Ensures the DatePicker displays and accepts DD/MM/YYYY format
+                                            onChange={(value) => {
+                                                if (value) {
+                                                    // Use dayjs to handle the date conversion and format
+                                                    const selectedDate = dayjs(value);
+
+                                                    // Format the selected date to 'YYYY-MM-DD' for backend compatibility
+                                                    const formattedDate = selectedDate.format("YYYY-MM-DD");
+
+                                                    // Pass the correctly formatted date to your handler
+                                                    handleSingleDateSelection(formattedDate);
+                                                }
+                                            }}
+                                            slotProps={{
+                                                field: {
+                                                    clearable: true,
+                                                    onClear: () => {
+                                                        setCleared(true);
+                                                        fetchNewProjection(new Date()); // Reset to today's date if cleared
+                                                    }
+                                                },
+                                            }}
+                                        />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="card-body">
-                        <div id="table-default" className="row tbl-scroll">
-                            <table className="table-vcenter table-nowrap admin-dash-tbl">
+                        <div className="tbl-scroll" style={{ width: "100%", height: "500px" }}>
+                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ width: "100%" }}>
                                 <thead className="admin-dash-tbl-thead">
                                     <tr className="tr-sticky"
                                         style={{
@@ -303,66 +413,235 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                             fontWeight: "bold",
                                         }}>
                                         <th>Sr. No</th>
-                                        <th>Employee Name</th>
-                                        <th>Branch</th>
-                                        <th>Total Companies</th>
-                                        <th>Offered Services</th>
-                                        <th>Total Offered Price</th>
-                                        <th>Total Estimated Amount</th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['ename'] = el}>
+                                                    BDE/BDM Name
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('ename') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("ename")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("ename")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'ename' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={totalEmployees}
+                                                            data={projection}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeProjection}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredProjection}
+                                                            forProjectionSummary={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['branchOffice'] = el}>
+                                                    Branch Office
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('branchOffice') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("branchOffice")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("branchOffice")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'branchOffice' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={totalEmployees}
+                                                            data={projection}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeProjection}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredProjection}
+                                                            forProjectionSummary={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_companies'] = el}>
+                                                    Total Compnaies
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_companies') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_companies")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_companies")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_companies' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={totalEmployees}
+                                                            data={projection}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeProjection}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredProjection}
+                                                            forProjectionSummary={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_services'] = el}>
+                                                    Offered Services
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_services') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_services")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_services")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_services' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={totalEmployees}
+                                                            data={projection}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeProjection}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredProjection}
+                                                            forProjectionSummary={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div></th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_offered_price'] = el}>
+                                                    Total Offered Price
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_offered_price') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_offered_price")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_offered_price")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_offered_price' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={totalEmployees}
+                                                            data={projection}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeProjection}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredProjection}
+                                                            forProjectionSummary={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_estimated_payment'] = el}>
+                                                    Total Estimated Amount
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_estimated_payment') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_estimated_payment")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_estimated_payment")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_estimated_payment' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={totalEmployees}
+                                                            data={projection}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeProjection}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredProjection}
+                                                            forProjectionSummary={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
                                     </tr>
                                 </thead>
-
-                                {/* <tbody>
-                                    {isLoading && <tr>
-                                        <td colSpan="11" className="LoaderTDSatyle">
-                                            <ClipLoader
-                                                color="lightgrey"
-                                                loading
-                                                size={30}
-                                                aria-label="Loading Spinner"
-                                                data-testid="loader"
-                                            />
-                                        </td>
-                                    </tr>}
-
-                                    {projection && projection.length > 0 ? (
-                                        projection.map((data, index) => (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{data.ename}</td>
-                                                <td>
-                                                    {data.result ? (data.result === "Not Added Yet" ? 0 : data.total_companies) : "Not Added Yet"}
-                                                    {data.result !== "Not Added Yet" && data.result ? (<FcDatabase
-                                                        className='ml-1'
-                                                        onClick={() => handleOpenProjectionsForEmployee(data.ename)} />) : null}
-                                                </td>
-                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : data.total_services) : "Not Added Yet"}</td>
-                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_offered_price)) : "Not Added Yet"}
-                                                </td>
-                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_estimated_payment)) : "Not Added Yet"}</td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td className="particular" colSpan="12">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-
-                                {projection && projection.length > 0 &&
-                                    <tfoot className="admin-dash-tbl-tfoot">
-                                        <tr style={{ fontWeight: 500 }} className="tf-sticky">
-                                            <td colSpan="2">Total</td>
-                                            <td>{projection.reduce((total, item) => total + item.total_companies, 0)}</td>
-                                            <td>{projection.reduce((total, item) => total + item.total_services, 0)}</td>
-                                            <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_offered_price, 0))}</td>
-                                            <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_estimated_payment, 0))}</td>
-                                        </tr>
-                                    </tfoot>
-                                } */}
-
                                 {/* New code with branch office */}
                                 <tbody>
                                     {isLoading && (
@@ -390,9 +669,10 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                                             className='ml-1'
                                                             onClick={() => handleOpenProjectionsForEmployee(data.ename)} />) : null}
                                                     </td>
-                                                    <td>{data.total_services}</td>
-                                                    <td>{formatCurrency(data.total_offered_price)}</td>
-                                                    <td>{formatCurrency(data.total_estimated_payment)}</td>
+                                                    <td>{data.result ? (data.result === "Not Added Yet" ? 0 : data.total_services) : "Not Added Yet"}</td>
+                                                    <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_offered_price)) : "Not Added Yet"}
+                                                    </td>
+                                                    <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_estimated_payment)) : "Not Added Yet"}</td>
                                                 </tr>
                                             );
                                         })
