@@ -233,7 +233,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
     useEffect(() => {
         // Fetch employees on component mount
         fetchEmployee();
-    }, []);
+    }, [floorManagerBranch]);
 
     useEffect(() => {
         // Fetch projections only when totalEmployees has data
