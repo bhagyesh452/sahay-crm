@@ -308,14 +308,14 @@ function EmployeesTodayProjectionSummary() {
                                                 <td>{data.ename}</td>
                                                 <td>
                                                     {data.result ? (data.result === "Not Added Yet" ? 0 : data.total_companies) : "Not Added Yet"}
-                                                    {data.result !== "Not Added Yet" && data.result && <FcDatabase
+                                                    {data.result !== "Not Added Yet" && data.result ? (<FcDatabase
                                                         className='ml-1'
-                                                        onClick={() => handleOpenProjectionsForEmployee(data.ename)} />}
+                                                        onClick={() => handleOpenProjectionsForEmployee(data.ename)} />) : null}
                                                 </td>
                                                 <td>{data.result ? (data.result === "Not Added Yet" ? 0 : data.total_services) : "Not Added Yet"}</td>
-                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : data.total_offered_price) : "Not Added Yet"}
+                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_offered_price)) : "Not Added Yet"}
                                                 </td>
-                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : data.total_estimated_payment) : "Not Added Yet"}</td>
+                                                <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_estimated_payment)) : "Not Added Yet"}</td>
                                             </tr>
                                         ))
                                     ) : (
