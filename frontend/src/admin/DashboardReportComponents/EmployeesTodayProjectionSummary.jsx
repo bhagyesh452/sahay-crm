@@ -147,10 +147,11 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
 
             // Process daily employee projections to incorporate "Not Added Yet" status
             const dailyEmployeeProjections = dailyEmployeeProjectionRes.data.data;
+            console.log("dailyEmployeeProjections", dailyEmployeeProjections);
             const combinedSummaryArray = totalEmployees.map(employee => {
                 const existingEmployee = summaryArray.find(summary => summary.ename === employee.ename);
                 const dailyProjection = dailyEmployeeProjections.find(daily => daily.ename === employee.ename);
-
+                console.log("dailyProjection", dailyProjection);
                 // If the employee exists in both summaries, use existing data; otherwise, default values
                 if (existingEmployee) {
                     return {
@@ -384,8 +385,10 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                                     <td>{data.ename}</td>
                                                     <td>{branchOffice}</td>
                                                     <td>
-                                                        {data.total_companies}
-                                                        <FcDatabase className='ml-1' onClick={() => handleOpenProjectionsForEmployee(data.ename)} />
+                                                        {data.result ? (data.result === "Not Added Yet" ? 0 : data.total_companies) : "Not Added Yet"}
+                                                        {data.result !== "Not Added Yet" && data.result ? (<FcDatabase
+                                                            className='ml-1'
+                                                            onClick={() => handleOpenProjectionsForEmployee(data.ename)} />) : null}
                                                     </td>
                                                     <td>{data.total_services}</td>
                                                     <td>{formatCurrency(data.total_offered_price)}</td>

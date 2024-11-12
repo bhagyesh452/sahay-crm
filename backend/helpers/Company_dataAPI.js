@@ -3268,7 +3268,7 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
   try {
     // Normalize the estimatedPaymentDate
     const normalizedDate = new Date(estimatedPaymentDate);
-    normalizedDate.setHours(0, 0, 0, 0);
+    // normalizedDate.setHours(0, 0, 0, 0);
 
     // Find or create the employee's daily projection
     let dailyProjection = await DailyEmployeeProjection.findOne({ ename });
@@ -3532,6 +3532,7 @@ router.post('/setProjectionCountToZero', async (req, res) => {
 });
 
 
+
 // Fetch all the projections :
 router.get('/getProjection', async (req, res) => {
   try {
@@ -3750,9 +3751,9 @@ router.get('/getCurrentDayProjection', async (req, res) => {
 // Endpoint to fetch today's projections for all employees
 router.get('/getDailyEmployeeProjections', async (req, res) => {
   try {
-      // Get today's date with time set to midnight for comparison
+      // Get today's date and set time to midnight for comparison
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0); // Ensure time is set to midnight
 
       // Fetch all employees' projections from DailyEmployeeProjection
       const dailyProjections = await DailyEmployeeProjection.find({});
@@ -3762,9 +3763,11 @@ router.get('/getDailyEmployeeProjections', async (req, res) => {
           const { ename, projectionsByDate } = employeeProjection;
 
           // Check if there’s an entry for today
-          const todayProjection = projectionsByDate.find(dateEntry =>
-              new Date(dateEntry.estimatedPaymentDate).getTime() === today.getTime()
-          );
+          const todayProjection = projectionsByDate.find(dateEntry => {
+              const entryDate = new Date(dateEntry.estimatedPaymentDate);
+              entryDate.setHours(0, 0, 0, 0); // Ensure entry date is also set to midnight
+              return entryDate.getTime() === today.getTime();
+          });
 
           if (todayProjection) {
               // If projections exist for today, return details
@@ -3795,6 +3798,7 @@ router.get('/getDailyEmployeeProjections', async (req, res) => {
       res.status(500).json({ result: false, message: "Internal server error", error: error.message });
   }
 });
+
 
 
 // Fetch projections for a specific employee :
