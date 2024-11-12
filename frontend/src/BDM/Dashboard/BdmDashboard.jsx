@@ -3819,7 +3819,11 @@ function BdmDashboard() {
       </div> */}
 
       {/* <FloorManagerProjectionSummary /> */}
-      <EmployeesTodayProjectionSummary isFloorManagerView={true} floorManagerBranch={floorManagerBranch} />
+      <div className='container-xl mt-3'>
+        <div className="employee-dashboard">
+          <EmployeesTodayProjectionSummary isFloorManagerView={true} floorManagerBranch={floorManagerBranch} />
+        </div>
+      </div>
 
 
       {/* -----------------employess interested leads---------------------- */}
