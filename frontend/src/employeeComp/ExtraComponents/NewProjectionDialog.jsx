@@ -55,20 +55,40 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
     // Handle skipping the projection by setting projection count to 0
     const handleSkipProjection = async () => {
         try {
-            // Make a request to set projection count to zero for the employee and date
-            await axios.post(`${secretKey}/company-data/setProjectionCountToZero`, {
-                employeeName,
-                date: new Date().toISOString().split("T")[0] // Current date in YYYY-MM-DD format
+            // Check if projections exist for the employee on the current date
+            const formattedDate = new Date().toISOString().split("T")[0];
+            const checkResponse = await axios.get(`${secretKey}/company-data/checkEmployeeProjectionForDate/${employeeName}`, {
+                params: {
+                    date: formattedDate
+                }
             });
-
-            Swal.fire("Success", "Projection count set to 0 for today.", "success");
-            closepopup();
-            fetchNewProjection && fetchNewProjection();
+            console.log("checkResponse", checkResponse);
+    
+            if (checkResponse.data.hasProjections) {
+                // If projections exist, display the disclaimer and show company names
+                const companyNames = checkResponse.data.companyNames.join(", ");
+                Swal.fire(
+                    "Projections Exist",
+                    `You cannot set projections to zero because projections already exist for the today for following companies: ${companyNames}`,
+                    "warning"
+                );
+            } else {
+                //If no projections exist, proceed with setting the count to zero
+                await axios.post(`${secretKey}/company-data/setProjectionCountToZero`, {
+                    employeeName,
+                    date: formattedDate // Current date in YYYY-MM-DD format
+                });
+    
+                Swal.fire("Success", "Projection count set to 0 for today.", "success");
+                closepopup();
+                fetchNewProjection && fetchNewProjection();
+            }
         } catch (error) {
             console.error("Error skipping projection:", error);
             Swal.fire("Error", "Failed to skip projection.", "error");
         }
     };
+    
 
     // Fetch BDM names
     const fetchBdmNames = async () => {
@@ -157,7 +177,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                 }
             });
             const projectionData = res.data.data;
-            // console.log("Fetched projection is :", projectionData);
+            console.log("Fetched projection is :", projectionData);
 
             if (projectionData) {
                 const futureProjections = projectionData.filter(p => new Date(p.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0));

@@ -858,6 +858,7 @@ function EmployeeMaturedLeads({
                     isProjectionEditable={isProjectionEditable}
                     viewProjection={viewProjection}
                     fetchNewProjection={fetchProjections}
+                    employeeName={ename}
                 />
             )}
         </div >

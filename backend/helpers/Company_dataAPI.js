@@ -3706,6 +3706,51 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
     console.log(error);
   }
 });
+// Check if projections exist for an employee on a specific date
+router.get('/checkEmployeeProjectionForDate/:employeeName', async (req, res) => {
+  const { employeeName } = req.params;
+  const { date } = req.query;
+console.log("employeeName" , employeeName)
+  try {
+    // If no date is provided, use the current day
+    const targetDate = date ? new Date(date) : new Date();
+    targetDate.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Build query to check if there are projections for the day
+    const query = {
+      $or: [
+        { bdeName: employeeName },
+        { bdmName: employeeName },
+      ],
+      estPaymentDate: { $gte: targetDate, $lte: endOfDay }
+    };
+
+    const projections = await ProjectionModel.find(query);
+
+    if (projections.length > 0) {
+      // Send back the company names in case projections are found
+      const companyNames = projections.map(proj => proj.companyName);
+      res.status(200).json({
+        result: true,
+        hasProjections: true,
+        companyNames
+      });
+    } else {
+      res.status(200).json({
+        result: true,
+        hasProjections: false
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: "Error checking projections",
+      error: error.message
+    });
+  }
+});
 
 
 // Fetching all projections for current day :

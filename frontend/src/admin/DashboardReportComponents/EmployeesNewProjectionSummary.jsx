@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ClipLoader from "react-spinners/ClipLoader";
 import moment from "moment";
 import { useParams } from "react-router-dom";
@@ -246,7 +246,7 @@ function EmployeesNewProjectionSummary() {
     };
 
 
-// ----------projection history function-----------------------------------
+    // ----------projection history function-----------------------------------
     const handleViewHistory = (companyId) => {
         // Find the specific projection that matches the companyId
         const selectedProjection = employeeProjectionData.find(projection => projection._id === companyId);
@@ -266,7 +266,7 @@ function EmployeesNewProjectionSummary() {
         setOpenHistoryDialog(false);
         setOpenProjectionTable(true);
     }
-// ----------search function---------------------------------
+    // ----------search function---------------------------------
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
         const searchValue = e.target.value.toLowerCase();
@@ -275,6 +275,8 @@ function EmployeesNewProjectionSummary() {
         );
         setProjection(filteredData);
     };
+
+    
 
     return (
         <div>
@@ -305,31 +307,34 @@ function EmployeesNewProjectionSummary() {
                                     id="employee-search"
                                 />
                             </div>
+                            {/* <div className="data-filter">
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DemoContainer components={['DatePicker']} sx={{ padding: '0px', width: '220px' }}>
+                                        <DatePicker
+                                            className="form-control my-date-picker form-control-sm p-0"
+                                            format="DD/MM/YYYY" // Ensures the DatePicker displays and accepts DD/MM/YYYY format
+                                            onChange={(value) => {
+                                                if (value) {
+                                                    // Use dayjs to handle the date conversion and format
+                                                    const selectedDate = dayjs(value);
 
-                            {/* <div>
-                                <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                                    <DemoContainer components={["SingleInputDateRangeField"]}>
-                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
-                                            onChange={(values) => {
-                                                const startDate = moment(values[0]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                const endDate = moment(values[1]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                fetchNewProjection(values);
+                                                    // Format the selected date to 'YYYY-MM-DD' for backend compatibility
+                                                    const formattedDate = selectedDate.format("YYYY-MM-DD");
+
+                                                    // Pass the correctly formatted date to your handler
+                                                    handleSingleDateSelection(formattedDate);
+                                                }
                                             }}
-                                            slots={{ field: SingleInputDateRangeField }}
                                             slotProps={{
-                                                shortcuts: {
-                                                    items: shortcutsItems,
-                                                },
-                                                actionBar: { actions: [] },
-                                                textField: {
-                                                    InputProps: { endAdornment: <Calendar /> },
+                                                field: {
+                                                    clearable: true,
+                                                    onClear: () => {
+                                                        setCleared(true);
+                                                        fetchNewProjection(new Date()); // Reset to today's date if cleared
+                                                        setSelectedDate(new Date());
+                                                    }
                                                 },
                                             }}
-                                            calendars={1}
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
@@ -527,7 +532,7 @@ function EmployeesNewProjectionSummary() {
                 onClose={handleCloseHistoryDialog}
                 fullWidth
                 maxWidth="lg"
-                
+
             >
                 <DialogTitle>
                     {historyCompanyName}'s History
@@ -569,7 +574,7 @@ function EmployeesNewProjectionSummary() {
                                     }}
                                 >
                                     <th>Sr. No</th>
-                                   
+
                                     <th>Company Name</th>
                                     <th>BDE Name</th>
                                     <th>BDM Name</th>
@@ -595,7 +600,7 @@ function EmployeesNewProjectionSummary() {
                                             <td>{entry.data.offeredServices.join(', ')}</td>
                                             <td>{formatCurrency(entry.data.offeredPrice)}</td>
                                             <td>{formatCurrency(entry.data.totalPayment)}</td>
-                                            <td>{entry.data.bdeName === entry.data.bdmName ? formatCurrency(entry.data.totalPayment) : formatCurrency((entry.data.totalPayment)/2)}</td>
+                                            <td>{entry.data.bdeName === entry.data.bdmName ? formatCurrency(entry.data.totalPayment) : formatCurrency((entry.data.totalPayment) / 2)}</td>
                                             <td>{formatDate(new Date(entry.data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(entry.data.estPaymentDate))}</td>
                                             <td>{entry.data.remarks}</td>
