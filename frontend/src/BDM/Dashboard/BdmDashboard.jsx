@@ -32,9 +32,29 @@ import FloorManagerForwardedData from './FloorManagerForwardedData.jsx';
 import FloorManagerProjectionSummary from './FloorManagerProjectionSummary.jsx';
 import FloorManagerLeadsReport from './FloorManagerLeadsReport.jsx';
 import BDMInterestedLeadsReport from './BdmTeamLeads/BDMInterestedLeadsReport.jsx';
+import EmployeesTodayProjectionSummary from '../../admin/DashboardReportComponents/EmployeesTodayProjectionSummary.jsx';
 
 function BdmDashboard() {
-  // const { userId } = useParams();
+
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const { userId } = useParams();
+  const [floorManagerData, setFloorManagerData] = useState({});
+  const [floorManagerBranch, setFloorManagerBranch] = useState("");
+
+  const fetchCurrentFloorManagerData = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+      setFloorManagerData(res.data.data);
+      setFloorManagerBranch(res.data.data.branchOffice);
+      // console.log("Floor manager data is :", res.data.data);
+    } catch (error) {
+      console.error("Error fetching current floor manager data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentFloorManagerData();
+  }, []);
 
   // const [data, setData] = useState([])
   // const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -2658,7 +2678,8 @@ function BdmDashboard() {
           </div>
         </div>
       </div> */}
-      <FloorManagerReceivedCaseReport />
+
+      {/* <FloorManagerReceivedCaseReport /> */}
 
 
       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
@@ -3055,6 +3076,7 @@ function BdmDashboard() {
           </div>
         </div>
       </div> */}
+
       <FloorManagerThisMonthBookings />
 
 
@@ -3474,7 +3496,8 @@ function BdmDashboard() {
           </div>
         </div>
       </div> */}
-      <FloorManagerForwardedData />
+
+      {/* <FloorManagerForwardedData /> */}
 
 
       {/* -------------------------------------------------projection summary------------------------------------------------------------ */}
@@ -3794,12 +3817,15 @@ function BdmDashboard() {
           </div>
         </div>
       </div> */}
-      <FloorManagerProjectionSummary />
+
+      {/* <FloorManagerProjectionSummary /> */}
+      <EmployeesTodayProjectionSummary isFloorManagerView={true} floorManagerBranch={floorManagerBranch} />
 
 
       {/* -----------------employess interested leads---------------------- */}
       {/* <BDMInterestedLeadsReport /> */}
-      <FloorManagerLeadsReport />
+
+      {/* <FloorManagerLeadsReport /> */}
     </div>
   );
 }

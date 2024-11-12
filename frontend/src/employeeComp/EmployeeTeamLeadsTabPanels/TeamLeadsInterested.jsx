@@ -319,14 +319,14 @@ function TeamLeadsInterested({
                                                         if (paymentDate >= currentDate) {
                                                             setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
                                                             setIsProjectionEditable(true);  // Enable edit mode
-                                                            setViewProjection(false); // Ensure view mode is off when editing
+                                                            newDesignation ? setViewProjection(true) : setViewProjection(false); // Open new projection dialog with enabled fields
                                                             setShowNewAddProjection(true);  // Open new projection dialog
                                                             setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
                                                             // console.log("Projection data to be updated :", matchedItem);
                                                         } else {
                                                             setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
                                                             setIsProjectionEditable(false); // Disable edit mode
-                                                            // setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                                            newDesignation && setViewProjection(true); // Open new projection dialog with disabled fields when new designation is admin or data manager
                                                             setShowNewAddProjection(true);  // Open new projection dialog
                                                             setProjectionDataToBeFilled(company); // Set matched item in the state
                                                             // console.log("Projection data to be viewed :", matchedItem);
@@ -336,7 +336,7 @@ function TeamLeadsInterested({
                                                     <RiEditCircleFill
                                                         color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
                                                             ? "#fbb900"
-                                                            : "grey"}
+                                                            : newDesignation ? "#fbb900" : "grey"}
                                                         style={{
                                                             width: "17px",
                                                             height: "17px",
@@ -349,13 +349,14 @@ function TeamLeadsInterested({
                                                         setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
                                                         setIsProjectionEditable(false); // Not opened in editing mode
                                                         setShowNewAddProjection(true);  // Open new projection dialog
-                                                        setViewProjection(false); // Open new projection dialog with enabled fields
+                                                        newDesignation ? setViewProjection(true) : setViewProjection(false); // Open new projection dialog with enabled fields
                                                         setProjectionDataToBeFilled(company); // Send whole company data when no match found
                                                         // console.log("Projection data to be added :", company);
                                                     }}
+                                                    disabled={newDesignation}
                                                 >
                                                     <RiEditCircleFill
-                                                        color="grey"
+                                                        color={newDesignation ? "lightgrey" : "grey"}
                                                         style={{
                                                             width: "17px",
                                                             height: "17px",
@@ -363,6 +364,7 @@ function TeamLeadsInterested({
                                                     />
                                                 </IconButton>
                                             )}
+
                                             {/* <ProjectionDialog
                                                 key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                                                 projectionCompanyName={company["Company Name"]}
@@ -438,7 +440,6 @@ function TeamLeadsInterested({
                     fetchNewProjection={fetchProjections}
                     isFilledFromTeamLeads={isFilledFromTeamLeads}
                     employeeName={employeeName}
-                    newDesignation={newDesignation}
                 />
             )}
         </div>

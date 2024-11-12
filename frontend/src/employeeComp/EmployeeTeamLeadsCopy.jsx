@@ -26,8 +26,6 @@ import { IoIosArrowDropleft } from "react-icons/io";
 
 function EmployeeTeamLeadsCopy({ designation }) {
 
-    console.log("Designation is :", designation);
-
     const { userId } = useParams();
     const navigate = useNavigate();
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -66,6 +64,35 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [teamData, setTeamData] = useState([]);
     const [bdmName, setbdmName] = useState("");
     const [showProjection, setShowProjection] = useState(false);
+
+    // Filter States
+    const [generalDataCount, setGeneralDataCount] = useState(0);
+    const [completeGeneralData, setCompleteGeneralData] = useState([]);
+    const [dataToFilterGeneral, setDataToFilterGeneral] = useState([]);
+    const [filteredDataGeneral, setFilteredDataGeneral] = useState([]);
+    const [activeFilterFieldsGeneral, setActiveFilterFieldsGeneral] = useState([]); // New state for active filter fields
+    const [activeFilterFieldGeneral, setActiveFilterFieldGeneral] = useState(null);
+
+    const [interestedDataCount, setInterestedDataCount] = useState(0);
+    const [completeInterestedData, setCompleteInterestedData] = useState([]);
+    const [dataToFilterInterested, setDataToFilterInterested] = useState([]);
+    const [filteredDataInterested, setFilteredDataInterested] = useState([]);
+    const [activeFilterFieldsInterested, setActiveFilterFieldsInterested] = useState([]); // New state for active filter fields
+    const [activeFilterFieldInterested, setActiveFilterFieldInterested] = useState(null);
+
+    const [maturedDataCount, setMaturedDataCount] = useState(0);
+    const [completeMaturedData, setCompleteMaturedData] = useState([]);
+    const [dataToFilterMatured, setDataToFilterMatured] = useState([]);
+    const [filteredDataMatured, setFilteredDataMatured] = useState([]);
+    const [activeFilterFieldsMatured, setActiveFilterFieldsMatured] = useState([]); // New state for active filter fields
+    const [activeFilterFieldMatured, setActiveFilterFieldMatured] = useState(null);
+
+    const [notInterestedDataCount, setNotInterestedDataCount] = useState(0);
+    const [completeNotInterestedData, setCompleteNotInterestedData] = useState([]);
+    const [dataToFilterNotInterested, setDataToFilterNotInterested] = useState([]);
+    const [filteredDataNotInterested, setFilteredDataNotInterested] = useState([]);
+    const [activeFilterFieldsNotInterested, setActiveFilterFieldsNotInterested] = useState([]); // New state for active filter fields
+    const [activeFilterFieldNotInterested, setActiveFilterFieldNotInterested] = useState(null);
 
     const itemsPerPage = 500;
     const startIndex = currentPage * itemsPerPage;
@@ -249,8 +276,21 @@ function EmployeeTeamLeadsCopy({ designation }) {
     useEffect(() => {
         if (teamLeadsData?.data) {
             setGeneralData(teamLeadsData?.data?.generalData);
+            // setGeneralDataCount(queryData?.totalCounts.untouched)
+            // setCompleteGeneralData(queryData?.generalData);
+            // setDataToFilterGeneral(queryData?.generalData);
+
             setInterestedData(teamLeadsData?.data?.interestedData);
+            // setCompleteInterestedData(queryData?.interestedData);
+            // setDataToFilterInterested(queryData?.interestedData);
+            // setInterestedData(queryData?.interestedData);
+            // setInterestedDataCount(queryData?.totalCounts.interested)
+
             setMaturedData(teamLeadsData?.data?.maturedData);
+            // setDataToFilterMatured(queryData?.maturedData);
+            // setCompleteMaturedData(queryData?.maturedData);
+            // setMaturedDataCount(queryData?.totalCounts.matured);
+
             setNotInterestedData(teamLeadsData?.data?.notInterestedData);
         }
     }, [teamLeadsData?.data, searchQuery]);
@@ -318,7 +358,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
         } else {
             document.title = `Employee-Sahay-CRM`;
         }
-    }, [designation]);
+    }, [data.ename]);
 
     const handleCheckboxChange = (id, event) => {
         // If the id is 'all', toggle all checkboxes
@@ -379,7 +419,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
             });
         }
     };
-
 
     const handleMouseDown = (id) => {
         // Initiate drag selection
@@ -578,7 +617,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
                 navigate(`/managing-director/employees/${nextId}`);
             } else {
                 navigate(`/dataanalyst/employeeLeads/${nextId}`);
-
             }
             //setBackButton(nextId !== 0);
         } else {

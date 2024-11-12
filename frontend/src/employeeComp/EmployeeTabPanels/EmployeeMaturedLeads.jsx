@@ -287,7 +287,7 @@ function EmployeeMaturedLeads({
                                     </th>
                                     <th>Remarks</th>
                                     <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['Company Incorporation Date  '] = el}>
                                                 Incorporation Date
                                             </div>
@@ -325,7 +325,7 @@ function EmployeeMaturedLeads({
                                         </div>
                                     </th>
                                     <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['City'] = el}>
                                                 City
                                             </div>
@@ -363,7 +363,7 @@ function EmployeeMaturedLeads({
                                         </div>
                                     </th>
                                     <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['State'] = el}>
                                                 State
                                             </div>
@@ -401,7 +401,7 @@ function EmployeeMaturedLeads({
                                         </div>
                                     </th>
                                     <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['Company Email'] = el}>
                                                 Company Email
                                             </div>
@@ -439,7 +439,7 @@ function EmployeeMaturedLeads({
                                         </div>
                                     </th>
                                     <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['AssignDate'] = el}>
                                                 Assign Date
                                             </div>
@@ -477,7 +477,7 @@ function EmployeeMaturedLeads({
                                         </div>
                                     </th>
                                     <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bookingDate'] = el}>
                                                 Booking Date
                                             </div>
@@ -515,7 +515,7 @@ function EmployeeMaturedLeads({
                                         </div>
                                     </th>
                                     <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bookingPublishDate'] = el}>
                                                 Booking Publish Date
                                             </div>
@@ -718,13 +718,13 @@ function EmployeeMaturedLeads({
                                                             // Check if payment date is before the current date
                                                             if (paymentDate >= currentDate) {
                                                                 setIsProjectionEditable(true);  // Enable edit mode
-                                                                setViewProjection(false); // Ensure view mode is off when editing
+                                                                (fordesignation === "admin" || fordesignation === "datamanager") ? setViewProjection(true) : setViewProjection(false); // Open new projection dialog with enabled fields
                                                                 setShowNewAddProjection(true);  // Open new projection dialog
                                                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
                                                                 // console.log("Projection data to be updated :", matchedItem);
                                                             } else {
                                                                 setIsProjectionEditable(false); // Disable edit mode
-                                                                setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                                                (fordesignation === "admin" || fordesignation === "datamanager") && setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                                                 setShowNewAddProjection(true);  // Open new projection dialog
                                                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
                                                                 // console.log("Projection data to be viewed :", matchedItem);
@@ -734,7 +734,7 @@ function EmployeeMaturedLeads({
                                                         <RiEditCircleFill
                                                             color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
                                                                 ? "#fbb900"
-                                                                : "lightgrey"}
+                                                                : (fordesignation === "admin" || fordesignation === "datamanager") ? "#fbb900" : "grey"}
                                                             style={{
                                                                 width: "17px",
                                                                 height: "17px",
@@ -750,9 +750,10 @@ function EmployeeMaturedLeads({
                                                             setProjectionDataToBeFilled(company); // Send whole company data when no match found
                                                             // console.log("Projection data to be added :", company);
                                                         }}
+                                                        disabled={fordesignation === "admin" || fordesignation === "datamanager"}
                                                     >
                                                         <RiEditCircleFill
-                                                            color="grey"
+                                                            color={(fordesignation === "admin" || fordesignation === "datamanager") ? "lightgrey" : "grey"}
                                                             style={{
                                                                 width: "17px",
                                                                 height: "17px",
@@ -760,6 +761,7 @@ function EmployeeMaturedLeads({
                                                         />
                                                     </IconButton>
                                                 )}
+
                                                 {/* <ProjectionDialog
                                                     key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                                                     projectionCompanyName={company["Company Name"]}

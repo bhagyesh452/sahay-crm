@@ -273,7 +273,7 @@ function App() {
             {/* <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeeLeads />} /> */}
             <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeePanelCopy fordesignation="datamanager" />} />
             {/* <Route path="/dataanalyst/employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} /> */}
-            <Route path="/dataanalyst/employeeteamleads/:id" element={<EmployeeTeamLeadsCopy designation="datamanager" />} />
+            <Route path="/dataanalyst/employeeteamleads/:userId" element={<EmployeeTeamLeadsCopy designation="datamanager" />} />
             <Route path="/dataanalyst/bookings" element={<ManagerBookings />} />
             <Route path="/dataanalyst/expensereport" element={<ExpenseReport />} />
             <Route path="/dataanalyst-profile-details/" element={<DataAnalystProfile />} />
