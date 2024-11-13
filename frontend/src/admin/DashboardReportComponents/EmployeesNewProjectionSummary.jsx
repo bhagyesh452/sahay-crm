@@ -83,6 +83,7 @@ function EmployeesNewProjectionSummary() {
     const [showProjectionDialog, setShowProjectionDialog] = useState(false);
     const [isProjectionEditable, setIsProjectionEditable] = useState(false);
     const [editableProjectionData, setEditableProjectionData] = useState({});
+    const [totalEmployees, setTotalEmployees] = useState([]);
     const [projection, setProjection] = useState([]);
     const [companyName, setCompanyName] = useState('');
     const [startDate, setStartDate] = useState('');
@@ -109,12 +110,24 @@ function EmployeesNewProjectionSummary() {
     const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [searchTerm, setSearchTerm] = useState("")
+
     const fetchEmployee = async () => {
         try {
-            const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
-            setEmployeeName(res.data.data.ename);
+            const res1 = await axios.get(`${secretKey}/employee/einfo`);
+            const res2 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+
+            let activeEmployeesProjection = res1.data.filter(
+                (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager"
+            );
+
+            let inActiveEmployeesProjection = res2.data.filter(
+                (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager"
+            );
+
+            const employeeData = [...activeEmployeesProjection, ...inActiveEmployeesProjection];
+            setTotalEmployees(employeeData);
         } catch (error) {
-            console.log("Error to fetch employee :", error);
+            console.log("Unexpected error in fetchEmployee:", error);
         }
     };
 
@@ -140,6 +153,7 @@ function EmployeesNewProjectionSummary() {
                     endDate: endDate || ''
                 }
             });
+            console.log("Total projection data is :", res.data.data);
 
             // Transform the data to calculate the required metrics
             const summary = res.data.data.reduce((acc, company) => {
@@ -196,8 +210,8 @@ function EmployeesNewProjectionSummary() {
             }));
 
             console.log("Employee Projection Summary:", summaryArray);
-            setProjection(summaryArray);
-            setFilteredProjection(summaryArray);
+            setProjection(summaryArray.filter(data => totalEmployees.some((employee) => employee.ename === data.ename)));
+            setFilteredProjection(summaryArray.filter(data => totalEmployees.some((employee) => employee.ename === data.ename)));
         } catch (error) {
             console.log("Error to fetch new projection:", error);
             setIsLoading(false);
@@ -205,7 +219,6 @@ function EmployeesNewProjectionSummary() {
             setIsLoading(false);
         }
     };
-
 
     const handleOpenProjectionsForEmployee = async (employeeName) => {
         setProjectionEname(employeeName); // Store the employee name for dialog title
@@ -266,6 +279,7 @@ function EmployeesNewProjectionSummary() {
         setOpenHistoryDialog(false);
         setOpenProjectionTable(true);
     }
+
     // ----------search function---------------------------------
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
@@ -276,18 +290,18 @@ function EmployeesNewProjectionSummary() {
         setProjection(filteredData);
     };
 
-    
-
     return (
         <div>
             <div className="col-12 mt-2" id="projectiondashboardemployee">
                 <div className="card">
                     <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                        
                         <div className="dashboard-title pl-1">
                             <h2 className="m-0">
                                 Total Projection Summary
                             </h2>
                         </div>
+
                         <div className="d-flex align-items-center pr-1">
                             <div class="input-icon mr-1">
                                 <span class="input-icon-addon">
@@ -307,6 +321,7 @@ function EmployeesNewProjectionSummary() {
                                     id="employee-search"
                                 />
                             </div>
+
                             {/* <div className="data-filter">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer components={['DatePicker']} sx={{ padding: '0px', width: '220px' }}>
@@ -341,12 +356,13 @@ function EmployeesNewProjectionSummary() {
                             </div> */}
                         </div>
                     </div>
+
                     <div className="card-body">
                         <div id="table-default" className="row tbl-scroll">
                             <table className="table-vcenter table-nowrap admin-dash-tbl">
                                 <thead className="admin-dash-tbl-thead">
                                     <tr className="tr-sticky"
-                                        style={{
+                                        style={{ 
                                             backgroundColor: "#ffb900",
                                             color: "white",
                                             fontWeight: "bold",
@@ -375,24 +391,19 @@ function EmployeesNewProjectionSummary() {
 
                                     {projection && projection.length > 0 ? (
                                         projection.map((data, index) => (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{data.ename}</td>
-                                                <td>
 
-                                                    {data.total_companies}
-                                                    <FcDatabase
-                                                        className='ml-1'
-                                                        onClick={() => handleOpenProjectionsForEmployee(data.ename)} />
-
-
-                                                </td>
-                                                <td>{data.total_services}</td>
-                                                <td>{formatCurrency(data.total_offered_price)}
-                                                </td>
-                                                <td>{formatCurrency(data.total_estimated_payment)}</td>
-                                            </tr>
-                                        ))
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{data.ename}</td>
+                                                    <td>
+                                                        {data.total_companies}
+                                                        <FcDatabase className='ml-1' onClick={() => handleOpenProjectionsForEmployee(data.ename)} />
+                                                    </td>
+                                                    <td>{data.total_services}</td>
+                                                    <td>{formatCurrency(data.total_offered_price)}</td>
+                                                    <td>{formatCurrency(data.total_estimated_payment)}</td>
+                                                </tr>
+                                            ))
                                     ) : (
                                         <tr>
                                             <td className="particular" colSpan="12">
@@ -402,7 +413,7 @@ function EmployeesNewProjectionSummary() {
                                     )}
                                 </tbody>
 
-                                {projection && projection.length > 0 &&
+                                {projection && projection.length > 0 && (
                                     <tfoot className="admin-dash-tbl-tfoot">
                                         <tr style={{ fontWeight: 500 }} className="tf-sticky">
                                             <td colSpan="2">Total</td>
@@ -412,7 +423,7 @@ function EmployeesNewProjectionSummary() {
                                             <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_estimated_payment, 0))}</td>
                                         </tr>
                                     </tfoot>
-                                }
+                                )}
 
                             </table>
                         </div>
@@ -527,24 +538,16 @@ function EmployeesNewProjectionSummary() {
             </Dialog>
 
             {/* --------------------history dialog---------------------------- */}
-            <Dialog
-                open={openHistoryDialog}
-                onClose={handleCloseHistoryDialog}
-                fullWidth
-                maxWidth="lg"
-
-            >
+            <Dialog open={openHistoryDialog} onClose={handleCloseHistoryDialog} fullWidth maxWidth="lg">
                 <DialogTitle>
                     {historyCompanyName}'s History
-                    <IconButton
-                        onClick={handleCloseHistoryDialog}
-                        style={{ float: "right" }}
-                    >
+                    <IconButton onClick={handleCloseHistoryDialog} style={{ float: "right" }}>
                         <CloseIcon color="primary" />
                     </IconButton>
                 </DialogTitle>
+
                 <DialogContent>
-                    <div
+                    <div 
                         id="table-default"
                         style={{ overflowX: "auto", overflowY: "auto" }}>
                         <table
@@ -574,7 +577,6 @@ function EmployeesNewProjectionSummary() {
                                     }}
                                 >
                                     <th>Sr. No</th>
-
                                     <th>Company Name</th>
                                     <th>BDE Name</th>
                                     <th>BDM Name</th>
@@ -589,6 +591,7 @@ function EmployeesNewProjectionSummary() {
                                     <th>Modified On</th>
                                 </tr>
                             </thead>
+
                             <tbody>
                                 {historyData && historyData.length > 0 ? (
                                     historyData.map((entry, index) => (
@@ -618,8 +621,6 @@ function EmployeesNewProjectionSummary() {
                     </div>
                 </DialogContent>
             </Dialog>
-
-
         </div>
     );
 }
