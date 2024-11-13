@@ -376,194 +376,43 @@ function Header({ name, id, designation, empProfile, gender }) {
     }
   };
 
-  useEffect(() => {
+  const officialHolidays = [
+    '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
+    '2024-07-07', '2024-08-19', '2024-10-12',
+    '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
+];
+
+const isHolidayOrSunday = (date) => {
+    const dateString = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+    const day = date.getDay(); // 0 = Sunday, 6 = Saturday
+    return officialHolidays.includes(dateString) || day === 0; // Check if it's a holiday or Sunday
+};
+
+useEffect(() => {
     if (data?.number) {
-      // Calculate the previous day
-      const previousDay = new Date();
-      previousDay.setDate(previousDay.getDate() - 1);
+        // Calculate the previous day
+        const previousDay = new Date();
+        console.log("previousDay" , previousDay)
+        previousDay.setDate(previousDay.getDate() - 1);
 
-      const fetchAndSaveData = async () => {
-        const dailyData = await fetchDailyData(previousDay, data.number); // Fetch only for the previous day
-        if (dailyData) {
-          await saveMonthlyDataToDatabase(data.number, dailyData); // Save only the previous day's data
+        // Find the last working day
+        while (isHolidayOrSunday(previousDay)) {
+            previousDay.setDate(previousDay.getDate() - 1); // Move to the previous day
         }
-      };
 
-      fetchAndSaveData();
+        const fetchAndSaveData = async () => {
+            const dailyData = await fetchDailyData(previousDay, data.number); // Fetch for the last working day
+            if (dailyData) {
+                await saveMonthlyDataToDatabase(data.number, dailyData); // Save the data
+            }
+        };
+
+        fetchAndSaveData();
     }
-  }, [data]);
+}, [data]);
 
 
-  //const [dialogCount, setDialogCount] = useState(0); // Count of how many times dialog has shown
-
-  // Utility function to get the current date in 'YYYY-MM-DD' format
-  const getTodayDate = () => new Date().toISOString().split("T")[0];
-
-  // // Load state from localStorage when the component mounts
-  // useEffect(() => {
-  //   const storedData = JSON.parse(localStorage.getItem(userId)) || {};
-  //   const today = getTodayDate();
-  //   console.log("here", storedData)
-
-  //   // Reset if it's a new day
-  //   if (storedData.date !== today) {
-  //     localStorage.setItem(
-  //       userId,
-  //       JSON.stringify({ date: today, count: 0, lastShown: null, dismissed: false })
-  //     );
-  //     setPopupCount(0);
-  //     setLastPopupTime(null);
-  //   } else {
-  //     setPopupCount(storedData.count || 0);
-  //     setLastPopupTime(new Date(storedData.lastShown) || null);
-  //   }
-  // }, [userId]);
-
-  // // Control when the popup is shown
-  // // useEffect(() => {
-  // //   const storedData = JSON.parse(localStorage.getItem(userId));
-  // //   const now = Date.now();
-  // //   const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
-  // //   if (!storedData || storedData.dismissed || storedData.popupCount >= 3) {
-  // //     console.log("1 yahan chala" , storedData , popupCount , lastPopupTime)
-  // //     return;  // Exit early if popup is dismissed
-  // //   }
-
-
-  // //   // Show the popup if 15 minutes have passed since the last popup and the count is < 3
-  // //   if (!storedData.dismissed && storedData.count < 3 && timeSinceLastPopup >= 1 * 60 * 1000) {
-  // //     console.log("2 yahan chala" , storedData , popupCount , lastPopupTime)
-  // //     setShowPopup(true);
-  // //   }
-  // // }, [lastPopupTime, popupCount]);
-
-  // useEffect(() => {
-  //   const storedData = JSON.parse(localStorage.getItem(userId));
-  //   const now = Date.now();
-  //   const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
-
-  //   console.log("Stored Data:", storedData);
-  //   console.log("Current Time:", now);
-  //   console.log("Last Popup Time:", lastPopupTime);
-  //   console.log("Time Since Last Popup:", timeSinceLastPopup);
-  //   console.log("Popup Count:", storedData?.count);
-
-  //   // Check if storedData is null or if popup is dismissed
-  //   if (!storedData && storedData.dismissed && storedData.count >= 3) {
-  //     console.log("Condition 1 met, exiting:", {
-  //       dismissed: storedData?.dismissed,
-  //       popupCount: storedData?.count,
-  //     });
-  //     setShowPopup(false)
-  //     return;  // Exit early if popup is dismissed or count is 3 or more
-  //   }
-
-  //   // Show the popup if 15 minutes have passed since the last popup and the count is < 3
-  //   if (!storedData.dismissed && storedData.count < 3 && timeSinceLastPopup >= 15 * 60 * 1000) {
-  //     console.log("Condition 2 met, showing popup:", {
-  //       dismissed: storedData.dismissed,
-  //       popupCount: storedData.count,
-  //       timeSinceLastPopup: timeSinceLastPopup,
-  //     });
-  //     setShowPopup(true);
-  //   } else {
-  //     console.log("Popup not shown. Conditions not met:", {
-  //       dismissed: storedData.dismissed,
-  //       count: storedData.count,
-  //       timeSinceLastPopup: timeSinceLastPopup,
-  //     });
-  //   }
-  // }, [lastPopupTime, popupCount, userId]);
-
-
-  // // Set the next popup to appear 15 minutes after the current one closes
-  // useEffect(() => {
-  //   const storedData = JSON.parse(localStorage.getItem(userId));
-  //   console.log("Stored Data:", storedData);
-
-  //   const now = new Date();
-  //   const timeSinceLastPopup = lastPopupTime ? now - new Date(storedData.lastShown).getTime() : Infinity;
-  //   if (!storedData.dismissed && storedData.count < 3) {
-  //     const timer = setTimeout(() => {
-  //       console.log("Condition 2 met, showing popup:", {
-  //         dismissed: storedData.dismissed,
-  //         popupCount: storedData.count,
-  //         timeSinceLastPopup: timeSinceLastPopup,
-  //       });
-  //       setShowPopup(true);
-  //     }, 15 * 60 * 1000); // 15 minutes from now
-
-  //     return () => clearTimeout(timer); // Clean up the timer on component unmount
-  //   }
-  // }, [popupCount, lastPopupTime]);
-
-  // // Handle the "Yes" button
-  // const handleYesClick = async () => {
-  //   const storedData = JSON.parse(localStorage.getItem(userId));
-  //   const newCount = storedData.count + 1;
-  //   const now = new Date();
-
-
-  //   // Update localStorage with new count and last shown time
-  //   localStorage.setItem(
-  //     userId,
-  //     JSON.stringify({ ...storedData, count: newCount, lastShown: now })
-  //   );
-  //   setPopupCount(newCount);
-  //   setLastPopupTime(now);
-  //   setShowPopup(false);
-  //   try {
-  //     await axios.post(`${secretKey}/employee/projectionstatustoday/${userId}`, {
-  //       projectionStatusForToday: "Pending",
-  //       projectionDate: now // Use the current date directly
-  //     });
-
-  //     // If the new count is 3, set a timer for 15 minutes
-  //     if (newCount === 3) {
-  //       setTimeout(() => {
-  //         setpopupMessage("Today's projection count is zero, strict actions will be taken!");
-  //         setNoPopup(true);
-  //       }, 15 * 60 * 1000); // 15 minutes in milliseconds
-  //     }
-
-  //     // Update component state
-
-  //     navigate(`/employee-data/${userId}`);
-  //   } catch (error) {
-  //     console.error("Error updating projection status:", error);
-  //     // Handle error (e.g., show a notification or alert)
-  //   }
-  // };
-
-  // // Handle the "No" button to disable popups for the rest of the day
-  // const handleNoClick = async () => {
-  //   const storedData = JSON.parse(localStorage.getItem(userId)) || {};
-
-  //   // Set count to 3 and dismissed to true, ensuring no further popups
-  //   localStorage.setItem(userId, JSON.stringify({
-  //     ...storedData,
-  //     count: 3,  // Set count to maximum to prevent further popups
-  //     dismissed: true,  // Mark dismissed as true
-  //     lastShown: new Date(),  // Optionally set the lastShown timestamp
-  //   }));
-  //   // Update component state
-  //   setPopupCount(3);
-  //   setShowPopup(false);
-  //   setNoPopup(true)
-  //   setpopupMessage("Today's projection count is zero, strict actions will be taken!")
-  //   try {
-  //     await axios.post(`${secretKey}/employee/projectionstatustoday-no/${userId}`, {
-  //       projectionStatusForToday: "Not Submitted",
-  //       projectionDate: new Date() // Use the current date directly
-  //     });
-
-
-  //   } catch (error) {
-  //     console.error("Error updating projection status:", error);
-  //     // Handle error (e.g., show a notification or alert)
-  //   }
-  //   ;
-  // };
+ 
 
 
   return (

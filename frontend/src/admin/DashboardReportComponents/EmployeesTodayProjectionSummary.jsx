@@ -22,7 +22,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from "dayjs";
 import moment from "moment";
 
-function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranch, floorManagerName }) {
+function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranch }) {
 
     // console.log("Is floor manager view :", isFloorManagerView);
     // console.log("Floor manager branch :", floorManagerBranch);
@@ -86,7 +86,6 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                 employees = employees.filter(
                     (employee) =>
                         !excludedEmployees.includes(employee.ename) &&
-                        employee.ename !== floorManagerName &&
                         employee.branchOffice === floorManagerBranch
                 );
             }

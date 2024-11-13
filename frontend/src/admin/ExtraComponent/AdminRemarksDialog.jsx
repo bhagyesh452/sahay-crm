@@ -17,6 +17,7 @@ function AdminRemarksDialog({
   companyStatus,
   currentRemarks,
   secretKey,
+  companyName
 }) {
   const [openRemarks, openchangeRemarks] = useState(false);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
@@ -103,7 +104,7 @@ function AdminRemarksDialog({
         maxWidth="sm"
       >
         <DialogTitle>
-          Remarks
+        <span style={{ fontSize: "14px" }}>{companyName} Remarks</span>
           <button
             style={{
               background: "none",

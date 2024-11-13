@@ -205,6 +205,7 @@ function TestLeads() {
                     response = await axios.get(`${secretKey}/company-data/filter-leads`, {
                         params: {
                             selectedStatus,
+                            lastExtractedStatus,
                             selectedState,
                             selectedNewCity,
                             selectedBDEName,
@@ -715,6 +716,7 @@ function TestLeads() {
                     params: {
                         dataStatus,
                         selectedStatus,
+                        lastExtractedStatus,
                         selectedState,
                         selectedNewCity,
                         selectedBDEName,
@@ -827,6 +829,7 @@ function TestLeads() {
                     isFilter,
                     dataStatus,
                     selectedStatus,
+                    lastExtractedStatus,
                     selectedState,
                     selectedNewCity,
                     selectedBDEName,
@@ -1324,7 +1327,8 @@ function TestLeads() {
     const [selectedNewCity, setSelectedNewCity] = useState("")
     const [selectedYear, setSelectedYear] = useState("")
     const [selectedMonth, setSelectedMonth] = useState("")
-    const [selectedStatus, setSelectedStatus] = useState("")
+    const [selectedStatus, setSelectedStatus] = useState("");
+    const [lastExtractedStatus, setLastExtractedStatus] = useState("");
     const [selectedBDEName, setSelectedBDEName] = useState("")
     const [selectedAssignDate, setSelectedAssignDate] = useState(null)
     const [selectedUploadedDate, setSelectedUploadedDate] = useState(null)
@@ -1378,6 +1382,7 @@ function TestLeads() {
             const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
                 params: {
                     selectedStatus,
+                    lastExtractedStatus,
                     selectedState,
                     selectedNewCity,
                     selectedBDEName,
@@ -1393,6 +1398,7 @@ function TestLeads() {
                 }
             });
             if (!selectedStatus &&
+                !lastExtractedStatus&&
                 !selectedState &&
                 !selectedNewCity &&
                 !selectedBDEName &&
@@ -1438,6 +1444,7 @@ function TestLeads() {
         setIsFilter(false)
         functionCloseFilterDrawer()
         setSelectedStatus('')
+        setLastExtractedStatus("")
         setSelectedState('')
         setSelectedNewCity('')
         setSelectedBDEName('')
@@ -1757,7 +1764,7 @@ function TestLeads() {
                                                     <th>State</th>
                                                     <th>Company Email</th>
                                                     {(dataStatus === "Assigned") && <th>Status</th>}
-                                                    {(dataStatus === "Assigned") && <th>Remarks</th>}
+                                                    {(dataStatus === "Assigned" || dataStatus === "Extracted") && <th>Remarks</th>}
                                                     <th>Uploaded By</th>
                                                     <th>Uploaded On</th>
                                                     {dataStatus === 'Extracted' && <th>Last Assigned To</th>}
@@ -1886,7 +1893,7 @@ function TestLeads() {
                                                             <td>{company["Company Email"]}</td>
 
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                            {(dataStatus === "Assigned") &&
+                                                            {(dataStatus === "Assigned" || dataStatus === "Extracted") &&
                                                                 <td>
                                                                     <AdminRemarksDialog
                                                                         key={`${"Company Name"}-${index}`}
@@ -1894,6 +1901,7 @@ function TestLeads() {
                                                                         companyID={company._id}
                                                                         companyStatus={company.Status}
                                                                         secretKey={secretKey}
+                                                                        companyName={company["Company Name"]}
 
                                                                     />
                                                                     
@@ -1991,14 +1999,14 @@ function TestLeads() {
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                            {(dataStatus === "Assigned") && <td>
+                                                            {(dataStatus === "Assigned" || dataStatus === "Extracted") && <td>
                                                                 <AdminRemarksDialog
                                                                     key={`${"Company Name"}-${index}`}
                                                                     currentRemarks={company.Remarks}
                                                                     companyID={company._id}
                                                                     companyStatus={company.Status}
                                                                     secretKey={secretKey}
-
+                                                                    companyName={company["Company Name"]}
                                                                 />
                                                                 
                                                             </td>}
@@ -2095,14 +2103,14 @@ function TestLeads() {
                                                             <td>{company["Company Email"]}</td>
 
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                            {(dataStatus === "Assigned") && <td>
+                                                            {(dataStatus === "Assigned" || dataStatus === "Extracted") && <td>
                                                                 <AdminRemarksDialog
                                                                     key={`${"Company Name"}-${index}`}
                                                                     currentRemarks={company.Remarks}
                                                                     companyID={company._id}
                                                                     companyStatus={company.Status}
                                                                     secretKey={secretKey}
-
+                                                                    companyName={company["Company Name"]}
                                                                 />
 
                                                             </td>}
@@ -2198,7 +2206,7 @@ function TestLeads() {
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                            {(dataStatus === "Assigned") &&
+                                                            {(dataStatus === "Assigned" || dataStatus === "Extracted") &&
                                                                 <td>
                                                                     <AdminRemarksDialog
                                                                         key={`${"Company Name"}-${index}`}
@@ -2206,7 +2214,7 @@ function TestLeads() {
                                                                         companyID={company._id}
                                                                         companyStatus={company.Status}
                                                                         secretKey={secretKey}
-
+                                                                        companyName={company["Company Name"]}
                                                                     />
                                                                     
                                                                 </td>}
@@ -3731,6 +3739,26 @@ function TestLeads() {
                                             defaultValue={null}
                                             placeholder="dd-mm-yyyy"
                                             onChange={(e) => setSelectedExtractedDate(e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-3'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Last Extracted Status</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={lastExtractedStatus}
+                                            onChange={(e) => {
+                                                setLastExtractedStatus(e.target.value)
+                                            }}>
+                                            <option selected value='Select Status'>Select Status</option>
+                                            <option value='Not Picked Up'>Not Picked Up</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Junk">Junk</option>
+                                            <option value="Not Interested">Not Interested</option>
+                                            <option value="Untouched">Untouched</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="Matured">Matured</option>
+                                            <option value="FollowUp">Followup</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
