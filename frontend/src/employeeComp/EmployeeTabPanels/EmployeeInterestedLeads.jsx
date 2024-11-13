@@ -547,7 +547,7 @@ function EmployeeInterestedLeads({
                     )}
                   </div>
                 </th>
-                <th>Action</th>
+                <th className="rm-sticky-action">Action</th>
                 {/* <th>Add Projection</th>
                                 {designation !== "Sales Manager" || fordesignation !== "admin" && (<th>Forward To Bdm</th>)} */}
               </tr>
@@ -790,7 +790,7 @@ function EmployeeInterestedLeads({
                     <td>{company["State"]}</td>
                     <td>{company["Company Email"]}</td>
                     <td>{formatDateNew(company["AssignDate"])}</td>
-                    <td>
+                    <td className="rm-sticky-action">
                       <div className="d-flex align-items-center justify-content-between">
                         {projectionData && projectionData
                           .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
@@ -833,6 +833,9 @@ function EmployeeInterestedLeads({
                                 width: "17px",
                                 height: "17px",
                               }}
+                              title={(fordesignation === "admin" || fordesignation === "datamanager") ? "View Projection"
+                                : projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                  ? "Update Projection" : "Add Projection"}
                             />
                           </IconButton>
                         ) : (
@@ -853,6 +856,7 @@ function EmployeeInterestedLeads({
                                 width: "17px",
                                 height: "17px",
                               }}
+                              title={(fordesignation === "admin" || fordesignation === "datamanager") ? "View Projection" : "Add Projection"}
                             />
                           </IconButton>
                         )}

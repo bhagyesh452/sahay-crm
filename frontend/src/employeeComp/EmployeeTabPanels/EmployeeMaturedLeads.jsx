@@ -552,7 +552,7 @@ function EmployeeMaturedLeads({
                                             )}
                                         </div>
                                     </th>
-                                    <th className="rm-sticky-action">Add Projections</th>
+                                    <th className="rm-sticky-action">Action</th>
                                 </tr>
                             </thead>
                             {isLoading ? (
@@ -739,6 +739,9 @@ function EmployeeMaturedLeads({
                                                                 width: "17px",
                                                                 height: "17px",
                                                             }}
+                                                            title={(fordesignation === "admin" || fordesignation === "datamanager") ? "View Projection"
+                                                                : projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                                                    ? "Update Projection" : "Add Projection"}
                                                         />
                                                     </IconButton>
                                                 ) : (
@@ -758,6 +761,7 @@ function EmployeeMaturedLeads({
                                                                 width: "17px",
                                                                 height: "17px",
                                                             }}
+                                                            title={(fordesignation === "admin" || fordesignation === "datamanager") ? "View Projection" : "Add Projection"}
                                                         />
                                                     </IconButton>
                                                 )}

@@ -109,13 +109,16 @@ function FeedbackDialog({ companyId, companyName, feedbackRemarks, feedbackPoint
             <button
                 style={{ border: "transparent", background: "none" }}
                 onClick={handleViewFeedback}
+                disabled={feedbackPoints.length === 0}
             >
                 {isEmployeeFeedback ? <RiInformationLine
                     style={{ cursor: "pointer", width: "17px", height: "17px" }}
                     color={feedbackPoints.length === 0 ? "lightgray" : "#fbb900"}
-                /> : <RiInformationLine
+                    title="View Feedback"
+                    /> : <RiInformationLine
                     style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                    color={feedbackPoints.length === 0 ? "black" : "#fbb900"}
+                    color={(newDesignation && feedbackPoints.length === 0) ? "lightgray" : feedbackPoints.length === 0 ? "black" : "#fbb900"}
+                    title={newDesignation ? "View Feedback" : feedbackPoints.length === 0 ? "Add Feedback" : "Update Feedback"}
                 />}
             </button>
 

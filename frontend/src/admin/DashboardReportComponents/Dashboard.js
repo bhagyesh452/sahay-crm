@@ -36,6 +36,7 @@ import InterestedFollowLeadReport from "./InterestedFollowLeadReport.jsx";
 import EmployeesForwardedDataReportFromBackend from "./EmployeesForwardedDataReportFromBackend.jsx";
 import EmployeesNewProjectionSummary from "./EmployeesNewProjectionSummary.jsx";
 import EmployeesTodayProjectionSummary from "./EmployeesTodayProjectionSummary.jsx";
+import FloorManagerLeadsReport from "../../BDM/Dashboard/FloorManagerLeadsReport.jsx";
 
 
 
@@ -169,7 +170,9 @@ function Dashboard() {
                             <EmployeeDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={2} className="mat-tab-inner">
-                            <InterestedFollowLeadReport />
+                            {/* <InterestedFollowLeadReport /> */}
+                            <FloorManagerLeadsReport isAdmin={true} />
+
                             {/* <EmployeesForwardedDataReport /> */}
                             <EmployeesForwardedDataReportFromBackend />
                         </CustomTabPanel>

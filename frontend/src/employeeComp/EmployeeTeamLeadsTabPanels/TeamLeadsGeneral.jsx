@@ -437,7 +437,7 @@ function TeamLeadsGeneral({
                                         )}
                                     </div>
                                 </th>
-                                {!newDesignation && <th>Action</th>}
+                                {!newDesignation && <th className="rm-sticky-action">Action</th>}
                             </tr>
                         </thead>
 
@@ -485,7 +485,19 @@ function TeamLeadsGeneral({
                                                 </div>
 
                                                 {/* <div className="intersted-history-btn disabled"> */}
-                                                <div className={company.interestedInformation.length !== 0 ? "intersted-history-btn" : "intersted-history-btn disabled"}>
+                                                <div className={
+                                                    (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                                        ? (company.Status === "Interested"
+                                                            ? "intersted-history-btn disabled"
+                                                            : company.Status === "FollowUp"
+                                                                ? "followup-history-btn disabled"
+                                                                : "")
+                                                        : (company.Status === "Interested"
+                                                            ? "intersted-history-btn"
+                                                            : company.Status === "FollowUp"
+                                                                ? "followup-history-btn"
+                                                                : "")
+                                                }>
                                                     <FaEye
                                                         key={company._id}
                                                         style={{ border: "transparent", background: "none" }}
@@ -535,7 +547,7 @@ function TeamLeadsGeneral({
                                         <td>{company["City"]}</td>
                                         <td>{company["State"]}</td>
                                         <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                        {!newDesignation && <td>
+                                        {!newDesignation && <td className="rm-sticky-action">
                                             <IconButton style={{ color: "green", marginRight: "5px", height: "25px", width: "25px" }}
                                                 onClick={(e) => handleAcceptClick(
                                                     company._id,
