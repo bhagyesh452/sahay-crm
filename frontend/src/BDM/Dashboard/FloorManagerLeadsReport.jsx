@@ -13,7 +13,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ClipLoader from "react-spinners/ClipLoader";
 import Nodata from '../Components/NoData/NoData.jsx';
 
-function FloorManagerLeadsReport() {
+function FloorManagerLeadsReport({ isAdmin }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
@@ -82,7 +82,9 @@ function FloorManagerLeadsReport() {
     };
 
     useEffect(() => {
-        fetchFloorManagerDetails();
+        if (!isAdmin) {
+            fetchFloorManagerDetails();
+        }
     }, []);
 
     const fetchLeadsReport = async (dates) => {
@@ -158,225 +160,206 @@ function FloorManagerLeadsReport() {
         }
     };
 
+    // Define filtered leads once to use in both <tbody> and <tfoot>
+    const filteredLeads = leadsReport.filter((emp) =>
+        isAdmin || (
+            emp.branchOffice === floorManagerBranch &&
+            emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
+            emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
+            emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami"
+        )
+    );
+
     return (
         <div>
-            <div className='container-xl mt-3'>
-                <div className="employee-dashboard">
-                    <div className="card">
-                        <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
-                            <div className="dashboard-title pl-1"  >
-                                <h2 className="m-0">
-                                    Employees Interested, Follow Up & Forwarded Leads Report
-                                </h2>
-                            </div>
-
-                            <div className="d-flex align-items-center pr-1">
-                                <div className="data-filter">
-                                    <LocalizationProvider
-                                        dateAdapter={AdapterDayjs} >
-                                        <DemoContainer
-                                            components={["SingleInputDateRangeField"]} sx={{
-                                                padding: '0px',
-                                                with: '220px'
-                                            }}  >
-                                            <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
-                                                onChange={(values) => fetchLeadsReport(values)}
-                                                slots={{ field: SingleInputDateRangeField }}
-                                                slotProps={{
-                                                    shortcuts: {
-                                                        items: shortcutsItems,
-                                                    },
-                                                    actionBar: { actions: [] },
-                                                    textField: {
-                                                        InputProps: { endAdornment: <Calendar /> },
-                                                    },
-                                                }}
-                                                calendars={1}
-                                            />
-                                        </DemoContainer>
-                                    </LocalizationProvider>
-                                </div>
-                            </div>
+            <div className="employee-dashboard mt-2">
+                <div className="card">
+                    <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                        <div className="dashboard-title pl-1"  >
+                            <h2 className="m-0">
+                                Employees Interested, Follow Up & Forwarded Leads Report
+                            </h2>
                         </div>
 
-                        <div className='card-body'>
-                            <div className="row tbl-scroll">
+                        <div className="d-flex align-items-center pr-1">
+                            <div className="data-filter">
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs} >
+                                    <DemoContainer
+                                        components={["SingleInputDateRangeField"]} sx={{
+                                            padding: '0px',
+                                            with: '220px'
+                                        }}  >
+                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={(values) => fetchLeadsReport(values)}
+                                            slots={{ field: SingleInputDateRangeField }}
+                                            slotProps={{
+                                                shortcuts: {
+                                                    items: shortcutsItems,
+                                                },
+                                                actionBar: { actions: [] },
+                                                textField: {
+                                                    InputProps: { endAdornment: <Calendar /> },
+                                                },
+                                            }}
+                                            calendars={1}
+                                        />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </div>
+                        </div>
+                    </div>
 
-                                <table className="admin-dash-tbl">
-                                    <thead className="admin-dash-tbl-thead">
+                    <div className='card-body'>
+                        <div className="row tbl-scroll">
+
+                            <table className="admin-dash-tbl">
+                                <thead className="admin-dash-tbl-thead">
+                                    <tr>
+                                        <th>Sr.No</th>
+                                        <th>BDE/BDM Name</th>
+                                        <th>Branch Name</th>
+
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.interestedLeads === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.interestedLeads === "descending") {
+                                                    updatedSortType = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    interestedLeads: updatedSortType,
+                                                }));
+                                                handleSortInterestedLeads(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>Interested Leads</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{ color: newSortType.interestedLeads === "descending" ? "black" : "#9d8f8f" }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{ color: newSortType.interestedLeads === "ascending" ? "black" : "#9d8f8f" }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.followUpLeads === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.followUpLeads === "descending") {
+                                                    updatedSortType = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    followUpLeads: updatedSortType,
+                                                }));
+                                                handleSortFollowUpLeads(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>Follow Up Leads</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{ color: newSortType.followUpLeads === "descending" ? "black" : "#9d8f8f" }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{ color: newSortType.followUpLeads === "ascending" ? "black" : "#9d8f8f" }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+
+                                        <th style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.forwardedLeads === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.forwardedLeads === "descending") {
+                                                    updatedSortType = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    forwardedLeads: updatedSortType,
+                                                }));
+                                                handleSortForwardedLeads(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>Forwarded Cases</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{ color: newSortType.forwardedLeads === "descending" ? "black" : "#9d8f8f" }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{ color: newSortType.forwardedLeads === "ascending" ? "black" : "#9d8f8f" }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {isLoading ? (
                                         <tr>
-                                            <th>Sr.No</th>
-                                            <th>BDE/BDM Name</th>
-                                            <th>Branch Name</th>
-
-                                            <th style={{ cursor: "pointer" }}
-                                                onClick={(e) => {
-                                                    let updatedSortType;
-                                                    if (newSortType.interestedLeads === "ascending") {
-                                                        updatedSortType = "descending";
-                                                    } else if (newSortType.interestedLeads === "descending") {
-                                                        updatedSortType = "none";
-                                                    } else {
-                                                        updatedSortType = "ascending";
-                                                    }
-                                                    setNewSortType((prevData) => ({
-                                                        ...prevData,
-                                                        interestedLeads: updatedSortType,
-                                                    }));
-                                                    handleSortInterestedLeads(updatedSortType);
-                                                }}><div className="d-flex align-items-center justify-content-between">
-                                                    <div>Interested Leads</div>
-                                                    <div className="short-arrow-div">
-                                                        <ArrowDropUpIcon className="up-short-arrow"
-                                                            style={{ color: newSortType.interestedLeads === "descending" ? "black" : "#9d8f8f" }}
-                                                        />
-                                                        <ArrowDropDownIcon className="down-short-arrow"
-                                                            style={{ color: newSortType.interestedLeads === "ascending" ? "black" : "#9d8f8f" }}
-                                                        />
-                                                    </div>
+                                            <td colSpan="6">
+                                                <div className="LoaderTDSatyle">
+                                                    <ClipLoader
+                                                        color="lightgrey"
+                                                        loading
+                                                        size={30}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
                                                 </div>
-                                            </th>
-
-                                            <th style={{ cursor: "pointer" }}
-                                                onClick={(e) => {
-                                                    let updatedSortType;
-                                                    if (newSortType.followUpLeads === "ascending") {
-                                                        updatedSortType = "descending";
-                                                    } else if (newSortType.followUpLeads === "descending") {
-                                                        updatedSortType = "none";
-                                                    } else {
-                                                        updatedSortType = "ascending";
-                                                    }
-                                                    setNewSortType((prevData) => ({
-                                                        ...prevData,
-                                                        followUpLeads: updatedSortType,
-                                                    }));
-                                                    handleSortFollowUpLeads(updatedSortType);
-                                                }}><div className="d-flex align-items-center justify-content-between">
-                                                    <div>Follow Up Leads</div>
-                                                    <div className="short-arrow-div">
-                                                        <ArrowDropUpIcon className="up-short-arrow"
-                                                            style={{ color: newSortType.followUpLeads === "descending" ? "black" : "#9d8f8f" }}
-                                                        />
-                                                        <ArrowDropDownIcon className="down-short-arrow"
-                                                            style={{ color: newSortType.followUpLeads === "ascending" ? "black" : "#9d8f8f" }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </th>
-
-                                            <th style={{ cursor: "pointer" }}
-                                                onClick={(e) => {
-                                                    let updatedSortType;
-                                                    if (newSortType.forwardedLeads === "ascending") {
-                                                        updatedSortType = "descending";
-                                                    } else if (newSortType.forwardedLeads === "descending") {
-                                                        updatedSortType = "none";
-                                                    } else {
-                                                        updatedSortType = "ascending";
-                                                    }
-                                                    setNewSortType((prevData) => ({
-                                                        ...prevData,
-                                                        forwardedLeads: updatedSortType,
-                                                    }));
-                                                    handleSortForwardedLeads(updatedSortType);
-                                                }}><div className="d-flex align-items-center justify-content-between">
-                                                    <div>Forwarded Cases</div>
-                                                    <div className="short-arrow-div">
-                                                        <ArrowDropUpIcon className="up-short-arrow"
-                                                            style={{ color: newSortType.forwardedLeads === "descending" ? "black" : "#9d8f8f" }}
-                                                        />
-                                                        <ArrowDropDownIcon className="down-short-arrow"
-                                                            style={{ color: newSortType.forwardedLeads === "ascending" ? "black" : "#9d8f8f" }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </th>
+                                            </td>
                                         </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        {isLoading ? (
-                                            <tr>
-                                                <td colSpan="6">
-                                                    <div className="LoaderTDSatyle">
-                                                        <ClipLoader
-                                                            color="lightgrey"
-                                                            loading
-                                                            size={30}
-                                                            aria-label="Loading Spinner"
-                                                            data-testid="loader"
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            <>
-                                                {leadsReport.length > 0 ? (
-                                                    leadsReport.filter((emp) =>
-                                                        emp.branchOffice === floorManagerBranch &&
-                                                        emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
-                                                        emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
-                                                        emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami")
-                                                        .map((emp, index) => (
-                                                            <tr key={index}>
-                                                                <td>{index + 1}</td>
-                                                                <td>{emp.employeeName}</td>
-                                                                <td>{emp.branchOffice}</td>
-                                                                <td>{emp.interested}</td>
-                                                                <td>{emp.followUp}</td>
-                                                                <td>{emp.forwarded}</td>
-                                                            </tr>
-                                                        ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan="6">
-                                                            <Nodata />
-                                                        </td>
+                                    ) : (
+                                        <>
+                                            {filteredLeads.length > 0 ? (
+                                                filteredLeads.map((emp, index) => (
+                                                    <tr key={index}>
+                                                        <td>{index + 1}</td>
+                                                        <td>{emp.employeeName}</td>
+                                                        <td>{emp.branchOffice}</td>
+                                                        <td>{emp.interested}</td>
+                                                        <td>{emp.followUp}</td>
+                                                        <td>{emp.forwarded}</td>
                                                     </tr>
-                                                )}
-                                            </>
-                                        )}
-                                    </tbody>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="6">
+                                                        <Nodata />
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </>
+                                    )}
+                                </tbody>
 
-                                    {leadsReport.length > 0 && <tfoot className="admin-dash-tbl-tfoot">
+                                {filteredLeads.length > 0 && (
+                                    <tfoot className="admin-dash-tbl-tfoot">
                                         <tr>
                                             <td colSpan={3}>Total</td>
-                                            <td>
-                                                {leadsReport                                                
-                                                .filter((emp) =>
-                                                    emp.branchOffice === floorManagerBranch &&
-                                                    emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
-                                                    emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
-                                                    emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami")
-                                                .reduce((sum, emp) => sum + (emp.interested || 0), 0)}
-                                            </td>
-                                            <td>
-                                                {leadsReport
-                                                .filter((emp) =>
-                                                    emp.branchOffice === floorManagerBranch &&
-                                                    emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
-                                                    emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
-                                                    emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami")
-                                                .reduce((sum, emp) => sum + (emp.followUp || 0), 0)}
-                                            </td>
-                                            <td>
-                                                {leadsReport
-                                                .filter((emp) =>
-                                                    emp.branchOffice === floorManagerBranch &&
-                                                    emp.employeeName !== "Vishnu Suthar" && emp.employeeName !== "Vandit Shah" &&
-                                                    emp.employeeName !== "Khushi Gandhi" && emp.employeeName !== "Yashesh Gajjar" &&
-                                                    emp.employeeName !== "Ravi Prajapati" && emp.employeeName !== "Yash Goswami")
-                                                .reduce((sum, emp) => sum + (emp.forwarded || 0), 0)}
-                                            </td>
+                                            <td>{filteredLeads.reduce((sum, emp) => sum + (emp.interested || 0), 0)}</td>
+                                            <td>{filteredLeads.reduce((sum, emp) => sum + (emp.followUp || 0), 0)}</td>
+                                            <td>{filteredLeads.reduce((sum, emp) => sum + (emp.forwarded || 0), 0)}</td>
                                         </tr>
-                                    </tfoot>}
-                                </table>
+                                    </tfoot>
+                                )}
+                            </table>
 
-                            </div>
                         </div>
-
                     </div>
+
                 </div>
             </div>
         </div>

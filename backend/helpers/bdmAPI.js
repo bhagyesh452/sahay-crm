@@ -354,7 +354,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Fetch paginated data for each status
     const [generalData, interestedData, maturedData, notInterestedData] = await Promise.all([
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in : ["Pending"]} })
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending"] } })
         .sort({ bdeForwardDate: -1 })
         .skip(skip)
         .limit(limit),
@@ -1730,14 +1730,16 @@ router.get("/floorManagerLeadsReport", async (req, res) => {
     const employees = await adminModel.find({
       $or: [
         { newDesignation: "Business Development Executive" },
-        { newDesignation: "Business Development Manager" }
+        { newDesignation: "Business Development Manager" },
+        { newDesignation: "Floor Manager" }
       ]
     });
 
     const deletedEmployees = await DeletedEmployeeModel.find({
       $or: [
         { newDesignation: "Business Development Executive" },
-        { newDesignation: "Business Development Manager" }
+        { newDesignation: "Business Development Manager" },
+        { newDesignation: "Floor Manager" }
       ]
     });
 

@@ -472,7 +472,7 @@ function TeamLeadsMatured({
                                         )}
                                     </div>
                                 </th>
-                                <th>Action</th>
+                                <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
 
@@ -614,7 +614,7 @@ function TeamLeadsMatured({
                                         <td>{company["State"]}</td>
                                         <td>{company["Company Email"]}</td>
                                         <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                        <td>
+                                        <td className="rm-sticky-action">
                                             <IconButton style={{ marginRight: "5px" }}
                                                 onClick={() => {
                                                     // setCompanyId(company._id);

@@ -40,12 +40,14 @@ function BdmDashboard() {
   const { userId } = useParams();
   const [floorManagerData, setFloorManagerData] = useState({});
   const [floorManagerBranch, setFloorManagerBranch] = useState("");
+  const [floorManagerName, setFloorManagerName] = useState("");
 
   const fetchCurrentFloorManagerData = async () => {
     try {
       const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
       setFloorManagerData(res.data.data);
       setFloorManagerBranch(res.data.data.branchOffice);
+      setFloorManagerName(res.data.data.ename);
       // console.log("Floor manager data is :", res.data.data);
     } catch (error) {
       console.error("Error fetching current floor manager data:", error);
@@ -3821,7 +3823,7 @@ function BdmDashboard() {
       {/* <FloorManagerProjectionSummary /> */}
       <div className='container-xl mt-3'>
         <div className="employee-dashboard">
-          <EmployeesTodayProjectionSummary isFloorManagerView={true} floorManagerBranch={floorManagerBranch} />
+          <EmployeesTodayProjectionSummary isFloorManagerView={true} floorManagerBranch={floorManagerBranch} floorManagerName={floorManagerName} />
         </div>
       </div>
 
@@ -3829,7 +3831,9 @@ function BdmDashboard() {
       {/* -----------------employess interested leads---------------------- */}
       {/* <BDMInterestedLeadsReport /> */}
 
-      {/* <FloorManagerLeadsReport /> */}
+      {/* <div className='container-xl mt-3'>
+        <FloorManagerLeadsReport />
+      </div> */}
     </div>
   );
 }

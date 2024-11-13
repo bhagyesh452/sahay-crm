@@ -547,7 +547,19 @@ function TeamLeadsNotInterested({
                                                     {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                                 </div>
 
-                                                <div className={company.interestedInformation.length !== 0 ? "intersted-history-btn" : "intersted-history-btn disabled"}>
+                                                <div className={
+                                                    (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                                        ? (company.bdeOldStatus === "Interested"
+                                                            ? "intersted-history-btn disabled"
+                                                            : company.bdeOldStatus === "FollowUp"
+                                                                ? "followup-history-btn disabled"
+                                                                : "")
+                                                        : (company.bdeOldStatus === "Interested"
+                                                            ? "intersted-history-btn"
+                                                            : company.bdeOldStatus === "FollowUp"
+                                                                ? "followup-history-btn"
+                                                                : "")
+                                                }>
                                                     <FaEye
                                                         key={company._id}
                                                         style={{ border: "transparent", background: "none" }}

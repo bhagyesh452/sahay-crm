@@ -570,12 +570,11 @@ function TeamLeadsInterested({
                                         )}
                                     </div>
                                 </th>
-                                <th>Add Projection</th>
-                                <th>Add Feedback</th>
                                 {newDesignation && <>
                                     <th>Status Modification Date</th>
                                     <th>Age</th>
                                 </>}
+                                <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
 
@@ -641,7 +640,19 @@ function TeamLeadsInterested({
                                                     {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                                 </div>
 
-                                                <div className={company.interestedInformation.length !== 0 ? "intersted-history-btn" : "intersted-history-btn disabled"}>
+                                                <div className={
+                                                    (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                                        ? (company.bdeOldStatus === "Interested"
+                                                            ? "intersted-history-btn disabled"
+                                                            : company.bdeOldStatus === "FollowUp"
+                                                                ? "followup-history-btn disabled"
+                                                                : "")
+                                                        : (company.bdeOldStatus === "Interested"
+                                                            ? "intersted-history-btn"
+                                                            : company.bdeOldStatus === "FollowUp"
+                                                                ? "followup-history-btn"
+                                                                : "")
+                                                }>
                                                     <FaEye
                                                         key={company._id}
                                                         style={{ border: "transparent", background: "none" }}
@@ -736,70 +747,80 @@ function TeamLeadsInterested({
                                         <td>{company["State"]}</td>
                                         <td>{company["Company Email"]}</td>
                                         <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                        <td>
-                                            {projectionData && projectionData
-                                                .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
-                                                .some((item) => item.companyName === company["Company Name"]) ? (
-                                                <IconButton
-                                                    onClick={() => {
-                                                        const matchedItem = projectionData
-                                                            .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))
-                                                            .find((item) => item.companyName === company["Company Name"]);
+                                        {newDesignation && <>
+                                            <td>{formatDate(company.bdmStatusChangeDate)} || {company.bdmStatusChangeTime}</td>
+                                            <td>{timePassedSince(company.bdmStatusChangeDate)}</td>
+                                        </>}
+                                        <td className="rm-sticky-action">
+                                            <div className="d-flex align-items-center justify-content-between">
+                                                {projectionData && projectionData
+                                                    .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
+                                                    .some((item) => item.companyName === company["Company Name"]) ? (
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            const matchedItem = projectionData
+                                                                .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))
+                                                                .find((item) => item.companyName === company["Company Name"]);
 
-                                                        const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
-                                                        const currentDate = new Date().setHours(0, 0, 0, 0);
+                                                            const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
+                                                            const currentDate = new Date().setHours(0, 0, 0, 0);
 
-                                                        // Check if payment date is before the current date
-                                                        if (paymentDate >= currentDate) {
-                                                            setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
-                                                            setIsProjectionEditable(newDesignation ? false : true);  // Enable edit mode
-                                                            setViewProjection(newDesignation ? true : false); // Open new projection dialog with disabled fields when new designation is admin or data manager
-                                                            setShowNewAddProjection(true);  // Open new projection dialog
-                                                            setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
-                                                            // console.log("Projection data to be updated :", matchedItem);
-                                                        } else {
-                                                            setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
-                                                            setIsProjectionEditable(false); // Disable edit mode
-                                                            newDesignation && setViewProjection(true); // Open new projection dialog with disabled fields when new designation is admin or data manager
-                                                            setShowNewAddProjection(true);  // Open new projection dialog
-                                                            setProjectionDataToBeFilled(newDesignation ? matchedItem : company); // Set matched item in the state
-                                                            // console.log("Projection data to be viewed :", matchedItem);
-                                                        }
-                                                    }}
-                                                >
-                                                    <RiEditCircleFill
-                                                        color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
-                                                            ? "#fbb900"
-                                                            : newDesignation ? "#fbb900" : "grey"}
-                                                        style={{
-                                                            width: "17px",
-                                                            height: "17px",
+                                                            // Check if payment date is before the current date
+                                                            if (paymentDate >= currentDate) {
+                                                                setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
+                                                                setIsProjectionEditable(newDesignation ? false : true);  // Enable edit mode
+                                                                setViewProjection(newDesignation ? true : false); // Open new projection dialog with disabled fields when new designation is admin or data manager
+                                                                setShowNewAddProjection(true);  // Open new projection dialog
+                                                                setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                                                // console.log("Projection data to be updated :", matchedItem);
+                                                            } else {
+                                                                setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
+                                                                setIsProjectionEditable(false); // Disable edit mode
+                                                                newDesignation && setViewProjection(true); // Open new projection dialog with disabled fields when new designation is admin or data manager
+                                                                setShowNewAddProjection(true);  // Open new projection dialog
+                                                                setProjectionDataToBeFilled(newDesignation ? matchedItem : company); // Set matched item in the state
+                                                                // console.log("Projection data to be viewed :", matchedItem);
+                                                            }
                                                         }}
-                                                    />
-                                                </IconButton>
-                                            ) : (
-                                                <IconButton
-                                                    onClick={() => {
-                                                        setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
-                                                        setIsProjectionEditable(false); // Not opened in editing mode
-                                                        setShowNewAddProjection(true);  // Open new projection dialog
-                                                        setViewProjection(false); // Open new projection dialog with enabled fields
-                                                        setProjectionDataToBeFilled(company); // Send whole company data when no match found
-                                                        // console.log("Projection data to be added :", company);
-                                                    }}
-                                                    disabled={newDesignation}
-                                                >
-                                                    <RiEditCircleFill
-                                                        color={newDesignation ? "lightgrey" : "grey"}
-                                                        style={{
-                                                            width: "17px",
-                                                            height: "17px",
+                                                    >
+                                                        <RiEditCircleFill
+                                                            color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                                                ? "#fbb900"
+                                                                : newDesignation ? "#fbb900" : "grey"}
+                                                            style={{
+                                                                width: "17px",
+                                                                height: "17px",
+                                                            }}
+                                                            title={newDesignation ? "View Projection"
+                                                                : projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                                                    ? "Update Projection" : "Add Projection"}
+                                                        />
+                                                    </IconButton>
+                                                ) : (
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            setIsFilledFromTeamLeads(true); // To set bde name for that companies projection
+                                                            setIsProjectionEditable(false); // Not opened in editing mode
+                                                            setShowNewAddProjection(true);  // Open new projection dialog
+                                                            setViewProjection(false); // Open new projection dialog with enabled fields
+                                                            setProjectionDataToBeFilled(company); // Send whole company data when no match found
+                                                            // console.log("Projection data to be added :", company);
                                                         }}
-                                                    />
-                                                </IconButton>
-                                            )}
+                                                        disabled={newDesignation}
+                                                    >
+                                                        <RiEditCircleFill
+                                                            color={newDesignation ? "lightgrey" : "grey"}
+                                                            style={{
+                                                                width: "17px",
+                                                                height: "17px",
+                                                            }}
+                                                            title={newDesignation ? "View Projection" : "Add Projection"}
 
-                                            {/* <ProjectionDialog
+                                                        />
+                                                    </IconButton>
+                                                )}
+
+                                                {/* <ProjectionDialog
                                                 key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                                                 projectionCompanyName={company["Company Name"]}
                                                 projectionData={projectionData}
@@ -814,22 +835,18 @@ function TeamLeadsInterested({
                                                 newDesignation={newDesignation}
                                                 isBdmProjection={true}
                                             /> */}
+
+                                                <FeedbackDialog
+                                                    companyId={company._id}
+                                                    companyName={company["Company Name"]}
+                                                    feedbackRemarks={company.feedbackRemarks}
+                                                    feedbackPoints={company.feedbackPoints}
+                                                    refetchTeamLeads={refetchTeamLeads}
+                                                    newDesignation={newDesignation}
+                                                    isEditable={true}
+                                                />
+                                            </div>
                                         </td>
-                                        <td>
-                                            <FeedbackDialog
-                                                companyId={company._id}
-                                                companyName={company["Company Name"]}
-                                                feedbackRemarks={company.feedbackRemarks}
-                                                feedbackPoints={company.feedbackPoints}
-                                                refetchTeamLeads={refetchTeamLeads}
-                                                newDesignation={newDesignation}
-                                                isEditable={true}
-                                            />
-                                        </td>
-                                        {newDesignation && <>
-                                            <td>{formatDate(company.bdmStatusChangeDate)} || {company.bdmStatusChangeTime}</td>
-                                            <td>{timePassedSince(company.bdmStatusChangeDate)}</td>
-                                        </>}
                                     </tr>
                                 ))
                             ) : (
