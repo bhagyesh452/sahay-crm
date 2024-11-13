@@ -3203,7 +3203,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
         existingCompany._id,
         {
           $push: { history: newHistoryEntry },
-          companyId: companyId,
+          companyId: payload.companyId,
           ename: payload.ename,
           date: payload.date,
           time: payload.time,
@@ -3226,7 +3226,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
     } else {
       // Create a new entry if the company doesn't exist
       const newCompany = new ProjectionModel({
-        companyId: companyId,
+        companyId: payload.companyId,
         companyName: payload.companyName,
         ename: payload.ename,
         date: payload.date,
@@ -3251,6 +3251,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ result: false, message: "Internal server error", error: error.message });
+    console.log(error);
   }
 });
 
@@ -3363,7 +3364,7 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
 
 router.post('/updateDailyProjection/:ename', async (req, res) => {
   const { ename } = req.params;
-  const {
+  let {
     companyId,
     companyName,
     bdeName,
@@ -3374,34 +3375,32 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
     expectedPrice,
     remarks
   } = req.body.projectionData;
-  console.log("companyId", companyId)
+
+  console.log("companyId", companyId);
   try {
     // Normalize the estimatedPaymentDate
     const normalizedDate = new Date(estimatedPaymentDate);
-    // normalizedDate.setHours(0, 0, 0, 0); // Ensure date normalization
 
     // Find the employee's daily projection or create a new one if not found
     let dailyProjection = await DailyEmployeeProjection.findOne({ ename });
     if (!dailyProjection) {
+      // Create a new daily projection if it doesn't exist
       dailyProjection = new DailyEmployeeProjection({
         ename,
         projectionsByDate: [{
           estimatedPaymentDate: normalizedDate,
-          result: "Added", // Set result to "Added" since we are adding a projection
-          projections: [{
-            companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
-          }]
+          result: "Added",
+          projections: [{ companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks }]
         }]
       });
     } else {
-      // Find any existing projection with the same companyId
       let existingDateIndex;
       let existingProjectionIndex;
       let existingEntryDate;
 
+      // Check for any existing projection with the same companyId
       dailyProjection.projectionsByDate.forEach((dateEntry, dateIndex) => {
         dateEntry.projections.forEach((proj, projIndex) => {
-          console.log("idhar", proj.companyId.toString(), companyId.toString())
           if (proj.companyId.toString() === companyId.toString()) {
             existingDateIndex = dateIndex;
             existingProjectionIndex = projIndex;
@@ -3411,31 +3410,34 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
       });
 
       if (existingDateIndex !== undefined) {
-        // The projection exists, check if the date has changed
+        // The projection exists; check if the date has changed
         if (existingEntryDate.getTime() !== normalizedDate.getTime()) {
-          // Remove the projection from the old date entry
-          dailyProjection.projectionsByDate[existingDateIndex].projections.splice(existingProjectionIndex, 1);
+          // If the projection date is changed, remove it from the current date entry
+          const projectionsArray = dailyProjection.projectionsByDate[existingDateIndex].projections;
+          projectionsArray.splice(existingProjectionIndex, 1);
 
-          // If no projections are left for this date, update `result` to "Not Added Yet"
-          if (dailyProjection.projectionsByDate[existingDateIndex].projections.length === 0) {
-            dailyProjection.projectionsByDate[existingDateIndex].result = "Not Added Yet";
+          // Check if this was the only projection for this date
+          if (projectionsArray.length === 0) {
+            // If so, remove the entire projectionsByDate entry
+            dailyProjection.projectionsByDate.splice(existingDateIndex, 1);
+          } else {
+            // Otherwise, update `result` to "Not Added Yet" for the current date
+            dailyProjection.projectionsByDate[existingDateIndex].result = "Added";
           }
-          // // Remove the date entry if no projections are left for that date
-          // if (dailyProjection.projectionsByDate[existingDateIndex].projections.length === 0) {
-          //   dailyProjection.projectionsByDate.splice(existingDateIndex, 1);
-          // }
 
-          // Add a new entry for the updated date
+          // Add a new entry for the updated date or add to an existing entry for that date
           let newDateEntry = dailyProjection.projectionsByDate.find(entry =>
             entry.estimatedPaymentDate.getTime() === normalizedDate.getTime()
           );
 
           if (newDateEntry) {
+            // If a new date entry already exists, push the new projection
             newDateEntry.projections.push({
               companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
             });
-            newDateEntry.result = "Added"; // Set result to "Added" for the new date entry
+            newDateEntry.result = "Added"; // Update result for the new date entry
           } else {
+            // Create a new date entry if none exists for the updated date
             dailyProjection.projectionsByDate.push({
               estimatedPaymentDate: normalizedDate,
               result: "Added",
@@ -3445,11 +3447,11 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
             });
           }
         } else {
-          // If the date hasn't changed, update the existing projection details
+          // If the date hasn't changed, simply update the existing projection details
           dailyProjection.projectionsByDate[existingDateIndex].projections[existingProjectionIndex] = {
             companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
           };
-          dailyProjection.projectionsByDate[existingDateIndex].result = "Added"; // Ensure result is "Added"
+          dailyProjection.projectionsByDate[existingDateIndex].result = "Added";
         }
       } else {
         // If no existing projection is found for this companyId, add a new one for the specified date
@@ -3461,7 +3463,7 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
           dateEntry.projections.push({
             companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
           });
-          dateEntry.result = "Added"; // Set result to "Added" for this date entry
+          dateEntry.result = "Added";
         } else {
           dailyProjection.projectionsByDate.push({
             estimatedPaymentDate: normalizedDate,
