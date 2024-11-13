@@ -763,589 +763,589 @@ function EmployeePanelCopy({ fordesignation }) {
     //     }
     //     };
 
-    
 
 
-        return (
-            <div>
-                {!showCallHistory && !formOpen && !addFormOpen ?
-                    (<div className="page-wrapper" key={fetchingId}>
-                        <div className="page-wrapper">
-                            <div className="page-header mt-3">
-                                <div className="container-xl">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div className="d-flex align-items-center">
-                                            <div >
-                                                {(fordesignation === "admin" || fordesignation === "datamanager") ? (
-                                                    <>
-                                                        <div className="btn-group mr-1" role="group" aria-label="Basic example">
-                                                            <button className="btn mybtn">
-                                                                <FaCircleChevronLeft
-                                                                    className="ep_right_button"
-                                                                    onClick={handleChangeUrlPrev}
-                                                                />
-                                                            </button>
-                                                            <button className="btn mybtn"><b>{data.ename}</b></button>
-                                                            <button className="btn mybtn">
-                                                                <FaCircleChevronRight
-                                                                    className="ep_left_button"
-                                                                    onClick={handleChangeUrl}
-                                                                />
-                                                            </button>
-                                                        </div>
-                                                        <div className="btn-group" role="group" aria-label="Basic example">
 
+    return (
+        <div>
+            {!showCallHistory && !formOpen && !addFormOpen ?
+                (<div className="page-wrapper" key={fetchingId}>
+                    <div className="page-wrapper">
+                        <div className="page-header mt-3">
+                            <div className="container-xl">
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center">
+                                        <div >
+                                            {(fordesignation === "admin" || fordesignation === "datamanager") ? (
+                                                <>
+                                                    <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                        <button className="btn mybtn">
+                                                            <FaCircleChevronLeft
+                                                                className="ep_right_button"
+                                                                onClick={handleChangeUrlPrev}
+                                                            />
+                                                        </button>
+                                                        <button className="btn mybtn"><b>{data.ename}</b></button>
+                                                        <button className="btn mybtn">
+                                                            <FaCircleChevronRight
+                                                                className="ep_left_button"
+                                                                onClick={handleChangeUrl}
+                                                            />
+                                                        </button>
+                                                    </div>
+                                                    <div className="btn-group" role="group" aria-label="Basic example">
+
+                                                        <button
+                                                            onClick={() => {
+                                                                if (fordesignation === "admin") {
+                                                                    navigate(`/managing-director/employees/${id}`);
+                                                                } else if (fordesignation === "datamanager") {
+                                                                    navigate(`/dataanalyst/employeeLeads/${id}`);
+                                                                }
+                                                            }}
+                                                            type="button"
+                                                            className={
+                                                                ((fordesignation === "admin" && window.location.pathname === `/managing-director/employees/${id}`) ||
+                                                                    (fordesignation === "datamanager" && window.location.pathname === `/dataanalyst/employeeLeads/${id}`)) &&
+                                                                    data.bdmWork
+                                                                    ? "btn mybtn active"
+                                                                    : "btn mybtn"
+                                                            }
+                                                        >
+                                                            <MdOutlinePersonPin
+
+                                                                className='mr-1' />
+                                                            Leads
+                                                        </button>
+                                                        {data.bdmWork &&
                                                             <button
-                                                                onClick={() => {
-                                                                    if (fordesignation === "admin") {
-                                                                        navigate(`/managing-director/employees/${id}`);
-                                                                    } else if (fordesignation === "datamanager") {
-                                                                        navigate(`/dataanalyst/employeeLeads/${id}`);
-                                                                    }
-                                                                }}
                                                                 type="button"
                                                                 className={
-                                                                    ((fordesignation === "admin" && window.location.pathname === `/managing-director/employees/${id}`) ||
-                                                                        (fordesignation === "datamanager" && window.location.pathname === `/dataanalyst/employeeLeads/${id}`)) &&
-                                                                        data.bdmWork
+                                                                    (fordesignation === "admin" && window.location.pathname === `/managing-director/employeeleads/${id}`) ||
+                                                                        (fordesignation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${id}`)
                                                                         ? "btn mybtn active"
                                                                         : "btn mybtn"
                                                                 }
-                                                            >
-                                                                <MdOutlinePersonPin
-
-                                                                    className='mr-1' />
-                                                                Leads
-                                                            </button>
-                                                            {data.bdmWork &&
-                                                                <button
-                                                                    type="button"
-                                                                    className={
-                                                                        (fordesignation === "admin" && window.location.pathname === `/managing-director/employeeleads/${id}`) ||
-                                                                            (fordesignation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${id}`)
-                                                                            ? "btn mybtn active"
-                                                                            : "btn mybtn"
+                                                                onClick={() => {
+                                                                    if (fordesignation === "admin") {
+                                                                        navigate(`/managing-director/employeeleads/${id}`);
+                                                                    } else if (fordesignation === "datamanager") {
+                                                                        navigate(`/dataanalyst/employeeteamleads/${id}`);
                                                                     }
-                                                                    onClick={() => {
-                                                                        if (fordesignation === "admin") {
-                                                                            navigate(`/managing-director/employeeleads/${id}`);
-                                                                        } else if (fordesignation === "datamanager") {
-                                                                            navigate(`/dataanalyst/employeeteamleads/${id}`);
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <AiOutlineTeam
-                                                                        className='mr-1' /> Team Leads
-                                                                </button>}
-                                                        </div>
-                                                    </>
-
-                                                ) : (
-                                                    <EmployeeAddLeadDialog
-                                                        secretKey={secretKey}
-                                                        fetchData={fetchData}
-                                                        ename={data.ename}
-                                                        refetch={refetch}
-                                                    />
-                                                )}
-
-                                            </div>
-
-                                            {(fordesignation !== "admin" && fordesignation !== "datamanager") && (
-                                                <div className="btn-group" role="group" aria-label="Basic example">
-                                                    {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
-                                                    <button type="button"
-                                                        className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                                        onClick={() => setOpenFilterDrawer(true)}
-                                                    >
-                                                        <IoFilterOutline className='mr-1' /> Filter
-                                                    </button>
-                                                    <button type="button" className="btn mybtn" onClick={functionopenpopup}>
-                                                        <MdOutlinePostAdd className='mr-1' /> Request Data
-                                                    </button>
-                                                    <button type="button" className="btn mybtn" onClick={handleProjectionPopupNew}>
-                                                        <MdOutlinePostAdd className='mr-1' /> Add Projection
-                                                    </button>
-                                                    {open &&
-                                                        <EmployeeRequestDataDialog
-                                                            secretKey={secretKey}
-                                                            ename={data.ename}
-                                                            setOpenChange={openchange}
-                                                            open={open}
-                                                        />}
-
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="d-flex align-items-center">
-                                            {(fordesignation === "admin" || fordesignation === "datamanager") && (
-                                                <>
-                                                    {selectedRows.length !== 0 && (
-                                                        <div className="selection-data mr-1" >
-                                                            Total Data Selected : <b>{selectedRows.length}</b>
-                                                        </div>
-                                                    )}
-                                                    <div className="btn-group mr-1" role="group" aria-label="Basic example">
-                                                        <Link
-
-                                                            to={fordesignation === "admin" ? `/managing-director/user` : `/dataanalyst/newEmployees`}
-                                                            style={{ marginLeft: "10px" }}
-                                                        >
-                                                            <button type="button" className="btn mybtn"
-
+                                                                }}
                                                             >
-                                                                <IoIosArrowDropleft className='mr-1' /> Back
-                                                            </button>
-                                                        </Link>
-                                                    </div>
-
-                                                    <div className="btn-group" role="group" aria-label="Basic example">
-                                                        {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
-
-                                                        <button type="button" className="btn mybtn"
-                                                            onClick={() => { setOpenAssignToBdm(true) }}
-                                                        >
-                                                            <RiShareForwardFill className='mr-1' /> Forward To BDM
-                                                        </button>
-                                                        {
-                                                            openAssignToBdm && (
-                                                                <ForwardToBdmDialog
-                                                                    openAssignToBdm={openAssignToBdm}
-                                                                    handleCloseForwardBdmPopup={handleCloseForwardBdmPopup}
-                                                                    handleForwardDataToBDM={handleForwardDataToBDM}
-
-                                                                    setBdmName={setBdmName}
-                                                                    bdmName={bdmName}
-                                                                    newempData={newEmpData}
-                                                                    id={(fordesignation === "admin" || fordesignation === "datamanager") ? id : userId}
-                                                                    branchName={data.branchOffice}
-                                                                />
-                                                            )
-                                                        }
-                                                        <button type="button" className="btn mybtn"
-                                                            onClick={functionOpenAssign}
-                                                        >
-                                                            <MdOutlinePostAdd className='mr-1' /> Assign Leads
-                                                        </button>
-                                                        {
-                                                            openAssign && (
-                                                                <AssignLeads
-                                                                    openAssign={openAssign}
-                                                                    closepopupAssign={closepopupAssign}
-                                                                    selectedOption={selectedOption}
-                                                                    setSelectedOption={setSelectedOption}
-                                                                    newemployeeSelection={newemployeeSelection}
-                                                                    setnewEmployeeSelection={setnewEmployeeSelection}
-                                                                    handleOptionChange={handleOptionChange}
-                                                                    handleUploadData={handleUploadData}
-                                                                    newempData={newEmpData}
-                                                                />
-                                                            )
-                                                        }
+                                                                <AiOutlineTeam
+                                                                    className='mr-1' /> Team Leads
+                                                            </button>}
                                                     </div>
                                                 </>
+
+                                            ) : (
+                                                <EmployeeAddLeadDialog
+                                                    secretKey={secretKey}
+                                                    fetchData={fetchData}
+                                                    ename={data.ename}
+                                                    refetch={refetch}
+                                                />
                                             )}
-                                            <div class="input-icon ml-1">
-                                                <span class="input-icon-addon">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                                        <path d="M21 21l-6 -6"></path>
-                                                    </svg>
-                                                </span>
-                                                <input
-                                                    value={searchQuery}
-                                                    onChange={(e) => {
-                                                        setSearchQuery(e.target.value);
-                                                        handleSearch(e.target.value)
-                                                        //handleFilterSearch(e.target.value)
-                                                        //setCurrentPage(0);
-                                                    }}
-                                                    className="form-control search-cantrol mybtn"
-                                                    placeholder="Search…"
-                                                    type="text"
-                                                    name="bdeName-search"
-                                                    id="bdeName-search" />
+
+                                        </div>
+
+                                        {(fordesignation !== "admin" && fordesignation !== "datamanager") && (
+                                            <div className="btn-group" role="group" aria-label="Basic example">
+                                                {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
+                                                <button type="button"
+                                                    className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                                                    onClick={() => setOpenFilterDrawer(true)}
+                                                >
+                                                    <IoFilterOutline className='mr-1' /> Filter
+                                                </button>
+                                                <button type="button" className="btn mybtn" onClick={functionopenpopup}>
+                                                    <MdOutlinePostAdd className='mr-1' /> Request Data
+                                                </button>
+                                                <button type="button" className="btn mybtn" onClick={handleProjectionPopupNew}>
+                                                    <MdOutlinePostAdd className='mr-1' /> Add Projection
+                                                </button>
+                                                {open &&
+                                                    <EmployeeRequestDataDialog
+                                                        secretKey={secretKey}
+                                                        ename={data.ename}
+                                                        setOpenChange={openchange}
+                                                        open={open}
+                                                    />}
+
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
-                                </div>
-                            </div>
-                            <div onCopy={(e) => {
-                                e.preventDefault();
-                            }}
-                                className="page-body">
-                                <div className="container-xl">
-                                    <div class="card-header my-tab">
-                                        <ul class="nav nav-tabs sales-nav-tabs card-header-tabs nav-fill p-0"
-                                            data-bs-toggle="tabs">
-                                            <li class="nav-item sales-nav-item data-heading" ref={allTabRef}>
-                                                <a
-                                                    href="#general"
-                                                    ref={allTabRef} // Attach the ref to the anchor tag
-                                                    onClick={() => handlnewEmpDataStatusChange("All", allTabRef)}
-                                                    className={`nav-link  ${dataStatus === "All" ? "active item-act" : ""}`}
-                                                    data-bs-toggle="tab"
-                                                >
-
-                                                    <div>General</div>
-                                                    <div className="no_badge">
-                                                        {generalDataCount}
+                                    <div className="d-flex align-items-center">
+                                        {(fordesignation === "admin" || fordesignation === "datamanager") && (
+                                            <>
+                                                {selectedRows.length !== 0 && (
+                                                    <div className="selection-data mr-1" >
+                                                        Total Data Selected : <b>{selectedRows.length}</b>
                                                     </div>
+                                                )}
+                                                <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                    <Link
 
-                                                </a>
-                                            </li>
-                                            <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
-                                                <a
-                                                    href="#Interested"
-                                                    ref={interestedTabRef} // Attach the ref to the anchor tag
-                                                    onClick={() => handlnewEmpDataStatusChange("Interested", interestedTabRef)}
-                                                    className={`nav-link ${dataStatus === "Interested" ? "active item-act" : ""}`}
-                                                    data-bs-toggle="tab"
-                                                >
-                                                    Interested
-                                                    <span className="no_badge">
-                                                        {interestedDataCount}
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item sales-nav-item data-heading" ref={maturedTabRef}>
-                                                <a
-                                                    href="#Matured"
-                                                    ref={maturedTabRef} // Attach the ref to the anchor tag
-                                                    onClick={() => handlnewEmpDataStatusChange("Matured", maturedTabRef)}
-                                                    className={`nav-link ${dataStatus === "Matured" ? "active item-act" : ""}`}
-                                                    data-bs-toggle="tab"
-                                                >
-                                                    Matured
-                                                    <span className="no_badge">
-                                                        {maturedDataCount}
-                                                    </span>
-                                                </a>
-                                            </li>
-                                            {data.designation !== "Sales Manager" &&
-                                                (<li class="nav-item sales-nav-item data-heading">
-                                                    <a
-                                                        href="#Forwarded"
-                                                        ref={forwardedTabRef} // Attach the ref to the anchor tag
-                                                        onClick={() => handlnewEmpDataStatusChange("Forwarded", forwardedTabRef)}
-                                                        className={`nav-link ${dataStatus === "Forwarded" ? "active item-act" : ""}`}
-                                                        data-bs-toggle="tab"
+                                                        to={fordesignation === "admin" ? `/managing-director/user` : `/dataanalyst/newEmployees`}
+                                                        style={{ marginLeft: "10px" }}
                                                     >
-                                                        Forwarded
-                                                        <span className="no_badge">
-                                                            {forwardedDataCount}
-                                                        </span>
-                                                    </a>
-                                                </li>)
-                                            }
-                                            <li class="nav-item sales-nav-item data-heading">
-                                                <a
-                                                    href="#NotInterested"
-                                                    ref={notInterestedTabRef} // Attach the ref to the anchor tag
-                                                    onClick={() => handlnewEmpDataStatusChange("Not Interested", notInterestedTabRef)}
-                                                    className={`nav-link ${dataStatus === "Not Interested" ? "active item-act" : ""}`}
-                                                    data-bs-toggle="tab"
-                                                >
-                                                    Not Interested
-                                                    <span className="no_badge">
-                                                        {notInterestedDataCount}
-                                                    </span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div className="tab-content card-body">
-                                        <div className={`tab-pane ${dataStatus === "All" ? "active" : ""}`} id="general">
-                                            {activeTabId === "All" && dataStatus === "All" && (
-                                                <EmployeeGeneralLeads
-                                                    userId={userId}
-                                                    generalData={generalData}
-                                                    isLoading={isLoading}
-                                                    refetch={refetch}
-                                                    formatDateNew={formatDateNew}
-                                                    startIndex={startIndex}
-                                                    endIndex={endIndex}
-                                                    totalPages={queryData?.totalGeneralPages}
-                                                    setCurrentPage={setCurrentPage}
-                                                    currentPage={currentPage}
-                                                    dataStatus={dataStatus}
-                                                    setdataStatus={setdataStatus}
-                                                    ename={data.ename}
-                                                    email={data.email}
-                                                    secretKey={secretKey}
-                                                    handleShowCallHistory={handleShowCallHistory}
-                                                    designation={data.designation}
-                                                    fordesignation={fordesignation}
-                                                    setSelectedRows={setSelectedRows}
-                                                    handleCheckboxChange={handleCheckboxChange}
-                                                    handleMouseDown={handleMouseDown}
-                                                    handleMouseEnter={handleMouseEnter}
-                                                    handleMouseUp={handleMouseUp}
-                                                    selectedRows={selectedRows}
-                                                    bdenumber={data.number}
-                                                    openCompanyProfile={handleOpenCompanyProfile}
-                                                    closeCompanyProfile={handleCloseCompanyProfile}
-                                                    dataToFilter={dataToFilterGeneral}
-                                                    completeGeneralData={completeGeneralData}
-                                                    setGeneralData={setGeneralData}
-                                                    setGeneralDataCount={setGeneralDataCount}
-                                                    filteredData={filteredDataGeneral}
-                                                    setFilteredData={setFilteredDataGeneral}
-                                                    activeFilterField={activeFilterFieldGeneral}
-                                                    setActiveFilterField={setActiveFilterFieldGeneral}
-                                                    activeFilterFields={activeFilterFieldsGeneral}
-                                                    setActiveFilterFields={setActiveFilterFieldsGeneral}
-                                                />)}
-                                        </div>
-                                        <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
-                                            {activeTabId === "Interested" && dataStatus === "Interested" && (
-                                                <EmployeeInterestedLeads
-                                                    userId={userId}
-                                                    interestedData={interestedData}
-                                                    isLoading={isLoading}
-                                                    refetch={refetch}
-                                                    formatDateNew={formatDateNew}
-                                                    startIndex={startIndex}
-                                                    endIndex={endIndex}
-                                                    totalPages={queryData?.totalInterestedPages}
-                                                    setCurrentPage={setCurrentPage}
-                                                    currentPage={currentPage}
-                                                    secretKey={secretKey}
-                                                    dataStatus={dataStatus}
-                                                    ename={data.ename}
-                                                    email={data.email}
-                                                    setdataStatus={setdataStatus}
-                                                    handleShowCallHistory={handleShowCallHistory}
-                                                    fetchProjections={fetchNewProjections}
-                                                    projectionData={projectionData}
-                                                    handleOpenFormOpen={handleOpenFormOpen}
-                                                    designation={data.designation}
-                                                    fordesignation={fordesignation}
-                                                    setSelectedRows={setSelectedRows}
-                                                    handleCheckboxChange={handleCheckboxChange}
-                                                    handleMouseDown={handleMouseDown}
-                                                    handleMouseEnter={handleMouseEnter}
-                                                    handleMouseUp={handleMouseUp}
-                                                    selectedRows={selectedRows}
-                                                    bdenumber={data.number}
-                                                    openCompanyProfile={handleOpenCompanyProfile}
-                                                    closeCompanyProfile={handleCloseCompanyProfile}
-                                                    dataToFilter={dataToFilterInterested}
-                                                    completeGeneralData={completeInterestedData}
-                                                    setInterestedData={setInterestedData}
-                                                    setInterestedDataCount={setInterestedDataCount}
-                                                    filteredData={filteredDataInterested}
-                                                    setFilteredData={setFilteredDataInterested}
-                                                    activeFilterField={activeFilterFieldInterested}
-                                                    setActiveFilterField={setActiveFilterFieldInterested}
-                                                    activeFilterFields={activeFilterFieldsInterested}
-                                                    setActiveFilterFields={setActiveFilterFieldsInterested}
-                                                />)}
-                                        </div>
-                                        <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
-                                            {activeTabId === "Matured" && (
-                                                <EmployeeMaturedLeads
-                                                    userId={userId}
-                                                    maturedLeads={maturedData}
-                                                    isLoading={isLoading}
-                                                    refetch={refetch}
-                                                    formatDateNew={formatDateNew}
-                                                    startIndex={startIndex}
-                                                    endIndex={endIndex}
-                                                    totalPages={queryData?.totalMaturedPages}
-                                                    setCurrentPage={setCurrentPage}
-                                                    currentPage={currentPage}
-                                                    secretKey={secretKey}
-                                                    dataStatus={dataStatus}
-                                                    ename={data.ename}
-                                                    email={data.email}
-                                                    setdataStatus={setdataStatus}
-                                                    handleShowCallHistory={handleShowCallHistory}
-                                                    fetchProjections={fetchNewProjections}
-                                                    projectionData={projectionData}
-                                                    designation={data.designation}
-                                                    fordesignation={fordesignation}
-                                                    setSelectedRows={setSelectedRows}
-                                                    handleCheckboxChange={handleCheckboxChange}
-                                                    handleMouseDown={handleMouseDown}
-                                                    handleMouseEnter={handleMouseEnter}
-                                                    handleMouseUp={handleMouseUp}
-                                                    selectedRows={selectedRows}
-                                                    bdenumber={data.number}
-                                                    openCompanyProfile={handleOpenCompanyProfile}
-                                                    closeCompanyProfile={handleCloseCompanyProfile}
-                                                    dataToFilter={dataToFilterMatured}
-                                                    completeGeneralData={completeMaturedData}
-                                                    setMaturedData={setMaturedData}
-                                                    setMaturedDataCount={setMaturedDataCount}
-                                                    filteredData={filteredDataMatured}
-                                                    setFilteredData={setFilteredDataMatured}
-                                                    activeFilterField={activeFilterFieldMatured}
-                                                    setActiveFilterField={setActiveFilterFieldMatured}
-                                                    activeFilterFields={activeFilterFieldsMatured}
-                                                    setActiveFilterFields={setActiveFilterFieldsMatured}
-                                                />)}
-                                        </div>
-                                        <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
-                                            {activeTabId === "Forwarded" && (
-                                                <EmployeeForwardedLeads
-                                                    userId={userId}
-                                                    forwardedLeads={forwardedData}
-                                                    isLoading={isLoading}
-                                                    refetch={refetch}
-                                                    formatDateNew={formatDateNew}
-                                                    startIndex={startIndex}
-                                                    endIndex={endIndex}
-                                                    totalPages={queryData?.totalForwardedCount}
-                                                    setCurrentPage={setCurrentPage}
-                                                    currentPage={currentPage}
-                                                    secretKey={secretKey}
-                                                    dataStatus={dataStatus}
-                                                    ename={data.ename}
-                                                    email={data.email}
-                                                    setdataStatus={setdataStatus}
-                                                    handleShowCallHistory={handleShowCallHistory}
-                                                    designation={data.designation}
-                                                    fordesignation={fordesignation}
-                                                    setSelectedRows={setSelectedRows}
-                                                    handleCheckboxChange={handleCheckboxChange}
-                                                    handleMouseDown={handleMouseDown}
-                                                    handleMouseEnter={handleMouseEnter}
-                                                    handleMouseUp={handleMouseUp}
-                                                    selectedRows={selectedRows}
-                                                    bdenumber={data.number}
-                                                    openCompanyProfile={handleOpenCompanyProfile}
-                                                    closeCompanyProfile={handleCloseCompanyProfile}
-                                                    //filteredData={filteredData}
-                                                    //filterMethod={handleFilter}
-                                                    dataToFilter={dataToFilterForwarded}
-                                                    completeGeneralData={completeForwardedData}
-                                                    setForwardedData={setForwardedData}
-                                                    setForwardedDataCount={setForwardedDataCount}
-                                                    filteredData={filteredDataForwraded}
-                                                    setFilteredData={setFilteredDataForwraded}
-                                                    activeFilterField={activeFilterFieldForwarded}
-                                                    setActiveFilterField={setActiveFilterFieldForwarded}
-                                                    activeFilterFields={activeFilterFieldsForwarded}
-                                                    setActiveFilterFields={setActiveFilterFieldsForwraded}
-                                                    //setFilteredData={setFilteredData}
-                                                />)}
-                                        </div>
-                                        <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
-                                            {activeTabId === "Not Interested" && (
-                                                <EmployeeNotInterestedLeads
-                                                    userId={userId}
-                                                    notInterestedLeads={notInterestedData}
-                                                    isLoading={isLoading}
-                                                    refetch={refetch}
-                                                    formatDateNew={formatDateNew}
-                                                    startIndex={startIndex}
-                                                    endIndex={endIndex}
-                                                    totalPages={queryData?.totalNotInterestedPages}
-                                                    setCurrentPage={setCurrentPage}
-                                                    currentPage={currentPage}
-                                                    secretKey={secretKey}
-                                                    dataStatus={dataStatus}
-                                                    ename={data.ename}
-                                                    email={data.email}
-                                                    setdataStatus={setdataStatus}
-                                                    handleShowCallHistory={handleShowCallHistory}
-                                                    designation={data.designation}
-                                                    fordesignation={fordesignation}
-                                                    setSelectedRows={setSelectedRows}
-                                                    handleCheckboxChange={handleCheckboxChange}
-                                                    handleMouseDown={handleMouseDown}
-                                                    handleMouseEnter={handleMouseEnter}
-                                                    handleMouseUp={handleMouseUp}
-                                                    selectedRows={selectedRows}
-                                                    bdenumber={data.number}
-                                                    openCompanyProfile={handleOpenCompanyProfile}
-                                                    closeCompanyProfile={handleCloseCompanyProfile}
-                                                    dataToFilter={dataToFilterNotInterested}
-                                                    completeGeneralData={completeNotInterestedData}
-                                                    setNotInterestedData={setNotInterestedData}
-                                                    setNotInterestedDataCount={setNotInterestedDataCount}
-                                                    filteredData={filteredDataNotInterested}
-                                                    setFilteredData={setFilteredDataNotInterested}
-                                                    activeFilterField={activeFilterFieldNotInterested}
-                                                    setActiveFilterField={setActiveFilterFieldNotInterested}
-                                                    activeFilterFields={activeFilterFieldsNotInterested}
-                                                    setActiveFilterFields={setActiveFilterFieldsNotInterested}
-                                                    
-                                                />)}
+                                                        <button type="button" className="btn mybtn"
+
+                                                        >
+                                                            <IoIosArrowDropleft className='mr-1' /> Back
+                                                        </button>
+                                                    </Link>
+                                                </div>
+
+                                                <div className="btn-group" role="group" aria-label="Basic example">
+                                                    {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
+
+                                                    <button type="button" className="btn mybtn"
+                                                        onClick={() => { setOpenAssignToBdm(true) }}
+                                                    >
+                                                        <RiShareForwardFill className='mr-1' /> Forward To BDM
+                                                    </button>
+                                                    {
+                                                        openAssignToBdm && (
+                                                            <ForwardToBdmDialog
+                                                                openAssignToBdm={openAssignToBdm}
+                                                                handleCloseForwardBdmPopup={handleCloseForwardBdmPopup}
+                                                                handleForwardDataToBDM={handleForwardDataToBDM}
+
+                                                                setBdmName={setBdmName}
+                                                                bdmName={bdmName}
+                                                                newempData={newEmpData}
+                                                                id={(fordesignation === "admin" || fordesignation === "datamanager") ? id : userId}
+                                                                branchName={data.branchOffice}
+                                                            />
+                                                        )
+                                                    }
+                                                    <button type="button" className="btn mybtn"
+                                                        onClick={functionOpenAssign}
+                                                    >
+                                                        <MdOutlinePostAdd className='mr-1' /> Assign Leads
+                                                    </button>
+                                                    {
+                                                        openAssign && (
+                                                            <AssignLeads
+                                                                openAssign={openAssign}
+                                                                closepopupAssign={closepopupAssign}
+                                                                selectedOption={selectedOption}
+                                                                setSelectedOption={setSelectedOption}
+                                                                newemployeeSelection={newemployeeSelection}
+                                                                setnewEmployeeSelection={setnewEmployeeSelection}
+                                                                handleOptionChange={handleOptionChange}
+                                                                handleUploadData={handleUploadData}
+                                                                newempData={newEmpData}
+                                                            />
+                                                        )
+                                                    }
+                                                </div>
+                                            </>
+                                        )}
+                                        <div class="input-icon ml-1">
+                                            <span class="input-icon-addon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                    <path d="M21 21l-6 -6"></path>
+                                                </svg>
+                                            </span>
+                                            <input
+                                                value={searchQuery}
+                                                onChange={(e) => {
+                                                    setSearchQuery(e.target.value);
+                                                    handleSearch(e.target.value)
+                                                    //handleFilterSearch(e.target.value)
+                                                    //setCurrentPage(0);
+                                                }}
+                                                className="form-control search-cantrol mybtn"
+                                                placeholder="Search…"
+                                                type="text"
+                                                name="bdeName-search"
+                                                id="bdeName-search" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>) : showCallHistory ?
-                        (<CallHistory
-                            handleCloseHistory={hanleCloseCallHistory}
-                            clientNumber={clientNumber}
-                            bdenumber={data.number}
-                            bdmName={data.bdmName}
-                            companyName={companyName}
-                        />)
-                        : formOpen ? (
-                            <RedesignedForm
-                                isEmployee={true}
-                                companysName={companyName}
-                                companysEmail={companyEmail}
-                                companyNumber={companyNumber}
-                                setNowToFetch={refetch}
-                                companysInco={companyInco}
-                                employeeName={data.ename}
-                                employeeEmail={data.email}
-                                handleCloseFormOpen={handleCloseFormOpen}
-                            />
-                        ) : addFormOpen ? (
-                            <AddLeadForm
-                                isEmployee={true}
-                                employeeEmail={data.email}
-                                newBdeName={newBdeName}
-                                isDeletedEmployeeCompany={deletedEmployeeStatus}
-                                setFormOpen={setAddFormOpen}
-                                companysName={companyName}
-                                setNowToFetch={refetch}
-                                setDataStatus={setdataStatus}
-                                employeeName={data.ename}
-                                handleCloseFormOpen={handleCloseFormOpen}
-                            />
-                        ) : null
-                }
+                        <div onCopy={(e) => {
+                            e.preventDefault();
+                        }}
+                            className="page-body">
+                            <div className="container-xl">
+                                <div class="card-header my-tab">
+                                    <ul class="nav nav-tabs sales-nav-tabs card-header-tabs nav-fill p-0"
+                                        data-bs-toggle="tabs">
+                                        <li class="nav-item sales-nav-item data-heading" ref={allTabRef}>
+                                            <a
+                                                href="#general"
+                                                ref={allTabRef} // Attach the ref to the anchor tag
+                                                onClick={() => handlnewEmpDataStatusChange("All", allTabRef)}
+                                                className={`nav-link  ${dataStatus === "All" ? "active item-act" : ""}`}
+                                                data-bs-toggle="tab"
+                                            >
 
-                {/* --------------------------------backdrop------------------------- */}
-                {/* {isLoading && (<Backdrop
+                                                <div>General</div>
+                                                <div className="no_badge">
+                                                    {generalDataCount}
+                                                </div>
+
+                                            </a>
+                                        </li>
+                                        <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
+                                            <a
+                                                href="#Interested"
+                                                ref={interestedTabRef} // Attach the ref to the anchor tag
+                                                onClick={() => handlnewEmpDataStatusChange("Interested", interestedTabRef)}
+                                                className={`nav-link ${dataStatus === "Interested" ? "active item-act" : ""}`}
+                                                data-bs-toggle="tab"
+                                            >
+                                                Interested
+                                                <span className="no_badge">
+                                                    {interestedDataCount}
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item sales-nav-item data-heading" ref={maturedTabRef}>
+                                            <a
+                                                href="#Matured"
+                                                ref={maturedTabRef} // Attach the ref to the anchor tag
+                                                onClick={() => handlnewEmpDataStatusChange("Matured", maturedTabRef)}
+                                                className={`nav-link ${dataStatus === "Matured" ? "active item-act" : ""}`}
+                                                data-bs-toggle="tab"
+                                            >
+                                                Matured
+                                                <span className="no_badge">
+                                                    {maturedDataCount}
+                                                </span>
+                                            </a>
+                                        </li>
+                                        {data.designation !== "Sales Manager" &&
+                                            (<li class="nav-item sales-nav-item data-heading">
+                                                <a
+                                                    href="#Forwarded"
+                                                    ref={forwardedTabRef} // Attach the ref to the anchor tag
+                                                    onClick={() => handlnewEmpDataStatusChange("Forwarded", forwardedTabRef)}
+                                                    className={`nav-link ${dataStatus === "Forwarded" ? "active item-act" : ""}`}
+                                                    data-bs-toggle="tab"
+                                                >
+                                                    Forwarded
+                                                    <span className="no_badge">
+                                                        {forwardedDataCount}
+                                                    </span>
+                                                </a>
+                                            </li>)
+                                        }
+                                        <li class="nav-item sales-nav-item data-heading">
+                                            <a
+                                                href="#NotInterested"
+                                                ref={notInterestedTabRef} // Attach the ref to the anchor tag
+                                                onClick={() => handlnewEmpDataStatusChange("Not Interested", notInterestedTabRef)}
+                                                className={`nav-link ${dataStatus === "Not Interested" ? "active item-act" : ""}`}
+                                                data-bs-toggle="tab"
+                                            >
+                                                Not Interested
+                                                <span className="no_badge">
+                                                    {notInterestedDataCount}
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div className="tab-content card-body">
+                                    <div className={`tab-pane ${dataStatus === "All" ? "active" : ""}`} id="general">
+                                        {activeTabId === "All" && dataStatus === "All" && (
+                                            <EmployeeGeneralLeads
+                                                userId={userId}
+                                                generalData={generalData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={queryData?.totalGeneralPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setdataStatus={setdataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                secretKey={secretKey}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                                bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
+                                                dataToFilter={dataToFilterGeneral}
+                                                completeGeneralData={completeGeneralData}
+                                                setGeneralData={setGeneralData}
+                                                setGeneralDataCount={setGeneralDataCount}
+                                                filteredData={filteredDataGeneral}
+                                                setFilteredData={setFilteredDataGeneral}
+                                                activeFilterField={activeFilterFieldGeneral}
+                                                setActiveFilterField={setActiveFilterFieldGeneral}
+                                                activeFilterFields={activeFilterFieldsGeneral}
+                                                setActiveFilterFields={setActiveFilterFieldsGeneral}
+                                            />)}
+                                    </div>
+                                    <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
+                                        {activeTabId === "Interested" && dataStatus === "Interested" && (
+                                            <EmployeeInterestedLeads
+                                                userId={userId}
+                                                interestedData={interestedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={queryData?.totalInterestedPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                fetchProjections={fetchNewProjections}
+                                                projectionData={projectionData}
+                                                handleOpenFormOpen={handleOpenFormOpen}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                                bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
+                                                dataToFilter={dataToFilterInterested}
+                                                completeGeneralData={completeInterestedData}
+                                                setInterestedData={setInterestedData}
+                                                setInterestedDataCount={setInterestedDataCount}
+                                                filteredData={filteredDataInterested}
+                                                setFilteredData={setFilteredDataInterested}
+                                                activeFilterField={activeFilterFieldInterested}
+                                                setActiveFilterField={setActiveFilterFieldInterested}
+                                                activeFilterFields={activeFilterFieldsInterested}
+                                                setActiveFilterFields={setActiveFilterFieldsInterested}
+                                            />)}
+                                    </div>
+                                    <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
+                                        {activeTabId === "Matured" && (
+                                            <EmployeeMaturedLeads
+                                                userId={userId}
+                                                maturedLeads={maturedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={queryData?.totalMaturedPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                fetchProjections={fetchNewProjections}
+                                                projectionData={projectionData}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                                bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
+                                                dataToFilter={dataToFilterMatured}
+                                                completeGeneralData={completeMaturedData}
+                                                setMaturedData={setMaturedData}
+                                                setMaturedDataCount={setMaturedDataCount}
+                                                filteredData={filteredDataMatured}
+                                                setFilteredData={setFilteredDataMatured}
+                                                activeFilterField={activeFilterFieldMatured}
+                                                setActiveFilterField={setActiveFilterFieldMatured}
+                                                activeFilterFields={activeFilterFieldsMatured}
+                                                setActiveFilterFields={setActiveFilterFieldsMatured}
+                                            />)}
+                                    </div>
+                                    <div className={`tab-pane ${dataStatus === "Forwarded" ? "active" : ""}`} id="Forwarded">
+                                        {activeTabId === "Forwarded" && (
+                                            <EmployeeForwardedLeads
+                                                userId={userId}
+                                                forwardedLeads={forwardedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={queryData?.totalForwardedCount}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                                bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
+                                                //filteredData={filteredData}
+                                                //filterMethod={handleFilter}
+                                                dataToFilter={dataToFilterForwarded}
+                                                completeGeneralData={completeForwardedData}
+                                                setForwardedData={setForwardedData}
+                                                setForwardedDataCount={setForwardedDataCount}
+                                                filteredData={filteredDataForwraded}
+                                                setFilteredData={setFilteredDataForwraded}
+                                                activeFilterField={activeFilterFieldForwarded}
+                                                setActiveFilterField={setActiveFilterFieldForwarded}
+                                                activeFilterFields={activeFilterFieldsForwarded}
+                                                setActiveFilterFields={setActiveFilterFieldsForwraded}
+                                            //setFilteredData={setFilteredData}
+                                            />)}
+                                    </div>
+                                    <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
+                                        {activeTabId === "Not Interested" && (
+                                            <EmployeeNotInterestedLeads
+                                                userId={userId}
+                                                notInterestedLeads={notInterestedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={queryData?.totalNotInterestedPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                secretKey={secretKey}
+                                                dataStatus={dataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                setdataStatus={setdataStatus}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                                bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
+                                                dataToFilter={dataToFilterNotInterested}
+                                                completeGeneralData={completeNotInterestedData}
+                                                setNotInterestedData={setNotInterestedData}
+                                                setNotInterestedDataCount={setNotInterestedDataCount}
+                                                filteredData={filteredDataNotInterested}
+                                                setFilteredData={setFilteredDataNotInterested}
+                                                activeFilterField={activeFilterFieldNotInterested}
+                                                setActiveFilterField={setActiveFilterFieldNotInterested}
+                                                activeFilterFields={activeFilterFieldsNotInterested}
+                                                setActiveFilterFields={setActiveFilterFieldsNotInterested}
+
+                                            />)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>) : showCallHistory ?
+                    (<CallHistory
+                        handleCloseHistory={hanleCloseCallHistory}
+                        clientNumber={clientNumber}
+                        bdenumber={data.number}
+                        bdmName={data.bdmName}
+                        companyName={companyName}
+                    />)
+                    : formOpen ? (
+                        <RedesignedForm
+                            isEmployee={true}
+                            companysName={companyName}
+                            companysEmail={companyEmail}
+                            companyNumber={companyNumber}
+                            setNowToFetch={refetch}
+                            companysInco={companyInco}
+                            employeeName={data.ename}
+                            employeeEmail={data.email}
+                            handleCloseFormOpen={handleCloseFormOpen}
+                        />
+                    ) : addFormOpen ? (
+                        <AddLeadForm
+                            isEmployee={true}
+                            employeeEmail={data.email}
+                            newBdeName={newBdeName}
+                            isDeletedEmployeeCompany={deletedEmployeeStatus}
+                            setFormOpen={setAddFormOpen}
+                            companysName={companyName}
+                            setNowToFetch={refetch}
+                            setDataStatus={setdataStatus}
+                            employeeName={data.ename}
+                            handleCloseFormOpen={handleCloseFormOpen}
+                        />
+                    ) : null
+            }
+
+            {/* --------------------------------backdrop------------------------- */}
+            {/* {isLoading && (<Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={isLoading}
                 onClick={handleCloseBackdrop}>
                 <CircularProgress color="inherit" />
             </Backdrop>)} */}
 
-                {fordesignation !== "admin" && fordesignation !== "datamanager" &&
-                    (<ProjectionInformationDialog
-                        showDialog={showDialog}    // Pass the state to the dialog component
-                        setShowDialog={setShowDialog}  // Pass setState function to close it
-                        //updateDialogCount={updateDialogCount}
-                        userId={userId}
-                        setdataStatus={setdataStatus}
-                        secretKey={secretKey}
-                        data={data}
-                        refetch={fetchData}
-                        dataStatus={dataStatus}
-                        setActiveTabId={setActiveTabId}
-                        handleCloseProjectionPopup={handleCloseProjectionPopup}
-                    />)}
+            {fordesignation !== "admin" && fordesignation !== "datamanager" &&
+                (<ProjectionInformationDialog
+                    showDialog={showDialog}    // Pass the state to the dialog component
+                    setShowDialog={setShowDialog}  // Pass setState function to close it
+                    //updateDialogCount={updateDialogCount}
+                    userId={userId}
+                    setdataStatus={setdataStatus}
+                    secretKey={secretKey}
+                    data={data}
+                    refetch={fetchData}
+                    dataStatus={dataStatus}
+                    setActiveTabId={setActiveTabId}
+                    handleCloseProjectionPopup={handleCloseProjectionPopup}
+                />)}
 
-                <NewProjectionDialog
-                    open={openProjectionPopUpNew}
-                    closepopup={handleCloseNewProjectionPopup}
-                    employeeName={data.ename}
-                    refetch={refetch}
-                />
-            </div>
-        );
-    }
+            <NewProjectionDialog
+                open={openProjectionPopUpNew}
+                closepopup={handleCloseNewProjectionPopup}
+                employeeName={data.ename}
+                refetch={refetch}
+            />
+        </div>
+    );
+}
 
-    export default EmployeePanelCopy;
+export default EmployeePanelCopy;

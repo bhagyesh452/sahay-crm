@@ -3180,6 +3180,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
       // Add the existing main data to the history array
       const newHistoryEntry = {
         data: {
+          // companyId : companyId,
           ename: existingCompany.ename,
           date: existingCompany.date,
           time: existingCompany.time,
@@ -3202,6 +3203,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
         existingCompany._id,
         {
           $push: { history: newHistoryEntry },
+          companyId: companyId,
           ename: payload.ename,
           date: payload.date,
           time: payload.time,
@@ -3224,6 +3226,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
     } else {
       // Create a new entry if the company doesn't exist
       const newCompany = new ProjectionModel({
+        companyId: companyId,
         companyName: payload.companyName,
         ename: payload.ename,
         date: payload.date,
@@ -3398,7 +3401,7 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
 
       dailyProjection.projectionsByDate.forEach((dateEntry, dateIndex) => {
         dateEntry.projections.forEach((proj, projIndex) => {
-          console.log(proj.companyId.toString(), companyId.toString())
+          console.log("idhar", proj.companyId.toString(), companyId.toString())
           if (proj.companyId.toString() === companyId.toString()) {
             existingDateIndex = dateIndex;
             existingProjectionIndex = projIndex;
@@ -3710,7 +3713,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
 router.get('/checkEmployeeProjectionForDate/:employeeName', async (req, res) => {
   const { employeeName } = req.params;
   const { date } = req.query;
-console.log("employeeName" , employeeName)
+  console.log("employeeName", employeeName)
   try {
     // If no date is provided, use the current day
     const targetDate = date ? new Date(date) : new Date();

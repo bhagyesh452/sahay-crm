@@ -9,7 +9,21 @@ import Select from "react-select";
 import { options } from "../../components/Options.js";
 import EmployeeAddLeadDialog from './EmployeeAddLeadDialog';
 
-function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, refetch, isFilledFromTeamLeads, isProjectionEditable, projectionData, fetchNewProjection }) {
+function NewProjectionDialog({
+    closepopup,
+    open,
+    viewProjection,
+    employeeName,
+    refetch,
+    isFilledFromTeamLeads,
+    isProjectionEditable,
+    projectionData,
+    fetchNewProjection,
+    viewedForParticularCompany,
+    setViewedForParticularCompany,
+    editableCompanyId,
+    setEditableCompanyId
+}) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     // Convert the date to a valid "YYYY-MM-DD" format for input fields
@@ -63,7 +77,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                 }
             });
             console.log("checkResponse", checkResponse);
-    
+
             if (checkResponse.data.hasProjections) {
                 // If projections exist, display the disclaimer and show company names
                 const companyNames = checkResponse.data.companyNames.join(", ");
@@ -78,7 +92,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                     employeeName,
                     date: formattedDate // Current date in YYYY-MM-DD format
                 });
-    
+
                 Swal.fire("Success", "Projection count set to 0 for today.", "success");
                 closepopup();
                 fetchNewProjection && fetchNewProjection();
@@ -88,7 +102,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             Swal.fire("Error", "Failed to skip projection.", "error");
         }
     };
-    
+
 
     // Fetch BDM names
     const fetchBdmNames = async () => {
@@ -167,6 +181,11 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
         setRemarks('');
         setAddProjectionToday(null);
         setFieldsDisabled(true);
+        // Only set `viewedForParticularCompany` to false if it is defined and truthy
+    if (editableCompanyId !== undefined && editableCompanyId !== null && viewedForParticularCompany !== undefined && viewedForParticularCompany !== null) {
+        setViewedForParticularCompany(false);
+        setEditableCompanyId('');
+    }
     };
 
     const fetchSelectedCompanyProjection = async () => {
@@ -346,7 +365,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             const dailyProjectionPayload = {
                 projectionData: {
                     ename: payload.ename,
-                    companyId: selectedCompany ? selectedCompany._id : "",
+                    companyId: selectedCompany ? selectedCompany._id : editableCompanyId,
                     companyName: payload.companyName,
                     bdeName: payload.bdeName,
                     bdmName: payload.bdmName,
@@ -357,6 +376,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                     remarks: payload.remarks,
                 }
             };
+            console.log("selectedCompany" , selectedCompany)
 
             // Call the API to update the daily projection
             await axios.post(`${secretKey}/company-data/updateDailyProjection/${payload.ename}`, dailyProjectionPayload);
@@ -368,7 +388,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
             Swal.fire("Error", "Failed to update projection.", "error");
         }
     };
-
+    console.log("viewies", isProjectionEditable, viewedForParticularCompany , editableCompanyId)
 
     return (
         <div>
@@ -381,7 +401,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                 </DialogTitle>
                 <DialogContent>
                     {/* Conditionally render radio buttons if neither isProjectionEditable nor isProjectionAvailable are true */}
-                    {!(isProjectionEditable || isProjectionAvailable || viewProjection) && (
+                    {!(isProjectionEditable || isProjectionAvailable || viewProjection || viewedForParticularCompany) && (
                         <div className="form-group mb-2">
                             <label>Do you want to add projection for the day?</label>
                             <div className='mb-2 mt-1'>
@@ -475,7 +495,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                             className="form-select mt-1"
                                             name="bdmName"
                                             id="bdmName"
-                                            disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                            disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                             value={selectedBdm}
                                             onChange={(e) => setSelectedBdm(e.target.value)}
                                         >
@@ -497,7 +517,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                     className="mt-1"
                                     options={options}
                                     placeholder="Select Services..."
-                                    isDisabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    isDisabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     onChange={(selectedOptions) => setOfferedServices(selectedOptions.map((option) => option.value))}
                                     value={offeredServices && offeredServices.map((value) => ({
                                         value,
@@ -516,7 +536,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                     type="number"
                                     className="form-control mt-1"
                                     placeholder="Please Enter Offered Price"
-                                    disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     value={offeredPrice}
                                     onChange={(e) => setOfferedPrice(e.target.value)}
                                 />
@@ -530,7 +550,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                     type="number"
                                     className="form-control mt-1"
                                     placeholder="Please Enter Expected Price"
-                                    disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     value={expectedPrice}
                                     onChange={(e) => setExpectedPrice(e.target.value)}
                                 />
@@ -545,7 +565,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                 <input
                                     type="date"
                                     className="form-control mt-1"
-                                    disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     value={followupDate}
                                     onChange={(e) => setFollowupDate(e.target.value)}
                                 />
@@ -558,7 +578,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                 <input
                                     type="date"
                                     className="form-control mt-1"
-                                    disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                                     value={paymentDate}
                                     onChange={(e) => setPaymentDate(e.target.value)}
                                 />
@@ -571,7 +591,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                         <textarea
                             className="form-control mt-1"
                             placeholder="Enter Remarks Here"
-                            disabled={!isProjectionEditable && !isProjectionAvailable && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                            disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
                             value={remarks}
                             onChange={(e) => setRemarks(e.target.value)}
                         />
@@ -579,7 +599,7 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
 
                     {/* Conditional footer buttons */}
                     {!viewProjection && ( // Only render buttons if viewProjection is false
-                        !(isProjectionEditable || isProjectionAvailable) ? (
+                        !(isProjectionEditable || isProjectionAvailable || viewedForParticularCompany) ? (
                             addProjectionToday ? (
                                 <div className="card-footer">
                                     <button
@@ -603,18 +623,33 @@ function NewProjectionDialog({ closepopup, open, viewProjection, employeeName, r
                                 </div>
                             )
                         ) : (
-                            <div className="card-footer">
-                                <button
-                                    style={{ width: "100%" }}
-                                    className="btn btn-success bdr-radius-none cursor-pointer"
-                                    onClick={handleUpdateProjection}
-                                    disabled={companyNotFound && !selectedCompany}
-                                >
-                                    <MdOutlinePostAdd /> Update Projection
-                                </button>
-                            </div>
+                            // Check if `isProjectionEditable` is false but `viewedForParticularCompany` is true
+                            !isProjectionEditable && viewedForParticularCompany ? (
+                                <div className="card-footer">
+                                    <button
+                                        style={{ width: "100%" }}
+                                        className="btn btn-success bdr-radius-none cursor-pointer"
+                                        onClick={handleAddProjection}
+                                        disabled={companyNotFound && !selectedCompany}
+                                    >
+                                        <MdOutlinePostAdd /> Add Projection
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="card-footer">
+                                    <button
+                                        style={{ width: "100%" }}
+                                        className="btn btn-success bdr-radius-none cursor-pointer"
+                                        onClick={handleUpdateProjection}
+                                        disabled={companyNotFound && !selectedCompany}
+                                    >
+                                        <MdOutlinePostAdd /> Update Projection
+                                    </button>
+                                </div>
+                            )
                         )
                     )}
+
 
                 </DialogContent>
 
