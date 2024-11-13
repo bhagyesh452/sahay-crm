@@ -32,7 +32,8 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
 
     const excludedEmployees = [
         "Vishnu Suthar", "Vandit Shah", "Khushi Gandhi",
-        "Yashesh Gajjar", "Ravi Prajapati", "Yash Goswami"
+        "Yashesh Gajjar", "Ravi Prajapati", "Yash Goswami", 
+        "DIRECT", "TEST ACCOUNT"
     ];
 
     const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +80,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
         try {
             const res2 = await axios.get(`${secretKey}/employee/einfo`);
             let employees = res2.data.filter(
-                (employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
+                (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager"
             );
 
             if (isFloorManagerView) {
@@ -167,7 +168,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                 if (existingEmployee) {
                     return {
                         ...existingEmployee,
-                        result: dailyProjection?.result || "Added",  // Add result status if available
+                        result: "Added",  // Add result status if available
                         branchOffice: employee.branchOffice,  // Add branch office from totalEmployees
                     };
                 } else if (dailyProjection) {
