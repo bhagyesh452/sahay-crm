@@ -345,7 +345,7 @@ function FloorManagerLeadsReport({ isAdmin }) {
                                     )}
                                 </tbody>
 
-                                {filteredLeads.length > 0 && (
+                                {filteredLeads.length > 0 && !isLoading && (
                                     <tfoot className="admin-dash-tbl-tfoot">
                                         <tr>
                                             <td colSpan={3}>Total</td>
