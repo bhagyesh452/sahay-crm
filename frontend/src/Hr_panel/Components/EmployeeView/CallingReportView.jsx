@@ -305,14 +305,6 @@ function CallingReportView({ employeeInformation }) {
         return months;
     };
 
-    // for (let year = 2025; year <= currentYear; year--) {
-    //     years.push(year);
-    // }
-
-
-    const formatDateForHolidayCheck = (year, month, day) => {
-        return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-    };
     const officialHolidays = [
         '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
         '2024-07-07', '2024-08-19', '2024-10-12',
@@ -552,8 +544,7 @@ function CallingReportView({ employeeInformation }) {
         hours = hours % 12 || 12; // Convert hour to 12-hour format
         return `${hours}:${String(minutes).padStart(2, '0')} ${ampm}`; // Ensure minutes are always two digits
     };
-    console.log("attendance", attendanceData);
-
+   
 
     return (
         <div className="calling-report-view mt-3">

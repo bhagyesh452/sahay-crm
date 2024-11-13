@@ -394,6 +394,7 @@ router.post('/exportLeads', async (req, res) => {
       isFilter,
       dataStatus,
       selectedStatus,
+      lastExtractedStatus,
       selectedState,
       selectedNewCity,
       selectedBDEName,
@@ -417,6 +418,7 @@ router.post('/exportLeads', async (req, res) => {
     // Construct query object based on filters if any filters are applied
     if (isFilter) {
       if (selectedStatus) query.Status = selectedStatus;
+      if (lastExtractedStatus) baseQuery.lastStatusOfExtractedEmployee = lastExtractedStatus;
       if (selectedState) query.State = selectedState;
       if (selectedNewCity) query.City = selectedNewCity;
       if (selectedAssignDate) {
@@ -845,6 +847,7 @@ router.get('/getIds', async (req, res) => {
     const {
       dataStatus,
       selectedStatus,
+      lastExtractedStatus,
       selectedState,
       selectedNewCity,
       selectedBDEName,
@@ -864,6 +867,7 @@ router.get('/getIds', async (req, res) => {
 
     // Apply filters if specified
     if (selectedStatus) query.Status = selectedStatus;
+    if (lastExtractedStatus) baseQuery.lastStatusOfExtractedEmployee = lastExtractedStatus;
     if (selectedState) query.State = selectedState;
     if (selectedNewCity) query.City = selectedNewCity;
     if (selectedAssignDate) {
@@ -1339,6 +1343,7 @@ router.post("/postExtractedData", async (req, res) => {
           feedbackPoints: [],
           multiBdmName: [],
           Status: "Untouched",
+          lastStatusOfExtractedEmployee: obj.Status,
           isDeletedEmployeeCompany: obj.Status === "Matured",
           extractedMultipleBde: obj.extractedMultipleBde && Array.isArray(obj.extractedMultipleBde)
             ? [...obj.extractedMultipleBde, obj.ename]

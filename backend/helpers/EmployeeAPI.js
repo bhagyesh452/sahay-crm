@@ -683,17 +683,41 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
 // });
 
 // Fetch employees from id :
+// router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
+//   const { empId } = req.params;
+//   try {
+//     const emp = await adminModel.findById(empId);
+//     if (!emp) {
+//       res.status(404).json({ result: false, message: "Employee not found" });
+//     } else {
+//       res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ result: true, message: "Error fetching employee", error: error });
+//   }
+// });
+
 router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   const { empId } = req.params;
   try {
-    const emp = await adminModel.findById(empId);
+    // Try finding the employee in adminModel first
+    let emp = await adminModel.findById(empId);
+    
+    // If employee not found in adminModel, search in deletedEmployeeModels
     if (!emp) {
-      res.status(404).json({ result: false, message: "Employee not found" });
+      emp = await deletedEmployeeModel.findById(empId);
+    }
+
+    // If employee is still not found, return an error message
+    if (!emp) {
+      return res.status(404).json({ result: false, message: "Employee not found" });
     } else {
-      res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
+      // If found, return the employee data
+      return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
     }
   } catch (error) {
-    res.status(500).json({ result: true, message: "Error fetching employee", error: error });
+    // Return an error if something goes wrong
+    return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
   }
 });
 

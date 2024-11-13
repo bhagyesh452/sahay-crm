@@ -211,8 +211,13 @@ const CompanySchema = new mongoose.Schema({
     type:Date,
     default:new Date()
   },
-  interestedInformation:[informationSchema]
+  interestedInformation:[informationSchema],
+  lastStatusOfExtractedEmployee:{
+    type:String,
+    default:""
+  }
 });
+
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);
 

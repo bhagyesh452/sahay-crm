@@ -166,7 +166,7 @@ function EmployeePanelCopy({ fordesignation }) {
             // Set the retrieved data in the state
             const userData = response.data.data;
             setEmployeeName(userData.ename)
-            //console.log(userData);
+            console.log("userData" , userData);
             setData(userData);
             setmoreFilteredData(userData);
             setNewEmpData(completeEmployess.data);
@@ -854,12 +854,12 @@ function EmployeePanelCopy({ fordesignation }) {
                                         {(fordesignation !== "admin" && fordesignation !== "datamanager") && (
                                             <div className="btn-group" role="group" aria-label="Basic example">
                                                 {/* <button data-bs-toggle="modal" data-bs-target="#staticBackdrop">Popup</button> */}
-                                                <button type="button"
+                                                {/* <button type="button"
                                                     className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
                                                     onClick={() => setOpenFilterDrawer(true)}
                                                 >
                                                     <IoFilterOutline className='mr-1' /> Filter
-                                                </button>
+                                                </button> */}
                                                 <button type="button" className="btn mybtn" onClick={functionopenpopup}>
                                                     <MdOutlinePostAdd className='mr-1' /> Request Data
                                                 </button>
