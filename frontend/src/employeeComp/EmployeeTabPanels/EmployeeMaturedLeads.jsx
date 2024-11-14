@@ -941,7 +941,7 @@ function EmployeeMaturedLeads({
                     forwardedStatus={companyStatus}
                     forwardedEName={ename}
                     bdeOldStatus={companyStatus}
-                    bdmNewAcceptStatus={"Pending"}
+                    bdmNewAcceptStatus={"MaturedPending"}
                     fetchNewData={refetch}
                 />
             )}

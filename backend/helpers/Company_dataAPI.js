@@ -2060,8 +2060,9 @@ router.get("/employees-new/:ename", async (req, res) => {
     const skip = parseInt(req.query.skip) || 0; // Default skip to 0
     const search = req.query.search ? req.query.search.toLowerCase() : ""; // Extract the search query
 
-    // Base query for employee-related data
+    // Base query for employee-related data, ensuring 'ename' is part of the query
     let baseQuery = {
+      ename: employeeName, // Always filter by the provided ename
       $or: [
         { ename: employeeName },
         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
@@ -2076,13 +2077,7 @@ router.get("/employees-new/:ename", async (req, res) => {
       // Combine search conditions with existing baseQuery
       baseQuery = {
         $and: [
-          {
-            $or: [
-              { ename: employeeName },
-              { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-              { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-            ]
-          },
+          baseQuery, // Keep the original ename condition
           {
             $or: [
               { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
@@ -2133,8 +2128,18 @@ router.get("/employees-new/:ename", async (req, res) => {
 
       CompanyModel.find({
         ...baseQuery,
-        bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
-        Status: { $in: ["Interested", "FollowUp"] }
+        $or: [
+          // Condition for "Matured" status
+          {
+              Status: "Matured",
+              bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] }
+          },
+          // Condition for "Interested" and "FollowUp" statuses
+          {
+              Status: { $in: ["Interested", "FollowUp"] },
+              bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
+          }
+      ]
       })
         .sort({ lastActionDate: -1 })
         .skip(skip)
@@ -2188,7 +2193,22 @@ router.get("/employees-new/:ename", async (req, res) => {
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", undefined] } }),
-      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["Pending", "Accept"] } }),
+      CompanyModel.countDocuments({
+        ...baseQuery,
+        $or: [
+          // Condition for "Matured" status with specific bdmAcceptStatus values
+          {
+            Status: "Matured",
+            bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] },
+          },
+          // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
+          {
+            Status: { $in: ["Interested", "FollowUp"] },
+            bdmAcceptStatus: { $in: ["Pending", "Accept"] },
+          },
+        ],
+      }),
+      
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Busy", "Not Picked Up"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Untouched"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } })
     ]);
@@ -2232,6 +2252,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 
 

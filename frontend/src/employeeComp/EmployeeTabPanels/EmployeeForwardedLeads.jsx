@@ -758,7 +758,8 @@ function EmployeeForwardedLeads({
                                                     <div
                                                         className={company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
                                                             company.bdeOldStatus === "FollowUp" ? "dfault_followup-status" :
-                                                                null}>
+                                                                company.bdeOldStatus === "Matured" ? "dfault_approved-status" :
+                                                                    null}>
                                                         {company.bdeOldStatus}
                                                     </div>
 
@@ -770,12 +771,17 @@ function EmployeeForwardedLeads({
                                                                     ? "intersted-history-btn disabled"
                                                                     : company.bdeOldStatus === "FollowUp"
                                                                         ? "followup-history-btn disabled"
-                                                                        : "")
+                                                                        : company.bdeOldStatus === "Matured"
+                                                                            ? "matured-history-btn disabled"
+                                                                            : "")
                                                                 : (company.bdeOldStatus === "Interested"
                                                                     ? "intersted-history-btn"
                                                                     : company.bdeOldStatus === "FollowUp"
                                                                         ? "followup-history-btn"
-                                                                        : "")
+                                                                        : company.bdeOldStatus === "Matured"
+                                                                            ? "matured-history-btn"
+                                                                            : "")
+
                                                         }
                                                     >
 
@@ -839,6 +845,7 @@ function EmployeeForwardedLeads({
                                                 <div
                                                     className={company.Status === "Interested" ? "dfault_interested-status" :
                                                         company.Status === "FollowUp" ? "dfault_followup-status" :
+                                                        company.Status === "Matured" ? "dfault_approved-status" :
                                                             null}>
                                                     {company.Status}
                                                 </div>
