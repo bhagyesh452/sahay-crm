@@ -217,7 +217,7 @@ function EmployeeForwardedLeads({
         }
     }, []);
 
-    console.log("forwardeddata" , forwardedLeads)
+    console.log(".bdmStatu" , forwardedLeads)
 
 
     return (
@@ -849,7 +849,7 @@ function EmployeeForwardedLeads({
                                                         company.Status === "FollowUp" ? "dfault_followup-status" :
                                                         company.Status === "Matured" ? "dfault_approved-status" :
                                                             null}>
-                                                    {company.bdmStatus}
+                                                    {company.Status}
                                                 </div>
                                             </td>
                                             <td>
