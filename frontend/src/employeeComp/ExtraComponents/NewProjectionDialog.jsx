@@ -38,7 +38,7 @@ function NewProjectionDialog({
     const [companyName, setCompanyName] = useState(projectionData ? (projectionData.companyName || projectionData["Company Name"]) : '');
     const [companyId, setCompanyId] = useState(projectionData ? projectionData._id : '');
     const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
-    const [selectedBdm, setSelectedBdm] = useState('');
+    const [selectedBdm, setSelectedBdm] = useState(viewProjection ? (projectionData.bdmName || projectionData.ename) : '');
     const [selectedBde, setSelectedBde] = useState(projectionData ? (projectionData.bdeName || projectionData.ename) : '');
     const [offeredServices, setOfferedServices] = useState(projectionData ? projectionData.offeredServices : []);
     const [offeredPrice, setOfferedPrice] = useState(projectionData ? projectionData.offeredPrice : null);
@@ -495,7 +495,7 @@ function NewProjectionDialog({
                                             className="form-select mt-1"
                                             name="bdmName"
                                             id="bdmName"
-                                            disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                            disabled={viewProjection || !isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && !projectionData))}
                                             value={selectedBdm}
                                             onChange={(e) => setSelectedBdm(e.target.value)}
                                         >
@@ -517,7 +517,7 @@ function NewProjectionDialog({
                                     className="mt-1"
                                     options={options}
                                     placeholder="Select Services..."
-                                    isDisabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    isDisabled={viewProjection || !isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && !projectionData))}
                                     onChange={(selectedOptions) => setOfferedServices(selectedOptions.map((option) => option.value))}
                                     value={offeredServices && offeredServices.map((value) => ({
                                         value,
@@ -536,7 +536,7 @@ function NewProjectionDialog({
                                     type="number"
                                     className="form-control mt-1"
                                     placeholder="Please Enter Offered Price"
-                                    disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    disabled={viewProjection || !isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && !projectionData))}
                                     value={offeredPrice}
                                     onChange={(e) => setOfferedPrice(e.target.value)}
                                 />
@@ -550,7 +550,7 @@ function NewProjectionDialog({
                                     type="number"
                                     className="form-control mt-1"
                                     placeholder="Please Enter Expected Price"
-                                    disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    disabled={viewProjection || !isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && !projectionData))}
                                     value={expectedPrice}
                                     onChange={(e) => setExpectedPrice(e.target.value)}
                                 />
@@ -565,7 +565,7 @@ function NewProjectionDialog({
                                 <input
                                     type="date"
                                     className="form-control mt-1"
-                                    disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    disabled={viewProjection || !isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && !projectionData))}
                                     value={followupDate}
                                     onChange={(e) => setFollowupDate(e.target.value)}
                                 />
@@ -578,7 +578,7 @@ function NewProjectionDialog({
                                 <input
                                     type="date"
                                     className="form-control mt-1"
-                                    disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                                    disabled={viewProjection || !isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && !projectionData))}
                                     value={paymentDate}
                                     onChange={(e) => setPaymentDate(e.target.value)}
                                 />
@@ -591,7 +591,7 @@ function NewProjectionDialog({
                         <textarea
                             className="form-control mt-1"
                             placeholder="Enter Remarks Here"
-                            disabled={!isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && (viewProjection || !projectionData)))}
+                            disabled={viewProjection || !isProjectionEditable && !isProjectionAvailable && !viewedForParticularCompany && (fieldsDisabled || (!selectedCompany && !projectionData))}
                             value={remarks}
                             onChange={(e) => setRemarks(e.target.value)}
                         />

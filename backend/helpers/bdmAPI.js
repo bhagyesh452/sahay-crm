@@ -1474,80 +1474,6 @@ router.get("/floorManagerProjectedAmountToday/:floorManagerName", async (req, re
 });
 
 // Floor manager Projection Summary Report :
-// router.get("/floorManagerProjectionSummaryReport/:floorManagerName", async (req, res) => {
-//   try {
-//     const { floorManagerName } = req.params;
-//     const { startDate, endDate } = req.query;
-
-//     // Validate the date range
-//     const start = startDate ? moment(startDate).format('YYYY-MM-DD') : null;
-//     const end = endDate ? moment(endDate).format('YYYY-MM-DD') : null;
-
-//     // console.log("Start Date:", start);
-//     // console.log("End Date:", end);
-
-//     // Step 1: Find the branch office of the floor manager from the 'newemployeeinfos' collection
-//     const floorManager = await adminModel.findOne({ ename: floorManagerName });
-//     if (!floorManager) {
-//       return res.status(404).json({ message: "Floor Manager not found" });
-//     }
-
-//     const floorManagerBranch = floorManager.branchOffice;
-
-//     // Step 2: Find all employees in the same branch office
-//     const employeesInBranch = await adminModel.find({ branchOffice: floorManagerBranch });
-//     const employeeNames = employeesInBranch
-//       .filter(emp => emp.newDesignation === "Business Development Executive" || emp.newDesignation === "Business Development Manager")
-//       .map(emp => emp.ename); // Extract employee names
-
-//     // Step 3: Prepare the match criteria for follow-up data
-//     const matchCriteria = {
-//       ename: { $in: employeeNames }, // Match employees
-//     };
-
-//     // Add date filtering if both startDate and endDate are provided
-//     if (start && end) {
-//       matchCriteria.estPaymentDate = {
-//         $gte: start,  // Use the start date from query params
-//         $lte: end    // Use the end date from query params
-//       };
-//     }
-
-//     // Fetch and aggregate data from 'followupcollections' for employees in the same branch
-//     const followUpData = await FollowUpModel.aggregate([
-//       {
-//         $match: matchCriteria // Use the constructed match criteria
-//       },
-//       {
-//         $group: {
-//           _id: "$ename", // Group by employee name
-//           companies: { $push: "$companyName" }, // Collect company names
-//           offeredServices: { $push: "$offeredServices" }, // Collect offered services
-//           totalOfferedPrice: { $sum: "$offeredPrize" }, // Sum offeredPrize
-//           totalPayment: { $sum: "$totalPayment" }, // Sum totalPayment
-//         }
-//       }
-//     ]);
-
-//     // Step 4: Format the data to return
-//     const result = employeeNames.map(employeeName => {
-//       const employeeData = followUpData.find(data => data._id === employeeName);
-//       return {
-//         employeeName: employeeName,
-//         companies: employeeData ? employeeData.companies.length : 0,
-//         totalOfferedServices: employeeData ? employeeData.offeredServices.flat().length : 0, // Count all services across companies
-//         totalOfferedPrice: employeeData ? employeeData.totalOfferedPrice : 0,
-//         totalPayment: employeeData ? employeeData.totalPayment : 0
-//       };
-//     });
-
-//     res.status(200).json({ result: true, message: "Projected amounts fetched successfully", data: result });
-//   } catch (error) {
-//     console.error("Error fetching floor manager projection summary:", error);
-//     res.status(500).json({ result: false, message: "Error fetching floor manager projection summary", error: error });
-//   }
-// });
-
 router.get("/floorManagerProjectionSummaryReport/:floorManagerName", async (req, res) => {
   try {
     const { floorManagerName } = req.params;
@@ -1641,18 +1567,27 @@ router.get("/floorManagerProjectionSummaryReport/:floorManagerName", async (req,
 // Floor manager leads Report :
 // router.get("/floorManagerLeadsReport", async (req, res) => {
 //   try {
+//     // Extract startDate and endDate from query parameters
+//     const { startDate, endDate } = req.query;
+
+//     // Convert startDate and endDate to ISO format to compare with AssignDate if they exist
+//     const start = startDate ? new Date(startDate) : null;
+//     const end = endDate ? new Date(endDate) : null;
+
 //     // Step 1: Get employees with specific designations
 //     const employees = await adminModel.find({
 //       $or: [
 //         { newDesignation: "Business Development Executive" },
-//         { newDesignation: "Business Development Manager" }
+//         { newDesignation: "Business Development Manager" },
+//         { newDesignation: "Floor Manager" }
 //       ]
 //     });
 
 //     const deletedEmployees = await DeletedEmployeeModel.find({
 //       $or: [
 //         { newDesignation: "Business Development Executive" },
-//         { newDesignation: "Business Development Manager" }
+//         { newDesignation: "Business Development Manager" },
+//         { newDesignation: "Floor Manager" }
 //       ]
 //     });
 
@@ -1672,22 +1607,33 @@ router.get("/floorManagerProjectionSummaryReport/:floorManagerName", async (req,
 //           employeeName: employeeName,
 //           branchOffice: branchOffice,
 //           interested: 0,
-//           interestedLeads: [],
+//           // interestedLeads: [],
 //           followUp: 0,
-//           followUpLeads: [],
+//           // followUpLeads: [],
 //           forwarded: 0,
-//           forwardedLeads: []
+//           // forwardedLeads: []
 //         };
 //       }
 
-//       // Step 3: Filter companies based on the specified criteria
-//       const companies = await CompanyModel.find({
-//         ename: employeeName, // Exclude companies where ename is 'Not Alloted' or 'Extracted'
-//         Status: { $in: ["Interested", "FollowUp"] }, // Status should be 'Interested' or 'FollowUp'
-//         bdmAcceptStatus: { $in: ["NotForwarded","Pending", "Accept"] } // bdmAcceptStatus should be 'Pending' or 'Accept'
-//       });
+//       // Step 3: Prepare the query object for filtering companies
+//       const query = {
+//         ename: employeeName,
+//         Status: { $in: ["Interested", "FollowUp"] },
+//         bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] }
+//       };
 
-//       // Step 4: Count leads and categorize them
+//       // Add AssignDate filtering only if startDate and endDate are provided
+//       if (start && end) {
+//         query.AssignDate = {
+//           $gte: start,  // Greater than or equal to startDate
+//           $lte: end     // Less than or equal to endDate
+//         };
+//       }
+
+//       // Step 4: Filter companies based on the specified criteria and assign date
+//       const companies = await CompanyModel.find(query);
+
+//       // Step 5: Count leads and categorize them
 //       companies.forEach(company => {
 //         const companyName = company["Company Name"];
 //         const companyStatus = company.Status;
@@ -1695,15 +1641,15 @@ router.get("/floorManagerProjectionSummaryReport/:floorManagerName", async (req,
 
 //         if (companyStatus === "Interested" && companyBdmAcceptStatus === "NotForwarded") {
 //           result[employeeName].interested++;
-//           result[employeeName].interestedLeads.push(companyName);
+//           // result[employeeName].interestedLeads.push(companyName);
 //         } else if (companyStatus === "FollowUp" && companyBdmAcceptStatus === "NotForwarded") {
 //           result[employeeName].followUp++;
-//           result[employeeName].followUpLeads.push(companyName);
+//           // result[employeeName].followUpLeads.push(companyName);
 //         }
 
 //         if (companyBdmAcceptStatus === "Pending" || companyBdmAcceptStatus === "Accept") {
 //           result[employeeName].forwarded++;
-//           result[employeeName].forwardedLeads.push(companyName);
+//           // result[employeeName].forwardedLeads.push(companyName);
 //         }
 //       });
 //     }
@@ -1712,106 +1658,103 @@ router.get("/floorManagerProjectionSummaryReport/:floorManagerName", async (req,
 //     const response = Object.values(result);
 //     res.status(200).json({ result: true, message: "Lead report fetched successfully", data: response });
 //   } catch (error) {
-//     console.error("Error fetching the data:", error); // Logging the error for better debugging
+//     console.error("Error fetching the data:", error);
 //     res.status(500).json({ result: false, message: "Error fetching the data", error: error });
 //   }
 // });
 
 router.get("/floorManagerLeadsReport", async (req, res) => {
   try {
-    // Extract startDate and endDate from query parameters
     const { startDate, endDate } = req.query;
-
-    // Convert startDate and endDate to ISO format to compare with AssignDate if they exist
+    
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
+    
+    // console.log("Start date :", start);
+    // console.log("End date :", end);
 
-    // Step 1: Get employees with specific designations
-    const employees = await adminModel.find({
-      $or: [
-        { newDesignation: "Business Development Executive" },
-        { newDesignation: "Business Development Manager" },
-        { newDesignation: "Floor Manager" }
-      ]
-    });
-
-    const deletedEmployees = await DeletedEmployeeModel.find({
-      $or: [
-        { newDesignation: "Business Development Executive" },
-        { newDesignation: "Business Development Manager" },
-        { newDesignation: "Floor Manager" }
-      ]
-    });
-
-    const employeesData = [...employees, ...deletedEmployees];
-
-    // Step 2: Create a result object to store the leads data
-    const result = {};
-
-    // Iterate through each employee
-    for (const employee of employeesData) {
-      const employeeName = employee.ename;
-      const branchOffice = employee.branchOffice; // Assuming this field exists
-
-      // Initialize result for the employee if it doesn't exist
-      if (!result[employeeName]) {
-        result[employeeName] = {
-          employeeName: employeeName,
-          branchOffice: branchOffice,
-          interested: 0,
-          // interestedLeads: [],
-          followUp: 0,
-          // followUpLeads: [],
-          forwarded: 0,
-          // forwardedLeads: []
-        };
+    // Step 1: Aggregate on CompanyModel to get counts of interested, followup, and forwarded leads by employee
+    const companyPipeline = [
+      {
+        $match: {
+          Status: { $in: ["Interested", "FollowUp"] },
+          bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] },
+          ...(start && end ? { AssignDate: { $gte: start, $lte: end } } : {})
+        }
+      },
+      {
+        $group: {
+          _id: "$ename",
+          interested: {
+            $sum: {
+              $cond: [
+                { $and: [{ $eq: ["$Status", "Interested"] }, { $eq: ["$bdmAcceptStatus", "NotForwarded"] }] },
+                1,
+                0
+              ]
+            }
+          },
+          followUp: {
+            $sum: {
+              $cond: [
+                { $and: [{ $eq: ["$Status", "FollowUp"] }, { $eq: ["$bdmAcceptStatus", "NotForwarded"] }] },
+                1,
+                0
+              ]
+            }
+          },
+          forwarded: {
+            $sum: {
+              $cond: [
+                { $or: [{ $eq: ["$bdmAcceptStatus", "Pending"] }, { $eq: ["$bdmAcceptStatus", "Accept"] }] },
+                1,
+                0
+              ]
+            }
+          }
+        }
       }
+    ];
 
-      // Step 3: Prepare the query object for filtering companies
-      const query = {
-        ename: employeeName,
-        Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] }
+    // Step 2: Run the aggregation pipeline on the CompanyModel
+    const companyData = await CompanyModel.aggregate(companyPipeline);
+    const companyDataMap = companyData.reduce((acc, curr) => {
+      acc[curr._id] = curr;
+      return acc;
+    }, {});
+
+    // Step 3: Get employee details from adminModel and DeletedEmployeeModel
+    const employees = await adminModel
+      .find({
+        newDesignation: { $in: ["Business Development Executive", "Business Development Manager", "Floor Manager"] }
+      })
+      .select("ename branchOffice newDesignation");
+
+    const deletedEmployees = await DeletedEmployeeModel
+      .find({
+        newDesignation: { $in: ["Business Development Executive", "Business Development Manager", "Floor Manager"] }
+      })
+      .select("ename branchOffice newDesignation");
+
+    const employeeData = [...employees, ...deletedEmployees];
+
+    // Step 4: Merge company lead data with employee data and set defaults for missing counts
+    const result = employeeData.map((employee) => {
+      const employeeCounts = companyDataMap[employee.ename] || { interested: 0, followUp: 0, forwarded: 0 };
+      return {
+        employeeName: employee.ename,
+        branchOffice: employee.branchOffice,
+        designation: employee.newDesignation,
+        interested: employeeCounts.interested,
+        followUp: employeeCounts.followUp,
+        forwarded: employeeCounts.forwarded
       };
+    });
 
-      // Add AssignDate filtering only if startDate and endDate are provided
-      if (start && end) {
-        query.AssignDate = {
-          $gte: start,  // Greater than or equal to startDate
-          $lte: end     // Less than or equal to endDate
-        };
-      }
-
-      // Step 4: Filter companies based on the specified criteria and assign date
-      const companies = await CompanyModel.find(query);
-
-      // Step 5: Count leads and categorize them
-      companies.forEach(company => {
-        const companyName = company["Company Name"];
-        const companyStatus = company.Status;
-        const companyBdmAcceptStatus = company.bdmAcceptStatus;
-
-        if (companyStatus === "Interested" && companyBdmAcceptStatus === "NotForwarded") {
-          result[employeeName].interested++;
-          // result[employeeName].interestedLeads.push(companyName);
-        } else if (companyStatus === "FollowUp" && companyBdmAcceptStatus === "NotForwarded") {
-          result[employeeName].followUp++;
-          // result[employeeName].followUpLeads.push(companyName);
-        }
-
-        if (companyBdmAcceptStatus === "Pending" || companyBdmAcceptStatus === "Accept") {
-          result[employeeName].forwarded++;
-          // result[employeeName].forwardedLeads.push(companyName);
-        }
-      });
-    }
-
-    // Convert result object to an array
-    const response = Object.values(result);
-    res.status(200).json({ result: true, message: "Lead report fetched successfully", data: response });
+    res.status(200).json({ result: true, message: "Lead report fetched successfully", data: result });
   } catch (error) {
     console.error("Error fetching the data:", error);
-    res.status(500).json({ result: false, message: "Error fetching the data", error: error });
+    res.status(500).json({ result: false, message: "Error fetching the data", error });
   }
 });
 
