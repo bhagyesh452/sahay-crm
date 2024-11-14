@@ -19,7 +19,8 @@ import FeedbackDialog from '../ExtraComponents/FeedbackDialog';
 import FilterableComponentEmployee from "../ExtraComponents/FilterableComponentEmployee";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
-
+import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInterestedInformationDialog';
+import { FaEye } from "react-icons/fa";
 function EmployeeForwardedLeads({
     forwardedLeads,
     isLoading,
@@ -745,11 +746,66 @@ function EmployeeForwardedLeads({
                                                 />
                                             </td>
                                             <td>
-                                                <div
+                                                {/* <div
                                                     className={company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
                                                         company.bdeOldStatus === "FollowUp" ? "dfault_followup-status" :
-                                                            null}>
+                                                            null}
+                                                            >
                                                     {company.bdeOldStatus}
+                                                </div> */}
+                                                <div className="d-flex align-items-center justify-content-between">
+                                                    {(fordesignation === "admin" || fordesignation === "datamanager") ? (
+                                                        <div
+                                                            className={company.Status === "Interested" ? "dfault_interested-status" :
+                                                                company.Status === "FollowUp" ? "dfault_followup-status" :
+                                                                    null}>
+                                                            {company.bdeOldStatus}
+                                                        </div>) : (
+                                                        <>
+                                                            {company.bdeOldStatus}
+                                                        </>
+
+                                                    )}
+                                                    <div
+                                                        className={
+                                                            (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                                                ? (company.Status === "Interested"
+                                                                    ? "intersted-history-btn disabled"
+                                                                    : company.Status === "FollowUp"
+                                                                        ? "followup-history-btn disabled"
+                                                                        : "")
+                                                                : (company.Status === "Interested"
+                                                                    ? "intersted-history-btn"
+                                                                    : company.Status === "FollowUp"
+                                                                        ? "followup-history-btn"
+                                                                        : "")
+                                                        }
+                                                    >
+
+                                                        <FaEye
+                                                            key={company._id}
+                                                            style={{ border: "transparent", background: "none" }}
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                                                            title="Interested Information"
+                                                        //disabled={!company.interestedInformation}
+                                                        />
+
+                                                        <EmployeeInterestedInformationDialog
+                                                            key={company._id}
+                                                            modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                                                            companyName={company["Company Name"]}
+                                                            interestedInformation={company.interestedInformation} // Pass the interested information here
+                                                            refetch={refetch}
+                                                            ename={ename}
+                                                            secretKey={secretKey}
+                                                            status={company.Status}
+                                                            companyStatus={company.Status}
+                                                            forView={true}
+                                                            fordesignation={fordesignation}
+
+                                                        />
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>

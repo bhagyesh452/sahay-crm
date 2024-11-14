@@ -17,6 +17,8 @@ import { RiEditCircleFill } from "react-icons/ri";
 import FilterableComponentEmployee from '../ExtraComponents/FilterableComponentEmployee';
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
+import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInterestedInformationDialog';
 
 function EmployeeMaturedLeads({
     maturedLeads,
@@ -641,9 +643,49 @@ function EmployeeMaturedLeads({
                                                 />
                                             </td>
                                             <td >
-                                                <div className="dfault_approved-status">
-                                                    {company.Status}
+                                                <div className="d-flex align-items-center justify-content-between">
+                                                    <div className="dfault_approved-status">
+                                                        {company.Status}
+                                                    </div>
+                                                    <div
+                                                        className={
+                                                            (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                                                ? (company.Status === "Matured"
+                                                                    ? "matured-history-btn disabled"
+                                                                        : "")
+                                                                : (company.Status === "Matured"
+                                                                    ? "matured-history-btn"
+                                                                    
+                                                                        : "")
+                                                        }
+                                                    >
+
+                                                        <FaEye
+                                                            key={company._id}
+                                                            style={{ border: "transparent", background: "none" }}
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                                                            title="Interested Information"
+                                                        //disabled={!company.interestedInformation}
+                                                        />
+
+                                                        <EmployeeInterestedInformationDialog
+                                                            key={company._id}
+                                                            modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                                                            companyName={company["Company Name"]}
+                                                            interestedInformation={company.interestedInformation} // Pass the interested information here
+                                                            refetch={refetch}
+                                                            ename={ename}
+                                                            secretKey={secretKey}
+                                                            status={company.Status}
+                                                            companyStatus={company.Status}
+                                                            forView={true}
+                                                            fordesignation={fordesignation}
+
+                                                        />
+                                                    </div>
                                                 </div>
+
                                             </td>
                                             <td>
                                                 <div key={company._id}>

@@ -4528,6 +4528,19 @@ div#table-default td {
   color: #6f6f6f;
   cursor:pointer;
 }
+.matured-history-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 5px;
+  background: #7ee48c;
+  border: 1px solid #1cbd27;
+  margin-left: 8px;
+  font-size: 11px;
+  color: #6f6f6f;
+  cursor:pointer;
+}
 .followup-history-btn {
   width: 24px;
   height: 24px;
