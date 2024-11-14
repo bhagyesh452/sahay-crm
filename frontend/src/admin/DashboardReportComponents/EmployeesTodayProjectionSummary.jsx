@@ -230,7 +230,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                     date: formattedDate
                 }
             });
-            // console.log("Projection data is :", res.data.data);
+            console.log("Projection data is todays :", res.data.data);
             setEmployeeProjectionData(res.data.data);
             setOpenProjectionTable(true); // Open the dialog
         } catch (error) {
@@ -782,6 +782,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                     <th>Remarks</th>
                                     <th>Added On</th>
                                     <th>Modified On</th>
+                                    <th>Is Matured Case</th>
                                     <th>View History</th>
 
                                 </tr>
@@ -803,6 +804,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                             <td>{data.remarks}</td>
                                             <td>{formatDate(new Date(data.addedOnDate))}</td>
                                             <td>{formatDate(new Date(data.projectionDate))}</td>
+                                            <td>{data.isPreviousMaturedCase === "true" ? "YES" : data.isPreviousMaturedCase === "false" ? "NO" : "-"}</td>
                                             <td>
                                                 {/* View History button or link (replace with your actual logic) */}
                                                 <MdHistory
@@ -883,7 +885,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                     <th>Remarks</th>
                                     <th>Added On</th>
                                     <th>Modified On</th>
-
+                                    <th>Is Matured Case</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -903,6 +905,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                             <td>{entry.data.remarks}</td>
                                             <td>{formatDate(addedOnDate)}</td>
                                             <td>{formatDate(new Date(entry.modifiedAt))}</td>
+                                            <td>{entry.data.isPreviousMaturedCase === "true" ? "YES" : entry.data.isPreviousMaturedCase === "false" ? "NO" : "-"}</td>
                                         </tr>
                                     ))
                                 ) : (

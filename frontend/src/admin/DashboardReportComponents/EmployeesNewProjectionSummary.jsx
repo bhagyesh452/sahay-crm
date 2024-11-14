@@ -491,6 +491,7 @@ function EmployeesNewProjectionSummary() {
                                     <th>Remarks</th>
                                     <th>Added On</th>
                                     <th>Modified On</th>
+                                    <th>Is Matured Case</th>
                                     <th>View History</th>
 
                                 </tr>
@@ -511,9 +512,11 @@ function EmployeesNewProjectionSummary() {
                                             <td>{formatDate(new Date(data.estPaymentDate))}</td>
                                             <td>{data.remarks}</td>
                                             <td>{formatDate(new Date(data.addedOnDate))}</td>
+                                            
                                             <td>{formatDate(new Date(data.projectionDate))}</td>
+                                            <td>{data.isPreviousMaturedCase === "true" ? "YES" : data.isPreviousMaturedCase === "false" ? "NO" : "-"}</td>
                                             <td>
-                                                {/* View History button or link (replace with your actual logic) */}
+                                                {/* View History button or link (replace with your a ctual logic) */}
                                                 <MdHistory
                                                     onClick={() => handleViewHistory(data._id)}
                                                 />
@@ -585,6 +588,7 @@ function EmployeesNewProjectionSummary() {
                                     <th>Remarks</th>
                                     <th>Added On</th>
                                     <th>Modified On</th>
+                                    <th>Is Matured Case</th>
                                 </tr>
                             </thead>
 
@@ -605,6 +609,8 @@ function EmployeesNewProjectionSummary() {
                                             <td>{entry.data.remarks}</td>
                                             <td>{formatDate(addedOnDate)}</td>
                                             <td>{formatDate(new Date(entry.modifiedAt))}</td>
+                                            <td>{entry.data.isPreviousMaturedCase === "true" ? "YES" : entry.data.isPreviousMaturedCase === "false" ? "NO" : "-"}</td>
+
                                         </tr>
                                     ))
                                 ) : (
