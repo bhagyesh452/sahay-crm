@@ -1764,11 +1764,14 @@ function TestLeads() {
                                                     <th>State</th>
                                                     <th>Company Email</th>
                                                     {(dataStatus === "Assigned") && <th>Status</th>}
+                                                    {(dataStatus === "Extracted") && <th>Last Status</th>}
                                                     {(dataStatus === "Assigned" || dataStatus === "Extracted") && <th>Remarks</th>}
+                                                    
                                                     <th>Uploaded By</th>
                                                     <th>Uploaded On</th>
                                                     {dataStatus === 'Extracted' && <th>Last Assigned To</th>}
                                                     {(dataStatus === "Extracted") && <th>BDM Name</th>}
+                                                    
                                                     {dataStatus === "Extracted" && <th>Extracted Date</th>}
                                                     {dataStatus === "Assigned" && <th>Assigned to</th>}
                                                     {(dataStatus === "Assigned") && <th>BDM Name</th>}
@@ -1891,7 +1894,6 @@ function TestLeads() {
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
-
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
                                                             {(dataStatus === "Assigned" || dataStatus === "Extracted") &&
                                                                 <td>
@@ -1999,6 +2001,7 @@ function TestLeads() {
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                            {(dataStatus === "Extracted") && <td>{company.lastStatusOfExtractedEmployee ? company.lastStatusOfExtractedEmployee : "-"}</td>}
                                                             {(dataStatus === "Assigned" || dataStatus === "Extracted") && <td>
                                                                 <AdminRemarksDialog
                                                                     key={`${"Company Name"}-${index}`}
@@ -2014,6 +2017,7 @@ function TestLeads() {
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
                                                             {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
                                                             {(dataStatus === "Extracted") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
+                                                            {(dataStatus === "Extracted") && <td>{company.lastStatusOfExtractedEmployee ? company.lastStatusOfExtractedEmployee : "-"}</td>}
                                                             {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
                                                             {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
@@ -2206,6 +2210,7 @@ function TestLeads() {
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
                                                             {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                            {(dataStatus === "Extracted") && <td>{company.lastStatusOfExtractedEmployee ? company.lastStatusOfExtractedEmployee : "-"}</td>}
                                                             {(dataStatus === "Assigned" || dataStatus === "Extracted") &&
                                                                 <td>
                                                                     <AdminRemarksDialog
