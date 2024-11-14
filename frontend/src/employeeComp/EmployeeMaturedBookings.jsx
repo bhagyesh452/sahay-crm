@@ -37,6 +37,20 @@ function EmployeeMaturedBookings() {
   const [data, setData] = useState([])
   const [searchText, setSearchText] = useState("");
   const [fetch, setFetch] = useState(false);
+  const [currentCompanyName, setCurrentCompanyName] = useState("");
+  const [isDeletedStatus, setisDeletedStatus] = useState(false);
+  const [currentBdeName, setCurrentBdeName] = useState("");
+  const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [sendingIndex, setSendingIndex] = useState(0);
+  const [open, openchange] = useState(false);
+  const [EditBookingOpen, setEditBookingOpen] = useState(false);
+  const [addFormOpen, setAddFormOpen] = useState(false);
+  const [currentLeadform, setCurrentLeadform] = useState(null);
+  const [nowToFetch, setNowToFetch] = useState(false);
+  //const [bookingIndex, setbookingIndex] = useState(-1);
+  const [openOtherDocs, setOpenOtherDocs] = useState(false);
+  const [companyName, setCompanyName] = useState("");
+
 
   useEffect(() => {
     document.title = `Employee-Sahay-CRM`;
@@ -118,9 +132,6 @@ function EmployeeMaturedBookings() {
     setFormData(infiniteBooking.filter((obj) => obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())));
   }, [searchText]);
 
-  const [currentCompanyName, setCurrentCompanyName] = useState("");
-  const [isDeletedStatus, setisDeletedStatus] = useState(false);
-  const [currentBdeName, setCurrentBdeName] = useState("");
 
   const functionToGetBdeName = async (companyName) => {
     try {
@@ -155,8 +166,8 @@ function EmployeeMaturedBookings() {
   }, [formData, currentCompanyName]);
 
 
-  console.log(isDeletedStatus);
-  console.log(currentBdeName);
+  // console.log(isDeletedStatus);
+  // console.log(currentBdeName);
 
 
   useEffect(() => {
@@ -184,16 +195,7 @@ function EmployeeMaturedBookings() {
     };
   }, []);
 
-  const [bookingFormOpen, setBookingFormOpen] = useState(false);
-  const [sendingIndex, setSendingIndex] = useState(0);
-  const [open, openchange] = useState(false);
-  const [EditBookingOpen, setEditBookingOpen] = useState(false);
-  const [addFormOpen, setAddFormOpen] = useState(false);
-  const [currentLeadform, setCurrentLeadform] = useState(null);
-  const [nowToFetch, setNowToFetch] = useState(false);
-  //const [bookingIndex, setbookingIndex] = useState(-1);
-  const [openOtherDocs, setOpenOtherDocs] = useState(false);
-  const [companyName, setCompanyName] = useState("");
+
 
   function formatDatePro(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -646,6 +648,8 @@ function EmployeeMaturedBookings() {
                           // console.log(latestBooking);
                           setFetch(true);
                           setCurrentLeadform(formData.find((data) => data["Company Name"] === obj["Company Name"]));
+                          setisDeletedStatus(formData.find((data) => data["Company Name"] === obj["Company Name"])?.isDeletedEmployeeCompany);
+                          setCurrentBdeName(formData.find((data) => data["Company Name"] === obj["Company Name"])?.bdeName);
                           setActiveIndexBooking(allBookings.indexOf(latestBooking) + 1); // This will now set the active index to the latest booking
                         }}
                         >
@@ -747,16 +751,26 @@ function EmployeeMaturedBookings() {
                             ? currentLeadform["Company Name"]
                             : formData && formData.length !== 0 ? formData[0]["Company Name"] : "-"}
                         </div>
-                        {((isDeletedStatus === true && currentBdeName === data.ename) ||
-                          ((isDeletedStatus === false || isDeletedStatus === undefined) && currentBdeName === data.ename)) && (
-                            <div className="bookings_add_more" title="Add More Booking" 
-                            onClick={() => 
-                              setAddFormOpen(true)
-                            }
-                            >
+                        {(() => {
+                          // Log the values to check which condition is being evaluated
+                          console.log("isDeletedStatus:", isDeletedStatus);
+                          console.log("currentBdeName:", currentBdeName);
+                          console.log("data.ename:", data.ename);
+                          console.log("currentLeadForm", currentLeadform);
+
+                          const condition1 = isDeletedStatus === true && currentBdeName === data.ename;
+                          const condition2 = (isDeletedStatus === false || isDeletedStatus === undefined) && currentBdeName === data.ename;
+
+                          console.log("Condition 1 (isDeletedStatus === true && currentBdeName === data.ename):", condition1);
+                          console.log("Condition 2 ((isDeletedStatus === false || isDeletedStatus === undefined) && currentBdeName === data.ename):", condition2);
+
+                          // Return the JSX only if either condition is true
+                          return (condition1 || condition2) && (
+                            <div className="bookings_add_more" title="Add More Booking" onClick={() => setAddFormOpen(true)}>
                               <FaPlus />
                             </div>
-                          )}
+                          );
+                        })()}
                       </div>
                     </div>
 
