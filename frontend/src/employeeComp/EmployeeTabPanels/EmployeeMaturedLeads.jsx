@@ -19,6 +19,8 @@ import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInterestedInformationDialog';
+import { TiArrowForward } from "react-icons/ti";
+import BdmMaturedCasesDialogBox from '../BdmMaturedCasesDialogBox';
 
 function EmployeeMaturedLeads({
     maturedLeads,
@@ -38,6 +40,7 @@ function EmployeeMaturedLeads({
     handleShowCallHistory,
     fetchProjections,
     projectionData,
+    designation,
     fordesignation,
     setSelectedRows,
     handleCheckboxChange,
@@ -77,6 +80,8 @@ function EmployeeMaturedLeads({
     const [isProjectionEditable, setIsProjectionEditable] = useState(false);
     const [projectionDataToBeFilled, setProjectionDataToBeFilled] = useState({});
     const [viewedForParticularCompany, setViewedForParticularCompany] = useState(false);
+    const [showForwardToBdmPopup, setShowForwardToBdmPopup] = useState(false);
+    const [companyStatus, setCompanyStatus] = useState("");
 
 
     const handleCloseNewProjection = () => {
@@ -148,6 +153,11 @@ function EmployeeMaturedLeads({
             };
         }
     }, []);
+
+    // --------------forward to bdm popup--------------------
+    const handleCloseBdmPopup = () => {
+        setShowForwardToBdmPopup(false);
+    };
 
 
     return (
@@ -814,22 +824,23 @@ function EmployeeMaturedLeads({
                                                         />
                                                     </IconButton>
                                                 )}
-
-                                                {/* <ProjectionDialog
-                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                    projectionCompanyName={company["Company Name"]}
-                                                    projectionData={projectionData}
-                                                    secretKey={secretKey}
-                                                    fetchProjections={fetchProjections}
-                                                    ename={ename}
-                                                    bdmAcceptStatus={company.bdmAcceptStatus}
-                                                    hasMaturedStatus={true}
-                                                    hasExistingProjection={projectionData?.some(
-                                                        (item) => item.companyName === company["Company Name"]
+                                                {
+                                                    ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (
+                                                        <TiArrowForward onClick={() => {
+                                                            setShowForwardToBdmPopup(true);
+                                                            setCompanyId(company._id);
+                                                            setCompanyName(company["Company Name"]);
+                                                            setCompanyStatus(company.Status);
+                                                        }}
+                                                            style={{
+                                                                cursor: "pointer",
+                                                                width: "17px",
+                                                                height: "17px",
+                                                            }}
+                                                            title="Forward To BDM"
+                                                            color="grey"
+                                                        />
                                                     )}
-                                                    userId={userId}
-                                                    fordesignation={fordesignation}
-                                                /> */}
                                             </td>
                                         </tr>
                                     ))}
@@ -916,6 +927,22 @@ function EmployeeMaturedLeads({
                     setViewedForParticularCompany={setViewedForParticularCompany}
                     editableCompanyId={companyId}
                     setEditableCompanyId={setCompanyId}
+                />
+            )}
+
+            {showForwardToBdmPopup && (
+                <BdmMaturedCasesDialogBox
+                    open={showForwardToBdmPopup}
+                    closepopup={handleCloseBdmPopup}
+                    key={companyId}
+                    currentData={maturedLeads}
+                    forwardedCompany={companyName}
+                    forwardCompanyId={companyId}
+                    forwardedStatus={companyStatus}
+                    forwardedEName={ename}
+                    bdeOldStatus={companyStatus}
+                    bdmNewAcceptStatus={"Pending"}
+                    fetchNewData={refetch}
                 />
             )}
         </div >
