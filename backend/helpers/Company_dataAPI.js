@@ -3969,8 +3969,8 @@ router.get('/getProjection/:employeeName', async (req, res) => {
       $or: [
         { bdeName: employeeName },
         { bdmName: employeeName },
-        { "history.data.bdeName": employeeName },
-        { "history.data.bdmName": employeeName }
+        // { "history.data.bdeName": employeeName },
+        // { "history.data.bdmName": employeeName }
       ]
     };
 
