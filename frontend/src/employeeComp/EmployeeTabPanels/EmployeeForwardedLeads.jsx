@@ -754,29 +754,26 @@ function EmployeeForwardedLeads({
                                                     {company.bdeOldStatus}
                                                 </div> */}
                                                 <div className="d-flex align-items-center justify-content-between">
-                                                    {(fordesignation === "admin" || fordesignation === "datamanager") ? (
-                                                        <div
-                                                            className={company.Status === "Interested" ? "dfault_interested-status" :
-                                                                company.Status === "FollowUp" ? "dfault_followup-status" :
-                                                                    null}>
-                                                            {company.bdeOldStatus}
-                                                        </div>) : (
-                                                        <>
-                                                            {company.bdeOldStatus}
-                                                        </>
 
-                                                    )}
+                                                    <div
+                                                        className={company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
+                                                            company.bdeOldStatus === "FollowUp" ? "dfault_followup-status" :
+                                                                null}>
+                                                        {company.bdeOldStatus}
+                                                    </div>
+
+
                                                     <div
                                                         className={
                                                             (company.interestedInformation === null || company.interestedInformation.length === 0)
-                                                                ? (company.Status === "Interested"
+                                                                ? (company.bdeOldStatus === "Interested"
                                                                     ? "intersted-history-btn disabled"
-                                                                    : company.Status === "FollowUp"
+                                                                    : company.bdeOldStatus === "FollowUp"
                                                                         ? "followup-history-btn disabled"
                                                                         : "")
-                                                                : (company.Status === "Interested"
+                                                                : (company.bdeOldStatus === "Interested"
                                                                     ? "intersted-history-btn"
-                                                                    : company.Status === "FollowUp"
+                                                                    : company.bdeOldStatus === "FollowUp"
                                                                         ? "followup-history-btn"
                                                                         : "")
                                                         }

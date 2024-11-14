@@ -112,7 +112,9 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
             });
             // Transform the data from the first API to calculate the required metrics
             const summary = currentDayProjectionRes.data.data.reduce((acc, company) => {
-                const isShared = company.bdeName !== company.bdmName;
+                const isShared = (company.bdeName !== company.bdmName) && !(company.bdmName === "Vaibhav Acharya" || company.bdmName === "Vishal Goel");
+
+
 
                 // Initialize each employee's data if not already in summary
                 [company.bdeName, company.bdmName].forEach((employeeName) => {
