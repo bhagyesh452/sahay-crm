@@ -80,7 +80,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
         try {
             const res2 = await axios.get(`${secretKey}/employee/einfo`);
             let employees = res2.data.filter(
-                (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager" || employee.newDesignation === "Floor Manager"
+                (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager"
             );
 
             if (isFloorManagerView) {
@@ -112,15 +112,15 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
             });
             // Transform the data from the first API to calculate the required metrics
             const summary = currentDayProjectionRes.data.data.reduce((acc, company) => {
-                // const isShared = (company.bdeName !== company.bdmName) && !(company.bdmName === "Vaibhav Acharya" || company.bdmName === "Vishal Goel");
+                const isShared = (company.bdeName !== company.bdmName) && !(company.bdmName === "Vaibhav Acharya" || company.bdmName === "Vishal Goel");
 
-                const isShared = (company.bdeName !== company.bdmName);
+                // const isShared = (company.bdeName !== company.bdmName);
                 // Safely check if the employee is found in the totalEmployees array
-                const employee = totalEmployees.find(emp => emp.ename === company.bdmName);
+                // const employee = totalEmployees.find(emp => emp.ename === company.bdmName);
 
-                // If the employee is found, access their newDesignation, otherwise default to "Unknown"
-                const bdmDesignation = employee ? employee.newDesignation : "Business Development Manager";
-                console.log("bdmDesignation", bdmDesignation , company.bdmName , employee); // Log the designation or "Unknown"
+                // // If the employee is found, access their newDesignation, otherwise default to "Unknown"
+                // const bdmDesignation = employee ? employee.newDesignation : "Business Development Manager";
+                // console.log("bdmDesignation", bdmDesignation , company.bdmName , employee); // Log the designation or "Unknown"
 
                 // Initialize each employee's data if not already in summary
                 [company.bdeName, company.bdmName].forEach((employeeName) => {
@@ -136,7 +136,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
 
                 const serviceCount = company.offeredServices ? company.offeredServices.length : 0;
 
-                if (isShared && employee.newDesignation !== "Floor Manager") {
+                if (isShared) {
                     acc[company.bdeName].total_companies += 0.5;
                     acc[company.bdmName].total_companies += 0.5;
                     acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;
@@ -163,11 +163,11 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                 total_estimated_payment: values.total_estimated_payment,
                 total_services: values.total_services,
             }));
-            console.log("summaryArray", summaryArray);
+            //console.log("summaryArray", summaryArray);
 
             // Process daily employee projections to incorporate "Not Added Yet" status
             const dailyEmployeeProjections = dailyEmployeeProjectionRes.data.data;
-            console.log("dailyEmployeeProjections", dailyEmployeeProjections);
+            //console.log("dailyEmployeeProjections", dailyEmployeeProjections);
             const combinedSummaryArray = totalEmployees.map(employee => {
                 const existingEmployee = summaryArray.find(summary => summary.ename === employee.ename);
                 const dailyProjection = dailyEmployeeProjections.find(daily => daily.ename === employee.ename);
@@ -223,7 +223,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
         try {
             setIsLoading(true);
             const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-            console.log("formattedDate", selectedDate, formattedDate)
+            //console.log("formattedDate", selectedDate, formattedDate)
             const res = await axios.get(`${secretKey}/company-data/getCurrentDayProjection/${employeeName}`, {
                 params: {
                     companyName,
