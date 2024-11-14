@@ -1341,7 +1341,7 @@ router.post("/postExtractedData", async (req, res) => {
           AssignDate: new Date(),
           bdmAcceptStatus: "NotForwarded",
           feedbackPoints: [],
-          multiBdmName: [],
+          //multiBdmName: [],
           Status: "Untouched",
           lastStatusOfExtractedEmployee: obj.Status,
           isDeletedEmployeeCompany: obj.Status === "Matured",
@@ -1352,7 +1352,7 @@ router.post("/postExtractedData", async (req, res) => {
           extractedDate: new Date()
         },
         $unset: {
-          bdmName: "",
+          //bdmName: "",
           bdeOldStatus: "",
           bdeForwardDate: "",
           bdmStatusChangeDate: "",
