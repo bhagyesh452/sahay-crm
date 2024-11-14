@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Nodata from '../components/Nodata';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 import axios from 'axios';
 import Swal from "sweetalert2";
 import { useParams } from 'react-router-dom';
 import { FaWhatsapp } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 import { TiArrowForward } from "react-icons/ti";
 
-function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompanyId, forwardedStatus, forwardedEName, bdeOldStatus, bdmNewAcceptStatus, fetchNewData }) {
+function BdmMaturedCasesDialogBox({ open, closepopup, currentData, forwardedCompany, forwardCompanyId, forwardedStatus, forwardedEName, bdeOldStatus, bdmNewAcceptStatus, fetchNewData }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
-    const modalId = `modal-${forwardedCompany.replace(/\s+/g, '')}-${forwardCompanyId}`; // Generate a unique modal ID
+    // const modalId = open
 
     const [maturedCases, setMaturedCases] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -103,7 +105,8 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
             setShowSuccessModal(true);
             fetchNewData(bdeOldStatus);
             setSelectedBdm(null);
-            Swal.fire("Lead Forwarded Successful!!",`By forwarding this lead to ${selectedBdm}, you raised the chances of closing it by ${ratio}%`, "success");
+            closepopup();
+            Swal.fire("Lead Forwarded Successful!!", `By forwarding this lead to ${selectedBdm}, you raised the chances of closing it by ${ratio}%`, "success");
         } catch (error) {
             console.log(error);
             Swal.fire("Error", "Error Forwarding Lead", "error");
@@ -121,9 +124,11 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
         fetchMaturedCases();
     };
 
+    if (!open) return null; // Prevent rendering if not open
+
     return (
         <div>
-            <div className={'d-flex align-items-center justify-content-center'}>
+            {/* <div className={'d-flex align-items-center justify-content-center'}>
                 <a
                     style={{ textDecoration: "none" }}
                     data-bs-toggle="modal"
@@ -140,140 +145,170 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                         color="grey"
                     />
                 </a>
-            </div>
+            </div> */}
 
-            <div className="modal" id={modalId}>
-                <div className="modal-dialog modal-lg modal-dialog-centered">
-                    <div className="modal-content">
+            <Dialog className='My_Mat_Dialog' open={open} fullWidth maxWidth="md">
+                <DialogTitle>
+                    <div className='d-flex justify-content-between'>
+                        BDM Matured Cases
+                        <div className='w-25'>
+                            <input
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    handleSearch();
+                                }}
+                                className="form-control search-cantrol mybtn"
+                                placeholder="Enter BDM Name"
+                                type="text"
+                                name="bdeName-search"
+                                id="bdeName-search" />
+                        </div>
+                        <button onClick={closepopup} style={{ backgroundColor: "transparent", border: "none", float: "right" }}>
+                            <IoClose color="primary"></IoClose>
+                        </button>{" "}
+                    </div>
+                </DialogTitle>
 
-                        {/* Modal Header */}
-                        <div className="modal-header">
-                            <div className='d-flex align-items-center justify-content-between w-100' >
-                                <div className=''>
-                                    <h4 className="modal-title">
-                                        BDM Matured Cases
-                                    </h4>
+                <DialogContent>
+                    {/* <div className="modal">
+                        <div className="modal-dialog modal-lg modal-dialog-centered">
+                            <div className="modal-content"> */}
+
+                    {/* Modal Header */}
+                    {/* <div className="modal-header">
+                        <div className='d-flex align-items-center justify-content-between w-100' >
+                            <div className=''>
+                                <h4 className="modal-title">
+                                    BDM Matured Cases
+                                </h4>
+                            </div>
+                            <div className='my-1 mx-1 w-25 float-right'>
+                                <div class="input-icon MR-2" >
+                                    <input
+                                        value={searchQuery}
+                                        onChange={(e) => {
+                                            setSearchQuery(e.target.value);
+                                            handleSearch();
+                                        }}
+                                        className="form-control search-cantrol mybtn"
+                                        placeholder="Enter BDM Name"
+                                        type="text"
+                                        name="bdeName-search"
+                                        id="bdeName-search" />
                                 </div>
-                                <div className='d-flex align-items-center '>
-                                    <div class="input-icon MR-2" >
-                                        <input
-                                            value={searchQuery}
-                                            onChange={(e) => {
-                                                setSearchQuery(e.target.value);
-                                                handleSearch();
-                                            }}
-                                            className="form-control search-cantrol mybtn"
-                                            placeholder="Enter BDM Name"
-                                            type="text"
-                                            name="bdeName-search"
-                                            id="bdeName-search" />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        className="btn-close"
-                                        data-bs-dismiss="modal"
-                                        onClick={() => setSelectedBdm(null)}
-                                    ></button>
-                                </div>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    // data-bs-dismiss="modal"
+                                    onClick={() => {
+                                        setSelectedBdm(null);
+                                        closepopup();
+                                    }}
+                                ></button>
                             </div>
                         </div>
+                    </div> */}
 
-                        <div className="modal-body">
-                            <div className='table table-responsive table-style-2 m-0'>
+                    {/* <div className="modal-body"> */}
+                    <div className='table table-responsive table-style-2 m-0'>
 
-                                <table className="table">
-                                    {/* Render the table header regardless of loading or data state */}
-                                    <thead>
-                                        <tr className='tr-sticky'>
-                                            <th>#</th>
-                                            <th>Sr. No</th>
-                                            <th>BDM Name</th>
-                                            <th>Number</th>
-                                            <th>Received Cases</th>
-                                            <th>Matured Cases</th>
-                                            <th>Ratio</th>
+                        <table className="table">
+                            {/* Render the table header regardless of loading or data state */}
+                            <thead>
+                                <tr className='tr-sticky'>
+                                    <th>#</th>
+                                    <th>Sr. No</th>
+                                    <th>BDM Name</th>
+                                    <th>Number</th>
+                                    <th>Received Cases</th>
+                                    <th>Matured Cases</th>
+                                    <th>Ratio</th>
+                                </tr>
+                            </thead>
+
+                            {/* Render table body or loader based on the state */}
+                            {isLoading ? (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="7" style={{ height: "50vh", overflow: "auto" }}>
+                                            <div className='d-flex justify-content-center align-items-center'>
+                                                <ClipLoader />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            ) : (searchQuery ? searchedData : maturedCases).length > 0 ? (
+                                <tbody>
+                                    {(searchQuery ? searchedData : maturedCases).map((item, index) => (
+                                        <tr key={item.bdmName}>
+                                            <td className='p-2'>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedBdm === item.bdmName} // Only this checkbox is selected
+                                                    onChange={() => handleCheckboxChange(item.bdmName)} // Avoid unchecking the same item
+                                                />
+                                            </td>
+                                            <td className='p-2'>{index + 1}</td>
+                                            <td className='p-2'>{item.bdmName}</td>
+                                            <td className='p-2'>
+                                                <a
+                                                    target="_blank"
+                                                    className="text-decoration-none text-dark"
+                                                    href={`https://wa.me/91${item.bdmNumber}`}
+                                                >
+                                                    {item.bdmNumber}
+                                                    <FaWhatsapp className="text-success w-25 mb-1" />
+                                                </a>
+                                            </td>
+                                            <td className='p-2'>{item.receivedCases}</td>
+                                            <td className='p-2'>{item.maturedCases}</td>
+                                            <td className='p-2'>{item.ratio} %</td>
                                         </tr>
-                                    </thead>
-
-                                    {/* Render table body or loader based on the state */}
-                                    {isLoading ? (
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="7" style={{ height: "50vh", overflow: "auto" }}>
-                                                    <div className='d-flex justify-content-center align-items-center'>
-                                                        <ClipLoader />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    ) : (searchQuery ? searchedData : maturedCases).length > 0 ? (
-                                        <tbody>
-                                            {(searchQuery ? searchedData : maturedCases).map((item, index) => (
-                                                <tr key={item.bdmName}>
-                                                    <td className='p-2'>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedBdm === item.bdmName} // Only this checkbox is selected
-                                                            onChange={() => handleCheckboxChange(item.bdmName)} // Avoid unchecking the same item
-                                                        />
-                                                    </td>
-                                                    <td className='p-2'>{index + 1}</td>
-                                                    <td className='p-2'>{item.bdmName}</td>
-                                                    <td className='p-2'>
-                                                        <a
-                                                            target="_blank"
-                                                            className="text-decoration-none text-dark"
-                                                            href={`https://wa.me/91${item.bdmNumber}`}
-                                                        >
-                                                            {item.bdmNumber}
-                                                            <FaWhatsapp className="text-success w-25 mb-1" />
-                                                        </a>
-                                                    </td>
-                                                    <td className='p-2'>{item.receivedCases}</td>
-                                                    <td className='p-2'>{item.maturedCases}</td>
-                                                    <td className='p-2'>{item.ratio} %</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    ) : (
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="7">
-                                                    <Nodata />
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    )}
-                                </table>
-
-                            </div>
-                        </div>
-
-                        <div className="modal-footer p-0 m-0">
-                            <div className='d-flex w-100 m-0'>
-                                <button style={{ border: "none", borderRadius: "0px" }}
-                                    className='btn btn-danger w-50 m-0'
-                                    data-bs-dismiss="modal"
-                                    onClick={() => setSelectedBdm(null)}// This will close the modal after clicking Forward
-                                >
-                                    Cancel
-                                </button>
-                                <button style={{ border: "none", borderRadius: "0px" }}
-                                    className='btn btn-primary w-50 m-0'
-                                    onClick={handleForwardBdm}
-                                    disabled={!selectedBdm}
-                                    data-bs-dismiss="modal" // This will close the modal after clicking Forward
-                                >
-                                    Forward
-                                </button>
-                            </div>
-                        </div>
+                                    ))}
+                                </tbody>
+                            ) : (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="7">
+                                            <Nodata />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            )}
+                        </table>
 
                     </div>
-                </div>
-            </div>
+                    {/* </div> */}
 
-            {/* {showSuccessModal && (
+                    {/* <div className="modal-footer p-0 m-0"> */}
+                    <div className='d-flex w-100 m-0 mt-1'>
+                        <button style={{ border: "none", borderRadius: "0px" }}
+                            className='btn btn-danger w-50 m-0'
+                            // data-bs-dismiss="modal"  // This will close the modal after clicking Forward
+                            onClick={() => {
+                                setSelectedBdm(null);
+                                closepopup();
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button style={{ border: "none", borderRadius: "0px" }}
+                            className='btn btn-primary w-50 m-0'
+                            onClick={handleForwardBdm}
+                            disabled={!selectedBdm}
+                        // data-bs-dismiss="modal" // This will close the modal after clicking Forward
+                        >
+                            Forward
+                        </button>
+                    </div>
+                    {/* </div> */}
+
+                    {/* </div> */}
+                    {/* </div> */}
+                    {/* </div> */}
+
+                    {/* {showSuccessModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                     <div className="modal-dialog modal-lg modal-dialog-centered">
                         <div className="modal-content">
@@ -299,7 +334,10 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                     </div>
                 </div>
             )} */}
+                </DialogContent>
+            </Dialog>
         </div>
+
     );
 }
 

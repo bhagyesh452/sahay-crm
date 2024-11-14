@@ -24,6 +24,7 @@ import { width } from "@mui/system";
 import FilterableComponentEmployee from "../ExtraComponents/FilterableComponentEmployee";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
+import { TiArrowForward } from "react-icons/ti";
 
 
 function EmployeeInterestedLeads({
@@ -67,23 +68,30 @@ function EmployeeInterestedLeads({
   activeFilterFields,
   setActiveFilterFields,
 }) {
-  const [companyName, setCompanyName] = useState("");
-  const [maturedCompanyName, setMaturedCompanyName] = useState("");
-  const [companyEmail, setCompanyEmail] = useState("");
-  const [companyInco, setCompanyInco] = useState(null);
-  const [companyNumber, setCompanyNumber] = useState(0);
   const [companyId, setCompanyId] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companyStatus, setCompanyStatus] = useState("");
+  const [companyNumber, setCompanyNumber] = useState(0);
+  const [companyEmail, setCompanyEmail] = useState("");
+  const [maturedCompanyName, setMaturedCompanyName] = useState("");
+  const [companyInco, setCompanyInco] = useState(null);
   // const [formOpen, setFormOpen] = useState(false);
   // //const [editFormOpen, setEditFormOpen] = useState(false);
   // const [addFormOpen, setAddFormOpen] = useState(false);
   const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false);
   const [newBdeName, setNewBdeName] = useState("");
   const [nowToFetch, setNowToFetch] = useState(false);
+  const [showForwardToBdmPopup, setShowForwardToBdmPopup] = useState(false);
   const [showNewAddProjection, setShowNewAddProjection] = useState(false);
   const [viewProjection, setViewProjection] = useState(false);
   const [isProjectionEditable, setIsProjectionEditable] = useState(false);
   const [projectionDataToBeFilled, setProjectionDataToBeFilled] = useState({});
-  const [viewedForParticularCompany, setViewedForParticularCompany] = useState(false)
+  const [viewedForParticularCompany, setViewedForParticularCompany] = useState(false);
+
+  const handleCloseBdmPopup = () => {
+    setShowForwardToBdmPopup(false);
+  };
+
   const handleCloseNewProjection = () => {
     setShowNewAddProjection(false);
   };
@@ -161,7 +169,7 @@ function EmployeeInterestedLeads({
   console.log("interestedData", interestedData);
   console.log("filterField", activeFilterField);
   console.log("activeFilterFieldsInterested", activeFilterFields);
-  console.log("companyId" , companyId)
+  console.log("companyId", companyId)
 
 
   return (
@@ -878,16 +886,19 @@ function EmployeeInterestedLeads({
                         /> */}
                         {
                           ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (
-                            <BdmMaturedCasesDialogBox
-                              key={company._id}
-                              currentData={interestedData}
-                              forwardedCompany={company["Company Name"]}
-                              forwardCompanyId={company._id}
-                              forwardedStatus={company.Status}
-                              forwardedEName={ename}
-                              bdeOldStatus={company.Status}
-                              bdmNewAcceptStatus={"Pending"}
-                              fetchNewData={refetch}
+                            <TiArrowForward onClick={() => {
+                              setShowForwardToBdmPopup(true);
+                              setCompanyId(company._id);
+                              setCompanyName(company["Company Name"]);
+                              setCompanyStatus(company.Status);
+                            }}
+                              style={{
+                                cursor: "pointer",
+                                width: "17px",
+                                height: "17px",
+                              }}
+                              title="Forward To BDM"
+                              color="grey"
                             />
                           )}
                       </div>
@@ -945,6 +956,22 @@ function EmployeeInterestedLeads({
                 setViewedForParticularCompany={setViewedForParticularCompany}
                 editableCompanyId={companyId}
                 setEditableCompanyId={setCompanyId}
+              />
+            )}
+
+            {showForwardToBdmPopup && (
+              <BdmMaturedCasesDialogBox
+                open={showForwardToBdmPopup}
+                closepopup={handleCloseBdmPopup}
+                key={companyId}
+                currentData={interestedData}
+                forwardedCompany={companyName}
+                forwardCompanyId={companyId}
+                forwardedStatus={companyStatus}
+                forwardedEName={ename}
+                bdeOldStatus={companyStatus}
+                bdmNewAcceptStatus={"Pending"}
+                fetchNewData={refetch}
               />
             )}
           </div>
