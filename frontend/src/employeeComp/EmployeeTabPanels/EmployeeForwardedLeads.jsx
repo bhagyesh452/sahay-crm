@@ -217,6 +217,8 @@ function EmployeeForwardedLeads({
         }
     }, []);
 
+    console.log("forwardeddata" , forwardedLeads)
+
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -847,7 +849,7 @@ function EmployeeForwardedLeads({
                                                         company.Status === "FollowUp" ? "dfault_followup-status" :
                                                         company.Status === "Matured" ? "dfault_approved-status" :
                                                             null}>
-                                                    {company.Status}
+                                                    {company.bdmStatus}
                                                 </div>
                                             </td>
                                             <td>

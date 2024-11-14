@@ -21,7 +21,7 @@ const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const RedesignedLeadModel = require('../models/RedesignedLeadform.js');
 const ForwardedLeadsModel = require('../models/FollowUp.js');
 const DailyEmployeeProjection = require('../models/DailyEmployeeProjection.js');
-
+const mongoose = require('mongoose');
 
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
 
@@ -2131,15 +2131,15 @@ router.get("/employees-new/:ename", async (req, res) => {
         $or: [
           // Condition for "Matured" status
           {
-              Status: "Matured",
-              bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] }
+            Status: "Matured",
+            bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] }
           },
           // Condition for "Interested" and "FollowUp" statuses
           {
-              Status: { $in: ["Interested", "FollowUp"] },
-              bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
+            Status: { $in: ["Interested", "FollowUp"] },
+            bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
           }
-      ]
+        ]
       })
         .sort({ lastActionDate: -1 })
         .skip(skip)
@@ -2163,30 +2163,53 @@ router.get("/employees-new/:ename", async (req, res) => {
         .limit(limit),
     ]);
 
-    // Fetch redesigned data for matching companies
-    const allCompanyIds = [
-      ...maturedData.map(item => item._id),
+    // Fetch teamleadsdata for matching companies and add the 'bdmStatus' field
+    const companyIds = [
+      ...maturedData.map(item => item["Company Name"]),
+      ...interestedData.map(item => item["Company Name"]),
+      ...forwardedData.map(item => item["Company Name"]),
+      ...busyData.map(item => item["Company Name"]),
+      ...generalData.map(item => item["Company Name"]),
+      ...notInterestedData.map(item => item["Company Name"]),
     ];
+    // console.log("companyIds" , companyIds)
 
-    const redesignedData = await RedesignedLeadformModel.find({ company: { $in: allCompanyIds } })
-      .select("company bookingDate bookingPublishDate")
-      .lean();
+    const teamLeadsData = await TeamLeadsModel.find({
+      "Company Name": { $in: companyIds }  // Convert strings to ObjectId
+    }).lean();
 
-    // Create map for redesigned data for quick access
-    const redesignedMap = redesignedData.reduce((acc, item) => {
-      acc[item.company] = {
-        bookingDate: item.bookingDate,
-        bookingPublishDate: item.bookingPublishDate
-      };
+    // console.log("teamLeads" , teamLeadsData)
+
+    // Create a map for bdmStatus by companyId for quick lookup
+    const bdmStatusMap = teamLeadsData.reduce((acc, item) => {
+      acc[item["Company Name"]] = item.bdmStatus;
       return acc;
     }, {});
 
-    // Update matured data with booking information
-    const updatedMaturedData = maturedData.map(item => ({
-      ...item._doc, // Spread the original _doc object to include all fields
-      bookingDate: redesignedMap[item._id]?.bookingDate || null,
-      bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
-    }));
+    // Update the data by adding the bdmStatus field from teamleadsdata
+    const addBdmStatusToData = (data) => {
+      return data.map(item => ({
+        ...item,
+        bdmStatus: bdmStatusMap[item["Company Name"]] || null, // Add bdmStatus if available, else null
+      }));
+    };
+
+    const updatedMaturedData = addBdmStatusToData(maturedData);
+    const updatedInterestedData = addBdmStatusToData(interestedData);
+    const updatedForwardedData = addBdmStatusToData(forwardedData);
+    const updatedBusyData = addBdmStatusToData(busyData);
+    const updatedGeneralData = addBdmStatusToData(generalData);
+    const updatedNotInterestedData = addBdmStatusToData(notInterestedData);
+
+    // Combine all data into a single field for easy access if needed
+    const combinedData = [
+      ...updatedGeneralData,
+      ...updatedBusyData,
+      ...updatedInterestedData,
+      ...updatedForwardedData,
+      ...updatedMaturedData,
+      ...updatedNotInterestedData
+    ];
 
     // Count documents for each category
     const [notInterestedCount, interestedCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
@@ -2208,12 +2231,9 @@ router.get("/employees-new/:ename", async (req, res) => {
           },
         ],
       }),
-      
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Busy", "Not Picked Up"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Untouched"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } })
     ]);
-    // Combine all data into a single field for easy access if needed
-    const combinedData = [...generalData, ...busyData, ...interestedData, ...maturedData, ...notInterestedData];
 
     // Total pages calculation based on the largest dataset (generalData as reference)
     const totalGeneralPages = Math.ceil(untouchedCount / limit);
