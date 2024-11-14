@@ -2086,7 +2086,16 @@ router.get("/employees-new/:ename", async (req, res) => {
           {
             $or: [
               { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
-              { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } }
+              { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $toString: "$Company Number" }, // Convert Company Number to string
+                    regex: `^${escapedSearch}`,             // Use template literals for the escaped search
+                    options: "i"                            // Case-insensitive search
+                  }
+                }
+              }
             ]
           }
         ]
