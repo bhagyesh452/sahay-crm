@@ -167,9 +167,9 @@ function BdmMaturedCasesDialogBox({ open, closepopup, currentData, forwardedComp
                                     name="bdeName-search"
                                     id="bdeName-search" />
                             </div>
-                            <button className='btn btn-link' style={{fontSize:'20px',padding:'0 12px'}}>
+                            <button onClick={closepopup} className='btn btn-link' style={{fontSize:'20px',padding:'0'}}>
                                 <IoClose color="primary"></IoClose>
-                            </button>
+                            </button>{" "}
                         </div>
                     </div>
                 </DialogTitle>
@@ -320,7 +320,7 @@ function BdmMaturedCasesDialogBox({ open, closepopup, currentData, forwardedComp
                 </div>
             )} */}
                 </DialogContent>
-               
+                
                 <div className='d-flex w-100 m-0 mt-1'>
                     <button style={{ border: "none", borderRadius: "0px" }}
                         className='btn btn-danger w-50 m-0'
