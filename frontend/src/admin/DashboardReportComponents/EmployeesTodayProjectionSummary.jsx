@@ -112,15 +112,15 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
             });
             // Transform the data from the first API to calculate the required metrics
             const summary = currentDayProjectionRes.data.data.reduce((acc, company) => {
-                // const isShared = (company.bdeName !== company.bdmName) && !(company.bdmName === "Vaibhav Acharya" || company.bdmName === "Vishal Goel");
+                const isShared = (company.bdeName !== company.bdmName) && !(company.bdmName === "Vaibhav Acharya" || company.bdmName === "Vishal Goel");
 
-                const isShared = (company.bdeName !== company.bdmName);
+                // const isShared = (company.bdeName !== company.bdmName);
                 // Safely check if the employee is found in the totalEmployees array
-                const employee = totalEmployees.find(emp => emp.ename === company.bdmName);
+                // const employee = totalEmployees.find(emp => emp.ename === company.bdmName);
 
-                // If the employee is found, access their newDesignation, otherwise default to "Unknown"
-                const bdmDesignation = employee ? employee.newDesignation : "Business Development Manager";
-                console.log("bdmDesignation", bdmDesignation , company.bdmName , employee); // Log the designation or "Unknown"
+                // // If the employee is found, access their newDesignation, otherwise default to "Unknown"
+                // const bdmDesignation = employee ? employee.newDesignation : "Business Development Manager";
+                // console.log("bdmDesignation", bdmDesignation , company.bdmName , employee); // Log the designation or "Unknown"
 
                 // Initialize each employee's data if not already in summary
                 [company.bdeName, company.bdmName].forEach((employeeName) => {
@@ -136,7 +136,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
 
                 const serviceCount = company.offeredServices ? company.offeredServices.length : 0;
 
-                if (isShared && employee.newDesignation !== "Floor Manager") {
+                if (isShared) {
                     acc[company.bdeName].total_companies += 0.5;
                     acc[company.bdmName].total_companies += 0.5;
                     acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;

@@ -4016,6 +4016,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
         caseType: projection.caseType,
         isPreviousMaturedCase: projection.isPreviousMaturedCase,
         addedOnDate: addedOnDateOnly,
+        history:history || []
       };
 
       // Group history records by lastAddedOnDate

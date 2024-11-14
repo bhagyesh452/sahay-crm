@@ -76,6 +76,8 @@ function EmployeeMaturedLeads({
     const [viewProjection, setViewProjection] = useState(false);
     const [isProjectionEditable, setIsProjectionEditable] = useState(false);
     const [projectionDataToBeFilled, setProjectionDataToBeFilled] = useState({});
+    const [viewedForParticularCompany, setViewedForParticularCompany] = useState(false);
+
 
     const handleCloseNewProjection = () => {
         setShowNewAddProjection(false);
@@ -652,11 +654,11 @@ function EmployeeMaturedLeads({
                                                             (company.interestedInformation === null || company.interestedInformation.length === 0)
                                                                 ? (company.Status === "Matured"
                                                                     ? "matured-history-btn disabled"
-                                                                        : "")
+                                                                    : "")
                                                                 : (company.Status === "Matured"
                                                                     ? "matured-history-btn"
-                                                                    
-                                                                        : "")
+
+                                                                    : "")
                                                         }
                                                     >
 
@@ -764,11 +766,15 @@ function EmployeeMaturedLeads({
                                                                 setShowNewAddProjection(true);  // Open new projection dialog
                                                                 setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
                                                                 // console.log("Projection data to be updated :", matchedItem);
+                                                                setViewedForParticularCompany(false)
+                                                                setCompanyId(company._id)
                                                             } else {
                                                                 setIsProjectionEditable(false); // Disable edit mode
                                                                 (fordesignation === "admin" || fordesignation === "datamanager") && setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
                                                                 setShowNewAddProjection(true);  // Open new projection dialog
                                                                 setProjectionDataToBeFilled(fordesignation === "admin" || fordesignation === "datamanager" ? matchedItem : company); // Set matched item in the state
+                                                                setViewedForParticularCompany(true)
+                                                                setCompanyId(company._id)
                                                                 // console.log("Projection data to be viewed :", matchedItem);
                                                             }
                                                         }}
@@ -789,6 +795,7 @@ function EmployeeMaturedLeads({
                                                 ) : (
                                                     <IconButton
                                                         onClick={() => {
+                                                            setViewedForParticularCompany(true)
                                                             setIsProjectionEditable(false); // Not opened in editing mode
                                                             setShowNewAddProjection(true);  // Open new projection dialog
                                                             setViewProjection(false); // Open new projection dialog with enabled fields
@@ -905,6 +912,10 @@ function EmployeeMaturedLeads({
                     viewProjection={viewProjection}
                     fetchNewProjection={fetchProjections}
                     employeeName={ename}
+                    viewedForParticularCompany={viewedForParticularCompany}
+                    setViewedForParticularCompany={setViewedForParticularCompany}
+                    editableCompanyId={companyId}
+                    setEditableCompanyId={setCompanyId}
                 />
             )}
         </div >

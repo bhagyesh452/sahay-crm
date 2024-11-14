@@ -113,24 +113,16 @@ function EmployeesNewProjectionSummary() {
 
     const fetchEmployee = async () => {
         try {
-            const res1 = await axios.get(`${secretKey}/employee/einfo`);
-            const res2 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-
-            let activeEmployeesProjection = res1.data.filter(
+            const res2 = await axios.get(`${secretKey}/employee/einfo`);
+            let employees = res2.data.filter(
                 (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager"
             );
 
-            let inActiveEmployeesProjection = res2.data.filter(
-                (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager"
-            );
-
-            const employeeData = [...activeEmployeesProjection, ...inActiveEmployeesProjection];
-            setTotalEmployees(employeeData);
+            setTotalEmployees(employees);
         } catch (error) {
             console.log("Unexpected error in fetchEmployee:", error);
         }
     };
-
     const fetchNewProjection = async (values) => {
         if (values) {
             if (values[0] === null && values[1] === null) {
@@ -157,7 +149,8 @@ function EmployeesNewProjectionSummary() {
 
             // Transform the data to calculate the required metrics
             const summary = res.data.data.reduce((acc, company) => {
-                const isShared = company.bdeName !== company.bdmName;
+                const isShared = (company.bdeName !== company.bdmName) && !(company.bdmName === "Vaibhav Acharya" || company.bdmName === "Vishal Goel");
+
 
                 // Initialize each employee's data if not already in summary
                 [company.bdeName, company.bdmName].forEach((employeeName) => {
@@ -247,8 +240,11 @@ function EmployeesNewProjectionSummary() {
     }, []);
 
     useEffect(() => {
-        fetchNewProjection();
-    }, [employeeName, companyName, startDate, endDate]);
+        // Fetch projections only when totalEmployees has data
+        if (totalEmployees && totalEmployees.length > 0) {
+            fetchNewProjection();
+        }
+    }, [totalEmployees]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-IN', {
