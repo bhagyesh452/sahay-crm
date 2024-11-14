@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Nodata from '../components/Nodata';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent,DialogActions } from "@mui/material";
 import axios from 'axios';
 import Swal from "sweetalert2";
 import { useParams } from 'react-router-dom';
@@ -149,24 +149,28 @@ function BdmMaturedCasesDialogBox({ open, closepopup, currentData, forwardedComp
 
             <Dialog className='My_Mat_Dialog' open={open} fullWidth maxWidth="md">
                 <DialogTitle>
-                    <div className='d-flex justify-content-between'>
-                        BDM Matured Cases
-                        <div className='w-25'>
-                            <input
-                                value={searchQuery}
-                                onChange={(e) => {
-                                    setSearchQuery(e.target.value);
-                                    handleSearch();
-                                }}
-                                className="form-control search-cantrol mybtn"
-                                placeholder="Enter BDM Name"
-                                type="text"
-                                name="bdeName-search"
-                                id="bdeName-search" />
+                    <div className='d-flex justify-content-between align-items-center'>
+                        <div>
+                            BDM Matured Cases
                         </div>
-                        <button onClick={closepopup} style={{ backgroundColor: "transparent", border: "none", float: "right" }}>
-                            <IoClose color="primary"></IoClose>
-                        </button>{" "}
+                        <div className='d-flex align-items-center'>
+                            <div>
+                                <input
+                                    value={searchQuery}
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        handleSearch();
+                                    }}
+                                    className="form-control search-cantrol mybtn"
+                                    placeholder="Enter BDM Name"
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
+                            </div>
+                            <button className='btn btn-link' style={{fontSize:'20px',padding:'0 12px'}}>
+                                <IoClose color="primary"></IoClose>
+                            </button>
+                        </div>
                     </div>
                 </DialogTitle>
 
@@ -282,26 +286,7 @@ function BdmMaturedCasesDialogBox({ open, closepopup, currentData, forwardedComp
                     {/* </div> */}
 
                     {/* <div className="modal-footer p-0 m-0"> */}
-                    <div className='d-flex w-100 m-0 mt-1'>
-                        <button style={{ border: "none", borderRadius: "0px" }}
-                            className='btn btn-danger w-50 m-0'
-                            // data-bs-dismiss="modal"  // This will close the modal after clicking Forward
-                            onClick={() => {
-                                setSelectedBdm(null);
-                                closepopup();
-                            }}
-                        >
-                            Cancel
-                        </button>
-                        <button style={{ border: "none", borderRadius: "0px" }}
-                            className='btn btn-primary w-50 m-0'
-                            onClick={handleForwardBdm}
-                            disabled={!selectedBdm}
-                        // data-bs-dismiss="modal" // This will close the modal after clicking Forward
-                        >
-                            Forward
-                        </button>
-                    </div>
+    
                     {/* </div> */}
 
                     {/* </div> */}
@@ -335,6 +320,27 @@ function BdmMaturedCasesDialogBox({ open, closepopup, currentData, forwardedComp
                 </div>
             )} */}
                 </DialogContent>
+               
+                <div className='d-flex w-100 m-0 mt-1'>
+                    <button style={{ border: "none", borderRadius: "0px" }}
+                        className='btn btn-danger w-50 m-0'
+                        // data-bs-dismiss="modal"  // This will close the modal after clicking Forward
+                        onClick={() => {
+                            setSelectedBdm(null);
+                            closepopup();
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button style={{ border: "none", borderRadius: "0px" }}
+                        className='btn btn-primary w-50 m-0'
+                        onClick={handleForwardBdm}
+                        disabled={!selectedBdm}
+                    // data-bs-dismiss="modal" // This will close the modal after clicking Forward
+                    >
+                        Forward
+                    </button>
+                </div>
             </Dialog>
         </div>
 
