@@ -2103,11 +2103,20 @@ router.get("/employees-new/:ename", async (req, res) => {
     }
 
     // Fetch data for each status category
-    const [generalData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
+    const [generalData, busyData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
       CompanyModel.find({
         ...baseQuery,
         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
-        Status: { $in: ["Busy", "Not Picked Up", "Untouched"] }
+        Status: { $in: ["Untouched"] }
+      })
+        .sort({ AssignDate: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      CompanyModel.find({
+        ...baseQuery,
+        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
+        Status: { $in: ["Busy", "Not Picked Up"] }
       })
         .sort({ AssignDate: -1 })
         .skip(skip)
@@ -2175,18 +2184,20 @@ router.get("/employees-new/:ename", async (req, res) => {
     }));
 
     // Count documents for each category
-    const [notInterestedCount, interestedCount, maturedCount, forwardedCount, untouchedCount] = await Promise.all([
+    const [notInterestedCount, interestedCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", undefined] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["Pending", "Accept"] } }),
-      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Untouched", "Busy", "Not Picked Up"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } })
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Busy", "Not Picked Up"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Untouched"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } })
     ]);
     // Combine all data into a single field for easy access if needed
-    const combinedData = [...generalData, ...interestedData, ...maturedData, ...notInterestedData];
+    const combinedData = [...generalData, ...busyData, ...interestedData, ...maturedData, ...notInterestedData];
 
     // Total pages calculation based on the largest dataset (generalData as reference)
     const totalGeneralPages = Math.ceil(untouchedCount / limit);
+    const totalBusyPages = Math.ceil(busyCount / limit);
     const totalInterestedPages = Math.ceil(interestedCount / limit);
     const totalMaturedPages = Math.ceil(maturedCount / limit);
     const totalForwardedCount = Math.ceil(forwardedCount / limit);
@@ -2194,6 +2205,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     // Return response with data categorized separately
     res.status(200).json({
       generalData,
+      busyData,
       interestedData,
       forwardedData,
       maturedData: updatedMaturedData, // Include updated matured data with booking information
@@ -2203,15 +2215,17 @@ router.get("/employees-new/:ename", async (req, res) => {
         interested: interestedCount,
         matured: maturedCount,
         forwarded: forwardedCount,
+        busy: busyCount,
         untouched: untouchedCount
       },
       totalGeneralPages: totalGeneralPages,
+      totalBusyPages: totalBusyPages,
       totalInterestedPages: totalInterestedPages,
       totalForwardedCount: totalForwardedCount,
       totalMaturedPages: totalMaturedPages,
       totalNotInterestedPages: totalNotInterestedPages,
       data: combinedData,
-      totalPages: Math.ceil((untouchedCount + interestedCount + maturedCount + forwardedCount + notInterestedCount) / limit), // Adjust this based on your pagination needs
+      totalPages: Math.ceil((untouchedCount + busyCount + interestedCount + maturedCount + forwardedCount + notInterestedCount) / limit), // Adjust this based on your pagination needs
     });
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -4025,7 +4039,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
         caseType: projection.caseType,
         isPreviousMaturedCase: projection.isPreviousMaturedCase,
         addedOnDate: addedOnDateOnly,
-        history:history || []
+        history: history || []
       };
 
       // Group history records by lastAddedOnDate
