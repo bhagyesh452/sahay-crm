@@ -1,36 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ClipLoader from "react-spinners/ClipLoader";
+import axios from "axios";
+import Swal from "sweetalert2";
 import Nodata from '../../components/Nodata';
-import TeamLeadsRemarksDialog from '../ExtraComponents/TeamLeadsRemarksDialog';
 import EmployeeStatusChange from '../ExtraComponents/EmployeeStatusChange';
-import NewProjectionDialog from '../ExtraComponents/NewProjectionDialog';
-import FeedbackDialog from '../ExtraComponents/FeedbackDialog';
+import TeamLeadsRemarksDialog from '../ExtraComponents/TeamLeadsRemarksDialog';
 import EmployeeInterestedInformationDialog from "../ExtraComponents/EmployeeInterestedInformationDialog";
 import FilterableComponentEmployee from '../ExtraComponents/FilterableComponentEmployee';
-import { IconButton } from "@mui/material";
-import { LuHistory } from "react-icons/lu";
-import { FaWhatsapp } from "react-icons/fa";
 import { GoArrowLeft } from "react-icons/go";
 import { GoArrowRight } from "react-icons/go";
+import { LuHistory } from "react-icons/lu";
+import { FaWhatsapp } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
-import { RiEditCircleFill } from "react-icons/ri";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
 
-function TeamLeadsInterested({
+function TeamLeadsBusy({
     secretKey,
-    employeeName,
-    interestedData,
-    setInterestedData,
-    setInterestedDataCount,
-    dataToFilterInterested,
-    completeInterestedData,
-    filteredDataInterested,
-    setFilteredDataInterested,
-    activeFilterFieldInterested,
-    setActiveFilterFieldInterested,
-    activeFilterFieldsInterested,
-    setActiveFilterFieldsInterested,
+    busyData,
+    setBusyData,
+    setBusyDataCount,
+    dataToFilterBusy,
+    completeBusyData,
+    filteredDataBusy,
+    setFilteredDataBusy,
+    activeFilterFieldBusy,
+    setActiveFilterFieldBusy,
+    activeFilterFieldsBusy,
+    setActiveFilterFieldsBusy,
     isLoading,
     refetchTeamLeads,
     formatDateNew,
@@ -45,7 +42,6 @@ function TeamLeadsInterested({
     email,
     designation,
     handleShowCallHistory,
-    fetchProjections,
     projectionData,
     teamData,
     handleOpenFormOpen,
@@ -58,13 +54,7 @@ function TeamLeadsInterested({
     handleMouseUp
 }) {
 
-    const [isFilledFromTeamLeads, setIsFilledFromTeamLeads] = useState(false);
-    const [showNewAddProjection, setShowNewAddProjection] = useState(false);
-    const [viewProjection, setViewProjection] = useState(false);
-    const [isProjectionEditable, setIsProjectionEditable] = useState(false);
-    const [projectionDataToBeFilled, setProjectionDataToBeFilled] = useState({});
-
-    // Team Leads Interested Filtered States :
+    // Team Leads General Filtered States :
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [isScrollLocked, setIsScrollLocked] = useState(false)
     //const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
@@ -77,17 +67,17 @@ function TeamLeadsInterested({
 
     const handleFilter = (newData) => {
         // console.log("newData", newData);
-        setFilteredDataInterested(newData);
-        setInterestedData(newData);
-        setInterestedDataCount(newData.length);
+        setFilteredDataBusy(newData);
+        setBusyData(newData);
+        setBusyDataCount(newData.length);
     };
 
     const handleFilterClick = (field) => {
-        if (activeFilterFieldInterested === field) {
+        if (activeFilterFieldBusy === field) {
             setShowFilterMenu(!showFilterMenu);
             setIsScrollLocked(!showFilterMenu);
         } else {
-            setActiveFilterFieldInterested(field);
+            setActiveFilterFieldBusy(field);
             setShowFilterMenu(true);
             setIsScrollLocked(true);
             const rect = fieldRefs.current[field].getBoundingClientRect();
@@ -95,7 +85,7 @@ function TeamLeadsInterested({
         }
     };
 
-    const isActiveField = (field) => activeFilterFieldsInterested.includes(field);
+    const isActiveField = (field) => activeFilterFieldsBusy.includes(field);
 
     useEffect(() => {
         if (typeof document !== 'undefined') {
@@ -112,42 +102,8 @@ function TeamLeadsInterested({
         }
     }, []);
 
-    // console.log("activeFilterFieldsInterested :", activeFilterFieldsInterested);
-    // console.log("interestedData :" , interestedData);
-
-    const handleCloseNewProjection = () => {
-        setShowNewAddProjection(false);
-    };
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = date.toLocaleString('default', { month: 'short' });
-        const year = date.getFullYear();
-        return `${day} ${month} ${year}`;
-    };
-
-    function timePassedSince(dateTimeString) {
-        const entryTime = new Date(dateTimeString);
-        const now = new Date();
-
-        // Calculate difference in milliseconds
-        const diffMs = now - entryTime;
-
-        // Convert milliseconds to minutes and hours
-        const diffMinutes = Math.floor(diffMs / (1000 * 60));
-        const diffHours = Math.floor(diffMinutes / 60);
-        const diffDays = Math.floor(diffHours / 24);
-
-        // Format the difference
-        if (diffDays > 0) {
-            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-        } else if (diffHours > 0) {
-            return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        } else {
-            return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
-        }
-    }
+    // console.log("activeFilterFieldsBusy :", activeFilterFieldsBusy);
+    // console.log("busyData :" , buysData);
 
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -177,7 +133,7 @@ function TeamLeadsInterested({
                                     <th className='AEP-sticky-left-1'>
                                         <label className='table-check'>
                                             <input type="checkbox"
-                                                checked={selectedRows && interestedData && (selectedRows.length === interestedData.length)}
+                                                checked={selectedRows && busyData && (selectedRows.length === busyData.length)}
                                                 onChange={(e) => handleCheckboxChange("all", e)}
                                             />
                                             <span class="table_checkmark"></span>
@@ -200,7 +156,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'Company Name' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'Company Name' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -208,15 +164,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -238,7 +194,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'ename' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'ename' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -246,15 +202,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -276,7 +232,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'Company Number' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'Company Number' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -284,15 +240,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -315,7 +271,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'bdeOldStatus' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'bdeOldStatus' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -323,15 +279,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -354,7 +310,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'Status' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'Status' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -362,15 +318,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -393,7 +349,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'Company Incorporation Date  ' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'Company Incorporation Date  ' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -401,15 +357,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -431,7 +387,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'City' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'City' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -439,15 +395,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -469,7 +425,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'State' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'State' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -477,15 +433,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -507,7 +463,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'Company Email' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'Company Email' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -515,15 +471,15 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
@@ -545,7 +501,7 @@ function TeamLeadsInterested({
                                     </div>
 
                                     {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterFieldInterested === 'bdeForwardDate' && (
+                                    {showFilterMenu && activeFilterFieldBusy === 'bdeForwardDate' && (
                                         <div
                                             ref={filterMenuRef}
                                             className="filter-menu"
@@ -553,26 +509,22 @@ function TeamLeadsInterested({
                                         >
                                             <FilterableComponentEmployee
                                                 noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFieldsInterested}
-                                                filteredData={filteredDataInterested}
-                                                activeTab={"Interested"}
-                                                data={interestedData}
-                                                filterField={activeFilterFieldInterested}
+                                                allFilterFields={setActiveFilterFieldsBusy}
+                                                filteredData={filteredDataBusy}
+                                                activeTab={"Busy"}
+                                                data={busyData}
+                                                filterField={activeFilterFieldBusy}
                                                 onFilter={handleFilter}
-                                                completeData={completeInterestedData}
+                                                completeData={completeBusyData}
                                                 showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilterInterested}
+                                                dataForFilter={dataToFilterBusy}
                                                 refetch={refetchTeamLeads}
                                             />
                                         </div>
                                     )}
                                 </div>
                             </th>
-                            {newDesignation && <>
-                                <th>Status Modification Date</th>
-                                <th>Age</th>
-                            </>}
-                            <th className="rm-sticky-action">Action</th>
+                            {/* <th className="rm-sticky-action">Action</th> */}
                         </tr>
                     </thead>
 
@@ -590,8 +542,8 @@ function TeamLeadsInterested({
                                 </div>
                             </td>
                         </tr>}
-                        {interestedData?.length !== 0 ? (
-                            interestedData?.map((company, index) => (
+                        {busyData?.length !== 0 ? (
+                            busyData?.map((company, index) => (
                                 <tr key={company._id}
                                     onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
                                     onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
@@ -697,7 +649,7 @@ function TeamLeadsInterested({
                                     </td>
                                     <td>
                                         {newDesignation ?
-                                            <div className={`${company.Status === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                            <div className={`${company.Status === "Busy" ? "dfault_busy-status" : "dfault_not-interested-status"}`}>
                                                 {company.Status}
                                             </div>
                                             : <EmployeeStatusChange
@@ -745,11 +697,7 @@ function TeamLeadsInterested({
                                     <td>{company["State"]}</td>
                                     <td>{company["Company Email"]}</td>
                                     <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                    {newDesignation && <>
-                                        <td>{formatDate(company.bdmStatusChangeDate)} || {company.bdmStatusChangeTime}</td>
-                                        <td>{timePassedSince(company.bdmStatusChangeDate)}</td>
-                                    </>}
-                                    <td className="rm-sticky-action">
+                                    {/* <td className="rm-sticky-action">
                                         <div className="d-flex align-items-center justify-content-between">
                                             {projectionData && projectionData
                                                 .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
@@ -818,22 +766,6 @@ function TeamLeadsInterested({
                                                 </IconButton>
                                             )}
 
-                                            {/* <ProjectionDialog
-                                                key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
-                                                projectionCompanyName={company["Company Name"]}
-                                                projectionData={projectionData}
-                                                secretKey={secretKey}
-                                                fetchProjections={fetchProjections}
-                                                ename={company.ename}
-                                                bdmAcceptStatus={company.bdmAcceptStatus}
-                                                hasMaturedStatus={false}
-                                                hasExistingProjection={projectionData?.some(
-                                                    (item) => item.companyName === company["Company Name"]
-                                                )}
-                                                newDesignation={newDesignation}
-                                                isBdmProjection={true}
-                                            /> */}
-
                                             <FeedbackDialog
                                                 companyId={company._id}
                                                 companyName={company["Company Name"]}
@@ -844,7 +776,7 @@ function TeamLeadsInterested({
                                                 isEditable={true}
                                             />
                                         </div>
-                                    </td>
+                                    </td> */}
                                 </tr>
                             ))
                         ) : (
@@ -860,7 +792,7 @@ function TeamLeadsInterested({
                 </table>
             </div>
 
-            {interestedData && interestedData.length !== 0 && (
+            {busyData && busyData.length !== 0 && (
                 <div className="pagination d-flex align-items-center justify-content-center w-100">
                     <div>
                         <button className='btn-pagination' onClick={prevPage} disabled={currentPage === 0}>
@@ -877,21 +809,8 @@ function TeamLeadsInterested({
                     </div>
                 </div>
             )}
-
-            {showNewAddProjection && (
-                <NewProjectionDialog
-                    open={showNewAddProjection}
-                    closepopup={handleCloseNewProjection}
-                    projectionData={projectionDataToBeFilled}
-                    isProjectionEditable={isProjectionEditable}
-                    viewProjection={viewProjection}
-                    fetchNewProjection={fetchProjections}
-                    isFilledFromTeamLeads={isFilledFromTeamLeads}
-                    employeeName={employeeName}
-                />
-            )}
         </div>
     );
 }
 
-export default TeamLeadsInterested;
+export default TeamLeadsBusy;

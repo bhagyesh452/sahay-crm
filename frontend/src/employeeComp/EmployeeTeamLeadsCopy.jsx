@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useQuery } from '@tanstack/react-query';
 import axios from "axios";
+import Swal from "sweetalert2";
 import "../assets/table.css";
 import "../assets/styles.css";
 import CallHistory from "./CallHistory.jsx";
@@ -7,17 +10,14 @@ import RedesignedForm from "../admin/RedesignedForm.jsx";
 import AddLeadForm from "../admin/AddLeadForm.jsx";
 import TeamLeadsGeneral from "./EmployeeTeamLeadsTabPanels/TeamLeadsGeneral.jsx";
 import TeamLeadsInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsInterested.jsx";
+import TeamLeadsBusy from "./EmployeeTeamLeadsTabPanels/TeamLeadsBusy.jsx";
 import TeamLeadsMatured from "./EmployeeTeamLeadsTabPanels/TeamLeadsMatured.jsx";
 import TeamLeadsNotInterested from "./EmployeeTeamLeadsTabPanels/TeamLeadsNotInterested.jsx";
 import AssignLeads from "../admin/ExtraComponent/AssignLeads.jsx";
 import NewProjectionDialog from "./ExtraComponents/NewProjectionDialog.jsx";
-import { IoFilterOutline } from "react-icons/io5";
-// import DrawerComponent from "../components/Drawer.js";
-import { MdOutlinePostAdd } from "react-icons/md";
-import { useQuery } from '@tanstack/react-query';
 import { jwtDecode } from "jwt-decode";
-import Swal from "sweetalert2";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { IoFilterOutline } from "react-icons/io5";
+import { MdOutlinePostAdd } from "react-icons/md";
 import { FaCircleChevronLeft } from "react-icons/fa6";
 import { FaCircleChevronRight } from "react-icons/fa6";
 import { MdOutlinePersonPin } from "react-icons/md";
@@ -49,10 +49,11 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [addFormOpen, setAddFormOpen] = useState(false);
     const [dataStatus, setDataStatus] = useState("General");
     const [activeTabId, setActiveTabId] = useState("General"); // Track active tab ID
-    const [generalData, setGeneralData] = useState([]);
-    const [interestedData, setInterestedData] = useState([]);
-    const [maturedData, setMaturedData] = useState([]);
-    const [notInterestedData, setNotInterestedData] = useState([]);
+    const [generalData, setGeneralData] = useState([]); // State to store general team leads data
+    const [busyData, setBusyData] = useState([]); // State to store busy team leads data
+    const [interestedData, setInterestedData] = useState([]);   // State to store interested team leads data
+    const [maturedData, setMaturedData] = useState([]); // State to store matured team leads data
+    const [notInterestedData, setNotInterestedData] = useState([]); // State to not interested busy team leads data
     const [companyName, setCompanyName] = useState("");
     const [maturedCompanyName, setMaturedCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
@@ -72,6 +73,13 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [filteredDataGeneral, setFilteredDataGeneral] = useState([]);
     const [activeFilterFieldsGeneral, setActiveFilterFieldsGeneral] = useState([]); // New state for active filter fields
     const [activeFilterFieldGeneral, setActiveFilterFieldGeneral] = useState(null);
+
+    const [busyDataCount, setBusyDataCount] = useState(0);
+    const [completeBusyData, setCompleteBusyData] = useState([]);
+    const [dataToFilterBusy, setDataToFilterBusy] = useState([]);
+    const [filteredDataBusy, setFilteredDataBusy] = useState([]);
+    const [activeFilterFieldsBusy, setActiveFilterFieldsBusy] = useState([]); // New state for active filter fields
+    const [activeFilterFieldBusy, setActiveFilterFieldBusy] = useState(null);
 
     const [interestedDataCount, setInterestedDataCount] = useState(0);
     const [completeInterestedData, setCompleteInterestedData] = useState([]);
@@ -99,10 +107,11 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const endIndex = startIndex + itemsPerPage;
 
     // -------------------------call history functions-------------------------------------
-    const allTabRef = useRef(null); // Ref for the Matured tab
+    const allTabRef = useRef(null); // Ref for the General tab
+    const busyTabRef = useRef(null); // Ref for the Busy tab
     const interestedTabRef = useRef(null); // Ref for the Interested tab
     const maturedTabRef = useRef(null); // Ref for the Matured tab
-    const notInterestedTabRef = useRef(null); // Ref for the Matured tab
+    const notInterestedTabRef = useRef(null); // Ref for the Not Interested tab
 
     const handleCloseProjection = () => {
         setShowProjection(false);
@@ -279,6 +288,11 @@ function EmployeeTeamLeadsCopy({ designation }) {
             setGeneralDataCount(teamLeadsData?.data?.totalGeneral);
             setCompleteGeneralData(teamLeadsData?.data?.generalData);
             setDataToFilterGeneral(teamLeadsData?.data?.generalData);
+
+            setBusyData(teamLeadsData?.data?.busyData);
+            setBusyDataCount(teamLeadsData?.data?.totalBusy);
+            setCompleteBusyData(teamLeadsData?.data?.busyData);
+            setDataToFilterBusy(teamLeadsData?.data?.busyData);
 
             setInterestedData(teamLeadsData?.data?.interestedData);
             setInterestedDataCount(teamLeadsData?.data?.totalInterested);
@@ -803,6 +817,28 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                             </a>
                                         </li>
 
+                                        <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
+                                            <a
+                                                href="#busy"
+                                                ref={busyTabRef} // Attach the ref to the anchor tag
+                                                // onClick={() => handleDataStatusChange("All", allTabRef)}
+                                                onClick={() => {
+                                                    setDataStatus("Busy");
+                                                    setActiveTabId("Busy");
+                                                    setSelectedRows([]);
+                                                    setCurrentPage(0);
+                                                }}
+                                                className={`nav-link  ${dataStatus === "Busy" ? "active item-act" : ""}`}
+                                                data-bs-toggle="tab"
+                                            >
+                                                <div>Busy</div>
+                                                <div className="no_badge">
+                                                    {busyDataCount || 0}
+                                                </div>
+
+                                            </a>
+                                        </li>
+
                                         <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
                                             <a
                                                 href="#Interested"
@@ -870,167 +906,219 @@ function EmployeeTeamLeadsCopy({ designation }) {
 
                                 <div className="tab-content card-body">
                                     <div className={`tab-pane ${dataStatus === "General" ? "active" : ""}`} id="general">
-                                        {activeTabId === "General" && dataStatus === "General" && (<TeamLeadsGeneral
-                                            secretKey={secretKey}
-                                            // generalData={teamLeadsData?.data?.data}
-                                            generalData={generalData}
-                                            setGeneralData={setGeneralData}
-                                            setGeneralDataCount={setGeneralDataCount}
-                                            dataToFilterGeneral={dataToFilterGeneral}
-                                            completeGeneralData={completeGeneralData}
-                                            filteredDataGeneral={filteredDataGeneral}
-                                            setFilteredDataGeneral={setFilteredDataGeneral}
-                                            activeFilterFieldGeneral={activeFilterFieldGeneral}
-                                            setActiveFilterFieldGeneral={setActiveFilterFieldGeneral}
-                                            activeFilterFieldsGeneral={activeFilterFieldsGeneral}
-                                            setActiveFilterFieldsGeneral={setActiveFilterFieldsGeneral}
-                                            isLoading={isTeamLeadsLoading}
-                                            refetchTeamLeads={refetchTeamLeads}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={teamLeadsData?.data?.totalGeneralPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            dataStatus={dataStatus}
-                                            setDataStatus={setDataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            designation={data.designation}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            projectionData={projectionData}
-                                            newDesignation={designation}
-                                            selectedRows={selectedRows}
-                                            setSelectedRows={setSelectedRows}
-                                            handleCheckboxChange={handleCheckboxChange}
-                                            handleMouseDown={handleMouseDown}
-                                            handleMouseEnter={handleMouseEnter}
-                                            handleMouseUp={handleMouseUp}
-                                        />)}
+                                        {activeTabId === "General" && dataStatus === "General" && (
+                                            <TeamLeadsGeneral
+                                                secretKey={secretKey}
+                                                // generalData={teamLeadsData?.data?.data}
+                                                generalData={generalData}
+                                                setGeneralData={setGeneralData}
+                                                setGeneralDataCount={setGeneralDataCount}
+                                                dataToFilterGeneral={dataToFilterGeneral}
+                                                completeGeneralData={completeGeneralData}
+                                                filteredDataGeneral={filteredDataGeneral}
+                                                setFilteredDataGeneral={setFilteredDataGeneral}
+                                                activeFilterFieldGeneral={activeFilterFieldGeneral}
+                                                setActiveFilterFieldGeneral={setActiveFilterFieldGeneral}
+                                                activeFilterFieldsGeneral={activeFilterFieldsGeneral}
+                                                setActiveFilterFieldsGeneral={setActiveFilterFieldsGeneral}
+                                                isLoading={isTeamLeadsLoading}
+                                                refetchTeamLeads={refetchTeamLeads}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={teamLeadsData?.data?.totalGeneralPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setDataStatus={setDataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                designation={data.designation}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                projectionData={projectionData}
+                                                newDesignation={designation}
+                                                selectedRows={selectedRows}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
+                                        {activeTabId === "Busy" && dataStatus === "Busy" && (
+                                            <TeamLeadsBusy
+                                                secretKey={secretKey}
+                                                // busyData={teamLeadsData?.data?.data}
+                                                busyData={busyData}
+                                                setBusyData={setGeneralData}
+                                                setBusyDataCount={setBusyDataCount}
+                                                dataToFilterBusy={dataToFilterBusy}
+                                                completeBusyData={completeBusyData}
+                                                filteredDataBusy={filteredDataBusy}
+                                                setFilteredDataBusy={setFilteredDataBusy}
+                                                activeFilterFieldBusy={activeFilterFieldBusy}
+                                                setActiveFilterFieldBusy={setActiveFilterFieldBusy}
+                                                activeFilterFieldsBusy={activeFilterFieldsBusy}
+                                                setActiveFilterFieldsBusy={setActiveFilterFieldsBusy}
+                                                isLoading={isTeamLeadsLoading}
+                                                refetchTeamLeads={refetchTeamLeads}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={teamLeadsData?.data?.totalBusyPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setDataStatus={setDataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                designation={data.designation}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                projectionData={projectionData}
+                                                teamData={teamData}
+                                                handleOpenFormOpen={handleOpenFormOpen}
+                                                newDesignation={designation}
+                                                selectedRows={selectedRows}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                            />
+                                        )}
                                     </div>
 
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
-                                        {activeTabId === "Interested" && dataStatus === "Interested" && (<TeamLeadsInterested
-                                            secretKey={secretKey}
-                                            employeeName={employeeName}
-                                            // interestedData={teamLeadsData?.data?.data}
-                                            interestedData={interestedData}
-                                            setInterestedData={setInterestedData}
-                                            setInterestedDataCount={setInterestedDataCount}
-                                            dataToFilterInterested={dataToFilterInterested}
-                                            completeInterestedData={completeInterestedData}
-                                            filteredDataInterested={filteredDataInterested}
-                                            setFilteredDataInterested={setFilteredDataInterested}
-                                            activeFilterFieldInterested={activeFilterFieldInterested}
-                                            setActiveFilterFieldInterested={setActiveFilterFieldInterested}
-                                            activeFilterFieldsInterested={activeFilterFieldsInterested}
-                                            setActiveFilterFieldsInterested={setActiveFilterFieldsInterested}
-                                            isLoading={isTeamLeadsLoading}
-                                            refetchTeamLeads={refetchTeamLeads}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={teamLeadsData?.data?.totalInterestedPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            dataStatus={dataStatus}
-                                            setDataStatus={setDataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            designation={data.designation}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            fetchProjections={fetchNewProjections}
-                                            projectionData={projectionData}
-                                            teamData={teamData}
-                                            handleOpenFormOpen={handleOpenFormOpen}
-                                            newDesignation={designation}
-                                            selectedRows={selectedRows}
-                                            setSelectedRows={setSelectedRows}
-                                            handleCheckboxChange={handleCheckboxChange}
-                                            handleMouseDown={handleMouseDown}
-                                            handleMouseEnter={handleMouseEnter}
-                                            handleMouseUp={handleMouseUp}
-                                        />)}
+                                        {activeTabId === "Interested" && dataStatus === "Interested" && (
+                                            <TeamLeadsInterested
+                                                secretKey={secretKey}
+                                                employeeName={employeeName}
+                                                // interestedData={teamLeadsData?.data?.data}
+                                                interestedData={interestedData}
+                                                setInterestedData={setInterestedData}
+                                                setInterestedDataCount={setInterestedDataCount}
+                                                dataToFilterInterested={dataToFilterInterested}
+                                                completeInterestedData={completeInterestedData}
+                                                filteredDataInterested={filteredDataInterested}
+                                                setFilteredDataInterested={setFilteredDataInterested}
+                                                activeFilterFieldInterested={activeFilterFieldInterested}
+                                                setActiveFilterFieldInterested={setActiveFilterFieldInterested}
+                                                activeFilterFieldsInterested={activeFilterFieldsInterested}
+                                                setActiveFilterFieldsInterested={setActiveFilterFieldsInterested}
+                                                isLoading={isTeamLeadsLoading}
+                                                refetchTeamLeads={refetchTeamLeads}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={teamLeadsData?.data?.totalInterestedPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setDataStatus={setDataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                designation={data.designation}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                fetchProjections={fetchNewProjections}
+                                                projectionData={projectionData}
+                                                teamData={teamData}
+                                                handleOpenFormOpen={handleOpenFormOpen}
+                                                newDesignation={designation}
+                                                selectedRows={selectedRows}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                            />
+                                        )}
                                     </div>
 
                                     <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
-                                        {activeTabId === "Matured" && (<TeamLeadsMatured
-                                            secretKey={secretKey}
-                                            // maturedData={teamLeadsData?.data?.data}
-                                            maturedData={maturedData}
-                                            setMaturedData={setMaturedData}
-                                            setMaturedDataCount={setMaturedDataCount}
-                                            dataToFilterMatured={dataToFilterMatured}
-                                            completeMaturedData={completeMaturedData}
-                                            filteredDataMatured={filteredDataMatured}
-                                            setFilteredDataMatured={setFilteredDataMatured}
-                                            activeFilterFieldMatured={activeFilterFieldMatured}
-                                            setActiveFilterFieldMatured={setActiveFilterFieldMatured}
-                                            activeFilterFieldsMatured={activeFilterFieldsMatured}
-                                            setActiveFilterFieldsMatured={setActiveFilterFieldsMatured}
-                                            isLoading={isTeamLeadsLoading}
-                                            refetchTeamLeads={refetchTeamLeads}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={teamLeadsData?.data?.totalMaturedPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            dataStatus={dataStatus}
-                                            setDataStatus={setDataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            designation={data.designation}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            fetchProjections={fetchNewProjections}
-                                            projectionData={projectionData}
-                                            newDesignation={designation}
-                                            selectedRows={selectedRows}
-                                            setSelectedRows={setSelectedRows}
-                                            handleCheckboxChange={handleCheckboxChange}
-                                            handleMouseDown={handleMouseDown}
-                                            handleMouseEnter={handleMouseEnter}
-                                            handleMouseUp={handleMouseUp}
-                                        />)}
+                                        {activeTabId === "Matured" && (
+                                            <TeamLeadsMatured
+                                                secretKey={secretKey}
+                                                // maturedData={teamLeadsData?.data?.data}
+                                                maturedData={maturedData}
+                                                setMaturedData={setMaturedData}
+                                                setMaturedDataCount={setMaturedDataCount}
+                                                dataToFilterMatured={dataToFilterMatured}
+                                                completeMaturedData={completeMaturedData}
+                                                filteredDataMatured={filteredDataMatured}
+                                                setFilteredDataMatured={setFilteredDataMatured}
+                                                activeFilterFieldMatured={activeFilterFieldMatured}
+                                                setActiveFilterFieldMatured={setActiveFilterFieldMatured}
+                                                activeFilterFieldsMatured={activeFilterFieldsMatured}
+                                                setActiveFilterFieldsMatured={setActiveFilterFieldsMatured}
+                                                isLoading={isTeamLeadsLoading}
+                                                refetchTeamLeads={refetchTeamLeads}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={teamLeadsData?.data?.totalMaturedPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setDataStatus={setDataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                designation={data.designation}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                fetchProjections={fetchNewProjections}
+                                                projectionData={projectionData}
+                                                newDesignation={designation}
+                                                selectedRows={selectedRows}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                            />
+                                        )}
                                     </div>
 
                                     <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
-                                        {activeTabId === "Not Interested" && (<TeamLeadsNotInterested
-                                            secretKey={secretKey}
-                                            // notInterestedData={teamLeadsData?.data?.data}
-                                            notInterestedData={notInterestedData}
-                                            setNotInterestedData={setNotInterestedData}
-                                            setNotInterestedDataCount={setNotInterestedDataCount}
-                                            dataToFilterNotInterested={dataToFilterNotInterested}
-                                            completeNotInterestedData={completeNotInterestedData}
-                                            filteredDataNotInterested={filteredDataNotInterested}
-                                            setFilteredDataNotInterested={setFilteredDataNotInterested}
-                                            activeFilterFieldNotInterested={activeFilterFieldNotInterested}
-                                            setActiveFilterFieldNotInterested={setActiveFilterFieldNotInterested}
-                                            activeFilterFieldsNotInterested={activeFilterFieldsNotInterested}
-                                            setActiveFilterFieldsNotInterested={setActiveFilterFieldsNotInterested}
-                                            isLoading={isTeamLeadsLoading}
-                                            refetchTeamLeads={refetchTeamLeads}
-                                            formatDateNew={formatDateNew}
-                                            startIndex={startIndex}
-                                            endIndex={endIndex}
-                                            totalPages={teamLeadsData?.data?.totalNotInterestedPages}
-                                            setCurrentPage={setCurrentPage}
-                                            currentPage={currentPage}
-                                            dataStatus={dataStatus}
-                                            setDataStatus={setDataStatus}
-                                            ename={data.ename}
-                                            email={data.email}
-                                            designation={data.designation}
-                                            handleShowCallHistory={handleShowCallHistory}
-                                            newDesignation={designation}
-                                            selectedRows={selectedRows}
-                                            setSelectedRows={setSelectedRows}
-                                            handleCheckboxChange={handleCheckboxChange}
-                                            handleMouseDown={handleMouseDown}
-                                            handleMouseEnter={handleMouseEnter}
-                                            handleMouseUp={handleMouseUp}
-                                        />)}
+                                        {activeTabId === "Not Interested" && (
+                                            <TeamLeadsNotInterested
+                                                secretKey={secretKey}
+                                                // notInterestedData={teamLeadsData?.data?.data}
+                                                notInterestedData={notInterestedData}
+                                                setNotInterestedData={setNotInterestedData}
+                                                setNotInterestedDataCount={setNotInterestedDataCount}
+                                                dataToFilterNotInterested={dataToFilterNotInterested}
+                                                completeNotInterestedData={completeNotInterestedData}
+                                                filteredDataNotInterested={filteredDataNotInterested}
+                                                setFilteredDataNotInterested={setFilteredDataNotInterested}
+                                                activeFilterFieldNotInterested={activeFilterFieldNotInterested}
+                                                setActiveFilterFieldNotInterested={setActiveFilterFieldNotInterested}
+                                                activeFilterFieldsNotInterested={activeFilterFieldsNotInterested}
+                                                setActiveFilterFieldsNotInterested={setActiveFilterFieldsNotInterested}
+                                                isLoading={isTeamLeadsLoading}
+                                                refetchTeamLeads={refetchTeamLeads}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={teamLeadsData?.data?.totalNotInterestedPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setDataStatus={setDataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                designation={data.designation}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                newDesignation={designation}
+                                                selectedRows={selectedRows}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                            />
+                                        )}
                                     </div>
                                 </div>
 
