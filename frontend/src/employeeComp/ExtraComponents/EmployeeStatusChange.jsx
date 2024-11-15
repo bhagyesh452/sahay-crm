@@ -334,11 +334,11 @@ const EmployeeStatusChange = ({
                 data-bs-toggle="modal"
                 data-bs-target={`#${modalId}`} // Use dynamic modal ID
                 value={companyStatus}
-                // onClick={(e) => {
-                //   setStatus("Interested");
-                //   setStatusClass("ready_to_submit");
-                //   console.log("Company Status:", e.target.value); // Log the companyStatus value
-                // }}
+                onClick={(e) => {
+                  setStatus("Interested");
+                  setStatusClass("ready_to_submit");
+                  console.log("Company Status:", e.target.value); // Log the companyStatus value
+                }}
                 href="#"
               >
                 Interested
@@ -394,10 +394,10 @@ const EmployeeStatusChange = ({
                 data-bs-toggle="modal"
                 data-bs-target={`#${modalId}`} // Use dynamic modal ID
                 value={companyStatus}
-                // onClick={(e) => {
-                //   setStatus("Interested")
-                //   setStatusClass("ready_to_submit")
-                // }}
+                onClick={(e) => {
+                  setStatus("Interested")
+                  setStatusClass("ready_to_submit")
+                }}
                 href="#"
               >
                 Interested

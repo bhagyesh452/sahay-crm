@@ -391,7 +391,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } })
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept","MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } })
         .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
         .limit(limit),
@@ -418,7 +418,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         ],
       }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept","MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } }),
     ]);
 
     // Total pages calculation based on the largest dataset (generalData as reference)
@@ -1721,7 +1721,7 @@ router.get("/floorManagerLeadsReport", async (req, res) => {
     const companyPipeline = [
       {
         $match: {
-          Status: { $in: ["Interested", "FollowUp"] },
+          Status: { $in: ["Interested", "FollowUp" , "Busy" , "Not Picked Up"] },
           bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] },
           ...(start && end ? { AssignDate: { $gte: start, $lte: end } } : {})
         }

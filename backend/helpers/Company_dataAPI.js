@@ -2133,7 +2133,7 @@ router.get("/employees-new/:ename", async (req, res) => {
         $or: [
           // Condition for "Matured" status
           {
-            Status: "Matured",
+            Status: {$in : ["Matured" , "Busy" , "Not Picked Up"]},
             bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] }
           },
           // Condition for "Interested" and "FollowUp" statuses
@@ -2176,7 +2176,7 @@ router.get("/employees-new/:ename", async (req, res) => {
         $or: [
           // Condition for "Matured" status with specific bdmAcceptStatus values
           {
-            Status: "Matured",
+            Status: {$in : ["Matured" , "Busy" , "Not Picked Up"]},
             bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] },
           },
           // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
