@@ -488,7 +488,8 @@ function TeamLeadsGeneral({
                                             </div>
 
                                             {/* <div className="intersted-history-btn disabled"> */}
-                                            <div className={
+                                            <div 
+                                            className={
                                                 (company.interestedInformation === null || company.interestedInformation.length === 0)
                                                     ? (company.Status === "Interested"
                                                         ? "intersted-history-btn disabled"
@@ -501,7 +502,8 @@ function TeamLeadsGeneral({
                                                             ? "followup-history-btn" 
                                                             :company.Status === "Matured" ? "matured-history-btn"
                                                             : "")
-                                            }>
+                                            }
+                                            >
                                                 <FaEye
                                                     key={company._id}
                                                     style={{ border: "transparent", background: "none" }}
