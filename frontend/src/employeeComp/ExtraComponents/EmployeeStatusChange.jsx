@@ -262,7 +262,7 @@ const EmployeeStatusChange = ({
   }, [mainStatus, companyStatus]);
 
   // ----------------------------------functions for modal--------------------------------
-  const modalId = `modal-${companyName.replace(/\s+/g, '')}`; // Generate a unique modal ID
+  const modalId = `modal-${companyName?.replace(/\s+/g, '')}`; // Generate a unique modal ID
 
 
   return (<>

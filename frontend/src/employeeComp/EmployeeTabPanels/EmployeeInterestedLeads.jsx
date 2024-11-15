@@ -867,22 +867,6 @@ function EmployeeInterestedLeads({
                             />
                           </IconButton>
                         )}
-
-                        {/* <ProjectionDialog
-                          key={company._id}
-                          projectionCompanyName={company["Company Name"]}
-                          projectionData={projectionData}
-                          secretKey={secretKey}
-                          fetchProjections={fetchProjections}
-                          ename={ename}
-                          bdmAcceptStatus={company.bdmAcceptStatus}
-                          hasMaturedStatus={false}
-                          hasExistingProjection={projectionData?.some(
-                            (item) => item.companyName === company["Company Name"]
-                          )}
-                          userId={userId}
-                          fordesignation={fordesignation}
-                        /> */}
                         {
                           ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (
                             <TiArrowForward onClick={() => {

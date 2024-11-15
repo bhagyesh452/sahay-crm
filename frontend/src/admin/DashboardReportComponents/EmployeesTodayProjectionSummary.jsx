@@ -80,7 +80,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
         try {
             const res2 = await axios.get(`${secretKey}/employee/einfo`);
             let employees = res2.data.filter(
-                (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager" || employee.newDesignation === "Floor Manager"
+                (employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager" 
             );
 
             if (isFloorManagerView) {
