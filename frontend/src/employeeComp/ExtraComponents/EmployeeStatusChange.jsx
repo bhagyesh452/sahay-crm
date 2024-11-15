@@ -51,7 +51,7 @@ const EmployeeStatusChange = ({
     try {
 
       if (newStatus === "Matured") {
-        handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename , bdmName);
+        handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename, bdmName);
         return true;
       }
 
@@ -119,7 +119,7 @@ const EmployeeStatusChange = ({
       let response;
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
-          response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${id}`);
+          // response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${id}`);
           const response2 = await axios.post(`${secretKey}/company-data/update-status/${id}`, {
             newStatus,
             title,
@@ -127,13 +127,13 @@ const EmployeeStatusChange = ({
             time,
           });
 
-          const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${id}`, {
-            bdmAcceptStatus: "NotForwarded"
-          });
+          // const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${id}`, {
+          //   bdmAcceptStatus: "NotForwarded"
+          // });
 
-          const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
-            caseType: "NotForwarded"
-          });
+          // const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
+          //   caseType: "NotForwarded"
+          // });
 
         } else if (newStatus === "Junk") {
           response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${id}`, {
@@ -197,6 +197,23 @@ const EmployeeStatusChange = ({
           default:
             return "";
         }
+      case "Busy":
+        switch (subStatus) {
+          case "Untouched":
+            return "untouched_status";
+          case "Not Picked Up":
+            return "cdbp-status";
+          case "Busy":
+            return "dfaulter-status";
+          case "Interested":
+            return "ready_to_submit";
+          case "FollowUp":
+            return "clnt_no_repond_status";
+          case "Not Interested":
+            return "inprogress-status";
+          default:
+            return "";
+        }
       case "Interested":
         switch (subStatus) {
           case "FollowUp":
@@ -250,10 +267,10 @@ const EmployeeStatusChange = ({
 
   return (<>
     <section className="rm_status_dropdown"
-      // style={{
-      //   width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
-      // }}
-      >
+    // style={{
+    //   width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
+    // }}
+    >
       <div className={
         mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :
           `dropdown custom-dropdown status_dropdown ${statusClass}`}>
@@ -342,6 +359,74 @@ const EmployeeStatusChange = ({
                 Follow Up
               </button>
             </li> */}
+          </ul>
+        ) : mainStatus === "Busy" ? (
+          <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+            {!isBdmStatusChange && <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Untouched", "untouched_status")}
+                href="#"
+              >
+                Untouched
+              </a>
+            </li>}
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Not Picked Up", "cdbp-status")}
+                href="#"
+              >
+                Not Picked Up
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Busy", "dfaulter-status")}
+                href="#"
+              >
+                Busy
+              </a>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target={`#${modalId}`} // Use dynamic modal ID
+                value={companyStatus}
+                onClick={(e) => {
+                  setStatus("Interested")
+                  setStatusClass("ready_to_submit")
+                }}
+                href="#"
+              >
+                Interested
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target={`#${modalId}`} // Use dynamic modal ID
+                onClick={(e) => {
+                  setStatus("FollowUp")
+                  setStatusClass("clnt_no_repond_status")
+                }}
+                href="#"
+              >
+                Follow Up
+              </button>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Not Interested", "inprogress-status")}
+                href="#"
+              >
+                Not Interested
+              </a>
+            </li>
           </ul>
         ) : mainStatus === "Interested" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
@@ -454,18 +539,18 @@ const EmployeeStatusChange = ({
         ) : null}
       </div>
     </section>
-      <EmployeeInterestedInformationDialog
-        modalId={modalId}
-        companyName={companyName}
-        secretKey={secretKey}
-        refetch={refetch}
-        ename={ename}
-        status={status}
-        setStatus={setStatus}
-        setStatusClass={setStatusClass}
-        companyStatus={companyStatus}
-        id={id}
-      />
+    <EmployeeInterestedInformationDialog
+      modalId={modalId}
+      companyName={companyName}
+      secretKey={secretKey}
+      refetch={refetch}
+      ename={ename}
+      status={status}
+      setStatus={setStatus}
+      setStatusClass={setStatusClass}
+      companyStatus={companyStatus}
+      id={id}
+    />
   </>);
 };
 

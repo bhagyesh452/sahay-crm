@@ -59,7 +59,7 @@ router.post("/forwardtobdmdata", async (req, res) => {
         bdeForwardDate: new Date(bdeForwardDate),
         bdeOldStatus: bdeOldStatus,
         bdmName: bdmName,
-        bdmStatus:"Untouched"
+        bdmStatus: "Untouched"
       }
 
     );
@@ -334,8 +334,6 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     // Build common query object
     let commonQuery = {
       bdmName: bdmName,
-      bdmAcceptStatus: { $nin: ["NotForwarded"] },
-      Status: { $nin: ["Busy"] },
     };
 
     // Add filters if provided
@@ -354,9 +352,19 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     if (incorporationDate) commonQuery["Company Incorporation Date"] = { $gte: new Date(incorporationDate).toISOString() };
 
     // Fetch paginated data for each status
-    const [generalData, interestedData, maturedData, notInterestedData] = await Promise.all([
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending" , "MaturedPending"] } })
+    const [generalData, busyData, interestedData, maturedData, notInterestedData] = await Promise.all([
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Pending" })
         .sort({ bdeForwardDate: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending", "MaturedPending"] } })
+        .sort({ bdeForwardDate: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded"] }, Status: { $in: ["Busy", "Not Picked Up"] } })
+        .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
         .limit(limit),
 
@@ -377,8 +385,10 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     ]);
 
     // Count total for each status category
-    const [totalGeneral, totalInterested, totalMatured, totalNotInterested] = await Promise.all([
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending" , "MaturedPending"] }  }),
+    const [totalGeneral, totalBusy, totalInterested, totalMatured, totalNotInterested] = await Promise.all([
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Pending" }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded"] }, Status: { $in: ["Busy", "Not Picked Up"] } }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending", "MaturedPending"] } }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } }),
@@ -386,29 +396,33 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Total pages calculation based on the largest dataset (generalData as reference)
     const totalGeneralPages = Math.ceil(totalGeneral / limit);
+    const totalBusyPages = Math.ceil(totalBusy / limit);
     const totalInterestedPages = Math.ceil(totalInterested / limit);
     const totalMaturedPages = Math.ceil(totalMatured / limit);
     const totalNotInterestedPages = Math.ceil(totalNotInterested / limit);
 
     // Combine all data into a single field for easy access if needed
-    const combinedData = [...generalData, ...interestedData, ...maturedData, ...notInterestedData];
+    const combinedData = [...generalData, ...busyData, ...interestedData, ...maturedData, ...notInterestedData];
 
     return res.status(200).json({
       currentPage: parseInt(page),
       perPage: parseInt(limit),
-      totalCounts: totalGeneral + totalInterested + totalMatured + totalNotInterested,
+      totalCounts: totalGeneral + totalBusy + totalInterested + totalMatured + totalNotInterested,
       totalGeneral: totalGeneral,
-      generalData: generalData.sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)) || [],
       totalGeneralPages: totalGeneralPages,
+      generalData: generalData.sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)) || [],
+      totalBusy: totalBusy,
+      totalBusyPages: totalBusyPages,
+      busyData: busyData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalInterested: totalInterested,
-      interestedData: interestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalInterestedPages: totalInterestedPages,
+      interestedData: interestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalMatured: totalMatured,
-      maturedData: maturedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalMaturedPages: totalMaturedPages,
+      maturedData: maturedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalNotInterested: totalNotInterested,
-      notInterestedData: notInterestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       totalNotInterestedPages: totalNotInterestedPages,
+      notInterestedData: notInterestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
       data: combinedData // combined data of all statuses on this page
     });
   } catch (error) {
@@ -1667,10 +1681,10 @@ router.get("/floorManagerProjectionSummaryReport/:floorManagerName", async (req,
 router.get("/floorManagerLeadsReport", async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
-    
+
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
-    
+
     // console.log("Start date :", start);
     // console.log("End date :", end);
 
