@@ -353,11 +353,6 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Fetch paginated data for each status
     const [generalData, busyData, interestedData, maturedData, notInterestedData] = await Promise.all([
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Pending" })
-        .sort({ bdeForwardDate: -1 })
-        .skip(skip)
-        .limit(limit),
-
       CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending", "MaturedPending"] } })
         .sort({ bdeForwardDate: -1 })
         .skip(skip)
@@ -386,9 +381,8 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
     // Count total for each status category
     const [totalGeneral, totalBusy, totalInterested, totalMatured, totalNotInterested] = await Promise.all([
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Pending" }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded"] }, Status: { $in: ["Busy", "Not Picked Up"] } }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending", "MaturedPending"] } }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded"] }, Status: { $in: ["Busy", "Not Picked Up"] } }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } }),

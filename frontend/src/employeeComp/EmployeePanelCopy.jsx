@@ -998,30 +998,13 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 className={`nav-link  ${dataStatus === "All" ? "active item-act" : ""}`}
                                                 data-bs-toggle="tab"
                                             >
-
                                                 <div>General</div>
                                                 <div className="no_badge">
                                                     {generalDataCount}
                                                 </div>
-
                                             </a>
                                         </li>
-                                        <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
-                                            <a
-                                                href="#busy"
-                                                ref={busyTabRef} // Attach the ref to the anchor tag
-                                                onClick={() => handlnewEmpDataStatusChange("Busy", busyTabRef)}
-                                                className={`nav-link  ${dataStatus === "Busy" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
 
-                                                <div>Busy</div>
-                                                <div className="no_badge">
-                                                    {busyDataCount}
-                                                </div>
-
-                                            </a>
-                                        </li>
                                         <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
                                             <a
                                                 href="#Interested"
@@ -1036,6 +1019,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 </span>
                                             </a>
                                         </li>
+
                                         <li class="nav-item sales-nav-item data-heading" ref={maturedTabRef}>
                                             <a
                                                 href="#Matured"
@@ -1050,6 +1034,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 </span>
                                             </a>
                                         </li>
+
                                         {data.designation !== "Sales Manager" &&
                                             (<li class="nav-item sales-nav-item data-heading">
                                                 <a
@@ -1066,6 +1051,22 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 </a>
                                             </li>)
                                         }
+
+                                        <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
+                                            <a
+                                                href="#busy"
+                                                ref={busyTabRef} // Attach the ref to the anchor tag
+                                                onClick={() => handlnewEmpDataStatusChange("Busy", busyTabRef)}
+                                                className={`nav-link  ${dataStatus === "Busy" ? "active item-act" : ""}`}
+                                                data-bs-toggle="tab"
+                                            >
+                                                <div>Busy</div>
+                                                <div className="no_badge">
+                                                    {busyDataCount}
+                                                </div>
+                                            </a>
+                                        </li>
+
                                         <li class="nav-item sales-nav-item data-heading">
                                             <a
                                                 href="#NotInterested"
@@ -1105,50 +1106,6 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
                                                 totalPages={queryData?.totalGeneralPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                dataStatus={dataStatus}
-                                                setdataStatus={setdataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                secretKey={secretKey}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                designation={data.designation}
-                                                fordesignation={fordesignation}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                                selectedRows={selectedRows}
-                                                bdenumber={data.number}
-                                                openCompanyProfile={handleOpenCompanyProfile}
-                                                closeCompanyProfile={handleCloseCompanyProfile}
-                                            />
-                                        )}
-                                    </div>
-
-                                    <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
-                                        {activeTabId === "Busy" && dataStatus === "Busy" && (
-                                            <EmployeeBusyLeads
-                                                userId={userId}
-                                                busyData={busyData}
-                                                dataToFilter={dataToFilterBusy}
-                                                completeBusyData={completeBusyData}
-                                                setBusyData={setBusyData}
-                                                setBusyDataCount={setBusyDataCount}
-                                                filteredData={filteredDataBusy}
-                                                setFilteredData={setFilteredDataBusy}
-                                                activeFilterField={activeFilterFieldBusy}
-                                                setActiveFilterField={setActiveFilterFieldBusy}
-                                                activeFilterFields={activeFilterFieldsBusy}
-                                                setActiveFilterFields={setActiveFilterFieldsBusy}
-                                                isLoading={isLoading}
-                                                refetch={refetch}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={queryData?.totalBusyPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 dataStatus={dataStatus}
@@ -1308,6 +1265,50 @@ function EmployeePanelCopy({ fordesignation }) {
                                             //filteredData={filteredData}
                                             //filterMethod={handleFilter}
                                             //setFilteredData={setFilteredData}
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
+                                        {activeTabId === "Busy" && dataStatus === "Busy" && (
+                                            <EmployeeBusyLeads
+                                                userId={userId}
+                                                busyData={busyData}
+                                                dataToFilter={dataToFilterBusy}
+                                                completeBusyData={completeBusyData}
+                                                setBusyData={setBusyData}
+                                                setBusyDataCount={setBusyDataCount}
+                                                filteredData={filteredDataBusy}
+                                                setFilteredData={setFilteredDataBusy}
+                                                activeFilterField={activeFilterFieldBusy}
+                                                setActiveFilterField={setActiveFilterFieldBusy}
+                                                activeFilterFields={activeFilterFieldsBusy}
+                                                setActiveFilterFields={setActiveFilterFieldsBusy}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={queryData?.totalBusyPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setdataStatus={setdataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                secretKey={secretKey}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                                bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
                                             />
                                         )}
                                     </div>

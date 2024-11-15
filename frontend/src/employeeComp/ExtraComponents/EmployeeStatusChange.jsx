@@ -207,8 +207,6 @@ const EmployeeStatusChange = ({
             return "dfaulter-status";
           case "Interested":
             return "ready_to_submit";
-          case "FollowUp":
-            return "clnt_no_repond_status";
           case "Not Interested":
             return "inprogress-status";
           default:
@@ -402,20 +400,6 @@ const EmployeeStatusChange = ({
                 href="#"
               >
                 Interested
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                data-bs-toggle="modal"
-                data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                onClick={(e) => {
-                  setStatus("FollowUp")
-                  setStatusClass("clnt_no_repond_status")
-                }}
-                href="#"
-              >
-                Follow Up
               </button>
             </li>
             <li>

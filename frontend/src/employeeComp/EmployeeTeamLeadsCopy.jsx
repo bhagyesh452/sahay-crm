@@ -813,29 +813,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 <div className="no_badge">
                                                     {generalDataCount || 0}
                                                 </div>
-
-                                            </a>
-                                        </li>
-
-                                        <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
-                                            <a
-                                                href="#busy"
-                                                ref={busyTabRef} // Attach the ref to the anchor tag
-                                                // onClick={() => handleDataStatusChange("All", allTabRef)}
-                                                onClick={() => {
-                                                    setDataStatus("Busy");
-                                                    setActiveTabId("Busy");
-                                                    setSelectedRows([]);
-                                                    setCurrentPage(0);
-                                                }}
-                                                className={`nav-link  ${dataStatus === "Busy" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
-                                                <div>Busy</div>
-                                                <div className="no_badge">
-                                                    {busyDataCount || 0}
-                                                </div>
-
                                             </a>
                                         </li>
 
@@ -878,6 +855,27 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 <span className="no_badge">
                                                     {maturedDataCount || 0}
                                                 </span>
+                                            </a>
+                                        </li>
+
+                                        <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
+                                            <a
+                                                href="#busy"
+                                                ref={busyTabRef} // Attach the ref to the anchor tag
+                                                // onClick={() => handleDataStatusChange("All", allTabRef)}
+                                                onClick={() => {
+                                                    setDataStatus("Busy");
+                                                    setActiveTabId("Busy");
+                                                    setSelectedRows([]);
+                                                    setCurrentPage(0);
+                                                }}
+                                                className={`nav-link  ${dataStatus === "Busy" ? "active item-act" : ""}`}
+                                                data-bs-toggle="tab"
+                                            >
+                                                <div>Busy</div>
+                                                <div className="no_badge">
+                                                    {busyDataCount || 0}
+                                                </div>
                                             </a>
                                         </li>
 
@@ -936,50 +934,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 designation={data.designation}
                                                 handleShowCallHistory={handleShowCallHistory}
                                                 projectionData={projectionData}
-                                                newDesignation={designation}
-                                                selectedRows={selectedRows}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                            />
-                                        )}
-                                    </div>
-
-                                    <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
-                                        {activeTabId === "Busy" && dataStatus === "Busy" && (
-                                            <TeamLeadsBusy
-                                                secretKey={secretKey}
-                                                // busyData={teamLeadsData?.data?.data}
-                                                busyData={busyData}
-                                                setBusyData={setGeneralData}
-                                                setBusyDataCount={setBusyDataCount}
-                                                dataToFilterBusy={dataToFilterBusy}
-                                                completeBusyData={completeBusyData}
-                                                filteredDataBusy={filteredDataBusy}
-                                                setFilteredDataBusy={setFilteredDataBusy}
-                                                activeFilterFieldBusy={activeFilterFieldBusy}
-                                                setActiveFilterFieldBusy={setActiveFilterFieldBusy}
-                                                activeFilterFieldsBusy={activeFilterFieldsBusy}
-                                                setActiveFilterFieldsBusy={setActiveFilterFieldsBusy}
-                                                isLoading={isTeamLeadsLoading}
-                                                refetchTeamLeads={refetchTeamLeads}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={teamLeadsData?.data?.totalBusyPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                dataStatus={dataStatus}
-                                                setDataStatus={setDataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                designation={data.designation}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                projectionData={projectionData}
-                                                teamData={teamData}
-                                                handleOpenFormOpen={handleOpenFormOpen}
                                                 newDesignation={designation}
                                                 selectedRows={selectedRows}
                                                 setSelectedRows={setSelectedRows}
@@ -1069,6 +1023,50 @@ function EmployeeTeamLeadsCopy({ designation }) {
                                                 handleShowCallHistory={handleShowCallHistory}
                                                 fetchProjections={fetchNewProjections}
                                                 projectionData={projectionData}
+                                                newDesignation={designation}
+                                                selectedRows={selectedRows}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
+                                        {activeTabId === "Busy" && dataStatus === "Busy" && (
+                                            <TeamLeadsBusy
+                                                secretKey={secretKey}
+                                                // busyData={teamLeadsData?.data?.data}
+                                                busyData={busyData}
+                                                setBusyData={setGeneralData}
+                                                setBusyDataCount={setBusyDataCount}
+                                                dataToFilterBusy={dataToFilterBusy}
+                                                completeBusyData={completeBusyData}
+                                                filteredDataBusy={filteredDataBusy}
+                                                setFilteredDataBusy={setFilteredDataBusy}
+                                                activeFilterFieldBusy={activeFilterFieldBusy}
+                                                setActiveFilterFieldBusy={setActiveFilterFieldBusy}
+                                                activeFilterFieldsBusy={activeFilterFieldsBusy}
+                                                setActiveFilterFieldsBusy={setActiveFilterFieldsBusy}
+                                                isLoading={isTeamLeadsLoading}
+                                                refetchTeamLeads={refetchTeamLeads}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={teamLeadsData?.data?.totalBusyPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setDataStatus={setDataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                designation={data.designation}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                projectionData={projectionData}
+                                                teamData={teamData}
+                                                handleOpenFormOpen={handleOpenFormOpen}
                                                 newDesignation={designation}
                                                 selectedRows={selectedRows}
                                                 setSelectedRows={setSelectedRows}
