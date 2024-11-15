@@ -1466,6 +1466,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
            bdmStatus:"Matured",
            bdmAcceptStatus:"MaturedDone"
         });
+        await TeamLeadsModel.findByIdAndDelete(companyData._id);
       }
 
       if (projectionData) {

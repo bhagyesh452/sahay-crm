@@ -724,6 +724,7 @@ function TeamLeadsInterested({
                                                 teamData={teamData}
                                                 handleFormOpen={handleOpenFormOpen}
                                                 isBdmStatusChange={true}
+                                                bdmStatus={company.bdmStatus}
                                             />}
                                     </td>
                                     <td>

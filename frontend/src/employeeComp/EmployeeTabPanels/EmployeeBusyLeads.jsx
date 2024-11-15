@@ -577,6 +577,7 @@ function EmployeeBusyLeads({
                                                             cnum={company["Company Number"]}
                                                             ename={company.ename}
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
+                                                            bdmStatus={company.bdmStatus}
                                                         />
                                                     )}
                                                 </td>
