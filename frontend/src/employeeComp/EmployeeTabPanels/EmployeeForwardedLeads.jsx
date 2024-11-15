@@ -847,9 +847,9 @@ function EmployeeForwardedLeads({
                                                 <div
                                                     className={company.Status === "Interested" ? "dfault_interested-status" :
                                                         company.Status === "FollowUp" ? "dfault_followup-status" :
-                                                        company.Status === "Matured" ? "dfault_approved-status" :
+                                                        company.bdmStatus && company.bdmStatus === "Untouched" ? "dfault_untouched-status" :
                                                             null}>
-                                                    {company.Status}
+                                                    {company.bdmStatus ? company.bdmStatus : company.Status}
                                                 </div>
                                             </td>
                                             <td>
@@ -919,7 +919,7 @@ function EmployeeForwardedLeads({
                                                         }}
                                                         color="grey"
                                                     />
-                                                </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
+                                                </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "MaturedPending" ? (<>
 
                                                     <TiArrowBack
                                                         onClick={() => {

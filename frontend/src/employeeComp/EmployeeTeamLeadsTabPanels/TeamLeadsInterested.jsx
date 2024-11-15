@@ -634,23 +634,30 @@ function TeamLeadsInterested({
                                     </td>
                                     <td>
                                         <div className="d-flex justify-content-center">
-                                            <div className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                            <div className={`${
+                                                company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
+                                                company.bdeOldStatus === "Matured" ? "dfault_approved-status" 
+                                                : "dfault_followup-status"}`}>
                                                 {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                             </div>
 
-                                            <div className={
+                                            <div 
+                                            className={
                                                 (company.interestedInformation === null || company.interestedInformation.length === 0)
                                                     ? (company.bdeOldStatus === "Interested"
                                                         ? "intersted-history-btn disabled"
                                                         : company.bdeOldStatus === "FollowUp"
                                                             ? "followup-history-btn disabled"
+                                                            : company.bdeOldStatus === "Matured" ? "matured-history-btn disabled"
                                                             : "")
                                                     : (company.bdeOldStatus === "Interested"
                                                         ? "intersted-history-btn"
                                                         : company.bdeOldStatus === "FollowUp"
                                                             ? "followup-history-btn"
+                                                            : company.bdeOldStatus === "Matured" ? "matured-history-btn"
                                                             : "")
-                                            }>
+                                            }
+                                            >
                                                 <FaEye
                                                     key={company._id}
                                                     style={{ border: "transparent", background: "none" }}
@@ -698,14 +705,14 @@ function TeamLeadsInterested({
                                     <td>
                                         {newDesignation ?
                                             <div className={`${company.Status === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
-                                                {company.Status}
+                                                {company.bdmStatus ? company.bdmStatus : company.Status}
                                             </div>
                                             : <EmployeeStatusChange
                                                 key={`${company["Company Name"]}-${index}`}
                                                 companyName={company["Company Name"]}
                                                 id={company._id}
                                                 refetch={refetchTeamLeads}
-                                                companyStatus={company.Status}
+                                                companyStatus={company.bdmStatus ? company.bdmStatus : company.Status}
                                                 mainStatus={dataStatus}
                                                 isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
                                                 cemail={company["Company Email"]}

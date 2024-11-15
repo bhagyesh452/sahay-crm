@@ -3481,6 +3481,16 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
 }
+.dfault_untouched-status {
+  background-color: #cfcfcf;
+  border: 1px solid #9b9b9b;
+  padding: 3px 8px 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  box-shadow: 0px 2px 5px #0000001A;
+  font-weight: 600;
+  line-height: 16px;
+}
 
 .ep_untouched_status {
   background-color: #cfcfcf;
