@@ -128,25 +128,6 @@ function BdmMaturedCasesDialogBox({ open, closepopup, currentData, forwardedComp
 
     return (
         <div>
-            {/* <div className={'d-flex align-items-center justify-content-center'}>
-                <a
-                    style={{ textDecoration: "none" }}
-                    data-bs-toggle="modal"
-                    data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                    onClick={handleOpenModal}
-                >
-                    <TiArrowForward
-                        style={{
-                            cursor: "pointer",
-                            width: "17px",
-                            height: "17px",
-                        }}
-                        title="Forward To BDM"
-                        color="grey"
-                    />
-                </a>
-            </div> */}
-
             <Dialog className='My_Mat_Dialog' open={open} fullWidth maxWidth="md">
                 <DialogTitle>
                     <div className='d-flex justify-content-between align-items-center'>

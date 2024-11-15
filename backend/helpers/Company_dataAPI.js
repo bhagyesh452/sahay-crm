@@ -2149,7 +2149,7 @@ router.get("/employees-new/:ename", async (req, res) => {
 
       CompanyModel.find({
         ...baseQuery,
-        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept","MaturedPending", "MaturedAccepted", undefined] },
+        bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept","MaturedPending", "MaturedAccepted", "MaturedDone", undefined] },
         Status: { $in: ["Matured"] }
       })
         .sort({ lastActionDate: -1 })
@@ -2170,7 +2170,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     const [notInterestedCount, interestedCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
-      CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept","MaturedPending", "MaturedAccepted", undefined] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept","MaturedPending", "MaturedAccepted","MaturedDone", undefined] } }),
       CompanyModel.countDocuments({
         ...baseQuery,
         $or: [

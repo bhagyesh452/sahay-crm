@@ -92,7 +92,7 @@ function EmployeeForwardedLeads({
         empStatus,
         bdmName
     ) => {
-        if (bdmAcceptStatus === "Pending") {
+        if (bdmAcceptStatus === "Pending" || bdmAcceptStatus === "MaturedPending") {
             try {
                 const response = await axios.post(
                     `${secretKey}/bdm-data/teamleads-reversedata/${companyId}`,
@@ -102,11 +102,11 @@ function EmployeeForwardedLeads({
                         bdmName: "NoOne" // Corrected parameter name
                     }
                 );
-                const response2 = await axios.post(`${secretKey}/
-                    /post-updaterejectedfollowup/${companyName}`, {
-                    caseType: "NotForwarded"
-                })
-                // console.log("response", response.data);
+                // const response2 = await axios.post(`${secretKey}/
+                //     /post-updaterejectedfollowup/${companyName}`, {
+                //     caseType: "NotForwarded"
+                // })
+                // // console.log("response", response.data);
                 Swal.fire("Data Reversed");
                 refetch();
             } catch (error) {
@@ -850,6 +850,9 @@ function EmployeeForwardedLeads({
                                                             company.Status === "Busy" ? "dfault_busy-status" :
                                                                 company.Status === "Not Picked Up" ? "dfault_not-pickedup-status" :
                                                                     company.bdmStatus && company.bdmStatus === "Untouched" ? "dfault_untouched-status" :
+                                                                    company.bdmStatus && company.bdmStatus === "Interested" ? "dfault_interested-status" :
+                                                                    company.bdmStatus && company.bdmStatus === "FollowUp" ? "dfault_followup-status" :
+                                                                    company.bdmStatus && company.bdmStatus === "Busy" ? "dfault_busy-status" :
                                                                         null}>
                                                     {company.bdmStatus ? company.bdmStatus : company.Status}
                                                 </div>
@@ -941,7 +944,7 @@ function EmployeeForwardedLeads({
                                                         color="#fbb900"
                                                     />
                                                 </>) :
-                                                    (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
+                                                    ((company.bdmAcceptStatus === "Accept" || company.bdmAcceptStatus === "MaturedAccepted") && !company.RevertBackAcceptedCompanyRequest) ? (
                                                         <>
                                                             <TiArrowBack
                                                                 onClick={() => handleRevertAcceptedCompany(

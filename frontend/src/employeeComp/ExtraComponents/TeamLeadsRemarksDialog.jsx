@@ -137,7 +137,7 @@ const TeamLeadsRemarksDialog = ({
     }, [companyName, companyId]);
 
     const renderTeamLeadsButton = () => {
-        if (remarksKey === "remarks" && (bdmAcceptStatus === "Pending" || bdmAcceptStatus === "Accept" || bdmAcceptStatus === "MaturedPending" || bdmAcceptStatus === "MaturedAccepted") || newDesignation) {
+        if (remarksKey === "remarks" && (bdmAcceptStatus === "Pending" || bdmAcceptStatus === "Accept" || bdmAcceptStatus === "MaturedPending" || bdmAcceptStatus === "MaturedAccepted" || bdmAcceptStatus === "MaturedDone") || newDesignation) {
             return (
                 <button onClick={handleOpenModal} style={{ border: "transparent", background: "none" }}>
                     <MdOutlineRemoveRedEye style={{ width: "14px", height: "14px", color: "#d6a10c", cursor: "pointer" }} />
@@ -145,7 +145,7 @@ const TeamLeadsRemarksDialog = ({
             );
         }
 
-        if (remarksKey === "bdmRemarks" && (bdmAcceptStatus === "Accept" || bdmAcceptStatus === "MaturedAccepted")) {
+        if (remarksKey === "bdmRemarks" && (bdmAcceptStatus === "Accept" || bdmAcceptStatus === "MaturedAccepted" || bdmAcceptStatus === "MaturedDone")) {
             return (
                 <button onClick={handleOpenModal} style={{ border: "transparent", background: "none" }}>
                     <MdOutlineEdit style={{ width: "12px", height: "12px", color: "rgb(139, 139, 139)" }} />

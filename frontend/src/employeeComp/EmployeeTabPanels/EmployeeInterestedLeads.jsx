@@ -408,7 +408,6 @@ function EmployeeInterestedLeads({
                     <div ref={el => fieldRefs.current['City'] = el}>
                       City
                     </div>
-
                     <div className='RM_filter_icon'>
                       {isActiveField('City') ? (
                         <FaFilter onClick={() => handleFilterClick("City")} />

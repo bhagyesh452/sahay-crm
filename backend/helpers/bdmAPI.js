@@ -386,7 +386,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" })
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: {$in : ["Accept" , "MaturedDone"]}, Status: "Matured" })
         .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
         .limit(limit),
@@ -417,7 +417,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
           },
         ],
       }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: {$in : ["Accept" , "MaturedDone"]}, Status: "Matured" }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept","MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } }),
     ]);
 
@@ -559,12 +559,16 @@ router.post("/update-bdm-status/:id", async (req, res) => {
       bdmStatusChangeTime: bdmStatusChangeTime,
     });
 
+    const companyToFind = await CompanyModel.findById(id).lean();
+    console.log("companyToFind", companyToFind)
     const company = await CompanyModel.findByIdAndUpdate(id, {
       bdmStatus: oldStatus === "Matured" ? "Interested" : oldStatus,
       bdmAcceptStatus: bdmAcceptStatus,
       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
       bdmStatusChangeTime: bdmStatusChangeTime,
+      isDeletedEmployeeCompany : oldStatus === "Matured" ? true : companyToFind.isDeletedEmployeeCompany
     });
+
 
     socketIO.emit("bdmDataAcceptedRequest", {
       ename: company.ename,
@@ -704,10 +708,19 @@ router.post(`/teamleads-reversedata/:id`, async (req, res) => {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
-    await CompanyModel.findByIdAndUpdate(id, {
-      bdmAcceptStatus: bdmAcceptStatus,
-      bdmName: bdmName,
-    }); // Corrected update
+    await CompanyModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          bdmAcceptStatus: bdmAcceptStatus, // Set this value
+          bdmName: bdmName,                // Set this value
+        },
+        $unset: {
+          bdmStatus:""
+        },
+      },
+      { new: true } // Return the updated document
+    );
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
