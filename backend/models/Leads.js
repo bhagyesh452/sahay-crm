@@ -182,6 +182,10 @@ const CompanySchema = new mongoose.Schema({
   bdmRemarks:{
     type:String
   },
+  bdmStatus:{
+    type:String,
+    default : ""
+  },
   bdmStatusChangeDate:{
     type:String,
   },

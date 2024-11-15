@@ -59,6 +59,7 @@ router.post("/forwardtobdmdata", async (req, res) => {
         bdeForwardDate: new Date(bdeForwardDate),
         bdeOldStatus: bdeOldStatus,
         bdmName: bdmName,
+        bdmStatus:"Untouched"
       }
 
     );
