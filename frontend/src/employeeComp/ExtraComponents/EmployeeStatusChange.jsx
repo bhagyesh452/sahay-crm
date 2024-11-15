@@ -260,7 +260,7 @@ const EmployeeStatusChange = ({
   }, [mainStatus, companyStatus]);
 
   // ----------------------------------functions for modal--------------------------------
-  const modalId = `modal-${CSS.escape(companyName?.replace(/\s+/g, ''))}`;
+  const modalId = `modal-${companyName?.replace(/[^a-zA-Z0-9]/g, '')}`; // Generate a sanitized modal ID
   // console.log("modalId", modalId);
 
   return (<>
@@ -394,10 +394,10 @@ const EmployeeStatusChange = ({
                 data-bs-toggle="modal"
                 data-bs-target={`#${modalId}`} // Use dynamic modal ID
                 value={companyStatus}
-                onClick={(e) => {
-                  setStatus("Interested")
-                  setStatusClass("ready_to_submit")
-                }}
+                // onClick={(e) => {
+                //   setStatus("Interested")
+                //   setStatusClass("ready_to_submit")
+                // }}
                 href="#"
               >
                 Interested
