@@ -3415,8 +3415,8 @@ td input {
 .dfault_approved-status {
   background-color: #7ee48c;
   border: 1px solid #1cbd27;
-  padding: 4px 8px 4px 8px;
-  border-radius: 100px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
@@ -3425,7 +3425,7 @@ td input {
 .dfault_busy-status {
   background-color: #ee9a9a;
   border: 1px solid #d81d1d;
-  padding: 4px 8px 4px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
@@ -3435,7 +3435,7 @@ td input {
 .dfault_not-interested-status {
   background-color: #fffec4;
   border: 1px solid #cfc022;
-  padding: 4px 8px 4px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
@@ -3445,8 +3445,8 @@ td input {
 .dfault_interested-status {
   background-color: #a3ffd8;
   border: 1px solid #35c286;
-  padding: 4px 8px 4px 8px;
-  border-radius: 100px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
@@ -3455,8 +3455,8 @@ td input {
 .dfault_followup-status {
   background-color: #ffe1ed;
   border: 1px solid #f393ba;
-  padding: 4px 8px 4px 8px;
-  border-radius: 100px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
@@ -3465,8 +3465,8 @@ td input {
 .dfault_notinterested-status {
   background-color: #FFD0A7;
   border: 1px solid #FF7909;
-  padding: 4px 8px 4px 8px;
-  border-radius: 100px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
@@ -3475,8 +3475,8 @@ td input {
 .dfault_junk-status {
   background-color: #ffe49d;
   border: 1px solid #ffba00;
-  padding: 4px 8px 4px 8px;
-  border-radius: 100px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
@@ -3484,7 +3484,7 @@ td input {
 .dfault_untouched-status {
   background-color: #cfcfcf;
   border: 1px solid #9b9b9b;
-  padding: 3px 8px 3px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
@@ -3495,8 +3495,8 @@ td input {
 .ep_untouched_status {
   background-color: #cfcfcf;
   border: 1px solid #9b9b9b;
-  padding: 4px 8px 4px 8px;
-  border-radius: 100px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
@@ -3505,8 +3505,8 @@ td input {
 .ep_busy_status {
   background-color: #ee9a9a;
   border: 1px solid #d81d1d;
-  padding: 4px 8px 4px 8px;
-  border-radius: 100px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
@@ -3515,8 +3515,8 @@ td input {
 .ep_notpickedup_status {
   background-color: #fffec4;
   border: 1px solid #cfc022;
-  padding: 4px 8px 4px 8px;
-  border-radius: 100px;
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 12px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
