@@ -110,6 +110,8 @@ router.post("/update-status/:id", async (req, res) => {
     if (newStatus === "Busy" || newStatus === "Not Picked Up") {
       await CompanyModel.findByIdAndUpdate(id, {
         Status: newStatus,
+        bdmStatusChangeDate: new Date(),
+        bdmStatusChangeTime: time,
         lastActionDate: new Date()
       });
     } else {
@@ -2113,7 +2115,7 @@ router.get("/employees-new/:ename", async (req, res) => {
         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
         Status: { $in: ["Busy", "Not Picked Up"] }
       })
-        .sort({ AssignDate: -1 })
+        .sort({ lastActionDate: -1 })
         .skip(skip)
         .limit(limit),
 
