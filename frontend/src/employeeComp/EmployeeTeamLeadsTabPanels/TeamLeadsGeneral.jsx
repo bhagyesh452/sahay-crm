@@ -120,14 +120,14 @@ function TeamLeadsGeneral({
     // console.log("Total pages are :", totalPages);
 
     const handleAcceptClick = async (companyId, cName, cemail, cdate, cnumber, oldStatus, newBdmStatus) => {
-        console.log(companyId)
+        console.log("companyiD" , companyId , oldStatus , newBdmStatus)
         const DT = new Date();
         try {
             const response = await axios.post(`${secretKey}/bdm-data/update-bdm-status/${companyId}`, {
                 newBdmStatus,
                 companyId,
                 oldStatus,
-                bdmAcceptStatus: "Accept",
+                bdmAcceptStatus: oldStatus === "Matured" ? "MaturedAccepted" : "Accept",
                 bdmStatusChangeDate: new Date(),
                 bdmStatusChangeTime: DT.toLocaleTimeString()
             });
@@ -479,7 +479,11 @@ function TeamLeadsGeneral({
                                     <td>{company.ename}</td>
                                     <td>
                                         <div className="d-flex justify-content-center">
-                                            <div className={`${company.Status === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                            <div className={`${
+                                                company.Status === "Interested" ? "dfault_interested-status" : 
+                                                company.Status === "FollowUp" ? "dfault_followup-status" :
+                                                company.Status === "Matured" ? "dfault_approved-status" :
+                                                "dfault_followup-status"}`}>
                                                 {company.Status}
                                             </div>
 
@@ -490,11 +494,12 @@ function TeamLeadsGeneral({
                                                         ? "intersted-history-btn disabled"
                                                         : company.Status === "FollowUp"
                                                             ? "followup-history-btn disabled"
-                                                            : "")
+                                                            : company.Status === "Matured" ? "matured-history-btn disabled" :  "")
                                                     : (company.Status === "Interested"
                                                         ? "intersted-history-btn"
                                                         : company.Status === "FollowUp"
-                                                            ? "followup-history-btn"
+                                                            ? "followup-history-btn" 
+                                                            :company.Status === "Matured" ? "matured-history-btn"
                                                             : "")
                                             }>
                                                 <FaEye
