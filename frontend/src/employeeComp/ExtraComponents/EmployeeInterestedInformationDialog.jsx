@@ -23,7 +23,7 @@ function EmployeeInterestedInformationDialog({
     forView,
     fordesignation,
     id,
-   
+
 
 }) {
 
@@ -220,11 +220,12 @@ function EmployeeInterestedInformationDialog({
                     "Company Name": companyName
                 })
             // Call setStatus and setStatusClass only if they are available
-            if (typeof setStatus === 'function') {
+            if (typeof setStatus === 'function' && typeof refetch === 'function') {
                 setStatus(companyStatus);
+                refetch();
             }
             if (typeof setStatusClass === 'function') {
-                setStatusClass("untouched_status");
+                setStatusClass(companyStatus === "Untouched" ? "untouched_status" : companyStatus === "Busy" ? "dfaulter-status" : "cdbp-status");
             } if (typeof refetch === 'function') {
                 refetch();
             }
@@ -232,7 +233,7 @@ function EmployeeInterestedInformationDialog({
 
         }
 
-     
+
         // Manually hide the modal
         const modalElement = document.getElementById(modalId);
         modalElement.classList.remove("show");
@@ -307,7 +308,7 @@ function EmployeeInterestedInformationDialog({
         return !fieldData;
     };
 
- 
+
     // console.log("visiblequestions" , visibleQuestions)
     return (<>
         <div className="modal fade" id={modalId} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -322,15 +323,15 @@ function EmployeeInterestedInformationDialog({
                         ></button>
                     </div>
                     <div className="modal-body">
-                        <div className = 'd-flex align-items-center justify-content-between'>
-                        <div className="company_name_int-_mod">
-                            {companyName}
-                        </div>
-                        <div className="company_name_int-_mod">
-                            {prefilledData?.updatedAt ? formatDatePro(prefilledData?.updatedAt) : ""}
-                        </div>
+                        <div className='d-flex align-items-center justify-content-between'>
+                            <div className="company_name_int-_mod">
+                                {companyName}
                             </div>
-                        
+                            <div className="company_name_int-_mod">
+                                {prefilledData?.updatedAt ? formatDatePro(prefilledData?.updatedAt) : ""}
+                            </div>
+                        </div>
+
                         <div className="accordion" id="accordionQue">
                             {(!forView || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) && (<div className="accordion-item int-accordion-item">
                                 <div className="accordion-header p-2" id="accordionQueOne">
