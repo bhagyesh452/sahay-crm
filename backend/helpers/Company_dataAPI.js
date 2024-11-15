@@ -2169,7 +2169,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     // Count documents for each category
     const [notInterestedCount, interestedCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
-      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp","Busy" , "Not Picked Up"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept","MaturedPending", "MaturedAccepted", undefined] } }),
       CompanyModel.countDocuments({
         ...baseQuery,
@@ -2181,7 +2181,7 @@ router.get("/employees-new/:ename", async (req, res) => {
           },
           // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
           {
-            Status: { $in: ["Interested", "FollowUp"] },
+            Status: { $in: ["Interested", "FollowUp","Busy" , "Not Picked Up"] },
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
           },
         ],
