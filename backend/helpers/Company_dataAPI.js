@@ -107,19 +107,19 @@ router.post("/update-status/:id", async (req, res) => {
     }
 
     //Update the status field in the CompanyModel
-    if (newStatus === "Busy" || newStatus === "Not Picked Up") {
+    // if (newStatus === "Busy" || newStatus === "Not Picked Up") {
+    //   await CompanyModel.findByIdAndUpdate(id, {
+    //     Status: newStatus,
+    //     lastActionDate: new Date(),
+    //   });
+    // } else {
       await CompanyModel.findByIdAndUpdate(id, {
         Status: newStatus,
-        bdmStatusChangeDate: new Date(),
-        bdmStatusChangeTime: time,
-        lastActionDate: new Date()
+        AssignDate: new Date(),
+        bdmStatus: newStatus,
+        lastActionDate: new Date(),
       });
-    } else {
-      await CompanyModel.findByIdAndUpdate(id, {
-        Status: newStatus,
-        AssignDate: new Date()
-      });
-    }
+    // }
 
     // Define an array of statuses for which the lead history should be deleted
     const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched", "Not Picked Up"];
@@ -2115,7 +2115,7 @@ router.get("/employees-new/:ename", async (req, res) => {
         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
         Status: { $in: ["Busy", "Not Picked Up"] }
       })
-        .sort({ lastActionDate: -1 })
+        .sort({ AssignDate: -1 })
         .skip(skip)
         .limit(limit),
 
@@ -2220,7 +2220,7 @@ router.get("/employees-new/:ename", async (req, res) => {
           // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
           {
             Status: { $in: ["Interested", "FollowUp"] },
-            bdmAcceptStatus: { $in: ["Pending", "Accept"] },
+            bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
           },
         ],
       }),
