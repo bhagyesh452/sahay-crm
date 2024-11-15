@@ -363,28 +363,28 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } })
-        .sort({ bdmStatusChangeDate: -1 })
-        .skip(skip)
-        .limit(limit),
-      // CompanyModel.find({
-      //   ...commonQuery,
-      //   $or: [
-      //     // Condition for "Matured" status
-      //     {
-      //       Status: "Matured",
-      //       bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }
-      //     },
-      //     // Condition for "Interested" and "FollowUp" statuses
-      //     {
-      //       Status: { $in: ["Interested", "FollowUp"] },
-      //       bdmAcceptStatus: { $in: ["Accept"] }
-      //     }
-      //   ]
-      // })
+      // CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } })
       //   .sort({ bdmStatusChangeDate: -1 })
       //   .skip(skip)
       //   .limit(limit),
+      CompanyModel.find({
+        ...commonQuery,
+        $or: [
+          // Condition for "Matured" status
+          {
+            Status: "Matured",
+            bdmAcceptStatus: { $in: ["MaturedAccepted"] }
+          },
+          // Condition for "Interested" and "FollowUp" statuses
+          {
+            Status: { $in: ["Interested", "FollowUp"] },
+            bdmAcceptStatus: { $in: ["Accept"] }
+          }
+        ]
+      })
+        .sort({ bdmStatusChangeDate: -1 })
+        .skip(skip)
+        .limit(limit),
 
       CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" })
         .sort({ bdmStatusChangeDate: -1 })
@@ -401,22 +401,22 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     const [totalGeneral, totalBusy, totalInterested, totalMatured, totalNotInterested] = await Promise.all([
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending", "MaturedPending"] } }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded" , "MaturedAccepted"] }, Status: { $in: ["Busy", "Not Picked Up"] } }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } }),
-      // CompanyModel.countDocuments({
-      //   ...commonQuery,
-      //   $or: [
-      //     // Condition for "Matured" status with specific bdmAcceptStatus values
-      //     {
-      //       Status: "Matured",
-      //       bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] },
-      //     },
-      //     // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
-      //     {
-      //       Status: { $in: ["Interested", "FollowUp"] },
-      //       bdmAcceptStatus: { $in: ["Accept"] },
-      //     },
-      //   ],
-      // }),
+      // CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } }),
+      CompanyModel.countDocuments({
+        ...commonQuery,
+        $or: [
+          // Condition for "Matured" status with specific bdmAcceptStatus values
+          {
+            Status: "Matured",
+            bdmAcceptStatus: { $in: ["MaturedAccepted"] },
+          },
+          // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
+          {
+            Status: { $in: ["Interested", "FollowUp"] },
+            bdmAcceptStatus: { $in: ["Accept"] },
+          },
+        ],
+      }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Not Interested", "Junk"] } }),
     ]);
