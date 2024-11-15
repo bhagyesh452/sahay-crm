@@ -230,7 +230,7 @@ function EmployeeInterestedInformationDialog({
                 refetch();
             }
             setVisibleQuestions({})
-
+            refetch();
         }
 
 

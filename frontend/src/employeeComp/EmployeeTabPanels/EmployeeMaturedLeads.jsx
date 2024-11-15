@@ -836,7 +836,7 @@ function EmployeeMaturedLeads({
                                                                 cursor: "pointer",
                                                                 width: "17px",
                                                                 height: "17px",
-                                                                display:"none",
+                                                                // display:"none",
                                                             }}
                                                             title="Forward To BDM"
                                                             color="grey"

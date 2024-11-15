@@ -2110,14 +2110,14 @@ router.get("/employees-new/:ename", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({
-        ...baseQuery,
-        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
-        Status: { $in: ["Busy", "Not Picked Up"] }
-      })
-        .sort({ AssignDate: -1 })
-        .skip(skip)
-        .limit(limit),
+        CompanyModel.find({
+          ...baseQuery,
+          bdmAcceptStatus: "NotForwarded",
+          Status: { $in: ["Busy", "Not Picked Up"] }
+        })
+          .sort({ lastActionDate: -1 })
+          .skip(skip)
+          .limit(limit),
 
       CompanyModel.find({
         ...baseQuery,
@@ -2138,7 +2138,7 @@ router.get("/employees-new/:ename", async (req, res) => {
           },
           // Condition for "Interested" and "FollowUp" statuses
           {
-            Status: { $in: ["Interested", "FollowUp"] },
+            Status: { $in: ["Interested", "FollowUp" ,"Busy" , "Not Picked Up"] },
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
           }
         ]
@@ -2165,49 +2165,11 @@ router.get("/employees-new/:ename", async (req, res) => {
         .limit(limit),
     ]);
 
-    // // Fetch teamleadsdata for matching companies and add the 'bdmStatus' field
-    // const companyIds = [
-    //   ...maturedData.map(item => item["Company Name"]),
-    //   ...interestedData.map(item => item["Company Name"]),
-    //   ...forwardedData.map(item => item["Company Name"]),
-    //   ...busyData.map(item => item["Company Name"]),
-    //   ...generalData.map(item => item["Company Name"]),
-    //   ...notInterestedData.map(item => item["Company Name"]),
-    // ];
-    // // console.log("companyIds" , companyIds)
-
-    // const teamLeadsData = await TeamLeadsModel.find({
-    //   "Company Name": { $in: companyIds }  // Convert strings to ObjectId
-    // }).lean();
-
-    // // console.log("teamLeads" , teamLeadsData)
-
-    // // Create a map for bdmStatus by companyId for quick lookup
-    // const bdmStatusMap = teamLeadsData.reduce((acc, item) => {
-    //   acc[item["Company Name"]] = item.bdmStatus;
-    //   return acc;
-    // }, {});
-
-    // // Update the data by adding the bdmStatus field from teamleadsdata
-    // const addBdmStatusToData = (data) => {
-    //   return data.map(item => ({
-    //     ...item,
-    //     bdmStatus: bdmStatusMap[item["Company Name"]] || null, // Add bdmStatus if available, else null
-    //   }));
-    // };
-
-    // const updatedMaturedData = addBdmStatusToData(maturedData);
-    // const updatedInterestedData = addBdmStatusToData(interestedData);
-    // const updatedForwardedData = addBdmStatusToData(forwardedData);
-    // const updatedBusyData = addBdmStatusToData(busyData);
-    // const updatedGeneralData = addBdmStatusToData(generalData);
-    // const updatedNotInterestedData = addBdmStatusToData(notInterestedData);
-
     const combinedData = [...generalData, ...busyData, ...interestedData, ...maturedData, ...notInterestedData];
     // Count documents for each category
     const [notInterestedCount, interestedCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
-      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp","Busy" , "Not Picked Up"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept","MaturedPending", "MaturedAccepted", undefined] } }),
       CompanyModel.countDocuments({
         ...baseQuery,
@@ -2224,7 +2186,7 @@ router.get("/employees-new/:ename", async (req, res) => {
           },
         ],
       }),
-      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Busy", "Not Picked Up"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Busy", "Not Picked Up"] }, bdmAcceptStatus: "NotForwarded" }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Untouched"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } })
     ]);
 
