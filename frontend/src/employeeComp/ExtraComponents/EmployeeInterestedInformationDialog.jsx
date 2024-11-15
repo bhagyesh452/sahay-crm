@@ -220,8 +220,9 @@ function EmployeeInterestedInformationDialog({
                     "Company Name": companyName
                 })
             // Call setStatus and setStatusClass only if they are available
-            if (typeof setStatus === 'function') {
+            if (typeof setStatus === 'function' && typeof refetch === 'function') {
                 setStatus(companyStatus);
+                refetch();
             }
             if (typeof setStatusClass === 'function') {
                 setStatusClass(companyStatus === "Untouched" ? "untouched_status" : companyStatus === "Busy" ? "dfaulter-status" : "cdbp-status");
