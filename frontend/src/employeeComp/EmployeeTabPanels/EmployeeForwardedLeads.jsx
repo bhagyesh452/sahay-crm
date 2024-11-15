@@ -217,7 +217,7 @@ function EmployeeForwardedLeads({
         }
     }, []);
 
-    console.log(".bdmStatu" , forwardedLeads)
+    console.log(".bdmStatu", forwardedLeads)
 
 
     return (
@@ -847,8 +847,10 @@ function EmployeeForwardedLeads({
                                                 <div
                                                     className={company.Status === "Interested" ? "dfault_interested-status" :
                                                         company.Status === "FollowUp" ? "dfault_followup-status" :
-                                                        company.bdmStatus && company.bdmStatus === "Untouched" ? "dfault_untouched-status" :
-                                                            null}>
+                                                            company.Status === "Busy" ? "dfault_busy-status" :
+                                                                company.Status === "Not Picked Up" ? "dfault_not-pickedup-status" :
+                                                                    company.bdmStatus && company.bdmStatus === "Untouched" ? "dfault_untouched-status" :
+                                                                        null}>
                                                     {company.bdmStatus ? company.bdmStatus : company.Status}
                                                 </div>
                                             </td>

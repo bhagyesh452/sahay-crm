@@ -649,7 +649,7 @@ function TeamLeadsBusy({
                                     </td>
                                     <td>
                                         {newDesignation ?
-                                            <div className={`${company.Status === "Busy" ? "dfault_busy-status" : "dfault_not-interested-status"}`}>
+                                            <div className={`${company.Status === "Busy" ? "dfault_busy-status" : "dfault_not-pickedup-status"}`}>
                                                 {company.Status}
                                             </div>
                                             : <EmployeeStatusChange
