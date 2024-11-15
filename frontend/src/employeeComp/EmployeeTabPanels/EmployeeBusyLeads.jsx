@@ -502,10 +502,10 @@ function EmployeeBusyLeads({
                                                                 type="checkbox"
                                                                 checked={selectedRows && selectedRows.includes(company._id)}
                                                                 onChange={(e) => handleCheckboxChange(company._id, e)}
+                                                                onMouseUp={handleMouseUp}
                                                             />
                                                             <span class="table_checkmark"></span>
                                                         </label>
-
                                                     </td>
                                                 )}
                                                 <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
