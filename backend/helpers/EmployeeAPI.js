@@ -617,12 +617,12 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
           <p>Best regards,<br>HR Team<br>Start-Up Sahay Private Limited</p>
         `;
 
-        try {
-          const emailInfo = await sendMailEmployees([employee.email], subject, "", html);
-          console.log(`Email sent: ${emailInfo.messageId}`);
-        } catch (emailError) {
-          console.error('Error sending email:', emailError);
-        }
+        // try {
+        //   const emailInfo = await sendMailEmployees([employee.email], subject, "", html);
+        //   console.log(`Email sent: ${emailInfo.messageId}`);
+        // } catch (emailError) {
+        //   console.error('Error sending email:', emailError);
+        // }
 
         successCount++;
 
@@ -1058,63 +1058,21 @@ router.put("/savedeletedemployee", upload.fields([
 
 router.get("/deletedemployeeinfo", async (req, res) => {
   try {
-    // Destructure query parameters
-    // const { search } = req.query;
-    // console.log("Search query :", search);
+    // Fetch employees where isPermanentDelete is false or doesn't exist
+    const data = await deletedEmployeeModel.find({
+      $or: [
+        { isPermanentDeleted: false },  // Include documents where isPermanentDelete is false
+        { isPermanentDeleted: { $exists: false } } // Include documents where isPermanentDelete is undefined
+      ]
+    }).lean();
 
-    // Create the filter object
-    // const filter = {};
-
-    // if (search) {
-    // Define search conditions
-    // const searchRegex = new RegExp(search, "i"); // case-insensitive search
-
-    // Map search terms for designation
-    //   let designationConditions = [];
-    //   if (search.toLowerCase() === "bd") {
-    //     // For BDE, match both Business Development Executive and Business Development Manager
-    //     designationConditions = [
-    //       { newDesignation: /Business Development Executive/i },
-    //       { newDesignation: /Business Development Manager/i }
-    //     ];
-    //   } else if (search.toLowerCase() === "bde") {
-    //     designationConditions = [{ newDesignation: /Business Development Executive/i }];
-    //   } else if (search.toLowerCase() === "bdm") {
-    //     designationConditions = [{ newDesignation: /Business Development Manager/i }];
-    //   } else if (search.toLowerCase() === "business development executive") {
-    //     designationConditions = [{ newDesignation: /Business Development Executive/i }];
-    //   } else if (search.toLowerCase() === "business development manager") {
-    //     designationConditions = [{ newDesignation: /Business Development Manager/i }];
-    //   } else {
-    //     designationConditions = [{ newDesignation: searchRegex }];
-    //   }
-
-    //   // Build the search query using $or
-    //   filter.$or = [
-    //     { ename: searchRegex },
-    //     { number: searchRegex },
-    //     { email: searchRegex },
-    //     { branchOffice: searchRegex },
-    //     { department: searchRegex },
-    //     ...designationConditions
-    //   ];
-    // }
-
-    // Perform the search query with projection
-    // let data;
-    // if(!search){
-    // Fetch all data when there's no search.
-    const data = await deletedEmployeeModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
-    // } else {
-    //   // Search using filter
-    //   data = await deletedEmployeeModel.find(filter).lean();
-    // }
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 // router.get("/searchDeletedEmployeeInfo", async (req, res) => {
 //   try {
@@ -2587,9 +2545,9 @@ router.delete("/einfo/:id", async (req, res) => {
 
 
 // ------------------new change only to hide employee not to delete it premannetly 16-11-2024------------------------
-router.put("/permanentDelete/:id", async (req, res) => {
+router.post("/permanentDelete/:id", async (req, res) => {
   const itemId = req.params.id;
-  console.log("itemId", itemId);
+  const socketIO = req.io;
 
   try {
     const updatedData = await deletedEmployeeModel.findByIdAndUpdate(
@@ -2597,12 +2555,12 @@ router.put("/permanentDelete/:id", async (req, res) => {
       { isPermanentDeleted: true }, // Set the field to true
       { new: true } // Return the updated document
     );
-    console.log("updatedData", updatedData);
+    // console.log("updatedData", updatedData);
 
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
     }
-
+    socketIO.emit("employee-deleted-permanently");
     res.status(200).json({ message: "Data marked as permanently deleted", updatedData });
   } catch (error) {
     console.error("Error updating data:", error);

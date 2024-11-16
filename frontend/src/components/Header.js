@@ -226,7 +226,7 @@ function Header({ name, id, designation, empProfile, gender }) {
         // Set count to 3 and dismissed to true, ensuring no further popups
         const newStoredData = JSON.parse(localStorage.getItem(userId))
 
-        console.log("kyaidharchala", newStoredData)
+        // console.log("kyaidharchala", newStoredData)
         // Update component state
         setPopupCount(newStoredData.count || 0);
         setLastPopupTime(new Date(newStoredData.lastShown) || null);

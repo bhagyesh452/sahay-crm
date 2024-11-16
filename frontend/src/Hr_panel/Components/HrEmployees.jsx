@@ -372,7 +372,7 @@ function HrEmployees() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`${secretKey}/employee/permanentDelete/${itemId}`);
+          const response = await axios.post(`${secretKey}/employee/permanentDelete/${itemId}`);
           Swal.fire(
             'Deleted!',
             'success'

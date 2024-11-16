@@ -29,7 +29,9 @@ import { useQuery } from "@tanstack/react-query";
 import UpcomingEmployees from "../Hr_panel/Components/UpcomingEmployees.jsx";
 import DialogAddRecentEmployee from "../Hr_panel/Components/Extra Components/DialogAddRecentEmployee.jsx";
 import AddBulkTagretDialog from "../admin/ExtraComponent/AddBulkTagretDialog.jsx";
-
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import notification_audio from "../assets/media/notification_tone.mp3";
+import io from "socket.io-client";
 
 
 function NewEmployee() {
@@ -49,6 +51,28 @@ function NewEmployee() {
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
     }, []);
+
+    useEffect(()=>{
+        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
+          });
+          socket.on("employee-deleted-permanently", (res) => {
+            
+            //   enqueueSnackbar(`Employee Deleted Permanently 🔄`, { variant: "reportComplete", persist: true });
+            //   const audioplayer = new Audio(notification_audio);
+            //   audioplayer.play();
+              refetchDeleted();
+           
+          });
+
+          // Clean up the socket connection when the component unmounts
+    return () => {
+        socket.disconnect();
+      };
+    },[adminName])
 
 
 
@@ -104,7 +128,7 @@ function NewEmployee() {
         staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
         refetchInterval: 60 * 1000,  // Refetch every 1 minute
     });
-
+    console.log("deletedData", deletedData?.data)
     // Deleted employees filtering and setting
     useEffect(() => {
         if (deletedData?.data) {

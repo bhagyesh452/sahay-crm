@@ -119,7 +119,7 @@ function Header({ name, designation }) {
       const employeeNumbers = tempData.map((item) => item.number); // Extract the 'number' field
   
       // You can use employeeNumbers array now
-      console.log("Employee Numbers: ", employeeNumbers);
+      // console.log("Employee Numbers: ", employeeNumbers);
   
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -168,8 +168,8 @@ function Header({ name, designation }) {
     const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
     const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
 
-    console.log("start", startTimestamp)
-    console.log("end", endTimestamp)
+    // console.log("start", startTimestamp)
+    // console.log("end", endTimestamp)
     const body = {
       "call_from": startTimestamp,
       "call_to": endTimestamp,
@@ -224,7 +224,7 @@ function Header({ name, designation }) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
 
-      console.log('Previous day data saved successfully');
+      // console.log('Previous day data saved successfully');
     } catch (err) {
       console.error('Error saving data:', err.message);
     }
