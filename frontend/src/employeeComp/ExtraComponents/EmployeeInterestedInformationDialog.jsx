@@ -23,7 +23,7 @@ function EmployeeInterestedInformationDialog({
     forView,
     fordesignation,
     id,
-
+    setOpenBacdrop
 
 }) {
 
@@ -166,6 +166,7 @@ function EmployeeInterestedInformationDialog({
             "Company Name": companyName,
             ename: ename
         }
+        setOpenBacdrop(true)
         try {
             const response = await axios.post(`${secretKey}/company-data/company/${companyName}/interested-info`,
                 {
@@ -184,6 +185,8 @@ function EmployeeInterestedInformationDialog({
             }
         } catch (error) {
             console.error('Error saving data:', error);
+        }finally{
+            setOpenBacdrop(false)
         }
     };
 

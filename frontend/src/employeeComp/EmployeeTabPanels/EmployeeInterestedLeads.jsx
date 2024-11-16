@@ -25,7 +25,8 @@ import FilterableComponentEmployee from "../ExtraComponents/FilterableComponentE
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
 import { TiArrowForward } from "react-icons/ti";
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function EmployeeInterestedLeads({
   interestedData,
@@ -87,7 +88,7 @@ function EmployeeInterestedLeads({
   const [isProjectionEditable, setIsProjectionEditable] = useState(false);
   const [projectionDataToBeFilled, setProjectionDataToBeFilled] = useState({});
   const [viewedForParticularCompany, setViewedForParticularCompany] = useState(false);
-
+  const [openBacdrop, setOpenBacdrop] = useState(false)
   const handleCloseBdmPopup = () => {
     setShowForwardToBdmPopup(false);
   };
@@ -166,14 +167,20 @@ function EmployeeInterestedLeads({
     }
   }, []);
 
-  console.log("interestedData", interestedData);
-  console.log("filterField", activeFilterField);
-  console.log("activeFilterFieldsInterested", activeFilterFields);
-  console.log("companyId", companyId)
+  // console.log("interestedData", interestedData);
+  // console.log("filterField", activeFilterField);
+  // console.log("activeFilterFieldsInterested", activeFilterFields);
+  // console.log("companyId", companyId)
 
 
   return (
     <div className="sales-panels-main" onMouseUp={handleMouseUp}>
+      {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={() => setOpenBacdrop(false)}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
       <>
         <div className="table table-responsive e-Leadtable-style m-0">
           <table
@@ -690,6 +697,7 @@ function EmployeeInterestedLeads({
                             ename={ename}
                             bdmAcceptStatus={company.bdmAcceptStatus}
                             handleFormOpen={handleOpenFormOpen}
+                            setOpenBacdrop={setOpenBacdrop}
                           />
                         )}
                         <div

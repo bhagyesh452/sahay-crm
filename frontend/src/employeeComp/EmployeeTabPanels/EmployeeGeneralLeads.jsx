@@ -13,7 +13,8 @@ import RemarksDialog from '../ExtraComponents/RemarksDialog';
 import FilterableComponentEmployee from '../ExtraComponents/FilterableComponentEmployee';
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function EmployeeGeneralLeads({
     userId,
@@ -75,6 +76,7 @@ function EmployeeGeneralLeads({
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [openBacdrop, setOpenBacdrop] = useState(false)
     //const [filteredData, setFilteredData] = useState([]);
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -132,12 +134,18 @@ function EmployeeGeneralLeads({
         }
     }, []);
 
-    console.log("activeFilterFieldsGeneral", activeFilterFields)
-    console.log("generalData" , generalData)
+    // console.log("activeFilterFieldsGeneral", activeFilterFields)
+    // console.log("generalData" , generalData)
 
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
+             {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={() => setOpenBacdrop(false)}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive e-Leadtable-style m-0">
@@ -578,6 +586,7 @@ function EmployeeGeneralLeads({
                                                             cnum={company["Company Number"]}
                                                             ename={company.ename}
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
+                                                            setOpenBacdrop={setOpenBacdrop}
                                                         />
                                                     )}
                                                 </td>

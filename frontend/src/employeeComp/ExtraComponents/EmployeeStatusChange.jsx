@@ -28,7 +28,8 @@ const EmployeeStatusChange = ({
   handleFormOpen,
   teamData,
   isBdmStatusChange,
-  bdmStatus
+  bdmStatus,
+  setOpenBacdrop
 }) => {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -107,6 +108,7 @@ const EmployeeStatusChange = ({
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
+    setOpenBacdrop(true)
     //setNewSubStatus(newStatus);
     if (newStatus === "Matured") {
       handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename);
@@ -118,9 +120,10 @@ const EmployeeStatusChange = ({
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
-
+    
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
     try {
+      
       let response;
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
@@ -177,6 +180,8 @@ const EmployeeStatusChange = ({
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
+    }finally{
+      setOpenBacdrop(false)
     }
   };
 
@@ -540,6 +545,7 @@ const EmployeeStatusChange = ({
       setStatusClass={setStatusClass}
       companyStatus={companyStatus}
       id={id}
+      setOpenBacdrop={setOpenBacdrop}
     />
   </>);
 };
