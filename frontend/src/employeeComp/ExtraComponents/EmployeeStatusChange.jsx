@@ -27,12 +27,14 @@ const EmployeeStatusChange = ({
   bdmAcceptStatus,
   handleFormOpen,
   teamData,
-  isBdmStatusChange
+  isBdmStatusChange,
+  bdmStatus,
+  setOpenBacdrop
 }) => {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  const [status, setStatus] = useState(companyStatus);
+  const [status, setStatus] = useState(isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus);
   const [statusClass, setStatusClass] = useState("");
   const [showDialog, setShowDialog] = useState(false); // State to control popup visibility
   const [selectedStatus, setSelectedStatus] = useState(""); // Store the selected status for the popup confirmation
@@ -52,10 +54,8 @@ const EmployeeStatusChange = ({
 
       if (newStatus === "Matured") {
         handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename, bdmName);
-        return true;
-      }
-
-      if (newStatus !== "Matured") {
+        // return true;
+      } else {
         const response = await axios.post(`${secretKey}/bdm-data/bdm-status-change/${id}`, {
           bdeStatus: companyStatus,
           bdmnewstatus: newStatus,
@@ -64,12 +64,14 @@ const EmployeeStatusChange = ({
           time: time,
           bdmStatusChangeDate: bdmStatusChangeDate,
         });
+        console.log("bdmAcceptStatus", bdmAcceptStatus , newStatus);
 
         const response2 = await axios.post(`${secretKey}/company-data/update-status/${id}`, {
           newStatus,
           title,
           date,
           time,
+          bdmAcceptStatus,
         });
 
         // Check if the API call was successful
@@ -79,20 +81,24 @@ const EmployeeStatusChange = ({
           // Handle the case where the API call was not successful
           console.error("Failed to update status:", response.data.message);
         }
-
-      } else {
-        const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
-        // setMaturedBooking(currentObject);
-        console.log("currentObject", currentObject);
-        // setDeletedEmployeeStatus(isDeletedEmployeeCompany);
-        if (!isDeletedEmployeeCompany) {
-          console.log("formchal");
-          // setFormOpen(true);
-        } else {
-          console.log("addleadfromchal");
-          // setAddFormOpen(true);
-        }
       }
+
+      
+        
+
+      // } else {
+      //   const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
+      //   // setMaturedBooking(currentObject);
+      //   console.log("currentObject", currentObject);
+      //   // setDeletedEmployeeStatus(isDeletedEmployeeCompany);
+      //   if (!isDeletedEmployeeCompany) {
+      //     console.log("formchal");
+      //     // setFormOpen(true);
+      //   } else {
+      //     console.log("addleadfromchal");
+      //     // setAddFormOpen(true);
+      //   }
+       
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
@@ -102,6 +108,7 @@ const EmployeeStatusChange = ({
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
+    setOpenBacdrop(true)
     //setNewSubStatus(newStatus);
     if (newStatus === "Matured") {
       handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename);
@@ -113,9 +120,10 @@ const EmployeeStatusChange = ({
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
-
+    
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
     try {
+      
       let response;
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
@@ -172,6 +180,8 @@ const EmployeeStatusChange = ({
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
+    }finally{
+      setOpenBacdrop(false)
     }
   };
 
@@ -256,8 +266,8 @@ const EmployeeStatusChange = ({
   };
 
   useEffect(() => {
-    setStatusClass(getStatusClass(mainStatus, companyStatus));
-  }, [mainStatus, companyStatus]);
+    setStatusClass(getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus: companyStatus)));
+  }, [mainStatus, companyStatus , bdmStatus]);
 
   // ----------------------------------functions for modal--------------------------------
   const modalId = `modal-${companyName?.replace(/[^a-zA-Z0-9]/g, '')}`; // Generate a sanitized modal ID
@@ -535,6 +545,7 @@ const EmployeeStatusChange = ({
       setStatusClass={setStatusClass}
       companyStatus={companyStatus}
       id={id}
+      setOpenBacdrop={setOpenBacdrop}
     />
   </>);
 };

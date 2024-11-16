@@ -1456,13 +1456,17 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           await CompanyModel.findByIdAndUpdate(companyData._id, {
             multiBdmName: multiBdmName,
             Status: "Matured",
+           
           });
         }
       }
       if (companyData && companyData.isDeletedEmployeeCompany) {
         await CompanyModel.findByIdAndUpdate(companyData._id, {
-          Status: "Matured"
+          Status: "Matured",
+           bdmStatus:"Matured",
+           bdmAcceptStatus:"MaturedDone"
         });
+        await TeamLeadsModel.findByIdAndDelete(companyData._id);
       }
 
       if (projectionData) {

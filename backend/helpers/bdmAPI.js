@@ -358,27 +358,32 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded" , "MaturedAccepted"] }, Status: { $in: ["Busy", "Not Picked Up"] } })
-        .sort({ bdmStatusChangeDate: -1 })
-        .skip(skip)
-        .limit(limit),
-
-      // CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } })
-      //   .sort({ bdmStatusChangeDate: -1 })
-      //   .skip(skip)
-      //   .limit(limit),
+       CompanyModel.find({
+          ...commonQuery,
+          bdmAcceptStatus: { $in: ["Accept", "NotForwarded", "MaturedAccepted"] },
+          $or: [
+            { Status: { $in: ["Busy", "Not Picked Up"] } },
+            { bdmStatus: { $in: ["Busy", "Not Picked Up"] } },
+          ],
+        })
+          .sort({ bdmStatusChangeDate: -1 }) // Sort by bdmStatusChangeDate descending
+          .skip(skip) // Skip specified number of records
+          .limit(limit), // Limit the number of records
       CompanyModel.find({
         ...commonQuery,
         $or: [
           // Condition for "Matured" status
           {
-            Status: "Matured",
+           $and: [
+            { Status: { $in: ["Matured"] }},
+            { bdmStatus: { $nin: ["Busy", "Not Picked Up"] } },
+          ],
             bdmAcceptStatus: { $in: ["MaturedAccepted"] }
           },
           // Condition for "Interested" and "FollowUp" statuses
           {
             Status: { $in: ["Interested", "FollowUp"] },
-            bdmAcceptStatus: { $in: ["Accept"] }
+            bdmAcceptStatus: { $in: ["Accept" , "MaturedAccepted"] }
           }
         ]
       })
@@ -386,12 +391,12 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" })
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedDone"] }, Status: "Matured" })
         .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept","MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } })
+      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } })
         .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
         .limit(limit),
@@ -400,62 +405,73 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
     // Count total for each status category
     const [totalGeneral, totalBusy, totalInterested, totalMatured, totalNotInterested] = await Promise.all([
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Pending", "MaturedPending"] } }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded" , "MaturedAccepted"] }, Status: { $in: ["Busy", "Not Picked Up"] } }),
-      // CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } }),
+      // CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded" , "MaturedAccepted"] }, Status: { $in: ["Busy", "Not Picked Up"] } }),
       CompanyModel.countDocuments({
         ...commonQuery,
+        bdmAcceptStatus: { $in: ["Accept", "NotForwarded", "MaturedAccepted"] },
         $or: [
-          // Condition for "Matured" status with specific bdmAcceptStatus values
-          {
-            Status: "Matured",
-            bdmAcceptStatus: { $in: ["MaturedAccepted"] },
-          },
-          // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
-          {
-            Status: { $in: ["Interested", "FollowUp"] },
-            bdmAcceptStatus: { $in: ["Accept"] },
-          },
+          { Status: { $in: ["Busy", "Not Picked Up"] }},
+          { bdmStatus: { $in: ["Busy", "Not Picked Up"] } },
         ],
       }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: "Matured" }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept","MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } }),
+    // CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: "Accept", Status: { $in: ["Interested", "FollowUp"] } }),
+    CompanyModel.countDocuments({
+      ...commonQuery,
+      $or: [
+        // Condition for "Matured" status with specific bdmAcceptStatus values
+        {
+          $and: [
+            { Status: { $in: ["Matured"] }},
+            { bdmStatus: { $nin: ["Busy", "Not Picked Up"] } },
+          ],
+          bdmAcceptStatus: { $in: ["MaturedAccepted"] },
+        },
+        // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
+        {
+          Status: { $in: ["Interested", "FollowUp"] },
+          bdmAcceptStatus: { $in: ["Accept" , "MaturedAccepted"] },
+        },
+      ],
+    }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedDone"] }, Status: "Matured" }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } }),
     ]);
 
-    // Total pages calculation based on the largest dataset (generalData as reference)
-    const totalGeneralPages = Math.ceil(totalGeneral / limit);
-    const totalBusyPages = Math.ceil(totalBusy / limit);
-    const totalInterestedPages = Math.ceil(totalInterested / limit);
-    const totalMaturedPages = Math.ceil(totalMatured / limit);
-    const totalNotInterestedPages = Math.ceil(totalNotInterested / limit);
+// Total pages calculation based on the largest dataset (generalData as reference)
+const totalGeneralPages = Math.ceil(totalGeneral / limit);
+const totalBusyPages = Math.ceil(totalBusy / limit);
+const totalInterestedPages = Math.ceil(totalInterested / limit);
+const totalMaturedPages = Math.ceil(totalMatured / limit);
+const totalNotInterestedPages = Math.ceil(totalNotInterested / limit);
 
-    // Combine all data into a single field for easy access if needed
-    const combinedData = [...generalData, ...busyData, ...interestedData, ...maturedData, ...notInterestedData];
+// Combine all data into a single field for easy access if needed
+const combinedData = [...generalData, ...busyData, ...interestedData, ...maturedData, ...notInterestedData];
 
-    return res.status(200).json({
-      currentPage: parseInt(page),
-      perPage: parseInt(limit),
-      totalCounts: totalGeneral + totalBusy + totalInterested + totalMatured + totalNotInterested,
-      totalGeneral: totalGeneral,
-      totalGeneralPages: totalGeneralPages,
-      generalData: generalData.sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)) || [],
-      totalBusy: totalBusy,
-      totalBusyPages: totalBusyPages,
-      busyData: busyData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
-      totalInterested: totalInterested,
-      totalInterestedPages: totalInterestedPages,
-      interestedData: interestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
-      totalMatured: totalMatured,
-      totalMaturedPages: totalMaturedPages,
-      maturedData: maturedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
-      totalNotInterested: totalNotInterested,
-      totalNotInterestedPages: totalNotInterestedPages,
-      notInterestedData: notInterestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
-      data: combinedData // combined data of all statuses on this page
-    });
+return res.status(200).json({
+  currentPage: parseInt(page),
+  perPage: parseInt(limit),
+  totalCounts: totalGeneral + totalBusy + totalInterested + totalMatured + totalNotInterested,
+  totalGeneral: totalGeneral,
+  totalGeneralPages: totalGeneralPages,
+  generalData: generalData.sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)) || [],
+  totalBusy: totalBusy,
+  totalBusyPages: totalBusyPages,
+  busyData: busyData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
+  totalInterested: totalInterested,
+  totalInterestedPages: totalInterestedPages,
+  interestedData: interestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
+  totalMatured: totalMatured,
+  totalMaturedPages: totalMaturedPages,
+  maturedData: maturedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
+  totalNotInterested: totalNotInterested,
+  totalNotInterestedPages: totalNotInterestedPages,
+  notInterestedData: notInterestedData.sort((a, b) => new Date(b.bdmStatusChangeDate) - new Date(a.bdmStatusChangeDate)) || [],
+  data: combinedData // combined data of all statuses on this page
+});
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
+  console.error(error);
+  return res.status(500).json({ message: "Internal Server Error" });
+}
 });
 
 router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
@@ -559,12 +575,16 @@ router.post("/update-bdm-status/:id", async (req, res) => {
       bdmStatusChangeTime: bdmStatusChangeTime,
     });
 
+    const companyToFind = await CompanyModel.findById(id).lean();
+    // console.log("companyToFind", companyToFind)
     const company = await CompanyModel.findByIdAndUpdate(id, {
       bdmStatus: oldStatus === "Matured" ? "Interested" : oldStatus,
       bdmAcceptStatus: bdmAcceptStatus,
       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
       bdmStatusChangeTime: bdmStatusChangeTime,
+      isDeletedEmployeeCompany: oldStatus === "Matured" ? true : companyToFind.isDeletedEmployeeCompany
     });
+
 
     socketIO.emit("bdmDataAcceptedRequest", {
       ename: company.ename,
@@ -644,9 +664,10 @@ router.post("/bdm-status-change/:id", async (req, res) => {
   try {
     // Update the status field in the database based on the employee id
 
-
+    console.log("bdmnewstatus1", bdmnewstatus)
     // Conditionally delete from TeamLeadsModel if bdmnewstatus is "Busy"
-    if (bdmnewstatus === "Busy") {
+    if (bdmnewstatus === "Not Interested") {
+      console.log("bdmnewstatus", bdmnewstatus)
       await TeamLeadsModel.findByIdAndDelete(id);
     } else {
       await TeamLeadsModel.findByIdAndUpdate(id, {
@@ -656,20 +677,23 @@ router.post("/bdm-status-change/:id", async (req, res) => {
         bdmStatusChangeTime: time,
       });
     }
-    const updateFields = {
-      Status: bdmnewstatus,
-      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
-      bdmStatusChangeTime: time,
-      bdmStatus: bdmnewstatus
-    };
+    // const updateFields = {
+    //   Status: bdmnewstatus,
+    //   bdmStatusChangeDate: new Date(bdmStatusChangeDate),
+    //   bdmStatusChangeTime: time,
+    //   bdmStatus: bdmnewstatus
+    // };
 
 
-    // if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
+    // if (bdmnewstatus === "Not Interested") {
     //   updateFields.bdmAcceptStatus = "NotForwarded"
+    //   updateFields.bdmStatus === "Not Interested"
     // }
-    //console.log("updateFie", updateFields)
-    // Update the CompanyModel
-    await CompanyModel.findByIdAndUpdate(id, { $set: updateFields });
+    // //console.log("updateFie", updateFields)
+    // // Update the CompanyModel
+    // await CompanyModel.findByIdAndUpdate(id, {
+    //   $set: updateFields
+    // });
 
     if (bdmnewstatus === "Interested") {
       await LeadHistoryForInterestedandFollowModel.findOneAndUpdate(
@@ -704,10 +728,19 @@ router.post(`/teamleads-reversedata/:id`, async (req, res) => {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
-    await CompanyModel.findByIdAndUpdate(id, {
-      bdmAcceptStatus: bdmAcceptStatus,
-      bdmName: bdmName,
-    }); // Corrected update
+    await CompanyModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          bdmAcceptStatus: bdmAcceptStatus, // Set this value
+          bdmName: bdmName,                // Set this value
+        },
+        $unset: {
+          bdmStatus: ""
+        },
+      },
+      { new: true } // Return the updated document
+    );
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -1721,7 +1754,7 @@ router.get("/floorManagerLeadsReport", async (req, res) => {
     const companyPipeline = [
       {
         $match: {
-          Status: { $in: ["Interested", "FollowUp" , "Busy" , "Not Picked Up"] },
+          Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
           bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] },
           ...(start && end ? { AssignDate: { $gte: start, $lte: end } } : {})
         }

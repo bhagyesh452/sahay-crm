@@ -13,6 +13,9 @@ import { LuHistory } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 function EmployeeBusyLeads({
     userId,
@@ -75,6 +78,8 @@ function EmployeeBusyLeads({
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [openBacdrop, setOpenBacdrop] = useState(false)
+
     //const [filteredData, setFilteredData] = useState([]);
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -137,6 +142,12 @@ function EmployeeBusyLeads({
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={() => setOpenBacdrop(false)}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive e-Leadtable-style m-0">
@@ -502,10 +513,10 @@ function EmployeeBusyLeads({
                                                                 type="checkbox"
                                                                 checked={selectedRows && selectedRows.includes(company._id)}
                                                                 onChange={(e) => handleCheckboxChange(company._id, e)}
+                                                                onMouseUp={handleMouseUp}
                                                             />
                                                             <span class="table_checkmark"></span>
                                                         </label>
-
                                                     </td>
                                                 )}
                                                 <td className={(fordesignation === "admin" || fordesignation === "datamanager") ? "AEP-sticky-left-2" : "rm-sticky-left-1 "}>{startIndex + index + 1}</td>
@@ -577,6 +588,8 @@ function EmployeeBusyLeads({
                                                             cnum={company["Company Number"]}
                                                             ename={company.ename}
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
+                                                            bdmStatus={company.bdmStatus}
+                                                            setOpenBacdrop={setOpenBacdrop}
                                                         />
                                                     )}
                                                 </td>

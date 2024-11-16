@@ -654,8 +654,8 @@ function TeamLeadsBusy({
                                     </td>
                                     <td>
                                         {newDesignation ?
-                                            <div className={`${company.Status === "Busy" ? "dfault_busy-status" : "dfault_not-pickedup-status"}`}>
-                                                {company.Status}
+                                            <div className={`${company.Status || company.bdmStatus === "Busy" ? "dfault_busy-status" : "dfault_not-pickedup-status"}`}>
+                                                {company.bdmStatus ? company.bdmStatus : company.Status}
                                             </div>
                                             : <EmployeeStatusChange
                                                 key={`${company["Company Name"]}-${index}`}
@@ -674,6 +674,7 @@ function TeamLeadsBusy({
                                                 teamData={teamData}
                                                 handleFormOpen={handleOpenFormOpen}
                                                 isBdmStatusChange={true}
+                                                bdmStatus={company.bdmStatus}
                                             />}
                                     </td>
                                     <td>

@@ -491,6 +491,12 @@ function EmployeePanelCopy({ fordesignation }) {
                         ? []
                         : queryData?.forwardedData?.map((row) => row._id)
                 );
+            }else if (dataStatus === "Busy" && activeTabId === "Busy") {
+                setSelectedRows((prevSelectedRows) =>
+                    prevSelectedRows.length === queryData?.busyData?.length
+                        ? []
+                        : queryData?.busyData?.map((row) => row._id)
+                );
             } else {
                 setSelectedRows([]);
             }

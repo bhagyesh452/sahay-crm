@@ -390,8 +390,8 @@ const RemarksDialog = ({
   // Render button based on bdmAcceptStatus and company status
   const renderButton = () => {
     if (
-      (remarksKey !== "bdmRemarks" && fordesignation !== "admin" && fordesignation !== "datamanager") && (bdmAcceptStatus !== "Accept" ||
-        ["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
+      (remarksKey !== "bdmRemarks" && fordesignation !== "admin" && fordesignation !== "datamanager") && 
+      ((bdmAcceptStatus !== "Accept" || bdmAcceptStatus !== "MaturedAccepted") ||["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
     ) {
       return (
         <button
@@ -406,7 +406,7 @@ const RemarksDialog = ({
     }
 
     if (
-      (remarksKey === "bdmRemarks" || fordesignation === "admin" || fordesignation === "datamanager") || (bdmAcceptStatus === "Accept" &&
+      (remarksKey === "bdmRemarks" || fordesignation === "admin" || fordesignation === "datamanager") || ((bdmAcceptStatus === "Accept" || bdmAcceptStatus === "MaturedAccepted") &&
         !["Matured", "Not Interested", "Busy", "Not Picked Up", "Junk"].includes(companyStatus))
     ) {
       return (
