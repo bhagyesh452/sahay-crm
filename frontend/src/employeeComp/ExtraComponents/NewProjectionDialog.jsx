@@ -34,7 +34,6 @@ function NewProjectionDialog({
 
     // New state for enabling/disabling fields based on user selection
     const [addProjectionToday, setAddProjectionToday] = useState(null); // null initially, true for adding, false for skipping
-    const [fieldsDisabled, setFieldsDisabled] = useState(true);
     const [companyName, setCompanyName] = useState(projectionData ? (projectionData.companyName || projectionData["Company Name"]) : '');
     const [companyId, setCompanyId] = useState(projectionData ? projectionData._id : '');
     const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
@@ -43,15 +42,36 @@ function NewProjectionDialog({
     const [offeredServices, setOfferedServices] = useState(projectionData ? projectionData.offeredServices : []);
     const [offeredPrice, setOfferedPrice] = useState(projectionData ? projectionData.offeredPrice : null);
     const [expectedPrice, setExpectedPrice] = useState(projectionData ? projectionData.totalPayment : null);
+    const [offeredPriceWithGst, setOfferedPriceWithGst] = useState(projectionData ? projectionData.offeredPriceWithGst : null);
+    const [expectedPriceWithGst, setExpectedPriceWithGst] = useState(projectionData ? projectionData.totalPaymentWithGst : null);
     const [followupDate, setFollowupDate] = useState(projectionData ? formatDate(projectionData.lastFollowUpdate) : '');
     const [paymentDate, setPaymentDate] = useState(projectionData ? formatDate(projectionData.estPaymentDate) : '');
     const [remarks, setRemarks] = useState(projectionData ? projectionData.remarks : '');
     const [bdmName, setBdmName] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
+    const [fieldsDisabled, setFieldsDisabled] = useState(true);
     const [companyNotFound, setCompanyNotFound] = useState(false);
     const [showAddLeadsPopup, setShowAddLeadsPopup] = useState(false);
     const [isProjectionAvailable, setIsProjectionAvailable] = useState(false);
+    const [isCheckedAmountWithGst, setIsCheckedAmountWithGst] = useState(false);
+
+    // Handle GST checkbox change
+    const handleAmountWithGst = (e) => {
+        const isChecked = e.target.checked;
+        setIsCheckedAmountWithGst(isChecked);
+
+        if (isChecked) {
+            // Calculate GST (18%) on offered and expected prices
+            const gstMultiplier = 1.18; // 18% GST
+            setOfferedPriceWithGst((offeredPrice ? parseFloat(offeredPrice) : 0) * gstMultiplier);
+            setExpectedPriceWithGst((expectedPrice ? parseFloat(expectedPrice) : 0) * gstMultiplier);
+        } else {
+            // Reset GST values when checkbox is unchecked
+            setOfferedPriceWithGst("");
+            setExpectedPriceWithGst("");
+        }
+    };
 
     // Handle radio button selection
     const handleRadioChange = (event) => {
@@ -176,16 +196,19 @@ function NewProjectionDialog({
         setOfferedServices([]);
         setOfferedPrice(null);
         setExpectedPrice(null);
+        setOfferedPriceWithGst(null);
+        setExpectedPriceWithGst(null);
         setFollowupDate('');
         setPaymentDate('');
         setRemarks('');
         setAddProjectionToday(null);
         setFieldsDisabled(true);
+        setIsCheckedAmountWithGst(false);
         // Only set `viewedForParticularCompany` to false if it is defined and truthy
-    if (editableCompanyId !== undefined && editableCompanyId !== null && viewedForParticularCompany !== undefined && viewedForParticularCompany !== null) {
-        setViewedForParticularCompany(false);
-        setEditableCompanyId('');
-    }
+        if (editableCompanyId !== undefined && editableCompanyId !== null && viewedForParticularCompany !== undefined && viewedForParticularCompany !== null) {
+            setViewedForParticularCompany(false);
+            setEditableCompanyId('');
+        }
     };
 
     const fetchSelectedCompanyProjection = async () => {
@@ -214,6 +237,8 @@ function NewProjectionDialog({
                     setOfferedServices(latestProjection.offeredServices);
                     setOfferedPrice(latestProjection.offeredPrice);
                     setExpectedPrice(latestProjection.totalPayment);
+                    setOfferedPriceWithGst(latestProjection.offeredPriceWithGst);
+                    setExpectedPriceWithGst(latestProjection.totalPaymentWithGst);
                     setFollowupDate(formatDate(latestProjection.lastFollowUpdate));
                     setPaymentDate(formatDate(latestProjection.estPaymentDate));
                     setRemarks(latestProjection.remarks);
@@ -239,6 +264,8 @@ function NewProjectionDialog({
             setOfferedServices([]);
             setOfferedPrice('');
             setExpectedPrice('');
+            setOfferedPriceWithGst('');
+            setExpectedPriceWithGst('');
             setFollowupDate('');
             setPaymentDate('');
             setRemarks('');
@@ -256,6 +283,8 @@ function NewProjectionDialog({
             offeredServices: offeredServices,
             offeredPrice: offeredPrice,
             totalPayment: expectedPrice,
+            offeredPriceWithGst: offeredPriceWithGst,
+            totalPaymentWithGst: expectedPriceWithGst,
             lastFollowUpdate: followupDate,
             estPaymentDate: paymentDate,
             remarks: remarks,
@@ -303,6 +332,8 @@ function NewProjectionDialog({
                     estimatedPaymentDate: payload.estPaymentDate,
                     offeredPrice: payload.offeredPrice,
                     expectedPrice: payload.totalPayment,
+                    offeredPriceWithGst: payload.offeredPriceWithGst,
+                    expectedPriceWithGst: payload.totalPaymentWithGst,
                     remarks: payload.remarks
                 }
             };
@@ -319,7 +350,7 @@ function NewProjectionDialog({
     };
 
     const handleUpdateProjection = async () => {
-        console.log("projectionData", projectionData)
+        // console.log("projectionData", projectionData);
         const payload = {
             ename: isFilledFromTeamLeads ? selectedBdm : selectedBde,
             date: new Date(),
@@ -327,6 +358,8 @@ function NewProjectionDialog({
             offeredServices: offeredServices,
             offeredPrice: offeredPrice,
             totalPayment: expectedPrice,
+            offeredPriceWithGst: offeredPriceWithGst,
+            totalPaymentWithGst: expectedPriceWithGst,
             lastFollowUpdate: new Date(followupDate),
             estPaymentDate: new Date(paymentDate),
             bdeName: isProjectionAvailable ? selectedBde : projectionData.bdeName,
@@ -373,10 +406,12 @@ function NewProjectionDialog({
                     estimatedPaymentDate: payload.estPaymentDate.toISOString().split('T')[0], // send in "YYYY-MM-DD" format
                     offeredPrice: payload.offeredPrice,
                     expectedPrice: payload.totalPayment,
+                    offeredPriceWithGst: payload.offeredPriceWithGst,
+                    expectedPriceWithGst: payload.totalPaymentWithGst,
                     remarks: payload.remarks,
                 }
             };
-            console.log("selectedCompany" , selectedCompany)
+            // console.log("selectedCompany", selectedCompany)
 
             // Call the API to update the daily projection
             await axios.post(`${secretKey}/company-data/updateDailyProjection/${payload.ename}`, dailyProjectionPayload);
@@ -388,7 +423,7 @@ function NewProjectionDialog({
             Swal.fire("Error", "Failed to update projection.", "error");
         }
     };
-    console.log("viewies", isProjectionEditable, viewedForParticularCompany , editableCompanyId)
+    console.log("viewies", isProjectionEditable, viewedForParticularCompany, editableCompanyId)
 
     return (
         <div>
@@ -531,7 +566,7 @@ function NewProjectionDialog({
                     <div className="row">
                         <div className="col-sm-6">
                             <div className="form-group mt-2 mb-2">
-                                <label htmlFor="offeredPrice">Offered Price (With GST) <span style={{ color: "red" }}>*</span> :</label>
+                                <label htmlFor="offeredPrice">Offered Price<span style={{ color: "red" }}>*</span> :</label>
                                 <input
                                     type="number"
                                     className="form-control mt-1"
@@ -545,7 +580,7 @@ function NewProjectionDialog({
 
                         <div className="col-sm-6">
                             <div className="form-group mt-2 mb-2">
-                                <label htmlFor="expectedPrice">Expected Price (With GST) <span style={{ color: "red" }}>*</span> :</label>
+                                <label htmlFor="expectedPrice">Expected Price<span style={{ color: "red" }}>*</span> :</label>
                                 <input
                                     type="number"
                                     className="form-control mt-1"
@@ -557,6 +592,41 @@ function NewProjectionDialog({
                             </div>
                         </div>
                     </div>
+
+                    <div>
+                        <input type="checkbox" name="amount with gst" id="amount with gst" onChange={handleAmountWithGst} />
+                        <label for="amount with gst" className='ms-1'>With GST (18%)</label>
+                    </div>
+
+                    {isCheckedAmountWithGst && (
+                        <div className="row">
+                            <div className="col-sm-6">
+                                <div className="form-group mt-2 mb-2">
+                                    <label htmlFor="offeredPrice">Offered Price (With GST)<span style={{ color: "red" }}>*</span> :</label>
+                                    <input
+                                        type="number"
+                                        className="form-control mt-1"
+                                        placeholder="Offered Price (With GST)"
+                                        disabled
+                                        value={offeredPriceWithGst.toFixed(2)} // Display with two decimal places
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="col-sm-6">
+                                <div className="form-group mt-2 mb-2">
+                                    <label htmlFor="expectedPrice">Expected Price (With GST)<span style={{ color: "red" }}>*</span> :</label>
+                                    <input
+                                        type="number"
+                                        className="form-control mt-1"
+                                        placeholder="Expected Price (With GST)"
+                                        disabled
+                                        value={expectedPriceWithGst.toFixed(2)} // Display with two decimal places
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="row">
                         <div className="col-sm-6">
@@ -649,13 +719,7 @@ function NewProjectionDialog({
                             )
                         )
                     )}
-
-
                 </DialogContent>
-
-
-
-
                 {showAddLeadsPopup && (
                     <EmployeeAddLeadDialog
                         ename={employeeName}

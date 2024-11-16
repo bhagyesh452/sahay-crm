@@ -34,6 +34,14 @@ const CompanySchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  offeredPriceWithGst: {
+    type: Number,
+    required: true
+  },
+  totalPaymentWithGst: {
+    type: Number,
+    required: true
+  },
   lastFollowUpdate: {
     type: Date,
     required: true

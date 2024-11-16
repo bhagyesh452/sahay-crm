@@ -250,15 +250,15 @@ function NewProjectionReport() {
                                                     ? data.offeredServices.map(service => service).join(", ")
                                                     : "N/A"}
                                                 </td>
-                                                <td>₹ {formatAmount(data.offeredPrice)}</td>
-                                                <td>₹ {formatAmount(data.totalPayment)}</td>
+                                                <td>₹ {formatAmount(data.offeredPriceWithGst ? data.offeredPriceWithGst : data.offeredPrice)}</td>
+                                                <td>₹ {formatAmount(data.totalPaymentWithGst ? data.totalPaymentWithGst : data.totalPayment)}</td>
                                                 <td>₹ {formatAmount(data.employeePayment)}</td>
                                                 <td>{formatDate(data.lastFollowUpdate)}</td>
                                                 <td>{formatDate(data.estPaymentDate)}</td>
                                                 <td>{data.remarks}</td>
-                                                <td>{data.isPreviousMaturedCase === "true" ? "Yes" : "No" }</td>
+                                                <td>{data.isPreviousMaturedCase === "true" ? "Yes" : "No"}</td>
                                                 <td style={{ padding: '0px !important' }}>
-                                                {new Date(new Date(data.estPaymentDate).setHours(0, 0, 0, 0)) >= new Date(new Date().setHours(0, 0, 0, 0)) ? (
+                                                    {new Date(new Date(data.estPaymentDate).setHours(0, 0, 0, 0)) >= new Date(new Date().setHours(0, 0, 0, 0)) ? (
                                                         <IconButton
                                                             onClick={() => {
                                                                 setShowProjectionDialog(true);
@@ -302,10 +302,24 @@ function NewProjectionReport() {
                                         <td colSpan="2">Total</td>
                                         <td>-</td>
                                         <td>-</td>
-                                        <td>{projection.reduce((a, b) => a + b.offeredServices.length, 0)}</td>
-                                        <td>₹ {formatAmount(projection.reduce((a, b) => a + b.offeredPrice, 0))}</td>
-                                        <td>₹ {formatAmount(projection.reduce((a, b) => a + b.totalPayment, 0))}</td>
-                                        <td>₹ {formatAmount(projection.reduce((a, b) => a + b.employeePayment, 0))}</td>
+                                        <td>
+                                            {projection.reduce((total, item) => total + (item.offeredServices?.length || 0), 0)}
+                                        </td>
+                                        <td>
+                                            ₹ {formatAmount(
+                                                projection.reduce((total, item) =>
+                                                    total + (item.offeredPriceWithGst > 0 ? item.offeredPriceWithGst : item.offeredPrice), 0)
+                                            )}
+                                        </td>
+                                        <td>
+                                            ₹ {formatAmount(
+                                                projection.reduce((total, item) =>
+                                                    total + (item.totalPaymentWithGst > 0 ? item.totalPaymentWithGst : item.totalPayment), 0)
+                                            )}
+                                        </td>
+                                        <td>
+                                            ₹ {formatAmount(projection.reduce((total, item) => total + (item.employeePayment || 0), 0))}
+                                        </td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
