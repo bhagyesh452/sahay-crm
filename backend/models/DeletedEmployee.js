@@ -166,6 +166,14 @@ const yourSchema = new mongoose.Schema({
   isDeletedEmployeeCompany: {
     type: Boolean,
     default: false
+  },
+  permanentDeletingDate:{
+    type:Date,
+    default:new Date()
+  },
+  permanentDeletingPerson:{
+    type:String,
+    default:""
   }
 })
 

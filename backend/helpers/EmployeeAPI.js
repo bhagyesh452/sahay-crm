@@ -951,7 +951,7 @@ router.put("/savedeletedemployee", upload.fields([
       return res.status(400).json({ error: "No employee data to save" });
     }
 
-    console.log("Deleted data is :", dataToDelete);
+    // console.log("Deleted data is :", dataToDelete);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -2545,28 +2545,39 @@ router.delete("/einfo/:id", async (req, res) => {
 
 
 // ------------------new change only to hide employee not to delete it premannetly 16-11-2024------------------------
-router.post("/permanentDelete/:id", async (req, res) => {
+router.patch("/permanentDelete/:id", async (req, res) => {
   const itemId = req.params.id;
   const socketIO = req.io;
+  const { deletingPerson } = req.body;
 
   try {
     const updatedData = await deletedEmployeeModel.findByIdAndUpdate(
       itemId,
-      { isPermanentDeleted: true }, // Set the field to true
+      {
+        isPermanentDeleted: true,
+        permanentDeletingDate: new Date(),
+        permanentDeletingPerson: deletingPerson, // Store the person who marked it
+      },
       { new: true } // Return the updated document
     );
-    // console.log("updatedData", updatedData);
 
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
     }
-    socketIO.emit("employee-deleted-permanently");
-    res.status(200).json({ message: "Data marked as permanently deleted", updatedData });
+
+    // Emit an event via socket.io to notify clients
+    socketIO.emit("employee-deleted-permanently", { id: itemId });
+
+    res.status(200).json({
+      message: "Data marked as permanently deleted",
+      updatedData,
+    });
   } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 router.get("/einfo/:email/:password", async (req, res) => {
   const { email, password } = req.params;

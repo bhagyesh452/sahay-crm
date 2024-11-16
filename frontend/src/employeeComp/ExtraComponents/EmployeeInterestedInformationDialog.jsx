@@ -23,9 +23,11 @@ function EmployeeInterestedInformationDialog({
     forView,
     fordesignation,
     id,
-    setOpenBacdrop
+
 
 }) {
+
+    console.log("interesedinfostatus" , status , companyStatus)
 
     // console.log("inetsredtedInform", interestedInformation)
     const [visibleQuestions, setVisibleQuestions] = useState({}); // Track which question's options are visible
@@ -166,7 +168,6 @@ function EmployeeInterestedInformationDialog({
             "Company Name": companyName,
             ename: ename
         }
-        setOpenBacdrop(true)
         try {
             const response = await axios.post(`${secretKey}/company-data/company/${companyName}/interested-info`,
                 {
@@ -185,8 +186,6 @@ function EmployeeInterestedInformationDialog({
             }
         } catch (error) {
             console.error('Error saving data:', error);
-        }finally{
-            setOpenBacdrop(false)
         }
     };
 
@@ -229,14 +228,13 @@ function EmployeeInterestedInformationDialog({
             }
             if (typeof setStatusClass === 'function') {
                 setStatusClass(companyStatus === "Untouched" ? "untouched_status" : companyStatus === "Busy" ? "dfaulter-status" : "cdbp-status");
-            } if (typeof refetch === 'function') {
+            } 
+            if (typeof refetch === 'function') {
                 refetch();
             }
             setVisibleQuestions({})
             refetch();
         }
-
-
         // Manually hide the modal
         const modalElement = document.getElementById(modalId);
         modalElement.classList.remove("show");
@@ -336,7 +334,8 @@ function EmployeeInterestedInformationDialog({
                         </div>
 
                         <div className="accordion" id="accordionQue">
-                            {(!forView || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) && (<div className="accordion-item int-accordion-item">
+                            {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) && 
+                            (<div className="accordion-item int-accordion-item">
                                 <div className="accordion-header p-2" id="accordionQueOne">
                                     <div className="d-flex align-items-center justify-content-between"  >
                                         <div className="int-que mr-2">
@@ -435,7 +434,7 @@ function EmployeeInterestedInformationDialog({
                                     )
                                 }
                             </div>)}
-                            {(!forView || (!isEmptyAnswer(formData.clientEmailRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientEmailRequest.remarks))) && (
+                            {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.clientEmailRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientEmailRequest.remarks))) && (
                                 <div className="accordion-item int-accordion-item">
                                     <div className="accordion-header p-2" id="accordionQuetwo">
                                         <div className="d-flex align-items-center justify-content-between"  >
@@ -524,7 +523,7 @@ function EmployeeInterestedInformationDialog({
                                         </div>
                                         )}
                                 </div>)}
-                            {(!forView || (!isEmptyAnswer(formData.interestedInServices.nextFollowUpDate) ||
+                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.interestedInServices.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedInServices.remarks) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesPitched) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesInterestedIn) ||
@@ -684,7 +683,7 @@ function EmployeeInterestedInformationDialog({
                                             </div>
                                         </div>)}
                                 </div>)}
-                            {(!forView || (!isEmptyAnswer(formData.interestedButNotNow.nextFollowUpDate) ||
+                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.interestedButNotNow.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.remarks) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.servicesPitched) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.servicesInterestedIn) ||

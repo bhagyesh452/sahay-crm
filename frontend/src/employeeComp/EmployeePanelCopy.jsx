@@ -40,6 +40,7 @@ import ProjectionInformationDialog from "./ExtraComponents/ProjectionInformation
 import { useNavigate } from 'react-router-dom';
 import NewProjectionDialog from "./ExtraComponents/NewProjectionDialog.jsx";
 import { filter } from "lodash";
+import EmployeeUnderDocsLeads from "./EmployeeTabPanels/EmployeeUnderDocsLeads.jsx";
 
 
 function EmployeePanelCopy({ fordesignation }) {
@@ -384,6 +385,7 @@ function EmployeePanelCopy({ fordesignation }) {
 
     // -------------------------call history functions-------------------------------------
     const allTabRef = useRef(null); // Ref for the Generak tab
+    const UnderDocsTabRef = useRef(null); // Ref for the Generak tab
     const busyTabRef = useRef(null); // Ref for the Busy tab
     const interestedTabRef = useRef(null); // Ref for the Interested tab
     const maturedTabRef = useRef(null); // Ref for the Matured tab
@@ -1010,7 +1012,20 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 </div>
                                             </a>
                                         </li>
-
+                                        <li class="nav-item sales-nav-item data-heading" ref={UnderDocsTabRef}>
+                                            <a
+                                                href="#UnderDocs"
+                                                ref={UnderDocsTabRef} // Attach the ref to the anchor tag
+                                                onClick={() => handlnewEmpDataStatusChange("UnderDocs", UnderDocsTabRef)}
+                                                className={`nav-link  ${dataStatus === "UnderDocs" ? "active item-act" : ""}`}
+                                                data-bs-toggle="tab"
+                                            >
+                                                <div>Under Docs/Info Review</div>
+                                                <div className="no_badge">
+                                                    {generalDataCount}
+                                                </div>
+                                            </a>
+                                        </li>
                                         <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
                                             <a
                                                 href="#Interested"
@@ -1134,7 +1149,49 @@ function EmployeePanelCopy({ fordesignation }) {
                                             />
                                         )}
                                     </div>
-
+                                    <div className={`tab-pane ${dataStatus === "UnderDocs" ? "active" : ""}`} id="UnderDocs">
+                                        {activeTabId === "UnderDocs" && dataStatus === "UnderDocs" && (
+                                            <EmployeeUnderDocsLeads
+                                                userId={userId}
+                                                generalData={[]}
+                                                dataToFilter={dataToFilterGeneral}
+                                                completeGeneralData={completeGeneralData}
+                                                setGeneralData={setGeneralData}
+                                                setGeneralDataCount={setGeneralDataCount}
+                                                filteredData={filteredDataGeneral}
+                                                setFilteredData={setFilteredDataGeneral}
+                                                activeFilterField={activeFilterFieldGeneral}
+                                                setActiveFilterField={setActiveFilterFieldGeneral}
+                                                activeFilterFields={activeFilterFieldsGeneral}
+                                                setActiveFilterFields={setActiveFilterFieldsGeneral}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={queryData?.totalGeneralPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                                dataStatus={dataStatus}
+                                                setdataStatus={setdataStatus}
+                                                ename={data.ename}
+                                                email={data.email}
+                                                secretKey={secretKey}
+                                                handleShowCallHistory={handleShowCallHistory}
+                                                designation={data.designation}
+                                                fordesignation={fordesignation}
+                                                setSelectedRows={setSelectedRows}
+                                                handleCheckboxChange={handleCheckboxChange}
+                                                handleMouseDown={handleMouseDown}
+                                                handleMouseEnter={handleMouseEnter}
+                                                handleMouseUp={handleMouseUp}
+                                                selectedRows={selectedRows}
+                                                bdenumber={data.number}
+                                                openCompanyProfile={handleOpenCompanyProfile}
+                                                closeCompanyProfile={handleCloseCompanyProfile}
+                                            />
+                                        )}
+                                    </div>
                                     <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
                                         {activeTabId === "Interested" && dataStatus === "Interested" && (
                                             <EmployeeInterestedLeads

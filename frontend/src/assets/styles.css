@@ -3382,6 +3382,12 @@ td input {
   border: 1px solid #1cbd27;
 }
 
+/*docs-sent-e*/
+.status_dropdown.docs_sent_e-status .status__btn {
+  background-color: #fffec4;
+  border: 1px solid #cfc022;
+}
+
 /*rejected*/
 .status_dropdown.rejected-status .status__btn {
   background-color: #FCBDBD;
