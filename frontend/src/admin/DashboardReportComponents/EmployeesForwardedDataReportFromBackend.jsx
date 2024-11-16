@@ -156,7 +156,7 @@ function EmployeesForwardedDataReportFromBackend() {
     const fetchDataFromBackend = async () => {
         try {
             setIsLoading(true);
-            const res = await axios.get(`${secretKey}/company-data/fetchForwaredLeads`);
+            const res = await axios.get(`${secretKey}/company-data/fetchForwardedLeads`);
             setBackendData(res.data);
             // console.log("Data from backend :", res.data);
 
