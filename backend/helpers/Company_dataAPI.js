@@ -2460,12 +2460,13 @@ router.get("/fetchLeads", async (req, res) => {
 });
 
 // Fetch data for forwarded and received cases :
-router.get("/fetchForwaredLeads", async (req, res) => {
+router.get("/fetchForwardedLeads", async (req, res) => {
   try {
     const data = await CompanyModel.aggregate([
       {
         $match: {
           ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
+          Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] }, // Filter out statuses
           bdmAcceptStatus: { $in: ["Accept", "Pending"] } // Match "Accept" or "Pending" status
         }
       },
@@ -2544,6 +2545,88 @@ router.get("/fetchForwaredLeads", async (req, res) => {
     res.send(sortedData);
   } catch (error) {
     console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Fetch forwarded leads projection :
+router.get("/fetchForwardedLeadsProjection", async (req, res) => {
+  try {
+    // Fetch forwarded leads first
+    const forwardedLeads = await CompanyModel.aggregate([
+      {
+        $match: {
+          bdmAcceptStatus: { $in: ["Accept", "Pending"] },
+          Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
+        },
+      },
+      {
+        $lookup: {
+          from: "newemployeeinfos",
+          localField: "ename",
+          foreignField: "ename",
+          as: "employee_info",
+        },
+      },
+      {
+        $match: {
+          "employee_info": { $ne: [] },
+        },
+      },
+      {
+        $group: {
+          _id: "$ename",
+          totalForwardedCases: { $sum: 1 },
+          companies: { $push: "$Company Name" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          ename: "$_id",
+          totalForwardedCases: 1,
+          companies: 1,
+        },
+      },
+    ]);
+
+    if (!forwardedLeads || forwardedLeads.length === 0) {
+      return res.status(404).json({ error: "No forwarded leads found" });
+    }
+
+    // Extract companies from forwarded leads
+    const companies = forwardedLeads.flatMap((lead) => lead.companies);
+
+    // Fetch projections for the companies
+    const projections = await ProjectionModel.aggregate([
+      {
+        $match: {
+          companyName: { $in: companies }, // Filter projections by company names
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Exclude _id
+          companyName: 1, // Include company name
+          ename: 1,
+          offeredServices: 1,
+          offeredPrice: 1,
+          totalPayment: 1,
+          lastFollowUpdate: 1,
+          estPaymentDate: 1,
+          remarks: 1,
+          bdeName: 1,
+          bdmName: 1,
+          caseType: 1,
+          isPreviousMaturedCase: 1,
+          history: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({ forwardedLeads, projections });
+  } catch (error) {
+    console.error("Error fetching projections:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
