@@ -124,7 +124,10 @@ app.use('/api/bdm-data', (req, res, next) => {
   next();
 }, bdmAPI)
 
-app.use('/api/employee', EmployeeAPI)
+app.use('/api/employee',(req , res , next) => {
+  req.io = socketIO;
+  next();
+}, EmployeeAPI)
 app.use('/api/rm-services', (req, res, next) => {
   req.io = socketIO;
   next();
