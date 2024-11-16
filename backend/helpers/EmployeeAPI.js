@@ -2435,95 +2435,7 @@ router.get("/einfo", async (req, res) => {
   }
 });
 
-// router.get("/searchEmployee", async (req, res) => {
-//   try {
-//     // Destructure query parameters
-//     const { search } = req.query;
-//     // console.log("Search query :", search);
 
-//     // Create the filter object
-//     const filter = {};
-
-//     if (search) {
-//       // Define search conditions
-//       const searchRegex = new RegExp(search, "i"); // case-insensitive search
-
-//       // Map search terms for designation
-//       let designationConditions = [];
-//       if (search.toLowerCase() === "bd") {
-//         // For BDE, match both Business Development Executive and Business Development Manager
-//         designationConditions = [
-//           { newDesignation: /Business Development Executive/i },
-//           { newDesignation: /Business Development Manager/i }
-//         ];
-//       } else if (search.toLowerCase() === "bde") {
-//         designationConditions = [{ newDesignation: /Business Development Executive/i }];
-//       } else if (search.toLowerCase() === "bdm") {
-//         designationConditions = [{ newDesignation: /Business Development Manager/i }];
-//       } else if (search.toLowerCase() === "business development executive") {
-//         designationConditions = [{ newDesignation: /Business Development Executive/i }];
-//       } else if (search.toLowerCase() === "business development manager") {
-//         designationConditions = [{ newDesignation: /Business Development Manager/i }];
-//       } else {
-//         designationConditions = [{ newDesignation: searchRegex }];
-//       }
-
-//       // Build the search query using $or
-//       filter.$or = [
-//         { ename: searchRegex },
-//         { number: searchRegex },
-//         { email: searchRegex },
-//         { branchOffice: searchRegex },
-//         { department: searchRegex },
-//         ...designationConditions
-//       ];
-//     }
-
-//     const projection = {
-//       profilePhoto: 1,
-//       ename: 1,
-//       number: 1,
-//       email: 1,
-//       branchOffice: 1,
-//       department: 1,
-//       newDesignation: 1,
-//       designation: 1,
-//       AddedOn: 1,
-//       Active: 1,
-//       jdate: 1,
-//       bdmWork: 1
-//     };
-
-//     // Perform the search query :
-//     const data = await adminModel.find(filter, projection).lean();
-//     res.json(data);
-//   } catch (error) {
-//     console.error("Error fetching data:", error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-
-// 3. Update the Employee
-// router.put("/einfo/:id", async (req, res) => {
-//   const id = req.params.id;
-//   const dataToSendUpdated = req.body;
-//   console.log("updatedData", dataToSendUpdated)
-//   try {
-//     const updatedData = await adminModel.findByIdAndUpdate(id, dataToSendUpdated, {
-//       new: true,
-//     });
-
-//     if (!updatedData) {
-//       return res.status(404).json({ error: "Data not found" });
-//     }
-
-//     res.json({ message: "Data updated successfully", updatedData });
-//   } catch (error) {
-//     console.error("Error updating data:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
 
 router.put("/einfo/:id", async (req, res) => {
   const id = req.params.id;
@@ -2656,18 +2568,44 @@ router.delete("/einfo/:id", async (req, res) => {
   }
 });
 
-router.delete("/permanentDelete/:id", async (req, res) => {
-  const itemId = req.params.id;
-  console.log(itemId);
-  try {
-    const deletedData = await deletedEmployeeModel.findByIdAndDelete(itemId);
+// --------------commneting old api to permanent delete employee 16-11-2024-----------------
+// router.delete("/permanentDelete/:id", async (req, res) => {
+//   const itemId = req.params.id;
+//   console.log(itemId);
+//   try {
+//     const deletedData = await deletedEmployeeModel.findByIdAndDelete(itemId);
 
-    if (!deletedData) {
+//     if (!deletedData) {
+//       return res.status(404).json({ error: "Data not found" });
+//     }
+//     res.status(200).json({ message: "Data deleted successfully", deletedData });
+//   } catch (error) {
+//     console.error("Error deleting data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+// ------------------new change only to hide employee not to delete it premannetly 16-11-2024------------------------
+router.put("/permanentDelete/:id", async (req, res) => {
+  const itemId = req.params.id;
+  console.log("itemId", itemId);
+
+  try {
+    const updatedData = await deletedEmployeeModel.findByIdAndUpdate(
+      itemId,
+      { isPermanentDeleted: true }, // Set the field to true
+      { new: true } // Return the updated document
+    );
+    console.log("updatedData", updatedData);
+
+    if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
     }
-    res.status(200).json({ message: "Data deleted successfully", deletedData });
+
+    res.status(200).json({ message: "Data marked as permanently deleted", updatedData });
   } catch (error) {
-    console.error("Error deleting data:", error);
+    console.error("Error updating data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
