@@ -2970,23 +2970,23 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
           upsert: true // Create a new document if it doesn't exist
         }
       )
-    }else {
-        updatedCompany = await CompanyModel.findOneAndUpdate(
-          { "Company Name": companyName }, // Query by company name
-          {
-            $set: {
-              Status: status, // Set company status
-              lastActionDate: new Date()
-            },
-            $push: {
-              interestedInformation: newInterestedInfo // Push new interested info to the array
-            }
+    } else {
+      updatedCompany = await CompanyModel.findOneAndUpdate(
+        { "Company Name": companyName }, // Query by company name
+        {
+          $set: {
+            Status: status, // Set company status
+            lastActionDate: new Date()
           },
-          {
-            new: true, // Return the updated document
-            upsert: true // Create a new document if it doesn't exist
+          $push: {
+            interestedInformation: newInterestedInfo // Push new interested info to the array
           }
-        );
+        },
+        {
+          new: true, // Return the updated document
+          upsert: true // Create a new document if it doesn't exist
+        }
+      );
     }
 
 
@@ -3112,6 +3112,8 @@ router.post('/addProjection/:companyName', async (req, res) => {
           offeredServices: existingCompany.offeredServices,
           offeredPrice: existingCompany.offeredPrice,
           totalPayment: existingCompany.totalPayment,
+          offeredPriceWithGst: existingCompany.offeredPriceWithGst || 0,
+          totalPaymentWithGst: existingCompany.totalPaymentWithGst || 0,
           lastFollowUpdate: existingCompany.lastFollowUpdate,
           estPaymentDate: existingCompany.estPaymentDate,
           remarks: existingCompany.remarks,
@@ -3135,6 +3137,8 @@ router.post('/addProjection/:companyName', async (req, res) => {
           offeredServices: payload.offeredServices,
           offeredPrice: payload.offeredPrice,
           totalPayment: payload.totalPayment,
+          offeredPriceWithGst: payload.offeredPriceWithGst || 0,
+          totalPaymentWithGst: payload.totalPaymentWithGst || 0,
           lastFollowUpdate: payload.lastFollowUpdate,
           estPaymentDate: payload.estPaymentDate,
           remarks: payload.remarks,
@@ -3159,6 +3163,8 @@ router.post('/addProjection/:companyName', async (req, res) => {
         offeredServices: payload.offeredServices,
         offeredPrice: payload.offeredPrice,
         totalPayment: payload.totalPayment,
+        offeredPriceWithGst: payload.offeredPriceWithGst || 0,
+        totalPaymentWithGst: payload.totalPaymentWithGst || 0,
         lastFollowUpdate: payload.lastFollowUpdate,
         estPaymentDate: payload.estPaymentDate,
         remarks: payload.remarks,
@@ -3191,6 +3197,8 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
     estimatedPaymentDate,
     offeredPrice,
     expectedPrice,
+    offeredPriceWithGst,
+    expectedPriceWithGst,
     remarks,
   } = req.body.projectionData;
 
@@ -3219,6 +3227,8 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
                 offeredServices,
                 offeredPrice,
                 expectedPrice,
+                offeredPriceWithGst,
+                expectedPriceWithGst,
                 remarks,
               },
             ],
@@ -3253,6 +3263,8 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
           offeredServices,
           offeredPrice,
           expectedPrice,
+          offeredPriceWithGst,
+          expectedPriceWithGst,
           remarks,
         });
         dateEntry.result = "Added"; // Update result to "Added"
@@ -3270,6 +3282,8 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
               offeredServices,
               offeredPrice,
               expectedPrice,
+              offeredPriceWithGst,
+              expectedPriceWithGst,
               remarks,
             },
           ],
@@ -3298,6 +3312,8 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
     estimatedPaymentDate,
     offeredPrice,
     expectedPrice,
+    offeredPriceWithGst,
+    expectedPriceWithGst,
     remarks
   } = req.body.projectionData;
 
@@ -3315,7 +3331,7 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
         projectionsByDate: [{
           estimatedPaymentDate: normalizedDate,
           result: "Added",
-          projections: [{ companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks }]
+          projections: [{ companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, offeredPriceWithGst, expectedPriceWithGst, remarks }]
         }]
       });
     } else {
@@ -3358,7 +3374,7 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
           if (newDateEntry) {
             // If a new date entry already exists, push the new projection
             newDateEntry.projections.push({
-              companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
+              companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, offeredPriceWithGst, expectedPriceWithGst, remarks
             });
             newDateEntry.result = "Added"; // Update result for the new date entry
           } else {
@@ -3367,14 +3383,14 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
               estimatedPaymentDate: normalizedDate,
               result: "Added",
               projections: [{
-                companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
+                companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, offeredPriceWithGst, expectedPriceWithGst, remarks
               }]
             });
           }
         } else {
           // If the date hasn't changed, simply update the existing projection details
           dailyProjection.projectionsByDate[existingDateIndex].projections[existingProjectionIndex] = {
-            companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
+            companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, offeredPriceWithGst, expectedPriceWithGst, remarks
           };
           dailyProjection.projectionsByDate[existingDateIndex].result = "Added";
         }
@@ -3386,7 +3402,7 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
 
         if (dateEntry) {
           dateEntry.projections.push({
-            companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
+            companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, offeredPriceWithGst, expectedPriceWithGst, remarks
           });
           dateEntry.result = "Added";
         } else {
@@ -3394,7 +3410,7 @@ router.post('/updateDailyProjection/:ename', async (req, res) => {
             estimatedPaymentDate: normalizedDate,
             result: "Added",
             projections: [{
-              companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, remarks
+              companyId, companyName, bdeName, bdmName, offeredServices, offeredPrice, expectedPrice, offeredPriceWithGst, expectedPriceWithGst, remarks
             }]
           });
         }
@@ -3582,7 +3598,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
 
     // Process each projection document
     projections.forEach(projection => {
-      const { bdeName, bdmName, totalPayment, estPaymentDate, history, _id, date } = projection;
+      const { bdeName, bdmName, totalPayment, totalPaymentWithGst, estPaymentDate, history, _id, date } = projection;
 
       // Check main entry for employee relevance and date range
       if ((bdeName === employeeName || bdmName === employeeName) &&
@@ -3590,9 +3606,9 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
 
         let mainEmployeePayment = 0;
         if (bdeName === bdmName && bdeName === employeeName) {
-          mainEmployeePayment = totalPayment;
+          mainEmployeePayment = totalPaymentWithGst ? totalPaymentWithGst : totalPayment;
         } else if (bdeName === employeeName || bdmName === employeeName) {
-          mainEmployeePayment = totalPayment / 2;
+          mainEmployeePayment = totalPaymentWithGst ? (totalPaymentWithGst / 2) : (totalPayment / 2);
         }
 
         // Collect relevant dates for calculating `addedOnDate`
@@ -3616,6 +3632,8 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
           offeredServices: projection.offeredServices,
           offeredPrice: projection.offeredPrice,
           totalPayment: projection.totalPayment,
+          offeredPriceWithGst: projection.offeredPriceWithGst || 0,
+          totalPaymentWithGst: projection.totalPaymentWithGst || 0,
           employeePayment: mainEmployeePayment,
           bdeName,
           bdmName,
@@ -3636,6 +3654,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
     console.log(error);
   }
 });
+
 // Check if projections exist for an employee on a specific date
 router.get('/checkEmployeeProjectionForDate/:employeeName', async (req, res) => {
   const { employeeName } = req.params;
@@ -4156,14 +4175,14 @@ router.get('/getProjection/:employeeName', async (req, res) => {
     const projectionSummary = [];
 
     projections.forEach(projection => {
-      const { bdeName, bdmName, totalPayment, history, _id, addedOnDate, companyName } = projection;
+      const { bdeName, bdmName, totalPayment, totalPaymentWithGst, history, _id, addedOnDate, companyName } = projection;
 
       // Set employee payment calculation for main object
       let mainEmployeePayment = 0;
       if (bdeName === bdmName && bdeName === employeeName) {
-        mainEmployeePayment = totalPayment;
+        mainEmployeePayment = totalPaymentWithGst ? totalPaymentWithGst : totalPayment;
       } else if (bdeName === employeeName || bdmName === employeeName) {
-        mainEmployeePayment = totalPayment / 2;
+        mainEmployeePayment = totalPaymentWithGst ? (totalPaymentWithGst / 2) : (totalPayment / 2);
       }
 
       // Normalize addedOnDate if it exists
@@ -4181,6 +4200,8 @@ router.get('/getProjection/:employeeName', async (req, res) => {
         offeredServices: projection.offeredServices,
         offeredPrice: projection.offeredPrice,
         totalPayment: projection.totalPayment,
+        offeredPriceWithGst: projection.offeredPriceWithGst || 0,
+        totalPaymentWithGst: projection.totalPaymentWithGst || 0,
         employeePayment: mainEmployeePayment,
         bdeName,
         bdmName,
@@ -4221,9 +4242,9 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 
             let historyEmployeePayment = 0;
             if (latestRecord.bdeName === latestRecord.bdmName && latestRecord.bdeName === employeeName) {
-              historyEmployeePayment = latestRecord.totalPayment;
+              historyEmployeePayment = latestRecord.totalPaymentWithGst ? latestRecord.totalPaymentWithGst : latestRecord.totalPayment;
             } else if (latestRecord.bdeName === employeeName || latestRecord.bdmName === employeeName) {
-              historyEmployeePayment = latestRecord.totalPayment / 2;
+              historyEmployeePayment = latestRecord.totalPaymentWithGst ? (latestRecord.totalPaymentWithGst / 2) : (latestRecord.totalPayment / 2);
             }
 
             projectionSummary.push({
@@ -4233,6 +4254,8 @@ router.get('/getProjection/:employeeName', async (req, res) => {
               offeredServices: latestRecord.offeredServices,
               offeredPrice: latestRecord.offeredPrice,
               totalPayment: latestRecord.totalPayment,
+              offeredPriceWithGst: latestRecord.offeredPriceWithGst || 0,
+              totalPaymentWithGst: latestRecord.totalPaymentWithGst || 0,
               employeePayment: historyEmployeePayment,
               bdeName: latestRecord.bdeName,
               bdmName: latestRecord.bdmName,
@@ -4270,6 +4293,8 @@ router.put('/updateProjection/:companyName', async (req, res) => {
     offeredServices,
     offeredPrice,
     totalPayment,
+    offeredPriceWithGst,
+    totalPaymentWithGst,
     lastFollowUpdate,
     estPaymentDate,
     remarks,
@@ -4291,6 +4316,8 @@ router.put('/updateProjection/:companyName', async (req, res) => {
           offeredServices: projection.offeredServices,
           offeredPrice: projection.offeredPrice,
           totalPayment: projection.totalPayment,
+          offeredPriceWithGst: projection.offeredPriceWithGst || 0,
+          totalPaymentWithGst: projection.totalPaymentWithGst || 0,
           lastFollowUpdate: projection.lastFollowUpdate,
           estPaymentDate: projection.estPaymentDate,
           bdeName: projection.bdeName,
@@ -4310,6 +4337,8 @@ router.put('/updateProjection/:companyName', async (req, res) => {
       projection.offeredServices = offeredServices;
       projection.offeredPrice = offeredPrice;
       projection.totalPayment = totalPayment;
+      projection.offeredPriceWithGst = offeredPriceWithGst;
+      projection.totalPaymentWithGst = totalPaymentWithGst;
       projection.lastFollowUpdate = lastFollowUpdate;
       projection.estPaymentDate = estPaymentDate;
       projection.bdeName = bdeName;

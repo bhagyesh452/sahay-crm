@@ -18,6 +18,8 @@ const DailyEmployeeProjectionSchema = new mongoose.Schema({
                       },
                     offeredPrice: { type: Number },
                     expectedPrice: { type: Number },
+                    offeredPriceWithGst: { type: Number },
+                    expectedPriceWithGst: { type: Number },
                     remarks: { type: String }
                 }
             ]

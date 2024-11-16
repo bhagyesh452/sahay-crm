@@ -139,16 +139,16 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                 if (isShared) {
                     acc[company.bdeName].total_companies += 0.5;
                     acc[company.bdmName].total_companies += 0.5;
-                    acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;
-                    acc[company.bdmName].total_offered_price += (company.offeredPrice || 0) * 0.5;
-                    acc[company.bdeName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
-                    acc[company.bdmName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
+                    acc[company.bdeName].total_offered_price += (company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0) * 0.5;
+                    acc[company.bdmName].total_offered_price += (company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0) * 0.5;
+                    acc[company.bdeName].total_estimated_payment += (company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0) * 0.5;
+                    acc[company.bdmName].total_estimated_payment += (company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0) * 0.5;
                     acc[company.bdeName].total_services += serviceCount;
                     acc[company.bdmName].total_services += serviceCount;
                 } else {
                     acc[company.bdeName].total_companies += 1;
-                    acc[company.bdeName].total_offered_price += company.offeredPrice || 0;
-                    acc[company.bdeName].total_estimated_payment += company.totalPayment || 0;
+                    acc[company.bdeName].total_offered_price += company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0;
+                    acc[company.bdeName].total_estimated_payment += company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0;
                     acc[company.bdeName].total_services += serviceCount;
                 }
 
@@ -897,8 +897,8 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                             <td>{entry.data.bdeName}</td>
                                             <td>{entry.data.bdmName}</td>
                                             <td>{entry.data.offeredServices.join(', ')}</td>
-                                            <td>{formatCurrency(entry.data.offeredPrice)}</td>
-                                            <td>{formatCurrency(entry.data.totalPayment)}</td>
+                                            <td>{formatCurrency(entry.data.offeredPriceWithGst ? entry.data.offeredPriceWithGst : entry.data.offeredPrice)}</td>
+                                            <td>{formatCurrency(entry.data.totalPaymentWithGst ? entry.data.totalPaymentWithGst : entry.data.totalPayment)}</td>
                                             <td>{entry.data.bdeName === entry.data.bdmName ? formatCurrency(entry.data.totalPayment) : formatCurrency((entry.data.totalPayment) / 2)}</td>
                                             <td>{formatDate(new Date(entry.data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(entry.data.estPaymentDate))}</td>
