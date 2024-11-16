@@ -269,6 +269,14 @@ function EmployeePanelCopy({ fordesignation }) {
     const [activeFilterFieldsBusy, setActiveFilterFieldsBusy] = useState([]); // New state for active filter fields
     const [activeFilterFieldBusy, setActiveFilterFieldBusy] = useState(null);
 
+    const [underDocsData, setUnderDocsData] = useState([]);
+    const [underDocsDataCount, setUnderDocsDataCount] = useState(0);
+    const [completeUnderDocsData, setCompleteUnderDocsData] = useState([]);
+    const [dataToFilterUnderDocs, setDataToFilterUnderDocs] = useState([]);
+    const [filteredDataUnderDocs, setFilteredDataUnderDocs] = useState([]);
+    const [activeFilterFieldsUnderDocs, setActiveFilterFieldsUnderDocs] = useState([]); // New state for active filter fields
+    const [activeFilterFieldUnderDocs, setActiveFilterFieldUnderDocs] = useState(null);
+
     const [interestedData, setInterestedData] = useState([]);
     const [interestedDataCount, setInterestedDataCount] = useState(0);
     const [completeInterestedData, setCompleteInterestedData] = useState([]);
@@ -332,6 +340,11 @@ function EmployeePanelCopy({ fordesignation }) {
             setGeneralDataCount(queryData?.totalCounts.untouched)
             setCompleteGeneralData(queryData?.generalData);
             setDataToFilterGeneral(queryData?.generalData);
+
+            setUnderDocsData(queryData?.underdocsData);
+            setUnderDocsDataCount(queryData?.totalCounts.underdocs)
+            setCompleteUnderDocsData(queryData?.underdocsData);
+            setDataToFilterUnderDocs(queryData?.underdocsData);
 
             setBusyData(queryData?.busyData);
             setBusyDataCount(queryData?.totalCounts.busy)
@@ -768,19 +781,8 @@ function EmployeePanelCopy({ fordesignation }) {
         setopenProjectionPopUpNew(false);
     }
 
-    // -----------------filterable table------------------
-    // const [filteredData, setFilteredData] = useState([]);
-    // const handleFilter = (newData) => {
-    //     if (activeTabId === "all") {
-    //         setFilteredData(newData)
-    //         setGeneralData(newData);
-    //         setGeneralDataCount(newData.length)
-    //     } else if (activeTabId === "Interested") {
-    //         setFilteredData(newData)
-    //         setInterestedData(newData);
-    //         setInterestedDataCount(newData.length)
-    //     }
-    //     };
+ 
+
 
 
 
@@ -1022,7 +1024,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 <div>Under Docs/Info Review</div>
                                                 <div className="no_badge">
-                                                    {generalDataCount}
+                                                    {underDocsDataCount}
                                                 </div>
                                             </a>
                                         </li>
@@ -1153,23 +1155,23 @@ function EmployeePanelCopy({ fordesignation }) {
                                         {activeTabId === "UnderDocs" && dataStatus === "UnderDocs" && (
                                             <EmployeeUnderDocsLeads
                                                 userId={userId}
-                                                generalData={[]}
-                                                dataToFilter={dataToFilterGeneral}
-                                                completeGeneralData={completeGeneralData}
-                                                setGeneralData={setGeneralData}
-                                                setGeneralDataCount={setGeneralDataCount}
-                                                filteredData={filteredDataGeneral}
-                                                setFilteredData={setFilteredDataGeneral}
-                                                activeFilterField={activeFilterFieldGeneral}
-                                                setActiveFilterField={setActiveFilterFieldGeneral}
-                                                activeFilterFields={activeFilterFieldsGeneral}
-                                                setActiveFilterFields={setActiveFilterFieldsGeneral}
+                                                underDocsData={underDocsData}
+                                                dataToFilter={dataToFilterUnderDocs}
+                                                completeUnderDocsData={completeUnderDocsData}
+                                                setUnderDocsData={setUnderDocsData}
+                                                setUnderDocsDataCount={setUnderDocsDataCount}
+                                                filteredData={filteredDataUnderDocs}
+                                                setFilteredData={setFilteredDataUnderDocs}
+                                                activeFilterField={activeFilterFieldUnderDocs}
+                                                setActiveFilterField={setActiveFilterFieldUnderDocs}
+                                                activeFilterFields={activeFilterFieldsUnderDocs}
+                                                setActiveFilterFields={setActiveFilterFieldsUnderDocs}
                                                 isLoading={isLoading}
                                                 refetch={refetch}
                                                 formatDateNew={formatDateNew}
                                                 startIndex={startIndex}
                                                 endIndex={endIndex}
-                                                totalPages={queryData?.totalGeneralPages}
+                                                totalPages={queryData?.totalUndrocsPages}
                                                 setCurrentPage={setCurrentPage}
                                                 currentPage={currentPage}
                                                 dataStatus={dataStatus}

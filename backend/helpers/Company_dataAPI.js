@@ -2126,7 +2126,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     }
 
     // Fetch data for each status category
-    const [generalData, busyData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
+    const [generalData, busyData, underdocsData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
       CompanyModel.find({
         ...baseQuery,
         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
@@ -2140,6 +2140,15 @@ router.get("/employees-new/:ename", async (req, res) => {
         ...baseQuery,
         bdmAcceptStatus: "NotForwarded",
         Status: { $in: ["Busy", "Not Picked Up"] }
+      })
+        .sort({ lastActionDate: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      CompanyModel.find({
+        ...baseQuery,
+        bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+        Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
       })
         .sort({ lastActionDate: -1 })
         .skip(skip)
@@ -2215,11 +2224,16 @@ router.get("/employees-new/:ename", async (req, res) => {
       bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
     }));
 
-    const combinedData = [...generalData, ...busyData, ...interestedData, ...maturedData, ...notInterestedData];
+    const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData];
     // Count documents for each category
-    const [notInterestedCount, interestedCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
+    const [notInterestedCount, interestedCount, underdocsCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
+      CompanyModel.countDocuments({
+        ...baseQuery,
+        bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+        Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
+      }),
       CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined] } }),
       CompanyModel.countDocuments({
         ...baseQuery,
@@ -2243,6 +2257,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     // Total pages calculation based on the largest dataset (generalData as reference)
     const totalGeneralPages = Math.ceil(untouchedCount / limit);
     const totalBusyPages = Math.ceil(busyCount / limit);
+    const totalUndrocsPages = Math.ceil(underdocsCount / limit);
     const totalInterestedPages = Math.ceil(interestedCount / limit);
     const totalMaturedPages = Math.ceil(maturedCount / limit);
     const totalForwardedCount = Math.ceil(forwardedCount / limit);
@@ -2251,6 +2266,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     res.status(200).json({
       generalData,
       busyData,
+      underdocsData,
       interestedData,
       forwardedData,
       maturedData: updatedMaturedData, // Include updated matured data with booking information
@@ -2261,10 +2277,12 @@ router.get("/employees-new/:ename", async (req, res) => {
         matured: maturedCount,
         forwarded: forwardedCount,
         busy: busyCount,
-        untouched: untouchedCount
+        untouched: untouchedCount,
+        underdocs: underdocsCount
       },
       totalGeneralPages: totalGeneralPages,
       totalBusyPages: totalBusyPages,
+      totalUndrocsPages: totalUndrocsPages,
       totalInterestedPages: totalInterestedPages,
       totalForwardedCount: totalForwardedCount,
       totalMaturedPages: totalMaturedPages,
@@ -2946,95 +2964,108 @@ router.get("/bdmMaturedCases", async (req, res) => {
 // POST route to add/update interestedInformation
 router.post('/company/:companyName/interested-info', async (req, res) => {
   const companyName = req.params.companyName; // Extract company name from params
-  const { newInterestedInfo, status, id, ename, date, time } = req.body; // Data from the request body
-  // console.log(newInterestedInfo, status)
+  const { newInterestedInfo, status, id, ename } = req.body; // Data from the request body
+
+  console.log("Request Body:", req.body);
 
   try {
     const existingCompany = await CompanyModel.findById(id);
-    let updatedCompany;
-    // Find the company and push new interestedInformation if it already exists
-    if (existingCompany.bdmAcceptStatus === "MaturedAccepted" || existingCompany.bdmAcceptStatus === "Accept") {
-      updatedCompany = await CompanyModel.findOneAndUpdate(
-        { "Company Name": companyName }, // Query by company name
-        {
-          $set: {
-            bdmStatus: status, // Set company status
-            lastActionDate: new Date()
-          },
-          $push: {
-            interestedInformation: newInterestedInfo // Push new interested info to the array
-          }
-        },
-        {
-          new: true, // Return the updated document
-          upsert: true // Create a new document if it doesn't exist
-        }
-      )
-    } else {
-      updatedCompany = await CompanyModel.findOneAndUpdate(
-        { "Company Name": companyName }, // Query by company name
-        {
-          $set: {
-            Status: status, // Set company status
-            lastActionDate: new Date()
-          },
-          $push: {
-            interestedInformation: newInterestedInfo // Push new interested info to the array
-          }
-        },
-        {
-          new: true, // Return the updated document
-          upsert: true // Create a new document if it doesn't exist
-        }
-      );
+    if (!existingCompany) {
+      console.log("Company not found for ID:", id);
+      return res.status(404).json({ message: 'Company not found' });
     }
 
+    console.log("Existing Company Data:", existingCompany);
 
-    if (status === "FollowUp" || status === "Interested") {
+    // Get the existing interestedInformation or initialize it as an empty array
+    const existingInfoArray = existingCompany.interestedInformation || [];
+    console.log("Existing Interested Information:", existingInfoArray);
 
-      // Find the company in LeadHistoryForInterestedandFollowModel
-      let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
-        "Company Name": companyName,
-      });
-      // console.log("0 leadHistory", leadHistory)
+    // Check if an entry with the same `ename` already exists
+    const existingIndex = existingInfoArray.findIndex(info => info.ename === ename);
+    console.log("Index of existing ename:", existingIndex);
 
-      if (leadHistory) {
-        // console.log("1 leadHistory", leadHistory)
-        // If the record exists, update old status, new status, date, and time
-        leadHistory.oldStatus = "Untouched";
-        leadHistory.newStatus = status;
-      } else {
-        // console.log("2 leadHistory", leadHistory)
-        // If the record does not exist, create a new one with the company name, ename, and statuses
-        leadHistory = new LeadHistoryForInterestedandFollowModel({
-          _id: id,
-          "Company Name": companyName,
-          ename: ename,
-          oldStatus: "Untouched",
-          newStatus: status,
-          date: new Date(),  // Convert the date string to a Date object
-          time: time,
-        });
+    if (existingIndex !== -1) {
+      // If `ename` exists, update the existing object
+      const existingInfo = existingInfoArray[existingIndex];
+
+      // Perform a selective merge: only update fields in `newInterestedInfo` that are non-empty
+      const mergedInfo = { ...existingInfo };
+
+      for (const key in newInterestedInfo) {
+        if (typeof newInterestedInfo[key] === 'object' && !Array.isArray(newInterestedInfo[key])) {
+          // Deep merge for nested objects
+          mergedInfo[key] = {
+            ...(existingInfo[key] || {}),
+            ...Object.fromEntries(
+              Object.entries(newInterestedInfo[key]).map(([subKey, subValue]) => {
+                if (Array.isArray(subValue)) {
+                  // Preserve existing array if new array is empty
+                  return [subKey, subValue.length > 0 ? subValue : existingInfo[key][subKey] || []];
+                }
+                return [subKey, subValue !== '' && subValue !== null ? subValue : existingInfo[key][subKey]];
+              })
+            ),
+          };
+        } else if (Array.isArray(newInterestedInfo[key])) {
+          // Handle array fields: retain existing array if the new array is empty
+          mergedInfo[key] = newInterestedInfo[key].length > 0 ? newInterestedInfo[key] : existingInfo[key];
+        } else if (newInterestedInfo[key] !== '' && newInterestedInfo[key] !== null) {
+          // Update only if the value is not empty
+          mergedInfo[key] = newInterestedInfo[key];
+        }
       }
-      // console.log("3 leadHistory", leadHistory)
 
-      // Save the lead history update
-      await leadHistory.save();
+      console.log("Merged Existing Info:", mergedInfo);
+
+      // Replace the existing entry with the merged one
+      existingInfoArray[existingIndex] = mergedInfo;
+    } else {
+      // If `ename` does not exist, add newInterestedInfo as a new object
+      existingInfoArray.push(newInterestedInfo);
+      console.log("Added New Info:", newInterestedInfo);
     }
+
+    // Prepare update fields
+    const updateFields = {
+      interestedInformation: existingInfoArray,
+      lastActionDate: new Date(),
+    };
+
+    if (existingCompany.bdmAcceptStatus === "MaturedAccepted" || existingCompany.bdmAcceptStatus === "Accept") {
+      updateFields.bdmStatus = status;
+    } else {
+      updateFields.Status = status;
+    }
+
+    console.log("Update Fields to be set:", updateFields);
+
+    // Update the company document
+    const updatedCompany = await CompanyModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { $set: updateFields },
+      { new: true, upsert: true } // Return updated document or create if not exists
+    );
+
+    console.log("Updated Company Data:", updatedCompany);
 
     if (updatedCompany) {
       res.status(200).json({
         message: 'Interested information added/updated successfully',
-        updatedCompany
+        updatedCompany,
       });
     } else {
       res.status(404).json({ message: 'Company not found' });
     }
   } catch (error) {
-    console.error('Error updating interested information:', error);
+    console.error("Error updating interested information:", error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+
+
 
 // Search Company API For Leads
 router.get('/companies/searchforLeads/:employeeName', async (req, res) => {
