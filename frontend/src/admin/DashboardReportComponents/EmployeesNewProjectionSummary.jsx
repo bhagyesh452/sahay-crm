@@ -172,11 +172,11 @@ function EmployeesNewProjectionSummary() {
                     acc[company.bdmName].total_companies += 0.5;
 
                     // Add half of the price and payment amounts to each employee
-                    acc[company.bdeName].total_offered_price += (company.offeredPrice || 0) * 0.5;
-                    acc[company.bdmName].total_offered_price += (company.offeredPrice || 0) * 0.5;
+                    acc[company.bdeName].total_offered_price += (company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0) * 0.5;
+                    acc[company.bdmName].total_offered_price += (company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0) * 0.5;
 
-                    acc[company.bdeName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
-                    acc[company.bdmName].total_estimated_payment += (company.totalPayment || 0) * 0.5;
+                    acc[company.bdeName].total_estimated_payment += (company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0) * 0.5;
+                    acc[company.bdmName].total_estimated_payment += (company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0) * 0.5;
 
                     // Add full service count to each employee without dividing
                     acc[company.bdeName].total_services += serviceCount;
@@ -184,9 +184,8 @@ function EmployeesNewProjectionSummary() {
                 } else {
                     // For non-shared companies, add full count to the single employee
                     acc[company.bdeName].total_companies += 1;
-
-                    acc[company.bdeName].total_offered_price += company.offeredPrice || 0;
-                    acc[company.bdeName].total_estimated_payment += company.totalPayment || 0;
+                    acc[company.bdeName].total_offered_price += company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0;
+                    acc[company.bdeName].total_estimated_payment += company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0;
                     acc[company.bdeName].total_services += serviceCount;
                 }
 
@@ -505,8 +504,8 @@ function EmployeesNewProjectionSummary() {
                                             <td>{data.bdeName}</td>
                                             <td>{data.bdmName}</td>
                                             <td>{data.offeredServices.join(', ')}</td>
-                                            <td>{formatCurrency(data.offeredPrice)}</td>
-                                            <td>{formatCurrency(data.totalPayment)}</td>
+                                            <td>{formatCurrency(data.offeredPriceWithGst ? data.offeredPriceWithGst : data.offeredPrice)}</td>
+                                            <td>{formatCurrency(data.totalPaymentWithGst ? data.totalPaymentWithGst : data.totalPayment)}</td>
                                             <td>{formatCurrency(data.employeePayment)}</td>
                                             <td>{formatDate(new Date(data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(data.estPaymentDate))}</td>
@@ -601,8 +600,8 @@ function EmployeesNewProjectionSummary() {
                                             <td>{entry.data.bdeName}</td>
                                             <td>{entry.data.bdmName}</td>
                                             <td>{entry.data.offeredServices.join(', ')}</td>
-                                            <td>{formatCurrency(entry.data.offeredPrice)}</td>
-                                            <td>{formatCurrency(entry.data.totalPayment)}</td>
+                                            <td>{formatCurrency(entry.data.offeredPriceWithGst ? entry.data.offeredPriceWithGst : entry.data.offeredPrice)}</td>
+                                            <td>{formatCurrency(entry.data.totalPaymentWithGst ? entry.data.totalPaymentWithGst : entry.data.totalPayment)}</td>
                                             <td>{entry.data.bdeName === entry.data.bdmName ? formatCurrency(entry.data.totalPayment) : formatCurrency((entry.data.totalPayment) / 2)}</td>
                                             <td>{formatDate(new Date(entry.data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(entry.data.estPaymentDate))}</td>

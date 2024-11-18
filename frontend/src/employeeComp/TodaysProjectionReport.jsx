@@ -155,8 +155,8 @@ function TodaysProjectionReport() {
                                                     : "N/A"}
                                                 </td>
                                                 <td>₹ {formatAmount(data.offeredPriceWithGst ? data.offeredPriceWithGst : data.offeredPrice)}</td>
-                                                <td>₹ {formatAmount(data.expectedAmountWithGst ? data.expectedAmountWithGst : data.totalPayment)}</td>
-                                                <td>₹ {formatAmount(data.totalPaymentWithGst ? data.totalPaymentWithGst : data.employeePayment)}</td>
+                                                <td>₹ {formatAmount(data.totalPaymentWithGst ? data.totalPaymentWithGst : data.totalPayment)}</td>
+                                                <td>₹ {formatAmount(data.employeePayment)}</td>
                                                 <td>{formatDate(data.lastFollowUpdate)}</td>
                                                 <td>{formatDate(data.estPaymentDate)}</td>
                                                 <td>{data.remarks}</td>

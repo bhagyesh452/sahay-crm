@@ -1456,15 +1456,15 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           await CompanyModel.findByIdAndUpdate(companyData._id, {
             multiBdmName: multiBdmName,
             Status: "Matured",
-           
+
           });
         }
       }
       if (companyData && companyData.isDeletedEmployeeCompany) {
         await CompanyModel.findByIdAndUpdate(companyData._id, {
           Status: "Matured",
-           bdmStatus:"Matured",
-           bdmAcceptStatus:"MaturedDone"
+          bdmStatus: "Matured",
+          bdmAcceptStatus: "MaturedDone"
         });
         await TeamLeadsModel.findByIdAndDelete(companyData._id);
       }
@@ -3578,36 +3578,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
 
 
         // Send success response
-        // res.status(201).send("Data sent");
-
-        // Logic to update the `isPreviousMaturedCase` field for the Projection collection
-        const projection = await ProjectionModel.findOne({ companyName: companyName });
-        const services = existingData.moreBookings.map((booking) => booking.services.map((service) => service.serviceName));
-        // console.log("Services are:", services);
-
-        if (projection) {
-          // Check if any service is found in the main offeredServices array
-          const mainServiceMatch = services.some((service) => projection.offeredServices.includes(service));
-          if (mainServiceMatch) {
-            projection.isPreviousMaturedCase = true; // Set in main document
-          }
-
-          // Check for each history entry if a service matches in the offeredServices array of history data
-          if (projection.history && projection.history.length > 0) {
-            projection.history.forEach((historyEntry) => {
-              const historyServiceMatch = services.some((service) => historyEntry.data.offeredServices.includes(service));
-              if (historyServiceMatch) {
-                historyEntry.data.isPreviousMaturedCase = true; // Set in history entry
-              }
-            });
-          }
-
-          // Save the updated projection document
-          await projection.save();
-        }
-
-        res.status(200).json({ result: true, message: "Data processed and matured case status updated successfully" });
-
+        res.status(201).send("Data sent");
       } else {
         res.status(404).json("Company Not found");
         return true;
@@ -3621,6 +3592,49 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
   }
 }
 );
+
+// API to update the `isPreviousMaturedCase` and add booking amount field for the Projection collection
+router.put("/update-matured-case-in-projection/:companyName", async (req, res) => {
+
+  const {companyName} = req.params;
+
+  try {
+    const bookingData = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+    const projection = await ProjectionModel.findOne({ companyName: companyName });
+
+    // Flatten the services array to get a list of all service names
+    const services = bookingData.moreBookings.flatMap((booking) => booking.services.map((service) => service.serviceName));
+    const bookingAmount = bookingData.moreBookings.map((booking) => booking.totalAmount);
+    // console.log("Services are:", services);
+
+    if (projection) {
+      // Check if any service is found in the main offeredServices array
+      const mainServiceMatch = services.some((service) => projection.offeredServices.includes(service));
+      if (mainServiceMatch) {
+        projection.isPreviousMaturedCase = true; // Set in main document
+        projection.bookingAmount = bookingAmount[0];
+      }
+
+      // Check for each history entry if a service matches in the offeredServices array of history data
+      if (projection.history && projection.history.length > 0) {
+        projection.history.forEach((historyEntry) => {
+          const historyServiceMatch = services.some((service) => historyEntry.data.offeredServices.includes(service));
+          if (historyServiceMatch) {
+            historyEntry.data.isPreviousMaturedCase = true; // Set in history entry
+            historyEntry.data.bookingAmount = bookingAmount[0];
+          }
+        });
+      }
+
+      // Save the updated projection document
+      await projection.save();
+    }
+
+    res.status(200).json({ result: true, message: "Data processed and matured case status updated successfully" });
+  } catch {
+    res.status(500).json({resulr: false, message: "Error updating matured case status"});
+  }
+});
 
 // Editing a Leadform
 router.post("/redesigned-edit-leadData/:CompanyName/:step", upload.fields([
@@ -6022,6 +6036,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
       const mainServiceMatch = services.some((service) => projection.offeredServices.includes(service));
       if (mainServiceMatch) {
         projection.isPreviousMaturedCase = true; // Set in main document
+        projection.bookingAmount = newData.totalAmount;
       }
 
       // Check for each history entry if a service matches in the offeredServices array of history data
@@ -6030,6 +6045,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
           const historyServiceMatch = services.some((service) => historyEntry.data.offeredServices.includes(service));
           if (historyServiceMatch) {
             historyEntry.data.isPreviousMaturedCase = true; // Set in history entry
+            historyEntry.data.bookingAmount = newData.totalAmount;
           }
         });
       }

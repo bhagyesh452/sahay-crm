@@ -35,12 +35,14 @@ const CompanySchema = new mongoose.Schema({
     required: true
   },
   offeredPriceWithGst: {
-    type: Number,
-    required: true
+    type: Number
   },
   totalPaymentWithGst: {
+    type: Number
+  },
+  bookingAmount: {
     type: Number,
-    required: true
+    default: 0
   },
   lastFollowUpdate: {
     type: Date,
@@ -109,6 +111,16 @@ const CompanySchema = new mongoose.Schema({
       totalPayment: {
         type: Number,
         required: true
+      },
+      offeredPriceWithGst: {
+        type: Number
+      },
+      totalPaymentWithGst: {
+        type: Number
+      },
+      bookingAmount: {
+        type: Number,
+        default: 0
       },
       lastFollowUpdate: {
         type: Date,

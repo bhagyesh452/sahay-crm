@@ -102,11 +102,11 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
             setIsLoading(true);
             // Manually format date to YYYY-MM-DD to avoid timezone shifts
             const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-            // console.log("formattedDate", selectedDate, formattedDate)
+            console.log("formattedDate", formattedDate)
             const currentDayProjectionRes = await axios.get(`${secretKey}/company-data/getCurrentDayProjection`, {
                 params: { companyName, date: formattedDate },
             });
-
+            // console.log("Current day projection data is :", currentDayProjectionRes.data.data);
             const dailyEmployeeProjectionRes = await axios.get(`${secretKey}/company-data/getDailyEmployeeProjections`, {
                 params: { date: formattedDate },
             });
@@ -129,6 +129,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                             total_companies: 0,
                             total_offered_price: 0,
                             total_estimated_payment: 0,
+                            total_maturd_amount: 0,
                             total_services: 0,
                         };
                     }
@@ -139,16 +140,23 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                 if (isShared) {
                     acc[company.bdeName].total_companies += 0.5;
                     acc[company.bdmName].total_companies += 0.5;
+
                     acc[company.bdeName].total_offered_price += (company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0) * 0.5;
                     acc[company.bdmName].total_offered_price += (company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0) * 0.5;
+                    
                     acc[company.bdeName].total_estimated_payment += (company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0) * 0.5;
                     acc[company.bdmName].total_estimated_payment += (company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0) * 0.5;
+
+                    acc[company.bdeName].total_maturd_amount += company.bookingAmount ? company.bookingAmount : 0;
+                    acc[company.bdmName].total_maturd_amount += company.bookingAmount ? company.bookingAmount : 0;
+                    
                     acc[company.bdeName].total_services += serviceCount;
                     acc[company.bdmName].total_services += serviceCount;
                 } else {
                     acc[company.bdeName].total_companies += 1;
                     acc[company.bdeName].total_offered_price += company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0;
                     acc[company.bdeName].total_estimated_payment += company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0;
+                    acc[company.bdeName].total_maturd_amount += company.bookingAmount ? company.bookingAmount : 0;
                     acc[company.bdeName].total_services += serviceCount;
                 }
 
@@ -161,6 +169,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                 total_companies: values.total_companies,
                 total_offered_price: values.total_offered_price,
                 total_estimated_payment: values.total_estimated_payment,
+                total_maturd_amount: values.total_maturd_amount,
                 total_services: values.total_services,
             }));
             console.log("summaryArray", summaryArray);
@@ -187,6 +196,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                         total_offered_price: 0,
                         total_estimated_payment: 0,
                         total_services: 0,
+                        total_maturd_amount: 0,
                         result: dailyProjection.result || "Not Added Yet",
                         branchOffice: employee.branchOffice,  // Add branch office from totalEmployees
                     };
@@ -198,6 +208,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                         total_offered_price: 0,
                         total_estimated_payment: 0,
                         total_services: 0,
+                        total_maturd_amount: 0,
                         result: 0,
                         branchOffice: employee.branchOffice,  // Add branch office from totalEmployees
                     };
@@ -275,12 +286,14 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
 
         // Set history data if found; otherwise, set an empty array
         setHistoryData(selectedProjection ? selectedProjection.history || [] : []);
+        console.log("History data is :", historyData)
 
         // Open the history dialog
         setOpenHistoryDialog(true);
         setOpenProjectionTable(false);
     };
 
+    
     const handleCloseHistoryDialog = () => {
         setOpenHistoryDialog(false);
         setOpenProjectionTable(true);
@@ -656,6 +669,44 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                                 )}
                                             </div>
                                         </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['matured_payment'] = el}>
+                                                    Matured Amount
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('matured_payment') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("matured_payment")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("matured_payment")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'matured_payment' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={totalEmployees}
+                                                            data={projection}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeProjection}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredProjection}
+                                                            forProjectionSummary={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
                                     </tr>
                                 </thead>
                                 {/* New code with branch office */}
@@ -689,6 +740,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                                     <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_offered_price)) : "Not Added Yet"}
                                                     </td>
                                                     <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_estimated_payment)) : "Not Added Yet"}</td>
+                                                    <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_maturd_amount)) : "No Matured Booking"}</td>
                                                 </tr>
                                             );
                                         })
@@ -709,6 +761,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                             <td>{projection.reduce((total, item) => total + item.total_services, 0)}</td>
                                             <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_offered_price, 0))}</td>
                                             <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_estimated_payment, 0))}</td>
+                                            <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_maturd_amount, 0))}</td>
                                         </tr>
                                     </tfoot>
                                 )}
@@ -777,6 +830,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                     <th>Total Offered Price</th>
                                     <th>Expected Amount</th>
                                     <th>Employee Payment</th>
+                                    <th>Matured Amount</th>
                                     <th>Last Follow Up Date</th>
                                     <th>Estimated Payment Date</th>
                                     <th>Remarks</th>
@@ -796,9 +850,10 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                             <td>{data.bdeName}</td>
                                             <td>{data.bdmName}</td>
                                             <td>{data.offeredServices.join(', ')}</td>
-                                            <td>{formatCurrency(data.offeredPrice)}</td>
-                                            <td>{formatCurrency(data.totalPayment)}</td>
+                                            <td>{formatCurrency(data.offeredPriceWithGst ? data.offeredPriceWithGst : data.offeredPrice)}</td>
+                                            <td>{formatCurrency(data.totalPaymentWithGst ? data.totalPaymentWithGst : data.totalPayment)}</td>
                                             <td>{formatCurrency(data.employeePayment)}</td>
+                                            <td>{formatCurrency(data.bookingAmount || 0)}</td>
                                             <td>{formatDate(new Date(data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(data.estPaymentDate))}</td>
                                             <td>{data.remarks}</td>
@@ -880,6 +935,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                     <th>Total Offered Price</th>
                                     <th>Expected Amount</th>
                                     <th>Employee Payment</th>
+                                    <th>Matured Amount</th>
                                     <th>Last Follow Up Date</th>
                                     <th>Estimated Payment Date</th>
                                     <th>Remarks</th>
@@ -900,6 +956,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                             <td>{formatCurrency(entry.data.offeredPriceWithGst ? entry.data.offeredPriceWithGst : entry.data.offeredPrice)}</td>
                                             <td>{formatCurrency(entry.data.totalPaymentWithGst ? entry.data.totalPaymentWithGst : entry.data.totalPayment)}</td>
                                             <td>{entry.data.bdeName === entry.data.bdmName ? formatCurrency(entry.data.totalPayment) : formatCurrency((entry.data.totalPayment) / 2)}</td>
+                                            <td>{formatCurrency(entry.data.bookingAmount || 0)}</td>
                                             <td>{formatDate(new Date(entry.data.lastFollowUpdate))}</td>
                                             <td>{formatDate(new Date(entry.data.estPaymentDate))}</td>
                                             <td>{entry.data.remarks}</td>
