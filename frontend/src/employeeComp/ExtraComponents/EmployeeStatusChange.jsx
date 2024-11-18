@@ -12,7 +12,6 @@ import { options } from "../../components/Options.js";
 import Select from "react-select";
 import EmployeeInterestedInformationDialog from "./EmployeeInterestedInformationDialog.jsx";
 
-    
 const EmployeeStatusChange = ({
   companyName,
   id,
@@ -123,7 +122,6 @@ const EmployeeStatusChange = ({
     try {
 
       let response;
-      openingBackdrop(true)
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
           // response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${id}`);
