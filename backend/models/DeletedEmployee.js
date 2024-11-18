@@ -158,6 +158,22 @@ const yourSchema = new mongoose.Schema({
   },
   deletedDate: {
     type: Date
+  },
+  isPermanentDeleted: {
+    type: Boolean,
+    default: false
+  },
+  isDeletedEmployeeCompany: {
+    type: Boolean,
+    default: false
+  },
+  permanentDeletingDate:{
+    type:Date,
+    default:new Date()
+  },
+  permanentDeletingPerson:{
+    type:String,
+    default:""
   }
 })
 

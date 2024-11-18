@@ -586,7 +586,10 @@ function TeamLeadsBusy({
                                     </td>
                                     <td>
                                         <div className="d-flex justify-content-center">
-                                            <div className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" : "dfault_followup-status"}`}>
+                                            <div className={`${
+                                                company.bdeOldStatus === "Interested" ? "dfault_interested-status" 
+                                                : company.bdeOldStatus === "Matured" ? "dfault_approved-status" 
+                                                : "dfault_followup-status"}`}>
                                                 {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                             </div>
 
@@ -596,11 +599,13 @@ function TeamLeadsBusy({
                                                         ? "intersted-history-btn disabled"
                                                         : company.bdeOldStatus === "FollowUp"
                                                             ? "followup-history-btn disabled"
+                                                             : company.bdeOldStatus === "Matured" ? "matured-history-btn disabled"
                                                             : "")
                                                     : (company.bdeOldStatus === "Interested"
                                                         ? "intersted-history-btn"
                                                         : company.bdeOldStatus === "FollowUp"
                                                             ? "followup-history-btn"
+                                                             : company.bdeOldStatus === "Matured" ? "matured-history-btn"
                                                             : "")
                                             }>
                                                 <FaEye
@@ -649,8 +654,8 @@ function TeamLeadsBusy({
                                     </td>
                                     <td>
                                         {newDesignation ?
-                                            <div className={`${company.Status === "Busy" ? "dfault_busy-status" : "dfault_not-pickedup-status"}`}>
-                                                {company.Status}
+                                            <div className={`${company.Status || company.bdmStatus === "Busy" ? "dfault_busy-status" : "dfault_not-pickedup-status"}`}>
+                                                {company.bdmStatus ? company.bdmStatus : company.Status}
                                             </div>
                                             : <EmployeeStatusChange
                                                 key={`${company["Company Name"]}-${index}`}
@@ -669,6 +674,7 @@ function TeamLeadsBusy({
                                                 teamData={teamData}
                                                 handleFormOpen={handleOpenFormOpen}
                                                 isBdmStatusChange={true}
+                                                bdmStatus={company.bdmStatus}
                                             />}
                                     </td>
                                     <td>

@@ -74,32 +74,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
     return formattedDate;
   }
 
-  //--------------------fetching employee data-----------------
-  // const fetchData = async () => {
-  //   try {
-  //     // setIsLoading(true);
-  //     let response;
-  //     if (!searchValue) {
-  //       response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-  //     } else {
-  //       response = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-  //         params: { search: searchValue }, // send searchValue as query param
-  //       });
-  //     }
-
-  //     // Set the retrieved data in the state
-  //     // setFilteredData(response.data);
-  //     setData(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error.message);
-  //   } finally {
-  //     // setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, [searchValue]);
+  //--------------------fetching employee data----------------
 
   // Old code handle search :
   const handleSearch = (e) => {
@@ -206,7 +181,9 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`${secretKey}/employee/permanentDelete/${itemId}`);
+          const response = await axios.patch(`${secretKey}/employee/permanentDelete/${itemId}`, {
+            deletingPerson: adminName // Sending the deleting person in the request body
+          });
           Swal.fire('Deleted!','success');
           // fetchData();
           refetchActive();

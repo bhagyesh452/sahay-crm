@@ -27,6 +27,8 @@ function EmployeeInterestedInformationDialog({
 
 }) {
 
+    // console.log("interesedinfostatus", status, companyStatus)
+
     // console.log("inetsredtedInform", interestedInformation)
     const [visibleQuestions, setVisibleQuestions] = useState({}); // Track which question's options are visible
     const [isSubmitted, setIsSubmitted] = useState(false); // To disable submit button
@@ -142,20 +144,43 @@ function EmployeeInterestedInformationDialog({
     };
 
     const handleSubmitInformation = () => {
-        // Validation: Ensure that at least one question has all required fields filled
-        const isWhatsAppRequestFilled = formData.clientWhatsAppRequest.nextFollowUpDate && formData.clientWhatsAppRequest.remarks;
-        const isEmailRequestFilled = formData.clientEmailRequest.nextFollowUpDate && formData.clientEmailRequest.remarks;
-        const isInterestedServicesFilled = formData.interestedInServices.servicesPitched.length > 0 && formData.interestedInServices.servicesInterestedIn.length > 0 && formData.interestedInServices.offeredPrice && formData.interestedInServices.nextFollowUpDate && formData.interestedInServices.remarks;
-        const isInterestedButNotNowFilled = formData.interestedButNotNow.servicesPitched.length > 0 && formData.interestedButNotNow.servicesInterestedIn.length > 0 && formData.interestedButNotNow.offeredPrice && formData.interestedButNotNow.nextFollowUpDate && formData.interestedButNotNow.remarks;
+        // Validation logic based on the status
+        if (status === "Docs/Info Sent (W)" || status === "Docs/Info Sent (E)" || status === "Docs/Info Sent (W&E)") {
+            // Ensure either question 3 or question 4 is filled
+            const isQuestion3Filled = formData.interestedInServices.servicesPitched.length > 0 &&
+                formData.interestedInServices.servicesInterestedIn.length > 0 &&
+                formData.interestedInServices.offeredPrice &&
+                formData.interestedInServices.nextFollowUpDate &&
+                formData.interestedInServices.remarks;
 
-        if (isWhatsAppRequestFilled || isEmailRequestFilled || isInterestedServicesFilled || isInterestedButNotNowFilled) {
-            // At least one section is fully answered, proceed with submission
-            handleSubmitToBackend();
-        } else {
-            // Show an error if no section is fully answered
-            Swal.fire("Please complete at least one question with all required fields.");
+            const isQuestion4Filled = formData.interestedButNotNow.servicesPitched.length > 0 &&
+                formData.interestedButNotNow.servicesInterestedIn.length > 0 &&
+                formData.interestedButNotNow.offeredPrice &&
+                formData.interestedButNotNow.nextFollowUpDate &&
+                formData.interestedButNotNow.remarks;
+
+            if (!isQuestion3Filled && !isQuestion4Filled) {
+                Swal.fire("Please complete either Question 3 or Question 4 with at least one required field.");
+                return;
+            }
+        } else if (status === "Interested") {
+            // Ensure either question 1 or question 2 is filled
+            const isQuestion1Filled = formData.clientWhatsAppRequest.nextFollowUpDate &&
+                formData.clientWhatsAppRequest.remarks;
+
+            const isQuestion2Filled = formData.clientEmailRequest.nextFollowUpDate &&
+                formData.clientEmailRequest.remarks;
+
+            if (!isQuestion1Filled && !isQuestion2Filled) {
+                Swal.fire("Please complete either Question 1 or Question 2 with at least one required field.");
+                return;
+            }
         }
+
+        // If validation passes, proceed with submission
+        handleSubmitToBackend();
     };
+
 
     const handleSubmitToBackend = async () => {
         const DT = new Date();
@@ -174,7 +199,9 @@ function EmployeeInterestedInformationDialog({
                     id: id,
                     ename: ename,
                     date: date,
-                    time: time
+                    time: time,
+
+
                 }
             );
             if (response.status === 200) {
@@ -226,14 +253,13 @@ function EmployeeInterestedInformationDialog({
             }
             if (typeof setStatusClass === 'function') {
                 setStatusClass(companyStatus === "Untouched" ? "untouched_status" : companyStatus === "Busy" ? "dfaulter-status" : "cdbp-status");
-            } if (typeof refetch === 'function') {
+            }
+            if (typeof refetch === 'function') {
                 refetch();
             }
             setVisibleQuestions({})
             refetch();
         }
-
-
         // Manually hide the modal
         const modalElement = document.getElementById(modalId);
         modalElement.classList.remove("show");
@@ -308,8 +334,28 @@ function EmployeeInterestedInformationDialog({
         return !fieldData;
     };
 
+    const getVisibleQuestions = () => {
+        const visibleKeys = Object.keys(visibleQuestions).filter((key) => visibleQuestions[key]);
+    
+        // If no questions are visible, assume q1 and q2 are visible by default
+        if (visibleKeys.length === 0) {
+            return ["q1", "q2"];
+        }
+    
+        return visibleKeys;
+    };
+    
+    const calculateQuestionNumber = (questionId) => {
+        const visibleKeys = getVisibleQuestions(); // Get visible question keys dynamically
+        const questionIndex = visibleKeys.indexOf(questionId);
+    
+        // If the question is not in the list, return 0
+        return questionIndex !== -1 ? questionIndex + 1 : 0;
+    };
 
-    // console.log("visiblequestions" , visibleQuestions)
+
+
+    console.log("visiblequestions", visibleQuestions)
     return (<>
         <div className="modal fade" id={modalId} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
@@ -333,111 +379,112 @@ function EmployeeInterestedInformationDialog({
                         </div>
 
                         <div className="accordion" id="accordionQue">
-                            {(!forView || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) && (<div className="accordion-item int-accordion-item">
-                                <div className="accordion-header p-2" id="accordionQueOne">
-                                    <div className="d-flex align-items-center justify-content-between"  >
-                                        <div className="int-que mr-2">
-                                            1. Client asked to send documents/information on WhatsApp for review!
-                                        </div>
-                                        {(forView) ? (
-                                            <div className="custom-toggle d-flex align-items-center int-opt">
+                            {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) &&
+                                (<div className="accordion-item int-accordion-item">
+                                    <div className="accordion-header p-2" id="accordionQueOne">
+                                        <div className="d-flex align-items-center justify-content-between"  >
+                                            <div className="int-que mr-2">
+                                                {calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review!
+                                            </div>
+                                            {(forView) ? (
+                                                <div className="custom-toggle d-flex align-items-center int-opt">
+                                                    <div className="custom-Yes-No d-flex align-items-center int-opt">
+                                                        <div
+                                                            className="yes-no"
+                                                            onClick={() => handleYesClickNew("q1")}
+                                                        >
+                                                            <button className="yes-no-alias">
+                                                                {visibleQuestions["q1"] ? <FaChevronUp /> : <FaChevronDown />}
+                                                            </button>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
                                                 <div className="custom-Yes-No d-flex align-items-center int-opt">
-                                                    <div
-                                                        className="yes-no"
-                                                        onClick={() => handleYesClickNew("q1")}
-                                                    >
-                                                        <button className="yes-no-alias">
-                                                            {visibleQuestions["q1"] ? <FaChevronUp /> : <FaChevronDown />}
-                                                        </button>
-
+                                                    <div className="yes-no"
+                                                        onClick={() => handleYesClick("q1")}>
+                                                        <input
+                                                            type="radio"
+                                                            name="rGroup"
+                                                            value="1"
+                                                            id="r1"
+                                                        //checked={formData.clientWhatsAppRequest.nextFollowUpDate && formData.clientWhatsAppRequest.remarks ? true : false}  
+                                                        />
+                                                        <label
+                                                            className="yes-no-alias"
+                                                            for="r1"
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target="#collapseOneQue"
+                                                            aria-expanded="true"
+                                                            aria-controls="collapseOneQue"
+                                                        >
+                                                            <div className="yes-alias-i"><FaCheck /></div>
+                                                            <div className="ml-1">Yes</div>
+                                                        </label>
+                                                    </div>
+                                                    <div className="yes-no ml-1" onClick={() => handleNoClick("q1")}>
+                                                        <input type="radio" name="rGroup" value="2" id="r2" />
+                                                        <label className="yes-no-alias" for="r2">
+                                                            <div className="no-alias-i"><CgClose /></div>
+                                                            <div className="ml-1">No</div>
+                                                        </label>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ) : (
-                                            <div className="custom-Yes-No d-flex align-items-center int-opt">
-                                                <div className="yes-no"
-                                                    onClick={() => handleYesClick("q1")}>
-                                                    <input
-                                                        type="radio"
-                                                        name="rGroup"
-                                                        value="1"
-                                                        id="r1"
-                                                    //checked={formData.clientWhatsAppRequest.nextFollowUpDate && formData.clientWhatsAppRequest.remarks ? true : false}  
-                                                    />
-                                                    <label
-                                                        className="yes-no-alias"
-                                                        for="r1"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseOneQue"
-                                                        aria-expanded="true"
-                                                        aria-controls="collapseOneQue"
-                                                    >
-                                                        <div className="yes-alias-i"><FaCheck /></div>
-                                                        <div className="ml-1">Yes</div>
-                                                    </label>
-                                                </div>
-                                                <div className="yes-no ml-1" onClick={() => handleNoClick("q1")}>
-                                                    <input type="radio" name="rGroup" value="2" id="r2" />
-                                                    <label className="yes-no-alias" for="r2">
-                                                        <div className="no-alias-i"><CgClose /></div>
-                                                        <div className="ml-1">No</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        )}
+                                            )}
 
-                                    </div>
-                                </div>
-                                {visibleQuestions["q1"] &&
-                                    (
-                                        <div
-                                            id="collapseOneQue"
-                                            className="accordion-collapse collapse show"
-                                            aria-labelledby="accordionQueOne"
-                                            data-bs-parent="#accordionQue"
-                                        >
-                                            <div className="accordion-body int-sub-que">
-                                                <div className="row">
-                                                    <div className="col-6">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="date">Next Follow-Up Date ?</label>
-                                                            <input
-                                                                type="date"
-                                                                class="form-control mt-1"
-                                                                id="date"
-                                                                value={formData.clientWhatsAppRequest.nextFollowUpDate}
-                                                                onChange={(e) => handleInputChange('clientWhatsAppRequest', 'nextFollowUpDate', e.target.value)}
-                                                                disabled={forView}
-
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-6">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="text">Remark Box: </label>
-                                                            <input type="text"
-                                                                class="form-control mt-1"
-                                                                placeholder="Add Remarks"
-                                                                id="text"
-                                                                value={formData.clientWhatsAppRequest.remarks}
-                                                                onChange={(e) => handleInputChange('clientWhatsAppRequest', 'remarks', e.target.value)}
-                                                                disabled={forView}
-
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
-                                    )
-                                }
-                            </div>)}
-                            {(!forView || (!isEmptyAnswer(formData.clientEmailRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientEmailRequest.remarks))) && (
+                                    </div>
+                                    {visibleQuestions["q1"] &&
+                                        (
+                                            <div
+                                                id="collapseOneQue"
+                                                className="accordion-collapse collapse show"
+                                                aria-labelledby="accordionQueOne"
+                                                data-bs-parent="#accordionQue"
+                                            >
+                                                <div className="accordion-body int-sub-que">
+                                                    <div className="row">
+                                                        <div className="col-6">
+                                                            <div class="form-group mt-2 mb-2">
+                                                                <label for="date">Next Follow-Up Date ?</label>
+                                                                <input
+                                                                    type="date"
+                                                                    class="form-control mt-1"
+                                                                    id="date"
+                                                                    value={formData.clientWhatsAppRequest.nextFollowUpDate}
+                                                                    onChange={(e) => handleInputChange('clientWhatsAppRequest', 'nextFollowUpDate', e.target.value)}
+                                                                    disabled={forView}
+
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-6">
+                                                            <div class="form-group mt-2 mb-2">
+                                                                <label for="text">Remark Box: </label>
+                                                                <input type="text"
+                                                                    class="form-control mt-1"
+                                                                    placeholder="Add Remarks"
+                                                                    id="text"
+                                                                    value={formData.clientWhatsAppRequest.remarks}
+                                                                    onChange={(e) => handleInputChange('clientWhatsAppRequest', 'remarks', e.target.value)}
+                                                                    disabled={forView}
+
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                </div>)}
+                            {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.clientEmailRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientEmailRequest.remarks))) && (
                                 <div className="accordion-item int-accordion-item">
                                     <div className="accordion-header p-2" id="accordionQuetwo">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                2. Client asked to send documents/information via email for review.
+                                                {calculateQuestionNumber("q2")}. Client asked to send documents/information via email for review.
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -521,7 +568,7 @@ function EmployeeInterestedInformationDialog({
                                         </div>
                                         )}
                                 </div>)}
-                            {(!forView || (!isEmptyAnswer(formData.interestedInServices.nextFollowUpDate) ||
+                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.interestedInServices.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedInServices.remarks) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesPitched) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesInterestedIn) ||
@@ -529,7 +576,7 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQuethree">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                3. Interested in one of our services.
+                                                {calculateQuestionNumber("q3")}. Interested in one of our services.
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -681,7 +728,7 @@ function EmployeeInterestedInformationDialog({
                                             </div>
                                         </div>)}
                                 </div>)}
-                            {(!forView || (!isEmptyAnswer(formData.interestedButNotNow.nextFollowUpDate) ||
+                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.interestedButNotNow.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.remarks) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.servicesPitched) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.servicesInterestedIn) ||
@@ -689,7 +736,7 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQueFour">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                4. Interested, but doesn't need the service right now.
+                                                {calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now.
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -862,7 +909,7 @@ function EmployeeInterestedInformationDialog({
                     </div>
                 </div>
             </div >
-        </div >
+        </div>
     </>)
 }
 

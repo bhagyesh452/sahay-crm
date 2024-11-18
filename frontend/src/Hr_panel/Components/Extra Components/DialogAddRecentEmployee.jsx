@@ -525,7 +525,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                 } else {
                     designation = row["Designation"];
                 }
-                console.log("row", row["Joining Date"])
+                // console.log("row", row["Joining Date"])
                 return {
                     firstName: row["First Name"],
                     middleName: row["Middle Name"],

@@ -711,6 +711,7 @@ function ManageLeads() {
 
     const handleCheckboxChange = async (id) => {
         try {
+            setOpenBacdrop(true)
             let response;
             if (id === "all") {
                 response = await axios.get(`${secretKey}/admin-leads/getIds`, {
@@ -957,6 +958,7 @@ function ManageLeads() {
         console.log("tempStatusData", tempStatusData)
 
         try {
+            setOpenBacdrop(true)
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
                 selectedObjects: dataToSend,

@@ -537,7 +537,7 @@ function TeamLeadsMatured({
                                                 {company.Status}
                                             </div>
 
-                                            <div className={company.interestedInformation.length !== 0 ? "intersted-history-btn" : "intersted-history-btn disabled"}>
+                                            <div className={company.interestedInformation.length !== 0 ? "matured-history-btn" : "matured-history-btn disabled"}>
                                                 <FaEye
                                                     key={company._id}
                                                     style={{ border: "transparent", background: "none" }}

@@ -15,10 +15,13 @@ import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInterestedInformationDialog';
+import { FaEye } from "react-icons/fa";
 
-function EmployeeGeneralLeads({
+
+function EmployeeUnderDocsLeads({
     userId,
-    generalData,
+    underDocsData,
     isLoading,
     refetch,
     formatDateNew,
@@ -44,16 +47,15 @@ function EmployeeGeneralLeads({
     bdenumber,
     filteredData,
     //handleFilter,
-    completeGeneralData,
+    completeUnderDocsData,
     dataToFilter,
-    setGeneralData,
+    setunderDocsData,
     setFilteredData,
     activeFilterField,
     setActiveFilterField,
     activeFilterFields,
     setActiveFilterFields,
-    setGeneralDataCount,
-    openingBackdrop
+    setUnderDocsDataCount
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -98,8 +100,8 @@ function EmployeeGeneralLeads({
     const handleFilter = (newData) => {
         console.log("newData", newData)
         setFilteredData(newData)
-        setGeneralData(newData);
-        setGeneralDataCount(newData.length);
+        setunderDocsData(newData);
+        setUnderDocsDataCount(newData.length);
     };
 
 
@@ -136,12 +138,12 @@ function EmployeeGeneralLeads({
     }, []);
 
     // console.log("activeFilterFieldsGeneral", activeFilterFields)
-    // console.log("generalData" , generalData)
+    // console.log("underDocsData" , underDocsData)
 
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
-             {openBacdrop && (<Backdrop
+            {openBacdrop && (<Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={openBacdrop}
                 onClick={() => setOpenBacdrop(false)}>
@@ -160,7 +162,7 @@ function EmployeeGeneralLeads({
                                                     <input
                                                         type="checkbox"
                                                         checked={
-                                                            selectedRows && generalData && (selectedRows.length === generalData.length)
+                                                            selectedRows && underDocsData && (selectedRows.length === underDocsData.length)
                                                         }
                                                         onChange={(e) => handleCheckboxChange("all", e)}
                                                     />
@@ -195,10 +197,10 @@ function EmployeeGeneralLeads({
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
-                                                        data={generalData}
+                                                        data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
-                                                        completeData={completeGeneralData}
+                                                        completeData={completeUnderDocsData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                         refetch={refetch}
@@ -233,10 +235,10 @@ function EmployeeGeneralLeads({
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
-                                                        data={generalData}
+                                                        data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
-                                                        completeData={completeGeneralData}
+                                                        completeData={completeUnderDocsData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                         refetch={refetch}
@@ -272,10 +274,10 @@ function EmployeeGeneralLeads({
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
-                                                        data={generalData}
+                                                        data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
-                                                        completeData={completeGeneralData}
+                                                        completeData={completeUnderDocsData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                         refetch={refetch}
@@ -311,10 +313,10 @@ function EmployeeGeneralLeads({
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
-                                                        data={generalData}
+                                                        data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
-                                                        completeData={completeGeneralData}
+                                                        completeData={completeUnderDocsData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                         refetch={refetch}
@@ -349,10 +351,10 @@ function EmployeeGeneralLeads({
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
-                                                        data={generalData}
+                                                        data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
-                                                        completeData={completeGeneralData}
+                                                        completeData={completeUnderDocsData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                         refetch={refetch}
@@ -387,10 +389,10 @@ function EmployeeGeneralLeads({
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
-                                                        data={generalData}
+                                                        data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
-                                                        completeData={completeGeneralData}
+                                                        completeData={completeUnderDocsData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                         refetch={refetch}
@@ -425,10 +427,10 @@ function EmployeeGeneralLeads({
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
-                                                        data={generalData}
+                                                        data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
-                                                        completeData={completeGeneralData}
+                                                        completeData={completeUnderDocsData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                         refetch={refetch}
@@ -463,10 +465,10 @@ function EmployeeGeneralLeads({
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
-                                                        data={generalData}
+                                                        data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
-                                                        completeData={completeGeneralData}
+                                                        completeData={completeUnderDocsData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                         refetch={refetch}
@@ -496,7 +498,7 @@ function EmployeeGeneralLeads({
                                     </tbody>
                                 ) : (
                                     <tbody>
-                                        {generalData && generalData.map((company, index) => (
+                                        {underDocsData && underDocsData.map((company, index) => (
                                             <tr key={company._id}
                                                 onMouseDown={() =>
                                                     handleMouseDown(company._id)
@@ -557,39 +559,86 @@ function EmployeeGeneralLeads({
                                                     />
                                                 </td>
                                                 <td>
-                                                    {(fordesignation === "admin" || fordesignation === "datamanager") ? (
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        {(fordesignation === "admin" || fordesignation === "datamanager") ? (
+                                                            <div
+                                                                className={company.Status === "Docs/Info Sent (W)" ? "ep_notpickedup_status" :
+                                                                    company.Status === "Docs/Info Sent (E)" ? "docs_sent_e-status" :
+                                                                        company.Status === "Docs/Info Sent (W&E)" ? "Docs/Info Sent (W&E)" : null}>
+                                                                {company.Status}
+                                                            </div>
+                                                        ) : (
+                                                            <EmployeeStatusChange
+                                                                key={`${company["Company Name"]}-${index}`}
+                                                                companyName={company && company["Company Name"]}
+                                                                companyStatus={company.Status}
+                                                                id={company._id}
+                                                                refetch={refetch}
+                                                                mainStatus={dataStatus}
+                                                                setCompanyName={setCompanyName}
+                                                                setCompanyEmail={setCompanyEmail}
+                                                                setCompanyInco={setCompanyInco}
+                                                                setCompanyId={setCompanyId}
+                                                                setCompanyNumber={setCompanyNumber}
+                                                                setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                                                                setNewBdeName={setNewBdeName}
+                                                                isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
+                                                                setFormOpen={setFormOpen}
+                                                                setAddFormOpen={setAddFormOpen}
+                                                                cemail={company["Company Email"]}
+                                                                cindate={company["Incorporation Date"]}
+                                                                cnum={company["Company Number"]}
+                                                                ename={company.ename}
+                                                                bdmAcceptStatus={company.bdmAcceptStatus}
+                                                                setOpenBacdrop={setOpenBacdrop}
+                                                                previousStatus={company.previousStatusToUndo}
+                                                            />
+                                                        )}
                                                         <div
-                                                            className={company.Status === "Untouched" ? "ep_untouched_status" :
-                                                                company.Status === "Busy" ? "ep_busy_status" :
-                                                                    company.Status === "Not Picked Up" ? "ep_notpickedup_status" : null}>
-                                                            {company.Status}
+                                                            className={
+                                                                (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                                                    ? (company.Status === "Docs/Info Sent (W)"
+                                                                        ? "docs_w-history-btn disabled"
+                                                                        : company.Status === "Docs/Info Sent (E)"
+                                                                            ? "docs_e-history-btn disabled"
+                                                                            : company.Status === "Docs/Info Sent (W&E)"
+                                                                                ? "docs_eeew-history-btn disabled"
+                                                                                : "")
+                                                                    : (company.Status === "Docs/Info Sent (W)"
+                                                                        ? "docs_w-history-btn"
+                                                                        : company.Status === "Docs/Info Sent (E)"
+                                                                            ? "docs_e-history-btn"
+                                                                            : company.Status === "Docs/Info Sent (W&E)"
+                                                                                ? "docs_eeew-history-btn"
+                                                                                : "")
+                                                            }
+                                                        >
+
+                                                            <FaEye
+                                                                key={company._id}
+                                                                style={{ border: "transparent", background: "none" }}
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                                                                title="Interested Information"
+                                                            //disabled={!company.interestedInformation}
+                                                            />
+
+                                                            <EmployeeInterestedInformationDialog
+                                                                key={company._id}
+                                                                modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                                                                companyName={company["Company Name"]}
+                                                                interestedInformation={company.interestedInformation} // Pass the interested information here
+                                                                refetch={refetch}
+                                                                ename={ename}
+                                                                secretKey={secretKey}
+                                                                status={company.Status}
+                                                                companyStatus={company.Status}
+                                                                forView={true}
+                                                                fordesignation={fordesignation}
+
+                                                            />
                                                         </div>
-                                                    ) : (
-                                                        <EmployeeStatusChange
-                                                            key={`${company["Company Name"]}-${index}`}
-                                                            companyName={company && company["Company Name"]}
-                                                            companyStatus={company.Status}
-                                                            id={company._id}
-                                                            refetch={refetch}
-                                                            mainStatus={dataStatus}
-                                                            setCompanyName={setCompanyName}
-                                                            setCompanyEmail={setCompanyEmail}
-                                                            setCompanyInco={setCompanyInco}
-                                                            setCompanyId={setCompanyId}
-                                                            setCompanyNumber={setCompanyNumber}
-                                                            setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                                                            setNewBdeName={setNewBdeName}
-                                                            isDeletedEmployeeCompany={company.isDeletedEmployeeCompany}
-                                                            setFormOpen={setFormOpen}
-                                                            setAddFormOpen={setAddFormOpen}
-                                                            cemail={company["Company Email"]}
-                                                            cindate={company["Incorporation Date"]}
-                                                            cnum={company["Company Number"]}
-                                                            ename={company.ename}
-                                                            bdmAcceptStatus={company.bdmAcceptStatus}
-                                                            setOpenBacdrop={setOpenBacdrop}
-                                                        />
-                                                    )}
+                                                    </div>
                                                 </td>
 
                                                 <td>
@@ -633,7 +682,7 @@ function EmployeeGeneralLeads({
                                     </tbody>
                                 )
                             }
-                            {generalData && generalData.length === 0 && !isLoading && (
+                            {underDocsData && underDocsData.length === 0 && !isLoading && (
                                 <tbody>
                                     <tr>
                                         <td colSpan="11" className="p-2 particular">
@@ -645,7 +694,7 @@ function EmployeeGeneralLeads({
                         </table>
 
                     </div>
-                    {generalData && generalData.length !== 0 && (
+                    {underDocsData && underDocsData.length !== 0 && (
                         <div className="pagination d-flex align-items-center justify-content-center w-100">
                             <div>
                                 <button className='btn-pagination' onClick={prevPage} disabled={currentPage === 0}>
@@ -699,4 +748,4 @@ function EmployeeGeneralLeads({
     );
 }
 
-export default EmployeeGeneralLeads;
+export default EmployeeUnderDocsLeads;

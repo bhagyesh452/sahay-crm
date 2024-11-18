@@ -3382,6 +3382,12 @@ td input {
   border: 1px solid #1cbd27;
 }
 
+/*docs-sent-e*/
+.status_dropdown.docs_sent_e-status .status__btn {
+  background-color: #fffec4;
+  border: 1px solid #cfc022;
+}
+
 /*rejected*/
 .status_dropdown.rejected-status .status__btn {
   background-color: #FCBDBD;
@@ -4553,6 +4559,45 @@ div#table-default td {
   border-radius: 5px;
   background: #a3ffd8;
   border: 1px solid #35c286;
+  margin-left: 8px;
+  font-size: 11px;
+  color: #6f6f6f;
+  cursor:pointer;
+}
+.docs_w-history-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 5px;
+  background: #A7D6FF;
+  border: 1px solid #2DBDCA;
+  margin-left: 8px;
+  font-size: 11px;
+  color: #6f6f6f;
+  cursor:pointer;
+}
+.docs_e-history-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 5px;
+  background: #fffec4;
+  border: 1px solid #cfc022;
+  margin-left: 8px;
+  font-size: 11px;
+  color: #6f6f6f;
+  cursor:pointer;
+}
+.docs_eeew-history-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 5px;
+  background: #faadff;
+  border: 1px solid #ae32ac;
   margin-left: 8px;
   font-size: 11px;
   color: #6f6f6f;

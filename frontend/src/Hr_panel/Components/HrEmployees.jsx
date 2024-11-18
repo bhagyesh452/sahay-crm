@@ -40,7 +40,8 @@ function HrEmployees() {
   const [recruiterData, setRecruiterData] = useState([])
   const [page, setPage] = useState(1);
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
-  const [openRecruiterWindow, setOpenRecruiterWindow] = useState(false)
+  const [openRecruiterWindow, setOpenRecruiterWindow] = useState(false);
+  const [hrData, sethrData] = useState([])
   const [openRecentEmployee, setOpenRecentEmployee] = useState(false)
 
   const handleAddEmployee = () => {
@@ -94,26 +95,18 @@ function HrEmployees() {
     }
   };
 
-  const fetchEmployee = async () => {
-    //   try {
-    //     setIsLoading(true);
-    //     let res;
-    //     if (!searchValue) {
-    //       res = await axios.get(`${secretKey}/employee/einfo`);
-    //     } else {
-    //       res = await axios.get(`${secretKey}/employee/searchEmployee`, {
-    //         params: { search: searchValue }, // send searchValue as query param
-    //       });
-    //     }
+  // const fetchEmployee = async () => {
+  //     try {
+        
+  //       let res;
+  //         res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+  //         sethrData(res.data.data)
+  //     } catch (error) {
+  //       console.log("Error fetching employees data:", error);
+  //     } 
+  // };
 
-    //     setEmployee(res.data);
-    //     // console.log("Fetched Employees are:", res.data);
-    //   } catch (error) {
-    //     console.log("Error fetching employees data:", error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-  };
+  
 
   const fetchRecruiterData = async (searchQuery = "", page = 1) => {
     try {
@@ -217,26 +210,6 @@ function HrEmployees() {
       }
     }
   }, [deletedEmployeeData?.data, searchValue]);
-
-  const fetchDeletedEmployee = async () => {
-    //   try {
-    //     setIsLoading(true);
-    //     let res;
-    //     if (!searchValue) {
-    //       res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-    //     } else {
-    //       res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-    //         params: { search: searchValue }, // send searchValue as query param
-    //       });
-    //     }
-
-    //     setDeletedEmployee(res.data);
-    //   } catch (error) {
-    //     console.log("Error fetching employees data:", error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-  };
 
   const handledeletefromcompany = async (filteredCompanyData) => {
     if (filteredCompanyData && filteredCompanyData.length !== 0) {
@@ -372,12 +345,14 @@ function HrEmployees() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`${secretKey}/employee/permanentDelete/${itemId}`);
+          const response = await axios.patch(`${secretKey}/employee/permanentDelete/${itemId}`, {
+            deletingPerson: myInfo.ename // Sending the deleting person in the request body
+          });
           Swal.fire(
             'Deleted!',
             'success'
           );
-          fetchDeletedEmployee();
+          
           refetchActive();
           refetchDeleted();
         } catch (error) {
@@ -393,9 +368,9 @@ function HrEmployees() {
   };
 
   useEffect(() => {
-    fetchEmployee();
+    // fetchEmployee();
     fetchCompanyData();
-    fetchDeletedEmployee();
+    // fetchDeletedEmployee();
   }, [searchValue]);
 
   const fetchPersonalInfo = async () => {

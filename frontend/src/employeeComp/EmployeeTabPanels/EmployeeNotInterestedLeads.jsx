@@ -12,6 +12,9 @@ import AddLeadForm from '../../admin/AddLeadForm';
 import FilterableComponentEmployee from "../ExtraComponents/FilterableComponentEmployee";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 
 function EmployeeNotInterestedLeads({
@@ -64,6 +67,7 @@ function EmployeeNotInterestedLeads({
     const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     const [newBdeName, setNewBdeName] = useState("")
     const [nowToFetch, setNowToFetch] = useState(false);
+    const [openBacdrop, setOpenBacdrop] = useState(false)
 
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -112,12 +116,12 @@ function EmployeeNotInterestedLeads({
     };
     const isActiveField = (field) => activeFilterFields.includes(field);
 
-    console.log("activeFilterFieldsInterested", activeFilterFields)
-    console.log("filterField" , activeFilterField)
-    console.log("notInterestedLeads", notInterestedLeads)
-    console.log("filteredData", filteredData)
-    console.log("dataToFilter", dataToFilter)
-    console.log("completeGeneralData", completeGeneralData)
+    // console.log("activeFilterFieldsInterested", activeFilterFields)
+    // console.log("filterField" , activeFilterField)
+    // console.log("notInterestedLeads", notInterestedLeads)
+    // console.log("filteredData", filteredData)
+    // console.log("dataToFilter", dataToFilter)
+    // console.log("completeGeneralData", completeGeneralData)
 
     useEffect(() => {
         if (typeof document !== 'undefined') {
@@ -138,6 +142,12 @@ function EmployeeNotInterestedLeads({
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={() => setOpenBacdrop(false)}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive e-Leadtable-style m-0">
@@ -702,6 +712,8 @@ function EmployeeNotInterestedLeads({
                                                             cnum={company["Company Number"]}
                                                             ename={company.ename}
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
+                                                            setOpenBacdrop={setOpenBacdrop}
+                                                            previousStatus={company.previousStatusToUndo}
                                                         />)}
                                                 </td>
                                                 <td>
