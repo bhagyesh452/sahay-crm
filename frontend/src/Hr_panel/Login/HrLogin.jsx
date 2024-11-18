@@ -20,7 +20,7 @@ function HrLogin({ setHrToken }){
     const [userId , setUserId] = useState(null)
     const[errorMessage , setErrorMessage] = useState("")
     const [ename , setEname] = useState("")
-    const [recruiterUserId, setRecruiterUserId] = useState(null)
+    const [hrUserId, setHrUserId] = useState(null)
    
     useEffect(() => {
         document.title = `HR-Sahay-CRM`;
@@ -33,7 +33,7 @@ function HrLogin({ setHrToken }){
           console.log(response.data)
           console.log(email , password)
           setData(response.data);
-          setRecruiterUserId(response.data._id)
+          setHrUserId(response.data._id)
           setDesignation(response.data.designation)
         } catch (error) {
           console.log("Error finding employee", error);
@@ -63,8 +63,8 @@ function HrLogin({ setHrToken }){
             setHrToken(hrToken);
             localStorage.setItem("hrName", ename)
             localStorage.setItem("hrToken", hrToken)
-            localStorage.setItem("hrUserId", recruiterUserId)
-            console.log("userId" , recruiterUserId);
+            localStorage.setItem("hrUserId", hrUserId)
+            console.log("userId" , hrUserId);
             window.location.replace(`/hr/dashboard`);
         } catch (error) {
             console.error("Login Failed", error);

@@ -181,21 +181,6 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
         ));
     };
 
-    // const fetchAllEmployee = async () => {
-    //     try {
-    //         const res = await axios.get(`${secretKey}/employee/einfo`);
-    //         const employeeData = res.data;
-    //         setEmployeeData(employeeData);
-    //         // console.log("Fetched Employees are:", res.data);
-    //     } catch (error) {
-    //         console.log("Error fetching employees data:")
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchAllEmployee();
-    // }, []);
-
     const fetchData = async () => {
         try {
             setIsLoading(true);
