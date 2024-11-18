@@ -51,7 +51,8 @@ function EmployeeGeneralLeads({
     setActiveFilterField,
     activeFilterFields,
     setActiveFilterFields,
-    setGeneralDataCount
+    setGeneralDataCount,
+    openingBackdrop
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -578,6 +579,7 @@ function EmployeeGeneralLeads({
                                                             cnum={company["Company Number"]}
                                                             ename={company.ename}
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
+                                                            openingBackdrop={openingBackdrop}
                                                         />
                                                     )}
                                                 </td>

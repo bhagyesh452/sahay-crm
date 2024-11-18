@@ -12,6 +12,7 @@ import { options } from "../../components/Options.js";
 import Select from "react-select";
 import EmployeeInterestedInformationDialog from "./EmployeeInterestedInformationDialog.jsx";
 
+    
 const EmployeeStatusChange = ({
   companyName,
   id,
@@ -27,7 +28,8 @@ const EmployeeStatusChange = ({
   bdmAcceptStatus,
   handleFormOpen,
   teamData,
-  isBdmStatusChange
+  isBdmStatusChange,
+  openingBackdrop
 }) => {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -117,6 +119,7 @@ const EmployeeStatusChange = ({
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
     try {
       let response;
+      openingBackdrop(true)
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
           // response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${id}`);
@@ -172,6 +175,8 @@ const EmployeeStatusChange = ({
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
+    }finally{
+      openingBackdrop(false)
     }
   };
 

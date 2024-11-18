@@ -257,3 +257,21 @@
     font-size: 12px;
     font-weight: 500;
 }
+.cmpnyP_nav_tabs
+{
+    border-bottom: 1px solid #eee !important;
+    width: 100%;
+    font-size: 13px;
+    margin: 10px 0 0 0;
+}
+.cmpnyP_nav_tabs .nav-item .nav-link
+{
+    border: 1px solid #eee0 !important;
+    font-weight: 600;
+}
+.cmpnyP_nav_tabs .nav-item .nav-link.active
+{
+    border-bottom: 1px solid #ffb900 !important;
+    color: #ffb900 !important;
+    background: #fff;
+}

@@ -27,7 +27,6 @@ function CompanyProfile() {
                   </div>
                 </div>
               </div>
-                
             </div>
           </div>
         </div>
@@ -122,8 +121,33 @@ function CompanyProfile() {
                 </div>
               </div>
             </div>
-            <div className='col-lg-7 col-md-6'>
-
+            <div className='col-lg-9 col-md-8'>
+              <div>
+                <ul class="nav nav-tabs cmpnyP_nav_tabs" id="Cmpny_P_Main_tab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="History-tab" data-bs-toggle="tab" data-bs-target="#Overview" type="button" role="tab" aria-controls="Overview" aria-selected="true">
+                      Overview
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="Activity-tab" data-bs-toggle="tab" data-bs-target="#Activity" type="button" role="tab" aria-controls="Activity" aria-selected="false">
+                      Activity
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="History-tab" data-bs-toggle="tab" data-bs-target="#History" type="button" role="tab" aria-controls="History" aria-selected="false">
+                      History
+                    </button>
+                  </li>
+                </ul>
+                <div class="tab-content cmpnyP_tab_content" id="myTabCmpny_P_Main_tab">
+                  <div class="tab-pane fade show active" id="Overview" role="tabpanel" aria-labelledby="History-tab">...</div>
+                  <div class="tab-pane fade" id="Activity" role="tabpanel" aria-labelledby="Activity-tab">...</div>
+                  <div class="tab-pane fade" id="History" role="tabpanel" aria-labelledby="History-tab">
+                    
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
