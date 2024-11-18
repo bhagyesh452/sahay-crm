@@ -27,7 +27,7 @@ function EmployeeInterestedInformationDialog({
 
 }) {
 
-    console.log("interesedinfostatus", status, companyStatus)
+    // console.log("interesedinfostatus", status, companyStatus)
 
     // console.log("inetsredtedInform", interestedInformation)
     const [visibleQuestions, setVisibleQuestions] = useState({}); // Track which question's options are visible
@@ -143,23 +143,25 @@ function EmployeeInterestedInformationDialog({
         }));
     };
 
-    const validateFormData = (status) => {
+    const handleSubmitInformation = () => {
+        // Validation logic based on the status
         if (status === "Docs/Info Sent (W)" || status === "Docs/Info Sent (E)" || status === "Docs/Info Sent (W&E)") {
             // Ensure either question 3 or question 4 is filled
-            const isQuestion3Filled = formData.interestedInServices.servicesPitched &&
-                formData.interestedInServices.servicesInterestedIn &&
+            const isQuestion3Filled = formData.interestedInServices.servicesPitched.length > 0 &&
+                formData.interestedInServices.servicesInterestedIn.length > 0 &&
                 formData.interestedInServices.offeredPrice &&
                 formData.interestedInServices.nextFollowUpDate &&
                 formData.interestedInServices.remarks;
 
-            const isQuestion4Filled = formData.interestedButNotNow.servicesPitched &&
-                formData.interestedButNotNow.servicesInterestedIn &&
+            const isQuestion4Filled = formData.interestedButNotNow.servicesPitched.length > 0 &&
+                formData.interestedButNotNow.servicesInterestedIn.length > 0 &&
                 formData.interestedButNotNow.offeredPrice &&
                 formData.interestedButNotNow.nextFollowUpDate &&
                 formData.interestedButNotNow.remarks;
 
             if (!isQuestion3Filled && !isQuestion4Filled) {
-                return ;
+                Swal.fire("Please complete either Question 3 or Question 4 with at least one required field.");
+                return;
             }
         } else if (status === "Interested") {
             // Ensure either question 1 or question 2 is filled
@@ -170,51 +172,15 @@ function EmployeeInterestedInformationDialog({
                 formData.clientEmailRequest.remarks;
 
             if (!isQuestion1Filled && !isQuestion2Filled) {
-                return ;
-            }
-        }
-        return { valid: true };
-    };
-
-
-    const handleSubmitInformation = () => {
-        // Validation logic based on the status
-        if (status === "Docs/Info Sent (W)" || status === "Docs/Info Sent (E)" || status === "Docs/Info Sent (W&E)") {
-            // Ensure either question 3 or question 4 is filled
-            const isQuestion3Filled = formData.interestedInServices.servicesPitched.length > 0 &&
-                                      formData.interestedInServices.servicesInterestedIn.length > 0 &&
-                                      formData.interestedInServices.offeredPrice &&
-                                      formData.interestedInServices.nextFollowUpDate &&
-                                      formData.interestedInServices.remarks;
-    
-            const isQuestion4Filled = formData.interestedButNotNow.servicesPitched.length > 0 &&
-                                      formData.interestedButNotNow.servicesInterestedIn.length > 0 &&
-                                      formData.interestedButNotNow.offeredPrice &&
-                                      formData.interestedButNotNow.nextFollowUpDate &&
-                                      formData.interestedButNotNow.remarks;
-    
-            if (!isQuestion3Filled && !isQuestion4Filled) {
-                Swal.fire("Please complete either Question 3 or Question 4 with at least one required field.");
-                return;
-            }
-        } else if (status === "Interested") {
-            // Ensure either question 1 or question 2 is filled
-            const isQuestion1Filled = formData.clientWhatsAppRequest.nextFollowUpDate &&
-                                      formData.clientWhatsAppRequest.remarks;
-    
-            const isQuestion2Filled = formData.clientEmailRequest.nextFollowUpDate &&
-                                      formData.clientEmailRequest.remarks;
-    
-            if (!isQuestion1Filled && !isQuestion2Filled) {
                 Swal.fire("Please complete either Question 1 or Question 2 with at least one required field.");
                 return;
             }
         }
-    
+
         // If validation passes, proceed with submission
         handleSubmitToBackend();
     };
-    
+
 
     const handleSubmitToBackend = async () => {
         const DT = new Date();
@@ -233,7 +199,9 @@ function EmployeeInterestedInformationDialog({
                     id: id,
                     ename: ename,
                     date: date,
-                    time: time
+                    time: time,
+
+
                 }
             );
             if (response.status === 200) {
@@ -366,8 +334,28 @@ function EmployeeInterestedInformationDialog({
         return !fieldData;
     };
 
+    const getVisibleQuestions = () => {
+        const visibleKeys = Object.keys(visibleQuestions).filter((key) => visibleQuestions[key]);
+    
+        // If no questions are visible, assume q1 and q2 are visible by default
+        if (visibleKeys.length === 0) {
+            return ["q1", "q2"];
+        }
+    
+        return visibleKeys;
+    };
+    
+    const calculateQuestionNumber = (questionId) => {
+        const visibleKeys = getVisibleQuestions(); // Get visible question keys dynamically
+        const questionIndex = visibleKeys.indexOf(questionId);
+    
+        // If the question is not in the list, return 0
+        return questionIndex !== -1 ? questionIndex + 1 : 0;
+    };
 
-    // console.log("visiblequestions" , visibleQuestions)
+
+
+    console.log("visiblequestions", visibleQuestions)
     return (<>
         <div className="modal fade" id={modalId} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
@@ -396,7 +384,7 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQueOne">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                1. Client asked to send documents/information on WhatsApp for review!
+                                                {calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review!
                                             </div>
                                             {(forView) ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -496,7 +484,7 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQuetwo">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                2. Client asked to send documents/information via email for review.
+                                                {calculateQuestionNumber("q2")}. Client asked to send documents/information via email for review.
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -588,7 +576,7 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQuethree">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                3. Interested in one of our services.
+                                                {calculateQuestionNumber("q3")}. Interested in one of our services.
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -748,7 +736,7 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQueFour">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                4. Interested, but doesn't need the service right now.
+                                                {calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now.
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">

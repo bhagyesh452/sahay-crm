@@ -713,6 +713,7 @@ function EmployeeNotInterestedLeads({
                                                             ename={company.ename}
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
                                                             setOpenBacdrop={setOpenBacdrop}
+                                                            previousStatus={company.previousStatusToUndo}
                                                         />)}
                                                 </td>
                                                 <td>

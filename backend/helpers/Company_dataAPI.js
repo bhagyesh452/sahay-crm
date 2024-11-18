@@ -106,7 +106,7 @@ router.post("/update-status/:id", async (req, res) => {
     //   return res.status(404).json({ error: "Company not found" });
     // }
 
-    console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus)
+    console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, company.Status)
 
     //Update the status field in the CompanyModel
     if ((newStatus === "Not Interested") && (company.bdmAcceptStatus === "MaturedAccepted")) {
@@ -143,8 +143,9 @@ router.post("/update-status/:id", async (req, res) => {
         AssignDate: new Date(),
         bdmStatus: newStatus,
         lastActionDate: new Date(),
+        previousStatusToUndo: company.Status
       });
-      console.log(newStatus, title, date, time, oldStatus);
+      console.log("else", newStatus, title, date, time, oldStatus);
     }
 
     // Define an array of statuses for which the lead history should be deleted
@@ -201,6 +202,154 @@ router.post("/update-status/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// router.post("/update-undo-status/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const { newStatus, title, date, time, companyStatus, previousStatus ,ename} = req.body;
+
+
+//   try {
+//     // Find the company by ID in the CompanyModel to get the company details
+//     const company = await CompanyModel.findById(id);
+
+//     console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, previousStatus)
+
+//     //Update the status field in the CompanyModel
+
+//     await CompanyModel.findByIdAndUpdate(
+//       id,
+//       {
+//         $set: {
+//           Status: previousStatus, // Set the status back to the previous status
+//           lastActionDate: new Date(), // Update the last action date
+//           previousStatusToUndo:company.Status
+//         },
+//         $pull: {
+//           interestedInformation: { ename: ename }, // Remove the object with matching ename
+//         },
+//       },
+//       { new: true } // Return the updated document
+//     );
+
+//     res.status(200).json({ message: "Status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating status:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+router.post("/update-undo-status/:id", async (req, res) => {
+  const { id } = req.params;
+  const { newStatus, title, date, time, companyStatus, previousStatus, ename } = req.body;
+
+  try {
+    // Find the company by ID in the CompanyModel to get the company details
+    const company = await CompanyModel.findById(id);
+
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    console.log("bdmAcceptStatus:", company.bdmAcceptStatus, "newStatus:", newStatus, "previousStatus:", previousStatus);
+
+    // Check if previousStatus is "Interested"
+    if (previousStatus === "Interested") {
+      // Find the object in the interestedInformation array that matches `ename`
+      const info = company.interestedInformation.find(info => info.ename === ename);
+
+      if (info) {
+        // Check if both clientWhatsAppRequest and clientEmailRequest fields are empty
+        const isWhatsAppEmpty =
+          !info.clientWhatsAppRequest || 
+          (!info.clientWhatsAppRequest.nextFollowUpDate && !info.clientWhatsAppRequest.remarks);
+
+        const isEmailEmpty =
+          !info.clientEmailRequest || 
+          (!info.clientEmailRequest.nextFollowUpDate && !info.clientEmailRequest.remarks);
+
+        if (isWhatsAppEmpty && isEmailEmpty) {
+          // Return an error if both fields are empty
+          return res.status(400).json({ 
+            message: "Please update clientWhatsAppRequest or clientEmailRequest fields before undoing the status." 
+          });
+        }
+      }
+    }
+
+    // Check if `company.Status` is "Busy" and `previousStatus` matches the criteria
+    if (
+      ["Busy" , "Not Picked Up" , "Not Interested" , "Junk"].includes(company.Status) &&
+      ["Interested", "Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"].includes(previousStatus)
+    ) {
+      console.log("Undo skipped due to 'Busy' status.");
+      // Skip pulling from interestedInformation
+      await CompanyModel.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            Status: previousStatus, // Restore previous status
+            lastActionDate: new Date(), // Update the last action date
+            previousStatusToUndo: company.Status,
+          },
+        },
+        { new: true } // Return the updated document
+      );
+    } else if (
+      ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)", "Interested"].includes(previousStatus)
+    ) {
+      // Find the index of the object in the array where `ename` matches
+      const index = company.interestedInformation.findIndex(info => info.ename === ename);
+
+      if (index !== -1) {
+        // Prepare the update object to unset specific fields
+        const updateQuery = {};
+        updateQuery[`interestedInformation.${index}.clientWhatsAppRequest`] = "";
+        updateQuery[`interestedInformation.${index}.clientEmailRequest`] = "";
+
+        // Update the company document with specific fields unset
+        await CompanyModel.findByIdAndUpdate(
+          id,
+          {
+            $set: {
+              Status: previousStatus, // Restore previous status
+              lastActionDate: new Date(), // Update the last action date
+              previousStatusToUndo: company.Status,
+            },
+            $unset: updateQuery, // Unset specific fields
+          },
+          { new: true } // Return the updated document
+        );
+      }
+    } else {
+      // Remove the entire object from the array if `previousStatus` does not match the criteria
+      await CompanyModel.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            Status: previousStatus, // Restore previous status
+            lastActionDate: new Date(), // Update the last action date
+            previousStatusToUndo: company.Status,
+          },
+          $pull: {
+            interestedInformation: { ename: ename }, // Remove the entire object with matching `ename`
+          },
+        },
+        { new: true } // Return the updated document
+      );
+    }
+
+    const updatedCompany = await CompanyModel.findById(id);
+    console.log("Updated Company:", updatedCompany);
+
+    res.status(200).json({ message: "Status updated successfully", updatedCompany });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 
 
 router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
@@ -2964,7 +3113,7 @@ router.get("/bdmMaturedCases", async (req, res) => {
 // POST route to add/update interestedInformation
 router.post('/company/:companyName/interested-info', async (req, res) => {
   const companyName = req.params.companyName; // Extract company name from params
-  const { newInterestedInfo, status, id, ename } = req.body; // Data from the request body
+  const { newInterestedInfo, status, id, ename , date , time } = req.body; // Data from the request body
 
   console.log("Request Body:", req.body);
 
@@ -3030,6 +3179,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     const updateFields = {
       interestedInformation: existingInfoArray,
       lastActionDate: new Date(),
+      previousStatusToUndo: existingCompany.Status
     };
 
     if (existingCompany.bdmAcceptStatus === "MaturedAccepted" || existingCompany.bdmAcceptStatus === "Accept") {
@@ -3043,11 +3193,46 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     // Update the company document
     const updatedCompany = await CompanyModel.findOneAndUpdate(
       { "Company Name": companyName },
-      { $set: updateFields },
+      { $set: 
+        updateFields,
+        
+       },
       { new: true, upsert: true } // Return updated document or create if not exists
     );
 
     console.log("Updated Company Data:", updatedCompany);
+
+    if (status === "FollowUp" || status === "Interested") {
+
+      // Find the company in LeadHistoryForInterestedandFollowModel
+      let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+        "Company Name": companyName,
+      });
+      // console.log("0 leadHistory", leadHistory)
+
+      if (leadHistory) {
+        // console.log("1 leadHistory", leadHistory)
+        // If the record exists, update old status, new status, date, and time
+        leadHistory.oldStatus = "Untouched";
+        leadHistory.newStatus = status;
+      } else {
+        // console.log("2 leadHistory", leadHistory)
+        // If the record does not exist, create a new one with the company name, ename, and statuses
+        leadHistory = new LeadHistoryForInterestedandFollowModel({
+          _id: id,
+          "Company Name": companyName,
+          ename: ename,
+          oldStatus: "Untouched",
+          newStatus: status,
+          date: new Date(),  // Convert the date string to a Date object
+          time: time,
+        });
+      }
+      // console.log("3 leadHistory", leadHistory)
+
+      // Save the lead history update
+      await leadHistory.save();
+    }
 
     if (updatedCompany) {
       res.status(200).json({

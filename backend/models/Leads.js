@@ -219,6 +219,10 @@ const CompanySchema = new mongoose.Schema({
   lastStatusOfExtractedEmployee:{
     type:String,
     default:""
+  },
+  previousStatusToUndo:{
+    type:String,
+    default:""
   }
 });
 

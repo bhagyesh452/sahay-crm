@@ -698,6 +698,7 @@ function EmployeeInterestedLeads({
                             bdmAcceptStatus={company.bdmAcceptStatus}
                             handleFormOpen={handleOpenFormOpen}
                             setOpenBacdrop={setOpenBacdrop}
+                            previousStatus={company.previousStatusToUndo}
                           />
                         )}
                         <div
