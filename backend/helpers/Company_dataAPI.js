@@ -348,10 +348,6 @@ router.post("/update-undo-status/:id", async (req, res) => {
   }
 });
 
-
-
-
-
 router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   const { ename } = req.params;
   try {
@@ -3851,6 +3847,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
           offeredPriceWithGst: projection.offeredPriceWithGst || 0,
           totalPaymentWithGst: projection.totalPaymentWithGst || 0,
           employeePayment: mainEmployeePayment,
+          bookingAmount: projection.bookingAmount || 0,
           bdeName,
           bdmName,
           lastFollowUpdate: projection.lastFollowUpdate,
@@ -4419,6 +4416,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
         offeredPriceWithGst: projection.offeredPriceWithGst || 0,
         totalPaymentWithGst: projection.totalPaymentWithGst || 0,
         employeePayment: mainEmployeePayment,
+        bookingAmount: projection.bookingAmount || 0,
         bdeName,
         bdmName,
         lastFollowUpdate: projection.lastFollowUpdate,
@@ -4473,6 +4471,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
               offeredPriceWithGst: latestRecord.offeredPriceWithGst || 0,
               totalPaymentWithGst: latestRecord.totalPaymentWithGst || 0,
               employeePayment: historyEmployeePayment,
+              bookingAmount: latestRecord.bookingAmount || 0,
               bdeName: latestRecord.bdeName,
               bdmName: latestRecord.bdmName,
               lastFollowUpdate: latestRecord.lastFollowUpdate,
