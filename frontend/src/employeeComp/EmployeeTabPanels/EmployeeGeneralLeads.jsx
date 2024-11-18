@@ -135,7 +135,7 @@ function EmployeeGeneralLeads({
     }, []);
 
     // console.log("activeFilterFieldsGeneral", activeFilterFields)
-    // console.log("generalData" , generalData)
+    console.log("generalData" , generalData)
 
 
     return (

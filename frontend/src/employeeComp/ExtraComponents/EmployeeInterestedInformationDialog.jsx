@@ -205,6 +205,22 @@ function EmployeeInterestedInformationDialog({
             );
             if (response.status === 200) {
                 Swal.fire('Data saved successfully');
+                // Manually hide the modal
+                const modalElement = document.getElementById(modalId);
+                modalElement.classList.remove("show");
+                modalElement.setAttribute("aria-hidden", "true");
+                modalElement.style.display = "none";
+
+                // Remove the backdrop if it exists
+                const modalBackdrop = document.querySelector('.modal-backdrop');
+                if (modalBackdrop) {
+                    modalBackdrop.parentNode.removeChild(modalBackdrop);
+                }
+
+                // Cleanup: Remove any leftover 'modal-open' classes and inline styles from body
+                document.body.classList.remove('modal-open');
+                document.body.style.removeProperty('overflow');
+                document.body.style.removeProperty('padding-right');
                 handleClearInterestedInformation()
                 refetch()
             }
@@ -259,22 +275,22 @@ function EmployeeInterestedInformationDialog({
             setVisibleQuestions({})
             refetch();
         }
-        // Manually hide the modal
-        const modalElement = document.getElementById(modalId);
-        modalElement.classList.remove("show");
-        modalElement.setAttribute("aria-hidden", "true");
-        modalElement.style.display = "none";
+        // // Manually hide the modal
+        // const modalElement = document.getElementById(modalId);
+        // modalElement.classList.remove("show");
+        // modalElement.setAttribute("aria-hidden", "true");
+        // modalElement.style.display = "none";
 
-        // Remove the backdrop if it exists
-        const modalBackdrop = document.querySelector('.modal-backdrop');
-        if (modalBackdrop) {
-            modalBackdrop.parentNode.removeChild(modalBackdrop);
-        }
+        // // Remove the backdrop if it exists
+        // const modalBackdrop = document.querySelector('.modal-backdrop');
+        // if (modalBackdrop) {
+        //     modalBackdrop.parentNode.removeChild(modalBackdrop);
+        // }
 
-        // Cleanup: Remove any leftover 'modal-open' classes and inline styles from body
-        document.body.classList.remove('modal-open');
-        document.body.style.removeProperty('overflow');
-        document.body.style.removeProperty('padding-right');
+        // // Cleanup: Remove any leftover 'modal-open' classes and inline styles from body
+        // document.body.classList.remove('modal-open');
+        // document.body.style.removeProperty('overflow');
+        // document.body.style.removeProperty('padding-right');
         refetch();
     };
 
@@ -336,39 +352,39 @@ function EmployeeInterestedInformationDialog({
 
     const getVisibleQuestions = () => {
         const visibleKeys = Object.keys(visibleQuestions).filter((key) => visibleQuestions[key]);
-    
+
         // If no questions are visible, assume q1 and q2 are visible by default
         if (visibleKeys.length === 0) {
             return ["q1", "q2"];
         }
-        
-    
+
+
         return visibleKeys;
     };
-    
+
     const calculateQuestionNumber = (questionId) => {
         const visibleKeys = getVisibleQuestions(); // Get visible question keys dynamically
-    
+
         // Check if the question is in the visibleKeys list
         const questionIndex = visibleKeys.indexOf(questionId);
-    
+
         if (questionIndex !== -1) {
             return questionIndex + 1; // Return the actual index + 1 if the question is visible
         }
-    
+
         // If not in the list, explicitly handle q1 and q2
         if (questionId === "q3") {
             return 1;
         } else if (questionId === "q4") {
             return 2;
         }
-    
+
         // Return 0 for other cases
         return 0;
     };
 
 
-    console.log("visiblequestions", visibleQuestions)
+    //console.log("visiblequestions", visibleQuestions)
     return (<>
         <div className="modal fade" id={modalId} data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
@@ -378,6 +394,7 @@ function EmployeeInterestedInformationDialog({
                         <button type="button"
                             className="btn-close"
                             aria-label="Close"
+                            data-bs-dismiss="modal"
                             onClick={handleClearInterestedInformation}
                         ></button>
                     </div>
@@ -392,7 +409,7 @@ function EmployeeInterestedInformationDialog({
                         </div>
 
                         <div className="accordion" id="accordionQue">
-                            {((!forView) && (status !== "Interested")  || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) &&
+                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) &&
                                 (<div className="accordion-item int-accordion-item">
                                     <div className="accordion-header p-2" id="accordionQueOne">
                                         <div className="d-flex align-items-center justify-content-between"  >
@@ -913,10 +930,13 @@ function EmployeeInterestedInformationDialog({
                             <button
                                 type="button"
                                 class="btn btn-danger w-50 m-0"
-                                style={{ border: "none", borderRadius: "0px" }} onClick={handleClearInterestedInformation}>Close</button>
+                                data-bs-dismiss="modal"
+                                style={{ border: "none", borderRadius: "0px" }}
+                                onClick={handleClearInterestedInformation}>Close</button>
                             <button
                                 type="button"
                                 class="btn btn-primary w-50 m-0"
+                                // data-bs-dismiss="modal"
                                 style={{ border: "none", borderRadius: "0px" }} onClick={handleSubmitInformation} disabled={forView}>Submit</button>
                         </div>
                     </div>
