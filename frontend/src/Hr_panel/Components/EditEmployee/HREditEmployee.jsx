@@ -114,7 +114,6 @@ export default function HREditEmployee() {
     currentAddress: "",
     permanentAddress: "",
     bloodGroup: "",
-
   });
   const validatePersonalInfo = () => {
     const newErrors = {};
@@ -474,10 +473,10 @@ export default function HREditEmployee() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target; // name is the name attribute of the input field and value is the current value of the input field.
-    setPersonalInfo(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    setPersonalInfo((prevState) => ({
+    ...prevState,
+    [name]: name === "personalPhoneNo" ? value.replace(/\s+/g, '') : value, // Remove spaces for phone number
+  }));
 
     setEmployeementInfo(prevState => ({
       ...prevState,
@@ -505,7 +504,7 @@ export default function HREditEmployee() {
 
     setEmergencyInfo(prevState => ({
       ...prevState,
-      [name]: value
+      [name]: name === "personPhoneNo" ? value.replace(/\s+/g, '') : value, // Remove spaces for phone number
     }));
 
     // Clear error for this field

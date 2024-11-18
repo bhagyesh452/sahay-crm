@@ -531,7 +531,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     middleName: row["Middle Name"],
                     lastName: row["Last Name"],
                     email: row["Email  Address"],
-                    number: row["Number"],
+                    number: typeof row["Number"] === "string" ? row["Number"].replace(/\s+/g, '') : String(row["Number"] || '').replace(/\s+/g, ''), // Ensure valid string
                     ename: `${row["First Name"]} ${row["Last Name"]}`,
                     empFullName: `${row["First Name"]} ${row["Middle Name"]} ${row["Last Name"]}`,
                     department: row["Department"],

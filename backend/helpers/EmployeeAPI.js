@@ -335,6 +335,8 @@ router.post('/addemployee/hrside', async (req, res) => {
     } = req.body;
     console.log("adddedOn" , AddedOn)
     const newAddedOn = new Date(AddedOn);
+    // Remove spaces from the number
+    const sanitizedNumber = number.replace(/\s+/g, '');
     console.log("Received request for adding employee:", req.body);
     // Step 1: Find the record of the last generated employee ID
     let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
@@ -371,7 +373,7 @@ router.post('/addemployee/hrside', async (req, res) => {
     // Step 4: Create a new employee document
     const newEmployee = new adminModel({
       email,
-      number,
+      number: sanitizedNumber, // Save sanitized number
       employeeID: newEmployeeID,
       ename,
       empFullName,
@@ -561,6 +563,8 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
   try {
     const { employeesData } = req.body;
 
+    console.log("employeesData" , employeesData)
+
     if (!employeesData || !Array.isArray(employeesData)) {
       return res.status(400).json({ message: 'Invalid data format' });
     }
@@ -578,6 +582,8 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
     // Array to hold the promises for inserting each employee
     const employeeInsertPromises = employeesData.map(async (employee) => {
       try {
+        
+       
         // Increment the employee number for each new employee
         employeeNumber += 1;
         let newEmployeeID = `SSPL${employeeNumber.toString().padStart(4, '0')}`;
@@ -617,12 +623,12 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
           <p>Best regards,<br>HR Team<br>Start-Up Sahay Private Limited</p>
         `;
 
-        // try {
-        //   const emailInfo = await sendMailEmployees([employee.email], subject, "", html);
-        //   console.log(`Email sent: ${emailInfo.messageId}`);
-        // } catch (emailError) {
-        //   console.error('Error sending email:', emailError);
-        // }
+        try {
+          const emailInfo = await sendMailEmployees([employee.email], subject, "", html);
+          console.log(`Email sent: ${emailInfo.messageId}`);
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+        }
 
         successCount++;
 
