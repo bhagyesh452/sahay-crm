@@ -39,7 +39,7 @@ function NewProjectionDialog({
     const [companyStatus, setCompanyStatus] = useState(projectionData ? projectionData.Status : '');
     const [selectedBdm, setSelectedBdm] = useState(viewProjection ? (projectionData.bdmName || projectionData.ename) : '');
     const [selectedBde, setSelectedBde] = useState(projectionData ? (projectionData.bdeName || projectionData.ename) : '');
-    const [offeredServices, setOfferedServices] = useState(projectionData ? projectionData.offeredServices : []);
+    const [offeredServices, setOfferedServices] = useState(projectionData && projectionData.offeredServices ? projectionData.offeredServices : []);
     const [offeredPrice, setOfferedPrice] = useState(projectionData ? projectionData.offeredPrice : null);
     const [expectedPrice, setExpectedPrice] = useState(projectionData ? projectionData.totalPayment : null);
     const [offeredPriceWithGst, setOfferedPriceWithGst] = useState(projectionData ? projectionData.offeredPriceWithGst : null);
@@ -54,7 +54,7 @@ function NewProjectionDialog({
     const [companyNotFound, setCompanyNotFound] = useState(false);
     const [showAddLeadsPopup, setShowAddLeadsPopup] = useState(false);
     const [isProjectionAvailable, setIsProjectionAvailable] = useState(false);
-    const [isCheckedAmountWithGst, setIsCheckedAmountWithGst] = useState(false);
+    const [isCheckedAmountWithGst, setIsCheckedAmountWithGst] = useState(Boolean(projectionData?.offeredPriceWithGst && projectionData?.totalPaymentWithGst));
 
     // Handle GST checkbox change
     const handleAmountWithGst = (e) => {
@@ -594,7 +594,7 @@ function NewProjectionDialog({
                     </div>
 
                     <div>
-                        <input type="checkbox" name="amount with gst" id="amount with gst" onChange={handleAmountWithGst} />
+                        <input type="checkbox" name="amount with gst" id="amount with gst" onChange={handleAmountWithGst} checked={isCheckedAmountWithGst} disabled={viewProjection || (!offeredPrice && !expectedPrice)} />
                         <label for="amount with gst" className='ms-1'>With GST (18%)</label>
                     </div>
 

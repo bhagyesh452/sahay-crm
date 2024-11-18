@@ -951,6 +951,7 @@ export default function AddLeadForm({
           const response = await axios.post(
             `${secretKey}/bookings/redesigned-addmore-booking/${companysName}/step5`, tempLeadData
           );
+          const response2 = await axios.put(`${secretKey}/bookings/update-matured-case-in-projection/${companysName}`);
           Swal.fire({
             icon: "success",
             title: "Booking Submitted",
