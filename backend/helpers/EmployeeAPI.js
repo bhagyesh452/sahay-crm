@@ -661,8 +661,6 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
   }
 });
 
-
-
 // router.post("/einfo", async (req, res) => {
 //   try {
 //     const { firstName, middleName, lastName, personalPhoneNo, personalEmail } = req.body;
@@ -2589,7 +2587,8 @@ router.get("/einfo/:email/:password", async (req, res) => {
   const { email, password } = req.params;
   console.log(email, password)
   try {
-    const data = await adminModel.findOne({ email: email, password: password });
+    const data = await adminModel.findOne({ email: email, password: password })
+    .select("email password").lean();
 
     if (data) {
       res.status(200).json(data);
