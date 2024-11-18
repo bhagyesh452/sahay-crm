@@ -106,7 +106,7 @@ router.post("/update-status/:id", async (req, res) => {
     //   return res.status(404).json({ error: "Company not found" });
     // }
 
-    console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus)
+    console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, company.Status)
 
     //Update the status field in the CompanyModel
     if ((newStatus === "Not Interested") && (company.bdmAcceptStatus === "MaturedAccepted")) {
@@ -143,8 +143,9 @@ router.post("/update-status/:id", async (req, res) => {
         AssignDate: new Date(),
         bdmStatus: newStatus,
         lastActionDate: new Date(),
+        previousStatusToUndo: company.Status
       });
-      console.log(newStatus, title, date, time, oldStatus);
+      console.log("else", newStatus, title, date, time, oldStatus);
     }
 
     // Define an array of statuses for which the lead history should be deleted
@@ -202,6 +203,150 @@ router.post("/update-status/:id", async (req, res) => {
   }
 });
 
+// router.post("/update-undo-status/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const { newStatus, title, date, time, companyStatus, previousStatus ,ename} = req.body;
+
+
+//   try {
+//     // Find the company by ID in the CompanyModel to get the company details
+//     const company = await CompanyModel.findById(id);
+
+//     console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, previousStatus)
+
+//     //Update the status field in the CompanyModel
+
+//     await CompanyModel.findByIdAndUpdate(
+//       id,
+//       {
+//         $set: {
+//           Status: previousStatus, // Set the status back to the previous status
+//           lastActionDate: new Date(), // Update the last action date
+//           previousStatusToUndo:company.Status
+//         },
+//         $pull: {
+//           interestedInformation: { ename: ename }, // Remove the object with matching ename
+//         },
+//       },
+//       { new: true } // Return the updated document
+//     );
+
+//     res.status(200).json({ message: "Status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating status:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+router.post("/update-undo-status/:id", async (req, res) => {
+  const { id } = req.params;
+  const { newStatus, title, date, time, companyStatus, previousStatus, ename } = req.body;
+
+  try {
+    // Find the company by ID in the CompanyModel to get the company details
+    const company = await CompanyModel.findById(id);
+
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    console.log("bdmAcceptStatus:", company.bdmAcceptStatus, "newStatus:", newStatus, "previousStatus:", previousStatus);
+
+    // Check if previousStatus is "Interested"
+    if (previousStatus === "Interested") {
+      // Find the object in the interestedInformation array that matches `ename`
+      const info = company.interestedInformation.find(info => info.ename === ename);
+
+      if (info) {
+        // Check if both clientWhatsAppRequest and clientEmailRequest fields are empty
+        const isWhatsAppEmpty =
+          !info.clientWhatsAppRequest || 
+          (!info.clientWhatsAppRequest.nextFollowUpDate && !info.clientWhatsAppRequest.remarks);
+
+        const isEmailEmpty =
+          !info.clientEmailRequest || 
+          (!info.clientEmailRequest.nextFollowUpDate && !info.clientEmailRequest.remarks);
+
+        if (isWhatsAppEmpty && isEmailEmpty) {
+          // Return an error if both fields are empty
+          return res.status(400).json({ 
+            message: "Please update clientWhatsAppRequest or clientEmailRequest fields before undoing the status." 
+          });
+        }
+      }
+    }
+
+    // Check if `company.Status` is "Busy" and `previousStatus` matches the criteria
+    if (
+      ["Busy" , "Not Picked Up" , "Not Interested" , "Junk"].includes(company.Status) &&
+      ["Interested", "Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"].includes(previousStatus)
+    ) {
+      console.log("Undo skipped due to 'Busy' status.");
+      // Skip pulling from interestedInformation
+      await CompanyModel.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            Status: previousStatus, // Restore previous status
+            lastActionDate: new Date(), // Update the last action date
+            previousStatusToUndo: company.Status,
+          },
+        },
+        { new: true } // Return the updated document
+      );
+    } else if (
+      ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)", "Interested"].includes(previousStatus)
+    ) {
+      // Find the index of the object in the array where `ename` matches
+      const index = company.interestedInformation.findIndex(info => info.ename === ename);
+
+      if (index !== -1) {
+        // Prepare the update object to unset specific fields
+        const updateQuery = {};
+        updateQuery[`interestedInformation.${index}.clientWhatsAppRequest`] = "";
+        updateQuery[`interestedInformation.${index}.clientEmailRequest`] = "";
+
+        // Update the company document with specific fields unset
+        await CompanyModel.findByIdAndUpdate(
+          id,
+          {
+            $set: {
+              Status: previousStatus, // Restore previous status
+              lastActionDate: new Date(), // Update the last action date
+              previousStatusToUndo: company.Status,
+            },
+            $unset: updateQuery, // Unset specific fields
+          },
+          { new: true } // Return the updated document
+        );
+      }
+    } else {
+      // Remove the entire object from the array if `previousStatus` does not match the criteria
+      await CompanyModel.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            Status: previousStatus, // Restore previous status
+            lastActionDate: new Date(), // Update the last action date
+            previousStatusToUndo: company.Status,
+          },
+          $pull: {
+            interestedInformation: { ename: ename }, // Remove the entire object with matching `ename`
+          },
+        },
+        { new: true } // Return the updated document
+      );
+    }
+
+    const updatedCompany = await CompanyModel.findById(id);
+    console.log("Updated Company:", updatedCompany);
+
+    res.status(200).json({ message: "Status updated successfully", updatedCompany });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   const { ename } = req.params;
@@ -2126,7 +2271,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     }
 
     // Fetch data for each status category
-    const [generalData, busyData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
+    const [generalData, busyData, underdocsData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
       CompanyModel.find({
         ...baseQuery,
         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
@@ -2140,6 +2285,15 @@ router.get("/employees-new/:ename", async (req, res) => {
         ...baseQuery,
         bdmAcceptStatus: "NotForwarded",
         Status: { $in: ["Busy", "Not Picked Up"] }
+      })
+        .sort({ lastActionDate: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      CompanyModel.find({
+        ...baseQuery,
+        bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+        Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
       })
         .sort({ lastActionDate: -1 })
         .skip(skip)
@@ -2215,11 +2369,16 @@ router.get("/employees-new/:ename", async (req, res) => {
       bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
     }));
 
-    const combinedData = [...generalData, ...busyData, ...interestedData, ...maturedData, ...notInterestedData];
+    const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData];
     // Count documents for each category
-    const [notInterestedCount, interestedCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
+    const [notInterestedCount, interestedCount, underdocsCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
+      CompanyModel.countDocuments({
+        ...baseQuery,
+        bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+        Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
+      }),
       CompanyModel.countDocuments({ ...baseQuery, Status: "Matured", bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined] } }),
       CompanyModel.countDocuments({
         ...baseQuery,
@@ -2243,6 +2402,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     // Total pages calculation based on the largest dataset (generalData as reference)
     const totalGeneralPages = Math.ceil(untouchedCount / limit);
     const totalBusyPages = Math.ceil(busyCount / limit);
+    const totalUndrocsPages = Math.ceil(underdocsCount / limit);
     const totalInterestedPages = Math.ceil(interestedCount / limit);
     const totalMaturedPages = Math.ceil(maturedCount / limit);
     const totalForwardedCount = Math.ceil(forwardedCount / limit);
@@ -2251,6 +2411,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     res.status(200).json({
       generalData,
       busyData,
+      underdocsData,
       interestedData,
       forwardedData,
       maturedData: updatedMaturedData, // Include updated matured data with booking information
@@ -2261,10 +2422,12 @@ router.get("/employees-new/:ename", async (req, res) => {
         matured: maturedCount,
         forwarded: forwardedCount,
         busy: busyCount,
-        untouched: untouchedCount
+        untouched: untouchedCount,
+        underdocs: underdocsCount
       },
       totalGeneralPages: totalGeneralPages,
       totalBusyPages: totalBusyPages,
+      totalUndrocsPages: totalUndrocsPages,
       totalInterestedPages: totalInterestedPages,
       totalForwardedCount: totalForwardedCount,
       totalMaturedPages: totalMaturedPages,
@@ -2946,49 +3109,94 @@ router.get("/bdmMaturedCases", async (req, res) => {
 // POST route to add/update interestedInformation
 router.post('/company/:companyName/interested-info', async (req, res) => {
   const companyName = req.params.companyName; // Extract company name from params
-  const { newInterestedInfo, status, id, ename, date, time } = req.body; // Data from the request body
-  // console.log(newInterestedInfo, status)
+  const { newInterestedInfo, status, id, ename , date , time } = req.body; // Data from the request body
+
+  console.log("Request Body:", req.body);
 
   try {
     const existingCompany = await CompanyModel.findById(id);
-    let updatedCompany;
-    // Find the company and push new interestedInformation if it already exists
-    if (existingCompany.bdmAcceptStatus === "MaturedAccepted" || existingCompany.bdmAcceptStatus === "Accept") {
-      updatedCompany = await CompanyModel.findOneAndUpdate(
-        { "Company Name": companyName }, // Query by company name
-        {
-          $set: {
-            bdmStatus: status, // Set company status
-            lastActionDate: new Date()
-          },
-          $push: {
-            interestedInformation: newInterestedInfo // Push new interested info to the array
-          }
-        },
-        {
-          new: true, // Return the updated document
-          upsert: true // Create a new document if it doesn't exist
-        }
-      )
-    } else {
-      updatedCompany = await CompanyModel.findOneAndUpdate(
-        { "Company Name": companyName }, // Query by company name
-        {
-          $set: {
-            Status: status, // Set company status
-            lastActionDate: new Date()
-          },
-          $push: {
-            interestedInformation: newInterestedInfo // Push new interested info to the array
-          }
-        },
-        {
-          new: true, // Return the updated document
-          upsert: true // Create a new document if it doesn't exist
-        }
-      );
+    if (!existingCompany) {
+      console.log("Company not found for ID:", id);
+      return res.status(404).json({ message: 'Company not found' });
     }
 
+    console.log("Existing Company Data:", existingCompany);
+
+    // Get the existing interestedInformation or initialize it as an empty array
+    const existingInfoArray = existingCompany.interestedInformation || [];
+    console.log("Existing Interested Information:", existingInfoArray);
+
+    // Check if an entry with the same `ename` already exists
+    const existingIndex = existingInfoArray.findIndex(info => info.ename === ename);
+    console.log("Index of existing ename:", existingIndex);
+
+    if (existingIndex !== -1) {
+      // If `ename` exists, update the existing object
+      const existingInfo = existingInfoArray[existingIndex];
+
+      // Perform a selective merge: only update fields in `newInterestedInfo` that are non-empty
+      const mergedInfo = { ...existingInfo };
+
+      for (const key in newInterestedInfo) {
+        if (typeof newInterestedInfo[key] === 'object' && !Array.isArray(newInterestedInfo[key])) {
+          // Deep merge for nested objects
+          mergedInfo[key] = {
+            ...(existingInfo[key] || {}),
+            ...Object.fromEntries(
+              Object.entries(newInterestedInfo[key]).map(([subKey, subValue]) => {
+                if (Array.isArray(subValue)) {
+                  // Preserve existing array if new array is empty
+                  return [subKey, subValue.length > 0 ? subValue : existingInfo[key][subKey] || []];
+                }
+                return [subKey, subValue !== '' && subValue !== null ? subValue : existingInfo[key][subKey]];
+              })
+            ),
+          };
+        } else if (Array.isArray(newInterestedInfo[key])) {
+          // Handle array fields: retain existing array if the new array is empty
+          mergedInfo[key] = newInterestedInfo[key].length > 0 ? newInterestedInfo[key] : existingInfo[key];
+        } else if (newInterestedInfo[key] !== '' && newInterestedInfo[key] !== null) {
+          // Update only if the value is not empty
+          mergedInfo[key] = newInterestedInfo[key];
+        }
+      }
+
+      console.log("Merged Existing Info:", mergedInfo);
+
+      // Replace the existing entry with the merged one
+      existingInfoArray[existingIndex] = mergedInfo;
+    } else {
+      // If `ename` does not exist, add newInterestedInfo as a new object
+      existingInfoArray.push(newInterestedInfo);
+      console.log("Added New Info:", newInterestedInfo);
+    }
+
+    // Prepare update fields
+    const updateFields = {
+      interestedInformation: existingInfoArray,
+      lastActionDate: new Date(),
+      previousStatusToUndo: existingCompany.Status
+    };
+
+    if (existingCompany.bdmAcceptStatus === "MaturedAccepted" || existingCompany.bdmAcceptStatus === "Accept") {
+      updateFields.bdmStatus = status;
+    } else {
+      updateFields.Status = status;
+    }
+
+    console.log("Update Fields to be set:", updateFields);
+
+    // Update the company document
+    const updatedCompany = await CompanyModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { $set: 
+        updateFields,
+        
+       },
+      { new: true, upsert: true } // Return updated document or create if not exists
+    );
+
+    console.log("Updated Company Data:", updatedCompany);
 
     if (status === "FollowUp" || status === "Interested") {
 
@@ -3025,16 +3233,20 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     if (updatedCompany) {
       res.status(200).json({
         message: 'Interested information added/updated successfully',
-        updatedCompany
+        updatedCompany,
       });
     } else {
       res.status(404).json({ message: 'Company not found' });
     }
   } catch (error) {
-    console.error('Error updating interested information:', error);
+    console.error("Error updating interested information:", error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+
+
 
 // Search Company API For Leads
 router.get('/companies/searchforLeads/:employeeName', async (req, res) => {
@@ -3635,6 +3847,7 @@ router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
           offeredPriceWithGst: projection.offeredPriceWithGst || 0,
           totalPaymentWithGst: projection.totalPaymentWithGst || 0,
           employeePayment: mainEmployeePayment,
+          bookingAmount: projection.bookingAmount || 0,
           bdeName,
           bdmName,
           lastFollowUpdate: projection.lastFollowUpdate,
@@ -4203,6 +4416,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
         offeredPriceWithGst: projection.offeredPriceWithGst || 0,
         totalPaymentWithGst: projection.totalPaymentWithGst || 0,
         employeePayment: mainEmployeePayment,
+        bookingAmount: projection.bookingAmount || 0,
         bdeName,
         bdmName,
         lastFollowUpdate: projection.lastFollowUpdate,
@@ -4257,6 +4471,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
               offeredPriceWithGst: latestRecord.offeredPriceWithGst || 0,
               totalPaymentWithGst: latestRecord.totalPaymentWithGst || 0,
               employeePayment: historyEmployeePayment,
+              bookingAmount: latestRecord.bookingAmount || 0,
               bdeName: latestRecord.bdeName,
               bdmName: latestRecord.bdmName,
               lastFollowUpdate: latestRecord.lastFollowUpdate,

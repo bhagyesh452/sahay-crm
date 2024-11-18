@@ -29,7 +29,8 @@ const EmployeeStatusChange = ({
   teamData,
   isBdmStatusChange,
   bdmStatus,
-  setOpenBacdrop
+  setOpenBacdrop,
+  previousStatus
 }) => {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -82,10 +83,6 @@ const EmployeeStatusChange = ({
           console.error("Failed to update status:", response.data.message);
         }
       }
-
-
-
-
       // } else {
       //   const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
       //   // setMaturedBooking(currentObject);
@@ -133,15 +130,8 @@ const EmployeeStatusChange = ({
             title,
             date,
             time,
+            previousStatus
           });
-
-          // const response3 = await axios.post(`${secretKey}/bdm-data/post-bdmAcceptStatusupate/${id}`, {
-          //   bdmAcceptStatus: "NotForwarded"
-          // });
-
-          // const response4 = await axios.post(`${secretKey}/projection/post-updaterejectedfollowup/${companyName}`, {
-          //   caseType: "NotForwarded"
-          // });
 
         } else if (newStatus === "Junk") {
           response = await axios.post(`${secretKey}/bdm-data/post-update-bdmstatusfrombde/${id}`, {
@@ -153,6 +143,7 @@ const EmployeeStatusChange = ({
             date,
             time,
             companyStatus,
+            previousStatus
           });
         }
       }
@@ -165,6 +156,7 @@ const EmployeeStatusChange = ({
           date,
           time,
           companyStatus,
+          previousStatus
         });
       }
 
@@ -184,6 +176,74 @@ const EmployeeStatusChange = ({
       setOpenBacdrop(false)
     }
   };
+
+  const handleUndoStatus = async (newStatus, statusClass) => {
+    setStatus(newStatus);
+    setStatusClass(statusClass);
+    setOpenBacdrop(true);
+
+    const title = `${ename} changed ${companyName} status from ${companyStatus} to ${newStatus}`;
+    const DT = new Date();
+    const date = DT.toLocaleDateString();
+    const time = DT.toLocaleTimeString();
+
+    try {
+        console.log("Request payload:", {
+            newStatus,
+            title,
+            date,
+            time,
+            companyStatus,
+            previousStatus,
+            ename
+        });
+
+        const response = await axios.post(`${secretKey}/company-data/update-undo-status/${id}`, {
+            newStatus,
+            title,
+            date,
+            time,
+            companyStatus,
+            previousStatus,
+            ename
+        });
+
+        console.log("API Response:", response);
+
+        // Check if the API call was successful
+        if (response.status === 200) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Status updated successfully!',
+                confirmButtonText: 'OK'
+            });
+
+            // Assuming `refetch` is a function to fetch updated employee data
+            refetch();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.data.message || 'Failed to update status.',
+                confirmButtonText: 'OK'
+            });
+        }
+    } catch (error) {
+        console.error("Error Response:", error?.response?.data);
+        console.error("Error Message:", error.message);
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.response?.data?.message || 'An error occurred while updating the status.',
+            confirmButtonText: 'OK'
+        });
+    } finally {
+        setOpenBacdrop(false);
+    }
+};
+
 
   const getStatusClass = (mainStatus, subStatus) => {
 
@@ -214,6 +274,27 @@ const EmployeeStatusChange = ({
             return "";
         }
       case "Busy":
+        switch (subStatus) {
+          case "Untouched":
+            return "untouched_status";
+          case "Docs/Info Sent (W)":
+            return "created-status";
+          case "Docs/Info Sent (E)":
+            return "docs_sent_e-status";
+          case "Docs/Info Sent (W&E)":
+            return "incomplete_status";
+          case "Not Picked Up":
+            return "cdbp-status";
+          case "Busy":
+            return "dfaulter-status";
+          case "Interested":
+            return "ready_to_submit";
+          case "Not Interested":
+            return "inprogress-status";
+          default:
+            return "";
+        }
+      case "UnderDocs":
         switch (subStatus) {
           case "Untouched":
             return "untouched_status";
@@ -359,7 +440,7 @@ const EmployeeStatusChange = ({
                 onClick={(e) => {
                   setStatus("Interested");
                   setStatusClass("ready_to_submit");
-                  console.log("Company Status:", e.target.value , status , companyStatus); // Log the companyStatus value
+                  console.log("Company Status:", e.target.value, status, companyStatus); // Log the companyStatus value
                 }}
                 href="#"
               >
@@ -375,7 +456,7 @@ const EmployeeStatusChange = ({
                 onClick={(e) => {
                   setStatus("Docs/Info Sent (W)");
                   setStatusClass("created-status");
-                  console.log("Company Status:", e.target.value , status); // Log the companyStatus value
+                  console.log("Company Status:", e.target.value, status); // Log the companyStatus value
                 }}
                 href="#"
               >
@@ -391,7 +472,7 @@ const EmployeeStatusChange = ({
                 onClick={(e) => {
                   setStatus("Docs/Info Sent (E)");
                   setStatusClass("docs_sent_e-status");
-                  console.log("Company Status:",e.target.value, status); // Log the companyStatus value
+                  console.log("Company Status:", e.target.value, status); // Log the companyStatus value
                 }}
                 href="#"
               >
@@ -407,7 +488,7 @@ const EmployeeStatusChange = ({
                 onClick={(e) => {
                   setStatus("Docs/Info Sent (W&E)");
                   setStatusClass("incomplete_status");
-                  console.log("Company Status:", e.target.value , status); // Log the companyStatus value
+                  console.log("Company Status:", e.target.value, status); // Log the companyStatus value
                 }}
                 href="#"
               >
@@ -420,10 +501,10 @@ const EmployeeStatusChange = ({
             {!isBdmStatusChange && <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Untouched", "untouched_status")}
+                onClick={() => handleUndoStatus(companyStatus, getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)))}
                 href="#"
               >
-                Untouched
+                Undo
               </a>
             </li>}
             <li>
@@ -517,8 +598,71 @@ const EmployeeStatusChange = ({
               </a>
             </li>
           </ul>
+        ) : mainStatus === "UnderDocs" ? (
+          <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+            {!isBdmStatusChange && <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleUndoStatus(companyStatus, getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)))}
+                href="#"
+              >
+                Undo
+              </a>
+            </li>}
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Not Picked Up", "cdbp-status")}
+                href="#"
+              >
+                Not Picked Up
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Busy", "dfaulter-status")}
+                href="#"
+              >
+                Busy
+              </a>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target={`#${modalId}`} // Use dynamic modal ID
+                value={companyStatus}
+                onClick={(e) => {
+                  setStatus("Interested")
+                  setStatusClass("ready_to_submit")
+                }}
+                href="#"
+              >
+                Interested
+              </button>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Not Interested", "inprogress-status")}
+                href="#"
+              >
+                Not Interested
+              </a>
+            </li>
+          </ul>
         ) : mainStatus === "Interested" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+            {!isBdmStatusChange && <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleUndoStatus(companyStatus, getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)))}
+                href="#"
+              >
+                Undo
+              </a>
+            </li>}
             <li>
               <a
                 className="dropdown-item"
@@ -588,6 +732,15 @@ const EmployeeStatusChange = ({
           </ul>
         ) : mainStatus === "Not Interested" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+            {!isBdmStatusChange && <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleUndoStatus(companyStatus, getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)))}
+                href="#"
+              >
+                Undo
+              </a>
+            </li>}
             <li>
               <a
                 className="dropdown-item"
@@ -640,6 +793,7 @@ const EmployeeStatusChange = ({
       companyStatus={companyStatus}
       id={id}
       setOpenBacdrop={setOpenBacdrop}
+
     />
   </>);
 };

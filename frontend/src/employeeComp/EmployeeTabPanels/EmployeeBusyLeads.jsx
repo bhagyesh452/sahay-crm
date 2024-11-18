@@ -590,6 +590,7 @@ function EmployeeBusyLeads({
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
                                                             bdmStatus={company.bdmStatus}
                                                             setOpenBacdrop={setOpenBacdrop}
+                                                            previousStatus={company.previousStatusToUndo}
                                                         />
                                                     )}
                                                 </td>
