@@ -146,6 +146,17 @@ function EmployeeInterestedInformationDialog({
     const handleSubmitInformation = () => {
         // Validation logic based on the status
         if (status === "Docs/Info Sent (W)" || status === "Docs/Info Sent (E)" || status === "Docs/Info Sent (W&E)") {
+            const isQuestion1Filled = formData.clientWhatsAppRequest.nextFollowUpDate &&
+                formData.clientWhatsAppRequest.remarks;
+
+            const isQuestion2Filled = formData.clientEmailRequest.nextFollowUpDate &&
+                formData.clientEmailRequest.remarks;
+
+            if (!isQuestion1Filled && !isQuestion2Filled) {
+                Swal.fire("Please complete either Question 1 or Question 2 with at least one required field.");
+                return;
+            }
+        } else if (status === "Interested") {
             // Ensure either question 3 or question 4 is filled
             const isQuestion3Filled = formData.interestedInServices.servicesPitched.length > 0 &&
                 formData.interestedInServices.servicesInterestedIn.length > 0 &&
@@ -161,18 +172,6 @@ function EmployeeInterestedInformationDialog({
 
             if (!isQuestion3Filled && !isQuestion4Filled) {
                 Swal.fire("Please complete either Question 3 or Question 4 with at least one required field.");
-                return;
-            }
-        } else if (status === "Interested") {
-            // Ensure either question 1 or question 2 is filled
-            const isQuestion1Filled = formData.clientWhatsAppRequest.nextFollowUpDate &&
-                formData.clientWhatsAppRequest.remarks;
-
-            const isQuestion2Filled = formData.clientEmailRequest.nextFollowUpDate &&
-                formData.clientEmailRequest.remarks;
-
-            if (!isQuestion1Filled && !isQuestion2Filled) {
-                Swal.fire("Please complete either Question 1 or Question 2 with at least one required field.");
                 return;
             }
         }
@@ -276,6 +275,7 @@ function EmployeeInterestedInformationDialog({
         document.body.classList.remove('modal-open');
         document.body.style.removeProperty('overflow');
         document.body.style.removeProperty('padding-right');
+        refetch();
     };
 
     // Clear fields related to a specific question
@@ -341,18 +341,31 @@ function EmployeeInterestedInformationDialog({
         if (visibleKeys.length === 0) {
             return ["q1", "q2"];
         }
+        
     
         return visibleKeys;
     };
     
     const calculateQuestionNumber = (questionId) => {
         const visibleKeys = getVisibleQuestions(); // Get visible question keys dynamically
+    
+        // Check if the question is in the visibleKeys list
         const questionIndex = visibleKeys.indexOf(questionId);
     
-        // If the question is not in the list, return 0
-        return questionIndex !== -1 ? questionIndex + 1 : 0;
+        if (questionIndex !== -1) {
+            return questionIndex + 1; // Return the actual index + 1 if the question is visible
+        }
+    
+        // If not in the list, explicitly handle q1 and q2
+        if (questionId === "q3") {
+            return 1;
+        } else if (questionId === "q4") {
+            return 2;
+        }
+    
+        // Return 0 for other cases
+        return 0;
     };
-
 
 
     console.log("visiblequestions", visibleQuestions)
@@ -379,7 +392,7 @@ function EmployeeInterestedInformationDialog({
                         </div>
 
                         <div className="accordion" id="accordionQue">
-                            {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) &&
+                            {((!forView) && (status !== "Interested")  || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) &&
                                 (<div className="accordion-item int-accordion-item">
                                     <div className="accordion-header p-2" id="accordionQueOne">
                                         <div className="d-flex align-items-center justify-content-between"  >
@@ -479,7 +492,7 @@ function EmployeeInterestedInformationDialog({
                                         )
                                     }
                                 </div>)}
-                            {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.clientEmailRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientEmailRequest.remarks))) && (
+                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.clientEmailRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientEmailRequest.remarks))) && (
                                 <div className="accordion-item int-accordion-item">
                                     <div className="accordion-header p-2" id="accordionQuetwo">
                                         <div className="d-flex align-items-center justify-content-between"  >
@@ -568,7 +581,7 @@ function EmployeeInterestedInformationDialog({
                                         </div>
                                         )}
                                 </div>)}
-                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.interestedInServices.nextFollowUpDate) ||
+                            {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.interestedInServices.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedInServices.remarks) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesPitched) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesInterestedIn) ||
@@ -728,7 +741,7 @@ function EmployeeInterestedInformationDialog({
                                             </div>
                                         </div>)}
                                 </div>)}
-                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.interestedButNotNow.nextFollowUpDate) ||
+                            {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.interestedButNotNow.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.remarks) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.servicesPitched) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.servicesInterestedIn) ||
