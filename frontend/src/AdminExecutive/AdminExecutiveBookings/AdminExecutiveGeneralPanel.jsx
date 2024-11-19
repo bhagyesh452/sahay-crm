@@ -909,9 +909,11 @@ function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFi
                                         </td>
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
                                         <td>
-                                            <div className="d-flex align-items-center justify-content-center">
+                                            <div className="d-flex align-items-center justify-content-between">
                                                 <div>
                                                     {obj.bdeName}
+                                                </div>
+                                                <div>
                                                     {
                                                         completeEmployeeInfo
                                                             .filter((employee) => employee.ename === obj.bdeName)
@@ -931,10 +933,12 @@ function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFi
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="d-flex align-items-center justify-content-center">
+                                            <div className="d-flex align-items-center justify-content-between">
 
                                                 <div>
                                                     {obj.bdmName}
+                                                </div>
+                                                <div>
                                                 {
                                                         completeEmployeeInfo
                                                             .filter((employee) => employee.ename === obj.bdmName)

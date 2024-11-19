@@ -1737,9 +1737,11 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter, totalFiltered
                       </td>
                       <td>{formatDatePro(obj.bookingDate)}</td>
                       <td>
-                                            <div className="d-flex align-items-center justify-content-center">
+                                            <div className="d-flex align-items-center justify-content-between">
                                                 <div>
                                                     {obj.bdeName}
+                                                  </div>
+                                                  <div>
                                                     {
                                                         completeEmployeeInfo
                                                             .filter((employee) => employee.ename === obj.bdeName)
@@ -1759,10 +1761,12 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter, totalFiltered
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="d-flex align-items-center justify-content-center">
+                                            <div className="d-flex align-items-center justify-content-between">
 
                                                 <div>
                                                     {obj.bdmName}
+                                                  </div>
+                                                  <div>
                                                 {
                                                         completeEmployeeInfo
                                                             .filter((employee) => employee.ename === obj.bdmName)

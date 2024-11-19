@@ -2724,7 +2724,7 @@ td input {
 
 .table-style-3 table {
   border-collapse: separate !important;
-  border-spacing: 0 0.5em;
+  border-spacing: 0 0.3em;
   margin-top: -6px;
 }
 
@@ -2742,7 +2742,7 @@ td input {
 
 .table-style-3 table tbody tr td {
   border: none !important;
-  padding: 6px 8px 6px 8px !important;
+  padding: 2px 8px 2px 8px !important;
   transition: .5s;
   border-top: 1px solid #eee !important;
   border-bottom: 1px solid #eee !important;
@@ -3313,12 +3313,12 @@ td input {
   min-width: 150px;
 } */
 .status__btn {
-  border-radius: 100px;
+  border-radius: 5px;
   border: none;
   padding: 3px 8px 3px 8px;
   background: transparent;
   width: 100% !important;
-  font-size: 12px;
+  font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
 }
 
@@ -3426,6 +3426,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .dfault_busy-status {
@@ -3436,6 +3437,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .dfault_not-pickedup-status {
@@ -3446,6 +3448,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .dfault_interested-status {
@@ -3456,6 +3459,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .dfault_followup-status {
@@ -3466,6 +3470,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .dfault_notinterested-status {
@@ -3476,6 +3481,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .dfault_junk-status {
@@ -3486,6 +3492,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 .dfault_untouched-status {
   background-color: #cfcfcf;
@@ -3496,6 +3503,7 @@ td input {
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
   line-height: 16px;
+  width: 100%;
 }
 
 .ep_untouched_status {
@@ -3506,6 +3514,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .ep_busy_status {
@@ -3516,6 +3525,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .ep_notpickedup_status {
@@ -3526,6 +3536,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 .ep_docssent-w-status_status {
   background-color: #A7D6FF;
@@ -3535,6 +3546,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 .ep_docssent-we-status_status {
   background-color: #faadff;
@@ -3544,6 +3556,7 @@ td input {
   font-size: 10px;
   box-shadow: 0px 2px 5px #0000001A;
   font-weight: 600;
+  width: 100%;
 }
 
 .ep_left_button {
@@ -3636,9 +3649,9 @@ td input {
 }
 
 .sec-indu-select {
-  font-size: 12px;
+  font-size: 10px;
   padding: 3px 8px !important;
-  border-radius: 26px !important;
+  border-radius: 5px !important;
   width: 100%;
   background-position: right 7px center;
   background-size: 8px 11px;
@@ -4570,80 +4583,80 @@ div#table-default td {
 }
 
 .intersted-history-btn {
-  width: 24px;
-  height: 24px;
-  line-height: 20px;
+  width: 32px;
+  height: 22px;
+  line-height: 18px;
   text-align: center;
   border-radius: 5px;
   background: #a3ffd8;
   border: 1px solid #35c286;
   margin-left: 8px;
-  font-size: 11px;
+  font-size: 10px;
   color: #6f6f6f;
   cursor:pointer;
 }
 .docs_w-history-btn {
-  width: 24px;
-  height: 24px;
-  line-height: 20px;
+  width: 32px;
+  height: 22px;
+  line-height: 18px;
   text-align: center;
   border-radius: 5px;
   background: #A7D6FF;
   border: 1px solid #2DBDCA;
   margin-left: 8px;
-  font-size: 11px;
+  font-size: 10px;
   color: #6f6f6f;
   cursor:pointer;
 }
 .docs_e-history-btn {
-  width: 24px;
-  height: 24px;
-  line-height: 20px;
+  width: 32px;
+  height: 22px;
+  line-height: 18px;
   text-align: center;
   border-radius: 5px;
   background: #fffec4;
   border: 1px solid #cfc022;
   margin-left: 8px;
-  font-size: 11px;
+  font-size: 10px;
   color: #6f6f6f;
   cursor:pointer;
 }
 .docs_eeew-history-btn {
-  width: 24px;
-  height: 24px;
-  line-height: 20px;
+  width: 32px;
+  height: 22px;
+  line-height: 18px;
   text-align: center;
   border-radius: 5px;
   background: #faadff;
   border: 1px solid #ae32ac;
   margin-left: 8px;
-  font-size: 11px;
+  font-size: 10px;
   color: #6f6f6f;
   cursor:pointer;
 }
 .matured-history-btn {
-  width: 24px;
-  height: 24px;
-  line-height: 20px;
+  width: 32px;
+  height: 22px;
+  line-height: 18px;
   text-align: center;
   border-radius: 5px;
   background: #7ee48c;
   border: 1px solid #1cbd27;
   margin-left: 8px;
-  font-size: 11px;
+  font-size: 10px;
   color: #6f6f6f;
   cursor:pointer;
 }
 .followup-history-btn {
-  width: 24px;
-  height: 24px;
-  line-height: 20px;
+  width: 32px;
+  height: 22px;
+  line-height: 18px;
   text-align: center;
   border-radius: 5px;
   background: #ffe1ed;
   border: 1px solid #f393ba;
   margin-left: 8px;
-  font-size: 11px;
+  font-size: 10px;
   color: #6f6f6f;
   cursor: pointer;
 }

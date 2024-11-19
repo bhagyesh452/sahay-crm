@@ -747,7 +747,7 @@ function EmployeeForwardedLeads({
                                                     color="grey"
                                                 />
                                             </td>
-                                            <td>
+                                            <td style={{ width: "200px" }}>
                                                 {/* <div
                                                     className={company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
                                                         company.bdeOldStatus === "FollowUp" ? "dfault_followup-status" :

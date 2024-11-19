@@ -1976,9 +1976,11 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                       <td>{obj.submittedBy ? obj.submittedBy : employeeData.ename}</td>
                       <td>{formatDatePro(obj.bookingDate)}</td>
                       <td>
-                        <div className="d-flex align-items-center justify-content-center">
+                        <div className="d-flex align-items-center justify-content-between">
                           <div>
                             {obj.bdeName}
+                          </div>
+                          <div>
                             {
                               completeEmployeeInfo
                                 .filter((employee) => employee.ename === obj.bdeName)
@@ -1998,10 +2000,13 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                         </div>
                       </td>
                       <td>
-                        <div className="d-flex align-items-center justify-content-center">
+                        <div className="d-flex align-items-center justify-content-between">
 
                           <div>
+                          
                             {obj.bdmName}
+                          </div>
+                            <div>
                             {
                               completeEmployeeInfo
                                 .filter((employee) => employee.ename === obj.bdmName)

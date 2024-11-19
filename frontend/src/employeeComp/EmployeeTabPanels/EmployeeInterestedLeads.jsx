@@ -665,7 +665,7 @@ function EmployeeInterestedLeads({
                         color="grey"
                       />
                     </td>
-                    <td style={{ width: "122px" }}>
+                    <td style={{ width: "150px" }}>
                       <div className="d-flex align-items-center justify-content-between">
                         {(fordesignation === "admin" || fordesignation === "datamanager") ? (
                           <div
