@@ -169,7 +169,7 @@ function TeamLeadsInterested({
     return (
         <div className="sales-panels-main">
             <div className="table table-responsive e-Leadtable-style m-0">
-                <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
+                <table className="table table-vcenter table-nowrap" style={{ width: "1222px" }}>
                     <thead>
                         <tr className="tr-sticky">
                             {(newDesignation === "admin" || newDesignation === "datamanager") &&
