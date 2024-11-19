@@ -211,10 +211,26 @@ router.post("/update-undo-status/:id", async (req, res) => {
   try {
     // Find the company by ID in the CompanyModel to get the company details
     const company = await CompanyModel.findById(id);
+    const leadHistory = await LeadHistoryForInterestedandFollowModel.findById(id)
+    let nextFollowUpDate = null;
+    if (company) {
+      // Look for the `nextFollowUpDate` field in all possible sub-objects
+      nextFollowUpDate =
+        company.interestedInformation?.clientWhatsAppRequest?.nextFollowUpDate ||
+        company.interestedInformation?.clientEmailRequest?.nextFollowUpDate ||
+        // company.interestedInformation.interestedInServices?.nextFollowUpDate ||
+        // company.interestedInformation.interestedButNotNow?.nextFollowUpDate ||
+        null;
+
+      console.log("Extracted Next Follow-Up Date:", nextFollowUpDate);
+    }
 
     if (!company) {
       return res.status(404).json({ message: "Company not found" });
     }
+
+
+
 
     console.log("bdmAcceptStatus:", company.bdmAcceptStatus, "newStatus:", newStatus, "previousStatus:", previousStatus);
 
@@ -225,7 +241,7 @@ router.post("/update-undo-status/:id", async (req, res) => {
 
       if (info) {
         console.log("info:", JSON.stringify(info, null, 2)); // Log the full `info` object for debugging
-      
+
         // Check if `interestedInServices` or `interestedButNotNow` fields are effectively empty
         const isWhatsAppEmpty =
           !info.interestedInServices ||
@@ -233,11 +249,11 @@ router.post("/update-undo-status/:id", async (req, res) => {
             info.interestedInServices.servicesPitched.length === 0 &&
             Array.isArray(info.interestedInServices.servicesInterestedIn) &&
             info.interestedInServices.servicesInterestedIn.length === 0 &&
-            !info.interestedInServices.remarks 
-            && !info.interestedInServices.nextFollowUpDate 
+            !info.interestedInServices.remarks
+            && !info.interestedInServices.nextFollowUpDate
             && !info.interestedInServices.offeredPrice
           );
-      
+
         const isEmailEmpty =
           !info.interestedButNotNow ||
           (Array.isArray(info.interestedButNotNow.servicesPitched) &&
@@ -245,12 +261,12 @@ router.post("/update-undo-status/:id", async (req, res) => {
             Array.isArray(info.interestedButNotNow.servicesInterestedIn) &&
             info.interestedButNotNow.servicesInterestedIn.length === 0 &&
             !info.interestedButNotNow.remarks
-            && !info.interestedButNotNow.nextFollowUpDate 
+            && !info.interestedButNotNow.nextFollowUpDate
             && !info.interestedButNotNow.offeredPrice);
-      
+
         console.log("isWhatsAppEmpty:", isWhatsAppEmpty); // Log result of WhatsApp check
         console.log("isEmailEmpty:", isEmailEmpty); // Log result of Email check
-      
+
         if (isWhatsAppEmpty && isEmailEmpty) {
           // Return an error if both fields are empty
           return res.status(400).json({
@@ -259,15 +275,44 @@ router.post("/update-undo-status/:id", async (req, res) => {
           });
         }
       }
-    }      
+    }
 
+    if (
+      ["Busy", "Not Picked Up", "Not Interested", "Junk", "FollowUp"].includes(company.Status) &&
+      ["Interested"].includes(previousStatus)
+    ) {
+      let leadHistory = await LeadHistoryForInterestedandFollowModel.findById(id);
+
+      if (leadHistory) {
+        // If the record exists, update old status, new status, date, and time
+        leadHistory.oldStatus = "Interested";
+        leadHistory.newStatus = company.Status; // Update with current status
+        leadHistory.date = new Date();
+        leadHistory.time = new Date().toLocaleTimeString();
+
+        await leadHistory.save();
+        console.log("Updated leadHistory:", leadHistory);
+      } else {
+        // If the record does not exist, create a new one
+        leadHistory = new LeadHistoryForInterestedandFollowModel({
+          _id: id,
+          "Company Name": company["Company Name"],
+          ename: company.ename,
+          oldStatus: "Interested",
+          newStatus: company.Status,
+          date: new Date(),
+          time: new Date().toLocaleTimeString(),
+        });
+
+        await leadHistory.save();
+        console.log("Created new leadHistory:", leadHistory);
+      }
+    }
     // Check if `company.Status` is "Busy" and `previousStatus` matches the criteria
     if (
-      ["Busy" , "Not Picked Up" , "Not Interested" , "Junk" , "FollowUp"].includes(company.Status) &&
+      ["Busy", "Not Picked Up", "Not Interested", "Junk", "FollowUp"].includes(company.Status) &&
       ["Interested", "Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"].includes(previousStatus)
     ) {
-      console.log("Undo skipped due to 'Busy' status.");
-      // Skip pulling from interestedInformation
       await CompanyModel.findByIdAndUpdate(
         id,
         {
@@ -299,11 +344,15 @@ router.post("/update-undo-status/:id", async (req, res) => {
               Status: previousStatus, // Restore previous status
               lastActionDate: new Date(), // Update the last action date
               previousStatusToUndo: company.Status,
+              bdeNextFollowUpDate: nextFollowUpDate ? nextFollowUpDate : ""
             },
             $unset: updateQuery, // Unset specific fields
           },
           { new: true } // Return the updated document
         );
+        if (leadHistory) {
+          await LeadHistoryForInterestedandFollowModel.findByIdAndDelete(id);
+        }
       }
     } else {
       // Remove the entire object from the array if `previousStatus` does not match the criteria
@@ -319,8 +368,12 @@ router.post("/update-undo-status/:id", async (req, res) => {
             interestedInformation: { ename: ename }, // Remove the entire object with matching `ename`
           },
         },
+        
         { new: true } // Return the updated document
       );
+      if (leadHistory) {
+        await LeadHistoryForInterestedandFollowModel.findByIdAndDelete(id);
+      }
     }
 
     const updatedCompany = await CompanyModel.findById(id);
@@ -3094,7 +3147,7 @@ router.get("/bdmMaturedCases", async (req, res) => {
 // POST route to add/update interestedInformation
 router.post('/company/:companyName/interested-info', async (req, res) => {
   const companyName = req.params.companyName; // Extract company name from params
-  const { newInterestedInfo, status, id, ename , date , time } = req.body; // Data from the request body
+  const { newInterestedInfo, status, id, ename, date, time } = req.body; // Data from the request body
 
   console.log("Request Body:", req.body);
 
@@ -3104,6 +3157,21 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
       console.log("Company not found for ID:", id);
       return res.status(404).json({ message: 'Company not found' });
     }
+    // Extract `nextFollowUpDate` from `newInterestedInfo`
+    let nextFollowUpDate = null;
+
+    if (newInterestedInfo) {
+      // Look for the `nextFollowUpDate` field in all possible sub-objects
+      nextFollowUpDate =
+        newInterestedInfo.clientWhatsAppRequest?.nextFollowUpDate ||
+        newInterestedInfo.clientEmailRequest?.nextFollowUpDate ||
+        newInterestedInfo.interestedInServices?.nextFollowUpDate ||
+        newInterestedInfo.interestedButNotNow?.nextFollowUpDate ||
+        null;
+
+      console.log("Extracted Next Follow-Up Date:", nextFollowUpDate);
+    }
+    console.log("nextFollowUpDate:", nextFollowUpDate);
 
     console.log("Existing Company Data:", existingCompany);
 
@@ -3160,7 +3228,8 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     const updateFields = {
       interestedInformation: existingInfoArray,
       lastActionDate: new Date(),
-      previousStatusToUndo: existingCompany.Status
+      previousStatusToUndo: existingCompany.Status,
+      bdeNextFollowUpDate: nextFollowUpDate, // Update the bdeNextFollowDate field
     };
 
     if (existingCompany.bdmAcceptStatus === "MaturedAccepted" || existingCompany.bdmAcceptStatus === "Accept") {
@@ -3174,10 +3243,11 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     // Update the company document
     const updatedCompany = await CompanyModel.findOneAndUpdate(
       { "Company Name": companyName },
-      { $set: 
-        updateFields,
-        
-       },
+      {
+        $set:
+          updateFields,
+
+      },
       { new: true, upsert: true } // Return updated document or create if not exists
     );
 

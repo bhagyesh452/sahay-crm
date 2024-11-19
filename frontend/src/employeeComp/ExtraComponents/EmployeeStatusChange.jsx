@@ -367,6 +367,7 @@ const EmployeeStatusChange = ({
   // ----------------------------------functions for modal--------------------------------
   const modalId = `modal-${companyName?.replace(/[^a-zA-Z0-9]/g, '')}`; // Generate a sanitized modal ID
   // console.log("modalId", modalId);
+  
 
   console.log("previousStatus", previousStatus)
 

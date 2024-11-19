@@ -17,6 +17,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInterestedInformationDialog';
 import { FaEye } from "react-icons/fa";
+import EmployeeNextFollowDate from '../ExtraComponents/EmployeeNextFollowUpDate';
 
 
 function EmployeeUnderDocsLeads({
@@ -55,7 +56,8 @@ function EmployeeUnderDocsLeads({
     setActiveFilterField,
     activeFilterFields,
     setActiveFilterFields,
-    setUnderDocsDataCount
+    setUnderDocsDataCount,
+    isCallHistoryEmpty,
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -98,7 +100,7 @@ function EmployeeUnderDocsLeads({
     //-------------------filter method-------------------------------
 
     const handleFilter = (newData) => {
-        console.log("newData", newData)
+
         setFilteredData(newData)
         setunderDocsData(newData);
         setUnderDocsDataCount(newData.length);
@@ -137,7 +139,7 @@ function EmployeeUnderDocsLeads({
         }
     }, []);
 
-    // console.log("activeFilterFieldsGeneral", activeFilterFields)
+    // console.log("activeFilterFieldsUnderDocs", activeFilterFields)
     // console.log("underDocsData" , underDocsData)
 
 
@@ -196,7 +198,7 @@ function EmployeeUnderDocsLeads({
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
-                                                        activeTab={"General"}
+                                                        activeTab={"UnderDocs"}
                                                         data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -234,7 +236,7 @@ function EmployeeUnderDocsLeads({
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
-                                                        activeTab={"General"}
+                                                        activeTab={"UnderDocs"}
                                                         data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -273,7 +275,7 @@ function EmployeeUnderDocsLeads({
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
-                                                        activeTab={"General"}
+                                                        activeTab={"UnderDocs"}
                                                         data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -287,6 +289,44 @@ function EmployeeUnderDocsLeads({
                                         </div>
                                     </th>
                                     <th>Remarks</th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['bdeNextFollowUpDate'] = el}>
+                                                Next FollowUp Date
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('bdeNextFollowUpDate') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeNextFollowUpDate")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeNextFollowUpDate")} />
+                                                )}
+                                            </div>
+
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'bdeNextFollowUpDate' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableComponentEmployee
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"UnderDocs"}
+                                                        data={underDocsData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeUnderDocsData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetch}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['Company Incorporation Date  '] = el}>
@@ -312,7 +352,7 @@ function EmployeeUnderDocsLeads({
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
-                                                        activeTab={"General"}
+                                                        activeTab={"UnderDocs"}
                                                         data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -350,7 +390,7 @@ function EmployeeUnderDocsLeads({
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
-                                                        activeTab={"General"}
+                                                        activeTab={"UnderDocs"}
                                                         data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -388,7 +428,7 @@ function EmployeeUnderDocsLeads({
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
-                                                        activeTab={"General"}
+                                                        activeTab={"UnderDocs"}
                                                         data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -426,7 +466,7 @@ function EmployeeUnderDocsLeads({
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
-                                                        activeTab={"General"}
+                                                        activeTab={"UnderDocs"}
                                                         data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -464,7 +504,7 @@ function EmployeeUnderDocsLeads({
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
-                                                        activeTab={"General"}
+                                                        activeTab={"UnderDocs"}
                                                         data={underDocsData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -551,20 +591,21 @@ function EmployeeUnderDocsLeads({
                                                             // setClientNumber(company["Company Number"]);
                                                         }}
                                                         style={{
-                                                            cursor: "pointer",
+                                                            cursor: isCallHistoryEmpty ? "not-allowed" : "pointer", // Change cursor if disabled
                                                             width: "15px",
                                                             height: "15px",
                                                         }}
-                                                        color="grey"
+                                                        color={isCallHistoryEmpty ? "lightgrey" : "grey"} // Change color if disabled
+                                                        disabled={isCallHistoryEmpty} // Disable the button
                                                     />
                                                 </td>
                                                 <td>
                                                     <div className="d-flex align-items-center justify-content-between">
                                                         {(fordesignation === "admin" || fordesignation === "datamanager") ? (
                                                             <div
-                                                                className={company.Status === "Docs/Info Sent (W)" ? "ep_notpickedup_status" :
-                                                                    company.Status === "Docs/Info Sent (E)" ? "docs_sent_e-status" :
-                                                                        company.Status === "Docs/Info Sent (W&E)" ? "Docs/Info Sent (W&E)" : null}>
+                                                                className={company.Status === "Docs/Info Sent (W)" ? "ep_docssent-w-status_status" :
+                                                                    company.Status === "Docs/Info Sent (E)" ? "ep_notpickedup_status" :
+                                                                        company.Status === "Docs/Info Sent (W&E)" ? "ep_docssent-we-status_status" : null}>
                                                                 {company.Status}
                                                             </div>
                                                         ) : (
@@ -656,7 +697,7 @@ function EmployeeUnderDocsLeads({
                                                             currentCompanyName={company["Company Name"]}
                                                             //remarksHistory={remarksHistory} // pass your remarks history data
                                                             companyId={company._id}
-                                                            remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                                            remarksKey="remarks" // Adjust this based on the type of remarks (UnderDocs or bdm)
                                                             isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
                                                             companyStatus={company.Status}
@@ -667,6 +708,15 @@ function EmployeeUnderDocsLeads({
                                                             mainRemarks={company.Remarks}
                                                         />
                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <EmployeeNextFollowDate
+                                                        key={company._id}
+                                                        id={company._id}
+                                                        nextFollowDate={company.bdeNextFollowUpDate}
+                                                        refetch={refetch}
+                                                        status={company.Status}
+                                                    />
                                                 </td>
                                                 <td>
                                                     {formatDateNew(
