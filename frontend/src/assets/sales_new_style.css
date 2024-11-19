@@ -125,6 +125,7 @@
     box-shadow: 0px 2px 5px #0000001A;
     font-weight: 600;
     line-height: 16px;
+    width: 100%;
 }
 .sales-panels-main .dfault_approved-status
 {
@@ -136,6 +137,7 @@
     box-shadow: 0px 2px 5px #0000001A;
     font-weight: 600;
     line-height: 16px;
+    width: 100%;
 }
 .sales-panels-main .dfault_followup-status
 {
@@ -147,6 +149,7 @@
     box-shadow: 0px 2px 5px #0000001A;
     font-weight: 600;
     line-height: 16px;
+    width: 100%;
 }
 .int-accordion-item
 {
@@ -274,4 +277,8 @@
     border-bottom: 1px solid #ffb900 !important;
     color: #ffb900 !important;
     background: #fff;
+}
+.rm_status_dropdown
+{
+    width: 100%;
 }
