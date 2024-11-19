@@ -606,7 +606,7 @@ const EmployeeStatusChange = ({
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Not Interested", "inprogress-status")}
+                onClick={() => isBdmStatusChange ? handlebdmStatusChange("Not Interested", "inprogress-status") : handleStatusChange("Not Interested", "inprogress-status")}
                 href="#"
               >
                 Not Interested
@@ -630,24 +630,6 @@ const EmployeeStatusChange = ({
                 Undo
               </a>
             </li>}
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Not Picked Up", "cdbp-status")}
-                href="#"
-              >
-                Not Picked Up
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Busy", "dfaulter-status")}
-                href="#"
-              >
-                Busy
-              </a>
-            </li>
             <li>
               <button
                 className="dropdown-item"
@@ -729,7 +711,7 @@ const EmployeeStatusChange = ({
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Busy", "dfaulter-status")}
+                onClick={() => isBdmStatusChange ? handlebdmStatusChange("Busy", "dfaulter-status") : handleStatusChange("Busy", "dfaulter-status")}
                 href="#"
               >
                 Busy

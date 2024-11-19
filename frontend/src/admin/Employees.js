@@ -259,7 +259,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     document.title = `Admin-Sahay-CRM`;
   }, []);
 
-  
+
 
   const [dataToDelete, setDataToDelete] = useState([]);
 
@@ -298,6 +298,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     // console.log("filtered" , filteredCompanyData)
     setCompanyDdata(filteredCompanyData);
     setItemIdToDelete(itemId);
+    console.log("nameToChange", nametochange)
 
     // console.log("object");
     Swal.fire({
@@ -311,18 +312,25 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       cancelButtonText: 'No, cancel!',
     }).then(async (result) => {
 
+      console.log("dataTODELETE", dataToDelete);
+
       if (result.isConfirmed) {
         try {
           const saveResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
             dataToDelete,
           });
+
+
           const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
 
           const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
 
+          
+
+
           // Refresh the data after successful deletion
           handledeletefromcompany(filteredCompanyData);
-          // fetchData();
+          //fetchData();
           refetchActive();
           refetchDeleted();
           setDataToDelete([]);
@@ -1179,7 +1187,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                             onClick={async () => {
                               const dataToDelete = employeeData.filter(obj => obj._id === item._id);
                               setDataToDelete(dataToDelete);
-                              const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
+                              const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename || obj.bdmName === item.ename);
+                              // console.log("filteredcompanydata", filteredCompanyData);
                               setCompanyDdata(filteredCompanyData);
                               handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
                             }}
@@ -1401,7 +1410,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                                         personal_number: "0",
                                         personal_email: "example@gmail.com"
                                       });
-                                      const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
+                                      const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename || obj.bdmName === item.ename);
                                       setCompanyDdata(filteredCompanyData);
                                       handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
                                     }}

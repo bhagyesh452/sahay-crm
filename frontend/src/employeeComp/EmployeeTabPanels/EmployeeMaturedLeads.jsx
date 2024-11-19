@@ -826,22 +826,31 @@ function EmployeeMaturedLeads({
                                                 )}
                                                 {
                                                     ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (
-                                                        <TiArrowForward onClick={() => {
-                                                            setShowForwardToBdmPopup(true);
-                                                            setCompanyId(company._id);
-                                                            setCompanyName(company["Company Name"]);
-                                                            setCompanyStatus(company.Status);
-                                                        }}
+                                                        <TiArrowForward
+                                                            onClick={() => {
+                                                                if (company.bdmAcceptStatus !== "MaturedAccepted" && company.bdmAcceptStatus !== "MaturedPending") {
+                                                                    setShowForwardToBdmPopup(true);
+                                                                    setCompanyId(company._id);
+                                                                    setCompanyName(company["Company Name"]);
+                                                                    setCompanyStatus(company.Status);
+                                                                }
+                                                            }}
                                                             style={{
-                                                                cursor: "pointer",
+                                                                cursor: company.bdmAcceptStatus === "MaturedAccepted" || company.bdmAcceptStatus === "MaturedPending" ? "not-allowed" : "pointer",
                                                                 width: "17px",
                                                                 height: "17px",
-                                                                // display:"none",
+                                                                opacity: company.bdmAcceptStatus === "MaturedAccepted" || company.bdmAcceptStatus === "MaturedPending" ? 0.5 : 1,
                                                             }}
-                                                            title="Forward To BDM"
+                                                            title={
+                                                                company.bdmAcceptStatus === "MaturedAccepted" || company.bdmAcceptStatus === "MaturedPending"
+                                                                    ? "Cannot forward to BDM"
+                                                                    : "Forward To BDM"
+                                                            }
                                                             color="grey"
                                                         />
-                                                    )}
+                                                    )
+                                                }
+
                                             </td>
                                         </tr>
                                     ))}

@@ -908,15 +908,6 @@ function EmployeeForwardedLeads({
                                             {(fordesignation !== "admin" && fordesignation !== "datamanager") && (<td>
                                                 {company.bdmAcceptStatus === "NotForwarded" ? (<>
                                                     <TiArrowForward
-                                                        // onClick={() => {
-                                                        //     handleConfirmAssign(
-                                                        //         company._id,
-                                                        //         company["Company Name"],
-                                                        //         company.Status, // Corrected parameter name
-                                                        //         company.ename,
-                                                        //         company.bdmAcceptStatus
-                                                        //     );
-                                                        // }}
                                                         style={{
                                                             cursor: "pointer",
                                                             width: "17px",

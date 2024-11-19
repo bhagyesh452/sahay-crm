@@ -514,7 +514,7 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQuetwo">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                {calculateQuestionNumber("q2")}. Client asked to send documents/information via email for review.
+                                                {calculateQuestionNumber("q2")}. Client asked to send documents/information via email for review.z
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
