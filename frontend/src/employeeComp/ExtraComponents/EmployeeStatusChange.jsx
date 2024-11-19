@@ -190,61 +190,61 @@ const EmployeeStatusChange = ({
     const time = DT.toLocaleTimeString();
 
     try {
-        console.log("Request payload:", {
-            newStatus,
-            title,
-            date,
-            time,
-            companyStatus,
-            previousStatus,
-            ename
-        });
+      console.log("Request payload:", {
+        newStatus,
+        title,
+        date,
+        time,
+        companyStatus,
+        previousStatus,
+        ename
+      });
 
-        const response = await axios.post(`${secretKey}/company-data/update-undo-status/${id}`, {
-            newStatus,
-            title,
-            date,
-            time,
-            companyStatus,
-            previousStatus,
-            ename
-        });
+      const response = await axios.post(`${secretKey}/company-data/update-undo-status/${id}`, {
+        newStatus,
+        title,
+        date,
+        time,
+        companyStatus,
+        previousStatus,
+        ename
+      });
 
-        console.log("API Response:", response);
+      console.log("API Response:", response);
 
-        // Check if the API call was successful
-        if (response.status === 200) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Status updated successfully!',
-                confirmButtonText: 'OK'
-            });
-
-            // Assuming `refetch` is a function to fetch updated employee data
-            refetch();
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.data.message || 'Failed to update status.',
-                confirmButtonText: 'OK'
-            });
-        }
-    } catch (error) {
-        console.error("Error Response:", error?.response?.data);
-        console.error("Error Message:", error.message);
-
+      // Check if the API call was successful
+      if (response.status === 200) {
         Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.response?.data?.message || 'An error occurred while updating the status.',
-            confirmButtonText: 'OK'
+          icon: 'success',
+          title: 'Success',
+          text: 'Status updated successfully!',
+          confirmButtonText: 'OK'
         });
+
+        // Assuming `refetch` is a function to fetch updated employee data
+        refetch();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.data.message || 'Failed to update status.',
+          confirmButtonText: 'OK'
+        });
+      }
+    } catch (error) {
+      console.error("Error Response:", error?.response?.data);
+      console.error("Error Message:", error.message);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'An error occurred while updating the status.',
+        confirmButtonText: 'OK'
+      });
     } finally {
-        setOpenBacdrop(false);
+      setOpenBacdrop(false);
     }
-};
+  };
 
 
   const getStatusClass = (mainStatus, subStatus) => {
@@ -368,6 +368,8 @@ const EmployeeStatusChange = ({
   const modalId = `modal-${companyName?.replace(/[^a-zA-Z0-9]/g, '')}`; // Generate a sanitized modal ID
   // console.log("modalId", modalId);
 
+  console.log("previousStatus", previousStatus)
+
   return (<>
     <section className="rm_status_dropdown"
     // style={{
@@ -462,7 +464,7 @@ const EmployeeStatusChange = ({
                 }}
                 href="#"
               >
-                Docs/Info Sent (W) 
+                Docs/Info Sent (W)
                 {/* <FaWhatsapp className="ml-1" /> */}
               </button>
             </li>
@@ -506,8 +508,14 @@ const EmployeeStatusChange = ({
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             {!isBdmStatusChange && <li>
               <a
-                className="dropdown-item"
-                onClick={() => handleUndoStatus(companyStatus, getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)))}
+                className={`dropdown-item ${!previousStatus ? 'disabled' : ''}`} // Add 'disabled' class if previousStatus is undefined or empty
+                onClick={() =>
+                  previousStatus && // Ensure onClick is not called if previousStatus is undefined or empty
+                  handleUndoStatus(
+                    companyStatus,
+                    getStatusClass(mainStatus, isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)
+                  )
+                }
                 href="#"
               >
                 Undo
@@ -608,8 +616,14 @@ const EmployeeStatusChange = ({
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             {!isBdmStatusChange && <li>
               <a
-                className="dropdown-item"
-                onClick={() => handleUndoStatus(companyStatus, getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)))}
+                className={`dropdown-item ${!previousStatus ? 'disabled' : ''}`} // Add 'disabled' class if previousStatus is undefined or empty
+                onClick={() =>
+                  previousStatus && // Ensure onClick is not called if previousStatus is undefined or empty
+                  handleUndoStatus(
+                    companyStatus,
+                    getStatusClass(mainStatus, isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)
+                  )
+                }
                 href="#"
               >
                 Undo
@@ -662,8 +676,14 @@ const EmployeeStatusChange = ({
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             {!isBdmStatusChange && <li>
               <a
-                className="dropdown-item"
-                onClick={() => handleUndoStatus(companyStatus, getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)))}
+                className={`dropdown-item ${!previousStatus ? 'disabled' : ''}`} // Add 'disabled' class if previousStatus is undefined or empty
+                onClick={() =>
+                  previousStatus && // Ensure onClick is not called if previousStatus is undefined or empty
+                  handleUndoStatus(
+                    companyStatus,
+                    getStatusClass(mainStatus, isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)
+                  )
+                }
                 href="#"
               >
                 Undo
@@ -740,8 +760,14 @@ const EmployeeStatusChange = ({
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             {!isBdmStatusChange && <li>
               <a
-                className="dropdown-item"
-                onClick={() => handleUndoStatus(companyStatus, getStatusClass(mainStatus, (isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)))}
+                className={`dropdown-item ${!previousStatus ? 'disabled' : ''}`} // Add 'disabled' class if previousStatus is undefined or empty
+                onClick={() =>
+                  previousStatus && // Ensure onClick is not called if previousStatus is undefined or empty
+                  handleUndoStatus(
+                    companyStatus,
+                    getStatusClass(mainStatus, isBdmStatusChange && bdmStatus ? bdmStatus : companyStatus)
+                  )
+                }
                 href="#"
               >
                 Undo
