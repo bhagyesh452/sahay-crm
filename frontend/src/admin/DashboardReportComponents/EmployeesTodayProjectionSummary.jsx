@@ -129,7 +129,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                             total_companies: 0,
                             total_offered_price: 0,
                             total_estimated_payment: 0,
-                            total_maturd_amount: 0,
+                            total_matured_amount: 0,
                             total_services: 0,
                         };
                     }
@@ -147,8 +147,8 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                     acc[company.bdeName].total_estimated_payment += (company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0) * 0.5;
                     acc[company.bdmName].total_estimated_payment += (company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0) * 0.5;
 
-                    acc[company.bdeName].total_maturd_amount += company.bookingAmount ? company.bookingAmount : 0;
-                    acc[company.bdmName].total_maturd_amount += company.bookingAmount ? company.bookingAmount : 0;
+                    acc[company.bdeName].total_matured_amount += company.bookingAmount ? company.bookingAmount : 0;
+                    acc[company.bdmName].total_matured_amount += company.bookingAmount ? company.bookingAmount : 0;
                     
                     acc[company.bdeName].total_services += serviceCount;
                     acc[company.bdmName].total_services += serviceCount;
@@ -156,7 +156,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                     acc[company.bdeName].total_companies += 1;
                     acc[company.bdeName].total_offered_price += company.offeredPriceWithGst ? company.offeredPriceWithGst : company.offeredPrice || 0;
                     acc[company.bdeName].total_estimated_payment += company.totalPaymentWithGst ? company.totalPaymentWithGst : company.totalPayment || 0;
-                    acc[company.bdeName].total_maturd_amount += company.bookingAmount ? company.bookingAmount : 0;
+                    acc[company.bdeName].total_matured_amount += company.bookingAmount ? company.bookingAmount : 0;
                     acc[company.bdeName].total_services += serviceCount;
                 }
 
@@ -169,7 +169,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                 total_companies: values.total_companies,
                 total_offered_price: values.total_offered_price,
                 total_estimated_payment: values.total_estimated_payment,
-                total_maturd_amount: values.total_maturd_amount,
+                total_matured_amount: values.total_matured_amount,
                 total_services: values.total_services,
             }));
             console.log("summaryArray", summaryArray);
@@ -196,7 +196,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                         total_offered_price: 0,
                         total_estimated_payment: 0,
                         total_services: 0,
-                        total_maturd_amount: 0,
+                        total_matured_amount: 0,
                         result: dailyProjection.result || "Not Added Yet",
                         branchOffice: employee.branchOffice,  // Add branch office from totalEmployees
                     };
@@ -208,7 +208,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                         total_offered_price: 0,
                         total_estimated_payment: 0,
                         total_services: 0,
-                        total_maturd_amount: 0,
+                        total_matured_amount: 0,
                         result: 0,
                         branchOffice: employee.branchOffice,  // Add branch office from totalEmployees
                     };
@@ -671,19 +671,19 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                         </th>
                                         <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
-                                                <div ref={el => fieldRefs.current['matured_payment'] = el}>
+                                                <div ref={el => fieldRefs.current['total_matured_amount'] = el}>
                                                     Matured Amount
                                                 </div>
 
                                                 <div className='RM_filter_icon' style={{ color: "black" }}>
-                                                    {isActiveField('matured_payment') ? (
-                                                        <FaFilter onClick={() => handleFilterClick("matured_payment")} />
+                                                    {isActiveField('total_matured_amount') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_matured_amount")} />
                                                     ) : (
-                                                        <BsFilter onClick={() => handleFilterClick("matured_payment")} />
+                                                        <BsFilter onClick={() => handleFilterClick("total_matured_amount")} />
                                                     )}
                                                 </div>
                                                 {/* ---------------------filter component--------------------------- */}
-                                                {showFilterMenu && activeFilterField === 'matured_payment' && (
+                                                {showFilterMenu && activeFilterField === 'total_matured_amount' && (
                                                     <div
                                                         ref={filterMenuRef}
                                                         className="filter-menu"
@@ -713,7 +713,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                 <tbody>
                                     {isLoading && (
                                         <tr>
-                                            <td colSpan="7" className="LoaderTDSatyle">
+                                            <td colSpan="8" className="LoaderTDSatyle">
                                                 <ClipLoader color="lightgrey" loading size={30} aria-label="Loading Spinner" data-testid="loader" />
                                             </td>
                                         </tr>
@@ -721,6 +721,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
 
                                     {projection && projection.length > 0 ? (
                                         projection.map((data, index) => {
+                                            console.log("Data is :", data);
                                             // Find the branch office for each employee in totalEmployees
                                             const employee = totalEmployees.find((emp) => emp.ename === data.ename);
                                             const branchOffice = employee ? employee.branchOffice : '-';
@@ -740,13 +741,13 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                                     <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_offered_price)) : "Not Added Yet"}
                                                     </td>
                                                     <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_estimated_payment)) : "Not Added Yet"}</td>
-                                                    <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_maturd_amount)) : "No Matured Booking"}</td>
+                                                    <td>{data.result ? (data.result === "Not Added Yet" ? 0 : formatCurrency(data.total_matured_amount)) : "No Matured Booking"}</td>
                                                 </tr>
                                             );
                                         })
                                     ) : (
                                         <tr>
-                                            <td className="particular" colSpan="7">
+                                            <td className="particular" colSpan="8">
                                                 <Nodata />
                                             </td>
                                         </tr>
@@ -761,7 +762,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                                             <td>{projection.reduce((total, item) => total + item.total_services, 0)}</td>
                                             <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_offered_price, 0))}</td>
                                             <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_estimated_payment, 0))}</td>
-                                            <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_maturd_amount, 0))}</td>
+                                            <td>₹ {formatAmount(projection.reduce((total, item) => total + item.total_matured_amount, 0))}</td>
                                         </tr>
                                     </tfoot>
                                 )}

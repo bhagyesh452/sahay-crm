@@ -992,17 +992,12 @@ export default function RedesignedForm({
           const tempLeadData = {
             ...leadData,
             services: servicestoSend
-          }
-          console.log("tempLeadData-final going data", tempLeadData)
-          const response = await axios.post(
-            `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
-            tempLeadData
-          );
-          const response2 = await axios.post(
-            `${secretKey}/bookings/redesigned-leadData/${companysName}/step5`
-          );
-
-
+          };
+          console.log("tempLeadData-final going data", tempLeadData);
+          
+          const response = await axios.post(`${secretKey}/bookings/redesigned-final-leadData/${companysName}`,tempLeadData);
+          const response2 = await axios.post(`${secretKey}/bookings/redesigned-leadData/${companysName}/step5`);
+          const response3 = await axios.put(`${secretKey}/bookings/update-matured-case-in-projection-for-first-booking/${companysName}`);
           Swal.fire({
             icon: "success",
             title: "Form Submitted",

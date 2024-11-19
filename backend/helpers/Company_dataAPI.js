@@ -4518,6 +4518,7 @@ router.put('/updateProjection/:companyName', async (req, res) => {
           totalPayment: projection.totalPayment,
           offeredPriceWithGst: projection.offeredPriceWithGst || 0,
           totalPaymentWithGst: projection.totalPaymentWithGst || 0,
+          bookingAmount: projection.bookingAmount || 0,
           lastFollowUpdate: projection.lastFollowUpdate,
           estPaymentDate: projection.estPaymentDate,
           bdeName: projection.bdeName,
