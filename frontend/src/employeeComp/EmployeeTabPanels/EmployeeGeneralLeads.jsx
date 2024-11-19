@@ -544,8 +544,6 @@ function EmployeeGeneralLeads({
                                                                 company.bdmName
 
                                                             );
-                                                            // setShowCallHistory(true);
-                                                            // setClientNumber(company["Company Number"]);
                                                         }}
                                                         style={{
                                                             cursor: "pointer",
