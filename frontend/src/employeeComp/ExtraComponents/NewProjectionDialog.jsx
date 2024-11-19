@@ -56,22 +56,26 @@ function NewProjectionDialog({
     const [isProjectionAvailable, setIsProjectionAvailable] = useState(false);
     const [isCheckedAmountWithGst, setIsCheckedAmountWithGst] = useState(Boolean(projectionData?.offeredPriceWithGst && projectionData?.totalPaymentWithGst));
 
-    // Handle GST checkbox change
+    const gstMultiplier = 1.18; // 18% GST
+
     const handleAmountWithGst = (e) => {
         const isChecked = e.target.checked;
         setIsCheckedAmountWithGst(isChecked);
 
-        if (isChecked) {
-            // Calculate GST (18%) on offered and expected prices
-            const gstMultiplier = 1.18; // 18% GST
-            setOfferedPriceWithGst((offeredPrice ? parseFloat(offeredPrice) : 0) * gstMultiplier);
-            setExpectedPriceWithGst((expectedPrice ? parseFloat(expectedPrice) : 0) * gstMultiplier);
-        } else {
+        if (!isChecked) {
             // Reset GST values when checkbox is unchecked
             setOfferedPriceWithGst("");
             setExpectedPriceWithGst("");
         }
     };
+
+    // Update GST values when offeredPrice or expectedPrice changes
+    useEffect(() => {
+        if (isCheckedAmountWithGst) {
+            setOfferedPriceWithGst((offeredPrice ? parseFloat(offeredPrice) : 0) * gstMultiplier);
+            setExpectedPriceWithGst((expectedPrice ? parseFloat(expectedPrice) : 0) * gstMultiplier);
+        }
+    }, [offeredPrice, expectedPrice, isCheckedAmountWithGst]);
 
     // Handle radio button selection
     const handleRadioChange = (event) => {
@@ -122,7 +126,6 @@ function NewProjectionDialog({
             Swal.fire("Error", "Failed to skip projection.", "error");
         }
     };
-
 
     // Fetch BDM names
     const fetchBdmNames = async () => {
@@ -230,6 +233,7 @@ function NewProjectionDialog({
 
                     // Fill the form with latest future projection
                     setIsProjectionAvailable(true);
+                    setIsCheckedAmountWithGst(true);
                     setCompanyName(latestProjection.companyName);
                     setCompanyId(latestProjection.companyId);
                     setSelectedBdm(latestProjection.bdmName);
@@ -257,6 +261,7 @@ function NewProjectionDialog({
         } else if (!projectionData) {
             // Clear fields only if there's no projection data available (i.e., not in edit mode)
             setIsProjectionAvailable(false);
+            setIsCheckedAmountWithGst(false);
             setCompanyId('');
             setCompanyName('');
             setSelectedBdm('');
@@ -608,7 +613,7 @@ function NewProjectionDialog({
                                         className="form-control mt-1"
                                         placeholder="Offered Price (With GST)"
                                         disabled
-                                        value={offeredPriceWithGst.toFixed(2)} // Display with two decimal places
+                                        value={offeredPriceWithGst ? offeredPriceWithGst.toFixed(2) : ""} // Display with two decimal places
                                     />
                                 </div>
                             </div>
@@ -621,7 +626,7 @@ function NewProjectionDialog({
                                         className="form-control mt-1"
                                         placeholder="Expected Price (With GST)"
                                         disabled
-                                        value={expectedPriceWithGst.toFixed(2)} // Display with two decimal places
+                                        value={expectedPriceWithGst ? expectedPriceWithGst.toFixed(2) : ""} // Display with two decimal places
                                     />
                                 </div>
                             </div>
