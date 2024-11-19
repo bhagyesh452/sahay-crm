@@ -116,6 +116,9 @@ const FilterTableCallingReport = ({
                 if (filterField === "total_offered_price") {
                     return item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_offered_price || 0;
                 }
+                if (filterField === "total_matured_amount") {
+                    return item.result === "Not Added Yet" ? 0 : item.result === 0 ? "No Matured Booking" : item.total_matured_amount || 0;
+                }
 
                 return item[filterField]; // Return the filtered field's value
             }).filter(value => value !== undefined && value !== null); // Filter out any falsy values (e.g., null)
@@ -229,6 +232,10 @@ const FilterTableCallingReport = ({
                             const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_offered_price || 0;
                             return columnFilters.includes(String(value));
                         }
+                        if (column === 'total_matured_amount') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "No Matured Booking" : item.total_matured_amount || 0;
+                            return columnFilters.includes(String(value));
+                        }
 
                         return columnFilters.includes(String(item[column]));
                     });
@@ -308,7 +315,10 @@ const FilterTableCallingReport = ({
                             const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "Not Added Yet" : item.total_offered_price || 0;
                             return columnFilters.includes(String(value));
                         }
-
+                        if (column === 'total_matured_amount') {
+                            const value = item.result === "Not Added Yet" ? 0 : item.result === 0 ? "No Matured Booking" : item.total_matured_amount || 0;
+                            return columnFilters.includes(String(value));
+                        }
 
                         return columnFilters.includes(String(item[column]));
                     });
@@ -460,4 +470,3 @@ const FilterTableCallingReport = ({
 };
 
 export default FilterTableCallingReport;
-

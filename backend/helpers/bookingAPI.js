@@ -3593,48 +3593,243 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
 }
 );
 
-// API to update the `isPreviousMaturedCase` and add booking amount field for the Projection collection
-router.put("/update-matured-case-in-projection/:companyName", async (req, res) => {
-
-  const {companyName} = req.params;
+// API to update the "isPreviousMaturedCase" and add "bookingAmount" field for the Projection collection when more bookings are added :
+router.put("/update-matured-case-in-projection-for-more-bookings/:companyName", async (req, res) => {
+  const { companyName } = req.params;
 
   try {
+    // Fetch booking data and projection
     const bookingData = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
     const projection = await ProjectionModel.findOne({ companyName: companyName });
 
-    // Flatten the services array to get a list of all service names
-    const services = bookingData.moreBookings.flatMap((booking) => booking.services.map((service) => service.serviceName));
-    const bookingAmount = bookingData.moreBookings.map((booking) => booking.totalAmount);
-    // console.log("Services are:", services);
-
-    if (projection) {
-      // Check if any service is found in the main offeredServices array
-      const mainServiceMatch = services.some((service) => projection.offeredServices.includes(service));
-      if (mainServiceMatch) {
-        projection.isPreviousMaturedCase = true; // Set in main document
-        projection.bookingAmount = bookingAmount[0];
-      }
-
-      // Check for each history entry if a service matches in the offeredServices array of history data
-      if (projection.history && projection.history.length > 0) {
-        projection.history.forEach((historyEntry) => {
-          const historyServiceMatch = services.some((service) => historyEntry.data.offeredServices.includes(service));
-          if (historyServiceMatch) {
-            historyEntry.data.isPreviousMaturedCase = true; // Set in history entry
-            historyEntry.data.bookingAmount = bookingAmount[0];
-          }
-        });
-      }
-
-      // Save the updated projection document
-      await projection.save();
+    if (!bookingData || !projection) {
+      return res.status(404).json({ result: false, message: "Company or Projection not found" });
     }
 
+    // Define service mapping for generalization
+    const serviceMappings = {
+      "ISO Certificate": [
+        "ISO Certificate IAF 9001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 9001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 9001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 14001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 14001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 14001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 45001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 45001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 45001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 22000 1 YEAR VALIDITY",
+        "ISO Certificate IAF 22000 3 YEAR VALIDITY",
+        "ISO Certificate IAF 22000 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 27001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 27001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 27001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 13485 1 YEAR VALIDITY",
+        "ISO Certificate IAF 13485 3 YEAR VALIDITY",
+        "ISO Certificate IAF 13485 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 20000-1 1 YEAR VALIDITY",
+        "ISO Certificate IAF 20000-1 3 YEAR VALIDITY",
+        "ISO Certificate IAF 20000-1 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 50001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 50001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 50001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 17025-2017 1 YEAR VALIDITY",
+        "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY",
+        "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate Non IAF 9001",
+        "ISO Certificate Non IAF 14001",
+        "ISO Certificate Non IAF 45001",
+        "ISO Certificate Non IAF 22000",
+        "ISO Certificate Non IAF 27001",
+        "ISO Certificate Non IAF 27001",
+        "ISO Certificate Non IAF 13485",
+        "ISO Certificate Non IAF 13485",
+        "ISO Certificate Non IAF 20000-1",
+        "ISO Certificate Non IAF 50001",
+        "ISO Certificate Non IAF 21001",
+        "ISO Certificate Non IAF GMP",
+        "ISO Certificate Non IAF GAP",
+        "ISO Certificate Non IAF FDA",
+        "ISO Certificate Non IAF HALAL",
+        "ISO Certificate Non IAF ORGANIC",
+        "ISO Certificate Non IAF FSSC",
+        "ISO Certificate Non IAF FSC",
+        "ISO Certificate Non IAF BIFMA",
+        "ISO Certificate Non IAF CE",
+        "ISO Certificate Non IAF HACCP",
+        "ISO Certificate Non IAF GHP",
+        "ISO Certificate Non IAF AIOTA",
+        "ISO Certificate Non IAF GREEN GUARD",
+        "ISO Certificate Non IAF SEDEX",
+        "ISO Certificate Non IAF WHO-GMP",
+        "ISO Certificate Non IAF BRC",
+        "ISO Certificate Non IAF VEGAN",
+        "ISO Certificate Non IAF SA 8000",
+        "ISO Certificate Non IAF SA CMMI LEVEL 3",
+        "ISO Certificate Non IAF SA CMMI LEVEL 5",
+        "ISO Certificate Non IAF SA GO GREEN",
+        "ISO Certificate Non IAF SA PCMM 5",
+        "ISO Certificate Non IAF SA RIOS",
+        "ISO Certificate Non IAF SA ROHS",
+        "ISO Certificate Non IAF SA IEC 17020",
+        "ISO Certificate Non IAF SA GFSI",
+        "ISO Certificate Non IAF SA GMO",
+        "ISO Certificate Non IAF SA 17025-2017",
+        "ISO Certificate Non IAF Others",
+      ],
+      "Company Incorporation": [
+        "OPC Private Limited Company Incorporation",
+        "Private Limited Company Incorporation",
+        "LLP Company Incorporation",
+      ],
+      "Organization DSC": [
+        "Organization DSC Only Signature With 1 Year Validity",
+        "Organization DSC Only Signature With 2 Year Validity",
+        "Organization DSC Only Signature With 3 Year Validity",
+        "Organization DSC Only Encryption With 1 Year Validity",
+        "Organization DSC Only Encryption With 2 Year Validity",
+        "Organization DSC Only Encryption With 3 Year Validity",
+        "Organization DSC Combo With 1 Year Validity",
+        "Organization DSC Combo With 2 Year Validity",
+        "Organization DSC Combo With 3 Year Validity"
+      ],
+      "Director DSC": [
+        "Director DSC Only Signature With 1 Year Validity",
+        "Director DSC Only Signature With 2 Year Validity",
+        "Director DSC Only Signature With 3 Year Validity",
+        "Director DSC Only Encryption With 1 Year Validity",
+        "Director DSC Only Encryption With 2 Year Validity",
+        "Director DSC Only Encryption With 3 Year Validity",
+        "Director DSC Combo With 1 Year Validity",
+        "Director DSC Combo With 2 Year Validity",
+        "Director DSC Combo With 3 Year Validity"
+      ],
+    };
+
+    // Function to find generalized service name
+    const getGeneralizedServiceName = (serviceName) => {
+      for (const [generalName, variants] of Object.entries(serviceMappings)) {
+        if (variants.some((variant) => serviceName.includes(variant))) {
+          return generalName;
+        }
+      }
+      return serviceName; // Return as-is if no match
+    };
+
+    // Flatten the services with their payment amounts and generalize names
+    const servicesWithAmounts = bookingData.moreBookings.flatMap((booking) =>
+      booking.services.map((service) => ({
+        serviceName: getGeneralizedServiceName(service.serviceName),
+        totalPaymentWGST: service.totalPaymentWGST,
+      }))
+    );
+
+    let totalBookingAmount = 0;
+    let isMatured = false;
+
+    // Check if any generalized service matches the offeredServices and accumulate booking amounts
+    servicesWithAmounts.forEach((service) => {
+      if (projection.offeredServices.includes(service.serviceName)) {
+        isMatured = true; // Mark as matured if a match is found
+        totalBookingAmount += service.totalPaymentWGST; // Add to total amount
+      }
+    });
+
+    // Update the main projection document
+    if (isMatured) {
+      projection.isPreviousMaturedCase = true;
+      projection.bookingAmount = totalBookingAmount;
+    }
+
+    // Update history entries if applicable
+    if (projection.history && projection.history.length > 0) {
+      projection.history.forEach((historyEntry) => {
+        let historyTotalBookingAmount = 0;
+        let historyMatured = false;
+
+        servicesWithAmounts.forEach((service) => {
+          if (historyEntry.data.offeredServices.includes(service.serviceName)) {
+            historyMatured = true;
+            historyTotalBookingAmount += service.totalPaymentWGST;
+          }
+        });
+
+        if (historyMatured) {
+          historyEntry.data.isPreviousMaturedCase = true;
+          historyEntry.data.bookingAmount = historyTotalBookingAmount;
+        }
+      });
+    }
+
+
+    // Function to find generalized service name
+    // const getGeneralizedServiceName = (serviceName) => {
+    //   for (const [generalName, variants] of Object.entries(serviceMappings)) {
+    //     if (variants.some((variant) => serviceName.includes(variant))) {
+    //       return generalName;
+    //     }
+    //   }
+    //   return serviceName; // Return as-is if no match
+    // };
+
+    // // Flatten the services with their payment amounts and generalize names
+    // const servicesWithAmounts = bookingData.moreBookings.flatMap((booking) =>
+    //   booking.services.map((service) => ({
+    //     serviceName: getGeneralizedServiceName(service.serviceName),
+    //     totalPaymentWGST: service.totalPaymentWGST,
+    //   }))
+    // );
+
+    // let totalBookingAmount = 0;
+    // let isMatured = false;
+
+    // // Check if any generalized service matches the offeredServices and accumulate booking amounts
+    // servicesWithAmounts.forEach((service) => {
+    //   if (projection.offeredServices.includes(service.serviceName)) {
+    //     isMatured = true; // Mark as matured if a match is found
+    //     totalBookingAmount += service.totalPaymentWGST; // Add to total amount
+    //   }
+    // });
+
+    // // Update the main projection document
+    // if (isMatured) {
+    //   projection.isPreviousMaturedCase = true;
+    //   projection.bookingAmount = (projection.bookingAmount || 0) + totalBookingAmount;
+    // }
+
+    // // Update history entries if applicable
+    // if (projection.history && projection.history.length > 0) {
+    //   projection.history.forEach((historyEntry) => {
+    //     let historyTotalBookingAmount = 0;
+    //     let historyMatured = false;
+
+    //     servicesWithAmounts.forEach((service) => {
+    //       if (historyEntry.data.offeredServices.includes(service.serviceName)) {
+    //         historyMatured = true;
+    //         historyTotalBookingAmount += service.totalPaymentWGST;
+    //       }
+    //     });
+
+    //     if (historyMatured) {
+    //       historyEntry.data.isPreviousMaturedCase = true;
+    //       historyEntry.data.bookingAmount =
+    //         (historyEntry.data.bookingAmount || 0) + historyTotalBookingAmount;
+    //     }
+    //   });
+    // }
+
+    // Save the updated projection document
+    await projection.save();
     res.status(200).json({ result: true, message: "Data processed and matured case status updated successfully" });
-  } catch {
-    res.status(500).json({resulr: false, message: "Error updating matured case status"});
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      result: false,
+      message: "Error updating matured case status",
+    });
   }
 });
+
 
 // Editing a Leadform
 router.post("/redesigned-edit-leadData/:CompanyName/:step", upload.fields([
@@ -6024,46 +6219,193 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
 
 
     // Send success response
-    // res.status(201).send("Data sent");
-
-    // Logic to update the `isPreviousMaturedCase` field for the Projection collection
-    const projection = await ProjectionModel.findOne({ companyName: CompanyName });
-    const services = newData.services.map((service) => service.serviceName);
-    // console.log("Services are:", services);
-
-    if (projection) {
-      // Check if any service is found in the main offeredServices array
-      const mainServiceMatch = services.some((service) => projection.offeredServices.includes(service));
-      if (mainServiceMatch) {
-        projection.isPreviousMaturedCase = true; // Set in main document
-        projection.bookingAmount = newData.totalAmount;
-      }
-
-      // Check for each history entry if a service matches in the offeredServices array of history data
-      if (projection.history && projection.history.length > 0) {
-        projection.history.forEach((historyEntry) => {
-          const historyServiceMatch = services.some((service) => historyEntry.data.offeredServices.includes(service));
-          if (historyServiceMatch) {
-            historyEntry.data.isPreviousMaturedCase = true; // Set in history entry
-            historyEntry.data.bookingAmount = newData.totalAmount;
-          }
-        });
-      }
-
-      // Save the updated projection document
-      await projection.save();
-    }
-
-    res.status(200).json({ result: true, message: "Data processed and matured case status updated successfully" });
+    res.status(201).send("Data sent");
   } catch (error) {
     console.error("Error creating/updating data:", error);
     res.status(500).send("Error creating/updating data"); // Send an error response
   }
 });
 
+// API to update the "isPreviousMaturedCase" and add "bookingAmount" field for the Projection collection when firsy booking is added :
+router.put("/update-matured-case-in-projection-for-first-booking/:companyName", async (req, res) => {
+  const { companyName } = req.params;
+
+  try {
+    // Fetch booking data and projection
+    const bookingData = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+    const projection = await ProjectionModel.findOne({ companyName: companyName });
+
+    if (!bookingData || !projection) {
+      return res.status(404).json({ result: false, message: "Company or Projection not found" });
+    }
+
+    // Define service mapping for generalization
+    const serviceMappings = {
+      "ISO Certificate": [
+        "ISO Certificate IAF 9001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 9001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 9001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 14001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 14001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 14001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 45001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 45001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 45001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 22000 1 YEAR VALIDITY",
+        "ISO Certificate IAF 22000 3 YEAR VALIDITY",
+        "ISO Certificate IAF 22000 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 27001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 27001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 27001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 13485 1 YEAR VALIDITY",
+        "ISO Certificate IAF 13485 3 YEAR VALIDITY",
+        "ISO Certificate IAF 13485 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 20000-1 1 YEAR VALIDITY",
+        "ISO Certificate IAF 20000-1 3 YEAR VALIDITY",
+        "ISO Certificate IAF 20000-1 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 50001 1 YEAR VALIDITY",
+        "ISO Certificate IAF 50001 3 YEAR VALIDITY",
+        "ISO Certificate IAF 50001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate IAF 17025-2017 1 YEAR VALIDITY",
+        "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY",
+        "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+        "ISO Certificate Non IAF 9001",
+        "ISO Certificate Non IAF 14001",
+        "ISO Certificate Non IAF 45001",
+        "ISO Certificate Non IAF 22000",
+        "ISO Certificate Non IAF 27001",
+        "ISO Certificate Non IAF 27001",
+        "ISO Certificate Non IAF 13485",
+        "ISO Certificate Non IAF 13485",
+        "ISO Certificate Non IAF 20000-1",
+        "ISO Certificate Non IAF 50001",
+        "ISO Certificate Non IAF 21001",
+        "ISO Certificate Non IAF GMP",
+        "ISO Certificate Non IAF GAP",
+        "ISO Certificate Non IAF FDA",
+        "ISO Certificate Non IAF HALAL",
+        "ISO Certificate Non IAF ORGANIC",
+        "ISO Certificate Non IAF FSSC",
+        "ISO Certificate Non IAF FSC",
+        "ISO Certificate Non IAF BIFMA",
+        "ISO Certificate Non IAF CE",
+        "ISO Certificate Non IAF HACCP",
+        "ISO Certificate Non IAF GHP",
+        "ISO Certificate Non IAF AIOTA",
+        "ISO Certificate Non IAF GREEN GUARD",
+        "ISO Certificate Non IAF SEDEX",
+        "ISO Certificate Non IAF WHO-GMP",
+        "ISO Certificate Non IAF BRC",
+        "ISO Certificate Non IAF VEGAN",
+        "ISO Certificate Non IAF SA 8000",
+        "ISO Certificate Non IAF SA CMMI LEVEL 3",
+        "ISO Certificate Non IAF SA CMMI LEVEL 5",
+        "ISO Certificate Non IAF SA GO GREEN",
+        "ISO Certificate Non IAF SA PCMM 5",
+        "ISO Certificate Non IAF SA RIOS",
+        "ISO Certificate Non IAF SA ROHS",
+        "ISO Certificate Non IAF SA IEC 17020",
+        "ISO Certificate Non IAF SA GFSI",
+        "ISO Certificate Non IAF SA GMO",
+        "ISO Certificate Non IAF SA 17025-2017",
+        "ISO Certificate Non IAF Others",
+      ],
+      "Company Incorporation": [
+        "OPC Private Limited Company Incorporation",
+        "Private Limited Company Incorporation",
+        "LLP Company Incorporation",
+      ],
+      "Organization DSC": [
+        "Organization DSC Only Signature With 1 Year Validity",
+        "Organization DSC Only Signature With 2 Year Validity",
+        "Organization DSC Only Signature With 3 Year Validity",
+        "Organization DSC Only Encryption With 1 Year Validity",
+        "Organization DSC Only Encryption With 2 Year Validity",
+        "Organization DSC Only Encryption With 3 Year Validity",
+        "Organization DSC Combo With 1 Year Validity",
+        "Organization DSC Combo With 2 Year Validity",
+        "Organization DSC Combo With 3 Year Validity"
+      ],
+      "Director DSC": [
+        "Director DSC Only Signature With 1 Year Validity",
+        "Director DSC Only Signature With 2 Year Validity",
+        "Director DSC Only Signature With 3 Year Validity",
+        "Director DSC Only Encryption With 1 Year Validity",
+        "Director DSC Only Encryption With 2 Year Validity",
+        "Director DSC Only Encryption With 3 Year Validity",
+        "Director DSC Combo With 1 Year Validity",
+        "Director DSC Combo With 2 Year Validity",
+        "Director DSC Combo With 3 Year Validity"
+      ],
+    };
+
+    // Function to find generalized service name
+    const getGeneralizedServiceName = (serviceName) => {
+      for (const [generalName, variants] of Object.entries(serviceMappings)) {
+        if (variants.some((variant) => serviceName.includes(variant))) {
+          return generalName;
+        }
+      }
+      return serviceName; // Return as-is if no match
+    };
+
+    // Flatten the services with their payment amounts and generalize names
+    const servicesWithAmounts = bookingData.services.map((service) => ({
+      serviceName: getGeneralizedServiceName(service.serviceName),
+      totalPaymentWGST: service.totalPaymentWGST,
+    }));
+
+    let totalBookingAmount = 0;
+    let isMatured = false;
+
+    // Check if any generalized service matches the offeredServices and accumulate booking amounts
+    servicesWithAmounts.forEach((service) => {
+      if (projection.offeredServices.includes(service.serviceName)) {
+        isMatured = true; // Mark as matured if a match is found
+        totalBookingAmount += service.totalPaymentWGST; // Add to total amount
+      }
+    });
+
+    // Update the main projection document
+    if (isMatured) {
+      projection.isPreviousMaturedCase = true;
+      projection.bookingAmount = totalBookingAmount;
+    }
+
+    // Update history entries if applicable
+    if (projection.history && projection.history.length > 0) {
+      projection.history.forEach((historyEntry) => {
+        let historyTotalBookingAmount = 0;
+        let historyMatured = false;
+
+        servicesWithAmounts.forEach((service) => {
+          if (historyEntry.data.offeredServices.includes(service.serviceName)) {
+            historyMatured = true;
+            historyTotalBookingAmount += service.totalPaymentWGST;
+          }
+        });
+
+        if (historyMatured) {
+          historyEntry.data.isPreviousMaturedCase = true;
+          historyEntry.data.bookingAmount = historyTotalBookingAmount;
+        }
+      });
+    }
+    await projection.save();
+
+    res.status(200).json({ result: true, message: "Projection updated successfully" });
+
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      result: false,
+      message: "Error updating matured case status",
+    });
+  }
+});
+
+
 //  *****************************************************************  DELETE REQUESTS OF BOOKINGS *****************************************************************
-
-
 // Request to Delete a booking
 // router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
 //   try {
