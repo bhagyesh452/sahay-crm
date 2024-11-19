@@ -2356,7 +2356,7 @@ router.get("/employees-new/:ename", async (req, res) => {
       bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
     }));
 
-    const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData];
+    const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData, ...forwardedData];
     // Count documents for each category
     const [notInterestedCount, interestedCount, underdocsCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
