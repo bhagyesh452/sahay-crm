@@ -291,7 +291,7 @@ function NewProjectionDialog({
             bdeName: isFilledFromTeamLeads ? selectedBde : (employeeName || projectionData.ename),
             bdmName: selectedBdm ? selectedBdm : (isFilledFromTeamLeads || projectionData) ? (employeeName || projectionData.ename) : employeeName,
             caseType: isFilledFromTeamLeads ? "Received" : "NotForwarded",
-            isPreviousMaturedCase: companyStatus === "Matured" ? true : false
+            // isPreviousMaturedCase: companyStatus === "Matured" ? true : false
         };
 
         if (offeredServices.length === 0) {
@@ -366,7 +366,7 @@ function NewProjectionDialog({
             bdmName: !selectedBdm ? projectionData.bdmName : selectedBdm,
             remarks: remarks,
             caseType: isFilledFromTeamLeads ? "Received" : "NotForwarded",
-            isPreviousMaturedCase: companyStatus === "Matured" ? true : false
+            // isPreviousMaturedCase: companyStatus === "Matured" ? true : false
         };
 
         if (offeredServices.length === 0) {
@@ -594,7 +594,7 @@ function NewProjectionDialog({
                     </div>
 
                     <div>
-                        <input type="checkbox" name="amount with gst" id="amount with gst" onChange={handleAmountWithGst} checked={isCheckedAmountWithGst} disabled={viewProjection || (!offeredPrice && !expectedPrice)} />
+                        <input type="checkbox" name="amount with gst" id="amount with gst" onChange={handleAmountWithGst} checked={isCheckedAmountWithGst} disabled={viewProjection || (!offeredPrice || !expectedPrice)} />
                         <label for="amount with gst" className='ms-1'>With GST (18%)</label>
                     </div>
 

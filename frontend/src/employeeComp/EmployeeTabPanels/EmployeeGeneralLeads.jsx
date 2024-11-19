@@ -52,7 +52,8 @@ function EmployeeGeneralLeads({
     setActiveFilterField,
     activeFilterFields,
     setActiveFilterFields,
-    setGeneralDataCount
+    setGeneralDataCount,
+    openingBackdrop
 }) {
 
     const [companyName, setCompanyName] = useState("");
