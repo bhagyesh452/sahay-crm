@@ -1117,38 +1117,46 @@ router.post(`/rejectedrequestdonebybdm`, async (req, res) => {
 
 router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
   const { data, name } = req.body;
-  //console.log("data", data, name)
+  console.log("data", data, name);
+
   try {
     const updatePromises = data.map(async (company) => {
       const uploadDate = company.UploadDate === '$AssignDate' ? new Date() : company.UploadDate;
+
+      // Update the company in CompanyModel
       const response = await CompanyModel.findByIdAndUpdate(company._id, {
         ...company,
         UploadDate: uploadDate, // Set UploadDate to current date if it was '$AssignDate'
-        bdmAcceptStatus: "Forwarded",
+        bdmAcceptStatus: "Pending",
         bdmName: name,
         bdeForwardDate: new Date(),
-        bdeOldStatus: company.Status
+        bdeOldStatus: company.Status,
       });
 
-      const response2 = await TeamLeadsModel.create({
-        ...company,
-        _id: company._id,
-        bdmName: name,
-        bdeForwardDate: new Date()
-      });
-      //console.log("response2", response2)
+      console.log("CompanyModel response:", response);
+
+      // Check if the company exists in TeamLeadsModel
+      const teamLeadResponse = await TeamLeadsModel.findOneAndUpdate(
+        { _id: company._id }, // Match the company by ID
+        {
+          ...company,
+          bdmName: name,
+          bdeForwardDate: new Date(),
+        },
+        { upsert: true, new: true } // Create new entry if not found, return the updated/new document
+      );
+
+      console.log("TeamLeadsModel response:", teamLeadResponse);
     });
 
-
-
     await Promise.all(updatePromises);
-    //console.log("Updated Data is :", updatePromises);
     res.status(200).json({ message: "Data created and updated successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // Floor manager received cases calculation :
 router.get("/floorManagerReceivedCases/:floorManagerName", async (req, res) => {

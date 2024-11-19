@@ -263,7 +263,7 @@ router.post("/update-undo-status/:id", async (req, res) => {
 
     // Check if `company.Status` is "Busy" and `previousStatus` matches the criteria
     if (
-      ["Busy" , "Not Picked Up" , "Not Interested" , "Junk"].includes(company.Status) &&
+      ["Busy" , "Not Picked Up" , "Not Interested" , "Junk" , "FollowUp"].includes(company.Status) &&
       ["Interested", "Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"].includes(previousStatus)
     ) {
       console.log("Undo skipped due to 'Busy' status.");
@@ -2427,8 +2427,6 @@ router.get("/employees-new/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 
 router.post("/postData", async (req, res) => {
