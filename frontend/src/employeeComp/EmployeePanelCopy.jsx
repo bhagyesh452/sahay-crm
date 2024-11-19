@@ -1010,7 +1010,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 <div>General</div>
                                                 <div className="no_badge">
-                                                    {generalDataCount}
+                                                    {generalDataCount || 0}
                                                 </div>
                                             </a>
                                         </li>
@@ -1024,7 +1024,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 <div>Under Docs/Info Review</div>
                                                 <div className="no_badge">
-                                                    {underDocsDataCount}
+                                                    {underDocsDataCount ? underDocsDataCount : 0 }
                                                 </div>
                                             </a>
                                         </li>
@@ -1038,7 +1038,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 Interested
                                                 <span className="no_badge">
-                                                    {interestedDataCount}
+                                                    {interestedDataCount || 0}
                                                 </span>
                                             </a>
                                         </li>
@@ -1053,7 +1053,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 Matured
                                                 <span className="no_badge">
-                                                    {maturedDataCount}
+                                                    {maturedDataCount || 0}
                                                 </span>
                                             </a>
                                         </li>
@@ -1069,7 +1069,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 >
                                                     Forwarded
                                                     <span className="no_badge">
-                                                        {forwardedDataCount}
+                                                        {forwardedDataCount || 0}
                                                     </span>
                                                 </a>
                                             </li>)
@@ -1085,7 +1085,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                             >
                                                 <div>Busy</div>
                                                 <div className="no_badge">
-                                                    {busyDataCount}
+                                                    {busyDataCount || 0}
                                                 </div>
                                             </a>
                                         </li>
