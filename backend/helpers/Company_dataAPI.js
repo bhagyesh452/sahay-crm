@@ -203,40 +203,6 @@ router.post("/update-status/:id", async (req, res) => {
   }
 });
 
-// router.post("/update-undo-status/:id", async (req, res) => {
-//   const { id } = req.params;
-//   const { newStatus, title, date, time, companyStatus, previousStatus ,ename} = req.body;
-
-
-//   try {
-//     // Find the company by ID in the CompanyModel to get the company details
-//     const company = await CompanyModel.findById(id);
-
-//     console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, previousStatus)
-
-//     //Update the status field in the CompanyModel
-
-//     await CompanyModel.findByIdAndUpdate(
-//       id,
-//       {
-//         $set: {
-//           Status: previousStatus, // Set the status back to the previous status
-//           lastActionDate: new Date(), // Update the last action date
-//           previousStatusToUndo:company.Status
-//         },
-//         $pull: {
-//           interestedInformation: { ename: ename }, // Remove the object with matching ename
-//         },
-//       },
-//       { new: true } // Return the updated document
-//     );
-
-//     res.status(200).json({ message: "Status updated successfully" });
-//   } catch (error) {
-//     console.error("Error updating status:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
 
 router.post("/update-undo-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -258,27 +224,46 @@ router.post("/update-undo-status/:id", async (req, res) => {
       const info = company.interestedInformation.find(info => info.ename === ename);
 
       if (info) {
-        // Check if both clientWhatsAppRequest and clientEmailRequest fields are empty
+        console.log("info:", JSON.stringify(info, null, 2)); // Log the full `info` object for debugging
+      
+        // Check if `interestedInServices` or `interestedButNotNow` fields are effectively empty
         const isWhatsAppEmpty =
-          !info.clientWhatsAppRequest || 
-          (!info.clientWhatsAppRequest.nextFollowUpDate && !info.clientWhatsAppRequest.remarks);
-
+          !info.interestedInServices ||
+          (Array.isArray(info.interestedInServices.servicesPitched) &&
+            info.interestedInServices.servicesPitched.length === 0 &&
+            Array.isArray(info.interestedInServices.servicesInterestedIn) &&
+            info.interestedInServices.servicesInterestedIn.length === 0 &&
+            !info.interestedInServices.remarks 
+            && !info.interestedInServices.nextFollowUpDate 
+            && !info.interestedInServices.offeredPrice
+          );
+      
         const isEmailEmpty =
-          !info.clientEmailRequest || 
-          (!info.clientEmailRequest.nextFollowUpDate && !info.clientEmailRequest.remarks);
-
+          !info.interestedButNotNow ||
+          (Array.isArray(info.interestedButNotNow.servicesPitched) &&
+            info.interestedButNotNow.servicesPitched.length === 0 &&
+            Array.isArray(info.interestedButNotNow.servicesInterestedIn) &&
+            info.interestedButNotNow.servicesInterestedIn.length === 0 &&
+            !info.interestedButNotNow.remarks
+            && !info.interestedButNotNow.nextFollowUpDate 
+            && !info.interestedButNotNow.offeredPrice);
+      
+        console.log("isWhatsAppEmpty:", isWhatsAppEmpty); // Log result of WhatsApp check
+        console.log("isEmailEmpty:", isEmailEmpty); // Log result of Email check
+      
         if (isWhatsAppEmpty && isEmailEmpty) {
           // Return an error if both fields are empty
-          return res.status(400).json({ 
-            message: "Please update clientWhatsAppRequest or clientEmailRequest fields before undoing the status." 
+          return res.status(400).json({
+            message:
+              "Please ensure that either 'interestedInServices' or 'interestedButNotNow' fields are filled before undoing the status.",
           });
         }
       }
-    }
+    }      
 
     // Check if `company.Status` is "Busy" and `previousStatus` matches the criteria
     if (
-      ["Busy" , "Not Picked Up" , "Not Interested" , "Junk"].includes(company.Status) &&
+      ["Busy" , "Not Picked Up" , "Not Interested" , "Junk" , "FollowUp"].includes(company.Status) &&
       ["Interested", "Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"].includes(previousStatus)
     ) {
       console.log("Undo skipped due to 'Busy' status.");
@@ -303,8 +288,8 @@ router.post("/update-undo-status/:id", async (req, res) => {
       if (index !== -1) {
         // Prepare the update object to unset specific fields
         const updateQuery = {};
-        updateQuery[`interestedInformation.${index}.clientWhatsAppRequest`] = "";
-        updateQuery[`interestedInformation.${index}.clientEmailRequest`] = "";
+        updateQuery[`interestedInformation.${index}.interestedInServices`] = "";
+        updateQuery[`interestedInformation.${index}.interestedButNotNow`] = "";
 
         // Update the company document with specific fields unset
         await CompanyModel.findByIdAndUpdate(
@@ -347,6 +332,8 @@ router.post("/update-undo-status/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 
 router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   const { ename } = req.params;
@@ -2369,7 +2356,7 @@ router.get("/employees-new/:ename", async (req, res) => {
       bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
     }));
 
-    const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData];
+    const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData, ...forwardedData];
     // Count documents for each category
     const [notInterestedCount, interestedCount, underdocsCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
@@ -2440,8 +2427,6 @@ router.get("/employees-new/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 
 router.post("/postData", async (req, res) => {

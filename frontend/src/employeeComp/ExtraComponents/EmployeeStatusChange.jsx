@@ -11,6 +11,8 @@ import { FaCheck } from "react-icons/fa6";
 import { options } from "../../components/Options.js";
 import Select from "react-select";
 import EmployeeInterestedInformationDialog from "./EmployeeInterestedInformationDialog.jsx";
+import { FaWhatsapp } from "react-icons/fa";
+import { MdOutlineEmail } from "react-icons/md";
 
 const EmployeeStatusChange = ({
   companyName,
@@ -460,7 +462,8 @@ const EmployeeStatusChange = ({
                 }}
                 href="#"
               >
-                Docs/Info Sent (W)
+                Docs/Info Sent (W) 
+                {/* <FaWhatsapp className="ml-1" /> */}
               </button>
             </li>
             <li>
@@ -477,6 +480,7 @@ const EmployeeStatusChange = ({
                 href="#"
               >
                 Docs/Info Sent (E)
+                {/* <MdOutlineEmail className="ml-1" /> */}
               </button>
             </li>
             <li>
@@ -493,6 +497,8 @@ const EmployeeStatusChange = ({
                 href="#"
               >
                 Docs/Info Sent (W&E)
+                {/* <FaWhatsapp className="ml-1" />
+                <MdOutlineEmail className="ml-1" /> */}
               </button>
             </li>
           </ul>

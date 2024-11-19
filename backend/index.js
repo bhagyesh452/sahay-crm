@@ -2534,28 +2534,37 @@ app.get('/api/generate-pdf-client', async (req, res) => {
 
 app.post("/api/hrlogin", async (req, res) => {
   const { email, password } = req.body;
-  //console.log(email,password)
-  const user = await adminModel.findOne({
-    email: email,
-    password: password,
-  });
-  //console.log(user)M
-  if (!user) {
-    // If user is not found
-    return res.status(401).json({ message: "Invalid email or password" });
-  } else if (user.designation !== "HR") {
-    // If designation is incorrect
-    return res.status(401).json({ message: "Designation is incorrect" });
-  } else {
-    // If credentials are correct
+
+  try {
+    // Fetch user with required fields
+    const user = await adminModel
+      .findOne({ email: email, password: password })
+      .select("email password designation ename")
+      .lean();
+
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Check if the designation is "HR"
+    if (user.designation !== "HR") {
+      return res.status(401).json({ message: "Designation is incorrect" });
+    }
+
+    // Generate JWT token
     const hrToken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
-    //console.log(bdmToken)
+
+    // Send success response
     res.status(200).json({ hrToken, userId: user._id, ename: user.ename });
-    //socketIO.emit("Employee-login");
+  } catch (error) {
+    console.error("Error in HR Login:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 
 /**************************************Employee Edit API - HR********************************************************************/
