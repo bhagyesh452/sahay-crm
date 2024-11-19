@@ -3716,13 +3716,19 @@ router.put("/update-matured-case-in-projection-for-more-bookings/:companyName", 
       return serviceName; // Return as-is if no match
     };
 
-    // Flatten the services with their payment amounts and generalize names
-    const servicesWithAmounts = bookingData.moreBookings.flatMap((booking) =>
-      booking.services.map((service) => ({
+    // Flatten and generalize services from both `services` and `moreBookings`
+    const servicesWithAmounts = [
+      ...(bookingData.services || []).map((service) => ({
         serviceName: getGeneralizedServiceName(service.serviceName),
         totalPaymentWGST: service.totalPaymentWGST,
-      }))
-    );
+      })),
+      ...(bookingData.moreBookings || []).flatMap((booking) =>
+        booking.services.map((service) => ({
+          serviceName: getGeneralizedServiceName(service.serviceName),
+          totalPaymentWGST: service.totalPaymentWGST,
+        }))
+      ),
+    ];
 
     let totalBookingAmount = 0;
     let isMatured = false;
@@ -3760,63 +3766,6 @@ router.put("/update-matured-case-in-projection-for-more-bookings/:companyName", 
         }
       });
     }
-
-
-    // Function to find generalized service name
-    // const getGeneralizedServiceName = (serviceName) => {
-    //   for (const [generalName, variants] of Object.entries(serviceMappings)) {
-    //     if (variants.some((variant) => serviceName.includes(variant))) {
-    //       return generalName;
-    //     }
-    //   }
-    //   return serviceName; // Return as-is if no match
-    // };
-
-    // // Flatten the services with their payment amounts and generalize names
-    // const servicesWithAmounts = bookingData.moreBookings.flatMap((booking) =>
-    //   booking.services.map((service) => ({
-    //     serviceName: getGeneralizedServiceName(service.serviceName),
-    //     totalPaymentWGST: service.totalPaymentWGST,
-    //   }))
-    // );
-
-    // let totalBookingAmount = 0;
-    // let isMatured = false;
-
-    // // Check if any generalized service matches the offeredServices and accumulate booking amounts
-    // servicesWithAmounts.forEach((service) => {
-    //   if (projection.offeredServices.includes(service.serviceName)) {
-    //     isMatured = true; // Mark as matured if a match is found
-    //     totalBookingAmount += service.totalPaymentWGST; // Add to total amount
-    //   }
-    // });
-
-    // // Update the main projection document
-    // if (isMatured) {
-    //   projection.isPreviousMaturedCase = true;
-    //   projection.bookingAmount = (projection.bookingAmount || 0) + totalBookingAmount;
-    // }
-
-    // // Update history entries if applicable
-    // if (projection.history && projection.history.length > 0) {
-    //   projection.history.forEach((historyEntry) => {
-    //     let historyTotalBookingAmount = 0;
-    //     let historyMatured = false;
-
-    //     servicesWithAmounts.forEach((service) => {
-    //       if (historyEntry.data.offeredServices.includes(service.serviceName)) {
-    //         historyMatured = true;
-    //         historyTotalBookingAmount += service.totalPaymentWGST;
-    //       }
-    //     });
-
-    //     if (historyMatured) {
-    //       historyEntry.data.isPreviousMaturedCase = true;
-    //       historyEntry.data.bookingAmount =
-    //         (historyEntry.data.bookingAmount || 0) + historyTotalBookingAmount;
-    //     }
-    //   });
-    // }
 
     // Save the updated projection document
     await projection.save();
