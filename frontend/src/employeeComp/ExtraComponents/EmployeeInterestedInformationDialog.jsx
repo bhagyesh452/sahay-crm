@@ -95,7 +95,7 @@ function EmployeeInterestedInformationDialog({
             remarks: prefilledData?.clientWhatsAppRequest?.remarks || '',
             date: prefilledData?.clientWhatsAppRequest?.date
                 ? new Date(prefilledData.clientWhatsAppRequest.date).toISOString().split('T')[0]
-                : ''
+                : new Date().toISOString().split('T')[0], // Default to today
         },
         clientEmailRequest: {
             nextFollowUpDate: prefilledData?.clientEmailRequest?.nextFollowUpDate
@@ -104,7 +104,7 @@ function EmployeeInterestedInformationDialog({
             remarks: prefilledData?.clientEmailRequest?.remarks || '',
             date: prefilledData?.clientEmailRequest?.date
                 ? new Date(prefilledData.clientEmailRequest.date).toISOString().split('T')[0]
-                : ''
+                : new Date().toISOString().split('T')[0], // Default to today
 
         },
         interestedInServices: {
@@ -117,7 +117,7 @@ function EmployeeInterestedInformationDialog({
             remarks: prefilledData?.interestedInServices?.remarks || '',
             date: prefilledData?.interestedInServices?.date
                 ? new Date(prefilledData.interestedInServices.date).toISOString().split('T')[0]
-                : ''
+                : new Date().toISOString().split('T')[0], // Default to today
         },
         interestedButNotNow: {
             servicesPitched: mapServicesToSelectOptions(prefilledData?.interestedButNotNow?.servicesPitched || []),
@@ -129,7 +129,7 @@ function EmployeeInterestedInformationDialog({
             remarks: prefilledData?.interestedButNotNow?.remarks || '',
             date: prefilledData?.interestedButNotNow?.date
                 ? new Date(prefilledData.interestedButNotNow.date).toISOString().split('T')[0]
-                : ''
+                : new Date().toISOString().split('T')[0], // Default to today
         },
         mainQuestion: [], // This tracks the Yes/No responses
         ename: ename,
@@ -196,51 +196,72 @@ function EmployeeInterestedInformationDialog({
 
     const handleSubmitToBackend = async () => {
         const DT = new Date();
-        const date = DT.toLocaleDateString();
-        const time = DT.toLocaleTimeString();
-        const payload = {
-            ...formData,
-            "Company Name": companyName,
-            ename: ename
-        }
-        try {
-            const response = await axios.post(`${secretKey}/company-data/company/${companyName}/interested-info`,
-                {
-                    newInterestedInfo: payload, // The formData object
-                    status: status, // Include the company status
-                    id: id,
-                    ename: ename,
-                    date: date,
-                    time: time,
+        const updatedFormData = { ...formData };
 
+        // Iterate through each key in the formData
+        Object.keys(updatedFormData).forEach((key) => {
+            if (typeof updatedFormData[key] === "object" && !Array.isArray(updatedFormData[key])) {
+                // Check if fields (other than 'date') have been modified
+                const hasDataChanged = Object.entries(updatedFormData[key]).some(([subKey, value]) => {
+                    return subKey !== "date" && value !== "" && value !== null;
+                });
 
+                // Update 'date' only if changes exist; otherwise, retain the section as is
+                if (hasDataChanged) {
+                    updatedFormData[key].date = new Date().toISOString().split("T")[0];
+                } else if (!hasDataChanged) {
+                    delete updatedFormData[key].date; // Remove 'date' field but retain other data in the section
                 }
-            );
+            }
+        });
+
+        // Create payload without excluding entire sections
+        const payload = {
+            ename,
+            "Company Name": companyName,
+            ...updatedFormData, // Send all sections including unchanged ones
+        };
+
+        console.log("payload", payload)
+
+        try {
+            const response = await axios.post(`${secretKey}/company-data/company/${companyName}/interested-info`, {
+                newInterestedInfo: payload,
+                status,
+                id,
+                ename,
+                date: DT.toLocaleDateString(),
+                time: DT.toLocaleTimeString(),
+            });
+
             if (response.status === 200) {
-                Swal.fire('Data saved successfully');
-                // Manually hide the modal
+                Swal.fire("Data saved successfully");
+
+                // Handle modal and UI cleanup
                 const modalElement = document.getElementById(modalId);
                 modalElement.classList.remove("show");
                 modalElement.setAttribute("aria-hidden", "true");
                 modalElement.style.display = "none";
 
-                // Remove the backdrop if it exists
-                const modalBackdrop = document.querySelector('.modal-backdrop');
+                const modalBackdrop = document.querySelector(".modal-backdrop");
                 if (modalBackdrop) {
                     modalBackdrop.parentNode.removeChild(modalBackdrop);
                 }
 
-                // Cleanup: Remove any leftover 'modal-open' classes and inline styles from body
-                document.body.classList.remove('modal-open');
-                document.body.style.removeProperty('overflow');
-                document.body.style.removeProperty('padding-right');
-                handleClearInterestedInformation()
-                refetch()
+                document.body.classList.remove("modal-open");
+                document.body.style.removeProperty("overflow");
+                document.body.style.removeProperty("padding-right");
+
+                handleClearInterestedInformation();
+                refetch();
             }
         } catch (error) {
-            console.error('Error saving data:', error);
+            console.error("Error saving data:", error);
         }
     };
+
+
+
 
     // Reset form data to initial state
     const handleClearInterestedInformation = () => {
@@ -404,6 +425,7 @@ function EmployeeInterestedInformationDialog({
         return 0;
     };
 
+    console.log("formData", formData);
 
     //console.log("visiblequestions", visibleQuestions)
     return (<>
@@ -424,78 +446,202 @@ function EmployeeInterestedInformationDialog({
                             <div className="company_name_int-_mod">
                                 {companyName}
                             </div>
-                            <div className="company_name_int-_mod">
+                            {/* <div className="company_name_int-_mod">
                                 {prefilledData?.updatedAt ? formatDatePro(prefilledData?.updatedAt) : ""}
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="accordion" id="accordionQue">
+                            {/* <div className="accordion-part">
+                          
+                                <div className="d-flex justify-content-end align-items-center mb-2">
+                                    <span className="part-date">
+                                        {visibleQuestions["q2"]
+                                            ? formatDatePro(prefilledData?.clientEmailRequest?.date)
+                                            : visibleQuestions["q1"]
+                                                ? formatDatePro(prefilledData?.clientWhatsAppRequest?.date)
+                                                : ""}
+                                    </span>
+                                </div>
+                            </div> */}
                             {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) &&
-                                (<div className="accordion-item int-accordion-item">
-                                    <div className="accordion-header p-2" id="accordionQueOne">
-                                        <div className="d-flex align-items-center justify-content-between"  >
-                                            <div className="int-que mr-2">
-                                            <div className="question-container">
-                                                    <span>{calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review!</span>
-                                                    <span className="date">{formData.clientWhatsAppRequest.date || "No date available"}</span>
-                                                </div>
-                                                {/* {calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review! */}
+                                (
+                                    <>
+                                        <div className="accordion-part">
+                                            <div className="d-flex justify-content-end align-items-center mb-2">
+                                                <span className="part-date">
+                                                    {prefilledData?.clientWhatsAppRequest?.date ? formatDatePro(prefilledData?.clientWhatsAppRequest?.date) :""}
+                                                </span>
                                             </div>
-                                            {(forView) ? (
-                                                <div className="custom-toggle d-flex align-items-center int-opt">
-                                                    <div className="custom-Yes-No d-flex align-items-center int-opt">
-                                                        <div
-                                                            className="yes-no"
-                                                            onClick={() => handleYesClickNew("q1")}
-                                                        >
-                                                            <button className="yes-no-alias">
-                                                                {visibleQuestions["q1"] ? <FaChevronUp /> : <FaChevronDown />}
-                                                            </button>
+                                        </div>
+                                        <div className="accordion-item int-accordion-item">
+                                            <div className="accordion-header p-2" id="accordionQueOne">
+                                                <div className="d-flex align-items-center justify-content-between"  >
+                                                    <div className="int-que mr-2">
+                                                        <div className="question-container">
+                                                            <span>{calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review!</span>
+                                                            {/* <span className="date">{formatDatePro(prefilledData?.clientWhatsAppRequest?.date) || ""}</span> */}
+                                                        </div>
+                                                        {/* {calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review! */}
+                                                    </div>
+                                                    {(forView) ? (
+                                                        <div className="custom-toggle d-flex align-items-center int-opt">
+                                                            <div className="custom-Yes-No d-flex align-items-center int-opt">
+                                                                <div
+                                                                    className="yes-no"
+                                                                    onClick={() => handleYesClickNew("q1")}
+                                                                >
+                                                                    <button className="yes-no-alias">
+                                                                        {visibleQuestions["q1"] ? <FaChevronUp /> : <FaChevronDown />}
+                                                                    </button>
 
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="custom-Yes-No d-flex align-items-center int-opt">
+                                                            <div className="yes-no"
+                                                                onClick={() => handleYesClick("q1")}>
+                                                                <input
+                                                                    type="radio"
+                                                                    name="rGroup"
+                                                                    value="1"
+                                                                    id="r1"
+                                                                //checked={formData.clientWhatsAppRequest.nextFollowUpDate && formData.clientWhatsAppRequest.remarks ? true : false}  
+                                                                />
+                                                                <label
+                                                                    className="yes-no-alias"
+                                                                    for="r1"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#collapseOneQue"
+                                                                    aria-expanded="true"
+                                                                    aria-controls="collapseOneQue"
+                                                                >
+                                                                    <div className="yes-alias-i"><FaCheck /></div>
+                                                                    <div className="ml-1">Yes</div>
+                                                                </label>
+                                                            </div>
+                                                            <div className="yes-no ml-1" onClick={() => handleNoClick("q1")}>
+                                                                <input type="radio" name="rGroup" value="2" id="r2" />
+                                                                <label className="yes-no-alias" for="r2">
+                                                                    <div className="no-alias-i"><CgClose /></div>
+                                                                    <div className="ml-1">No</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                </div>
+                                            </div>
+                                            {visibleQuestions["q1"] &&
+                                                (
+                                                    <div
+                                                        id="collapseOneQue"
+                                                        className="accordion-collapse collapse show"
+                                                        aria-labelledby="accordionQueOne"
+                                                        data-bs-parent="#accordionQue"
+                                                    >
+                                                        <div className="accordion-body int-sub-que">
+                                                            <div className="row">
+                                                                <div className="col-6">
+                                                                    <div class="form-group mt-2 mb-2">
+                                                                        <label for="date">Next Follow-Up Date ?</label>
+                                                                        <input
+                                                                            type="date"
+                                                                            class="form-control mt-1"
+                                                                            id="date"
+                                                                            value={formData.clientWhatsAppRequest.nextFollowUpDate}
+                                                                            onChange={(e) => handleInputChange('clientWhatsAppRequest', 'nextFollowUpDate', e.target.value)}
+                                                                            disabled={forView}
+
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col-6">
+                                                                    <div class="form-group mt-2 mb-2">
+                                                                        <label for="text">Remark Box: </label>
+                                                                        <input type="text"
+                                                                            class="form-control mt-1"
+                                                                            placeholder="Add Remarks"
+                                                                            id="text"
+                                                                            value={formData.clientWhatsAppRequest.remarks}
+                                                                            onChange={(e) => handleInputChange('clientWhatsAppRequest', 'remarks', e.target.value)}
+                                                                            disabled={forView}
+
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ) : (
-                                                <div className="custom-Yes-No d-flex align-items-center int-opt">
-                                                    <div className="yes-no"
-                                                        onClick={() => handleYesClick("q1")}>
-                                                        <input
-                                                            type="radio"
-                                                            name="rGroup"
-                                                            value="1"
-                                                            id="r1"
-                                                        //checked={formData.clientWhatsAppRequest.nextFollowUpDate && formData.clientWhatsAppRequest.remarks ? true : false}  
-                                                        />
-                                                        <label
-                                                            className="yes-no-alias"
-                                                            for="r1"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#collapseOneQue"
-                                                            aria-expanded="true"
-                                                            aria-controls="collapseOneQue"
-                                                        >
-                                                            <div className="yes-alias-i"><FaCheck /></div>
-                                                            <div className="ml-1">Yes</div>
-                                                        </label>
-                                                    </div>
-                                                    <div className="yes-no ml-1" onClick={() => handleNoClick("q1")}>
-                                                        <input type="radio" name="rGroup" value="2" id="r2" />
-                                                        <label className="yes-no-alias" for="r2">
-                                                            <div className="no-alias-i"><CgClose /></div>
-                                                            <div className="ml-1">No</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            )}
-
+                                                )
+                                            }
+                                        </div>
+                                    </>)}
+                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.clientEmailRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientEmailRequest.remarks))) && (
+                                <>
+                                    <div className="accordion-part">
+                                        <div className="d-flex justify-content-end align-items-center mb-2">
+                                            <span className="part-date">
+                                                {prefilledData?.clientEmailRequest?.date ? formatDatePro(prefilledData?.clientEmailRequest?.date) : ""}
+                                            </span>
                                         </div>
                                     </div>
-                                    {visibleQuestions["q1"] &&
-                                        (
-                                            <div
-                                                id="collapseOneQue"
+                                    <div className="accordion-item int-accordion-item">
+                                        <div className="accordion-header p-2" id="accordionQuetwo">
+                                            <div className="d-flex align-items-center justify-content-between"  >
+                                                <div className="int-que">
+                                                    <div className="question-container">
+                                                        <span>{calculateQuestionNumber("q2")}. Client asked to send documents/information via email for review.</span>
+                                                        {/* <span className="date">{formatDatePro(prefilledData?.clientEmailRequest?.date) || ""}</span> */}
+                                                    </div>
+                                                </div>
+                                                {forView ? (
+                                                    <div className="custom-toggle d-flex align-items-center int-opt">
+                                                        <div className="custom-Yes-No d-flex align-items-center int-opt">
+                                                            <div
+                                                                className="yes-no"
+                                                                onClick={() => handleYesClickNew("q2")}
+                                                            >
+                                                                <button className="yes-no-alias">
+                                                                    {visibleQuestions["q2"] ? <FaChevronUp /> : <FaChevronDown />}
+                                                                </button>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="custom-Yes-No d-flex align-items-center int-opt">
+                                                        <div className="yes-no" onClick={() => handleYesClick("q2")}>
+                                                            <input type="radio" name="rGroup2" value="3" id="r3" />
+                                                            <label
+                                                                className="yes-no-alias"
+                                                                for="r3"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#collapsetwoQue"
+                                                                aria-expanded="true"
+                                                                aria-controls="collapsetwoQue"
+                                                            >
+                                                                <div className="yes-alias-i"><FaCheck /></div>
+                                                                <div className="ml-1">Yes</div>
+                                                            </label>
+                                                        </div>
+                                                        <div className="yes-no ml-1" onClick={() => handleNoClick("q2")}>
+                                                            <input type="radio" name="rGroup2" value="4" id="r4" />
+                                                            <label className="yes-no-alias" for="r4">
+                                                                <div className="no-alias-i"><CgClose /></div>
+                                                                <div className="ml-1">No</div>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        {visibleQuestions["q2"] &&
+                                            (<div
+                                                id="collapsetwoQue"
                                                 className="accordion-collapse collapse show"
-                                                aria-labelledby="accordionQueOne"
+                                                aria-labelledby="accordionQuetwo"
                                                 data-bs-parent="#accordionQue"
                                             >
                                                 <div className="accordion-body int-sub-que">
@@ -503,12 +649,11 @@ function EmployeeInterestedInformationDialog({
                                                         <div className="col-6">
                                                             <div class="form-group mt-2 mb-2">
                                                                 <label for="date">Next Follow-Up Date ?</label>
-                                                                <input
-                                                                    type="date"
+                                                                <input type="date"
                                                                     class="form-control mt-1"
                                                                     id="date"
-                                                                    value={formData.clientWhatsAppRequest.nextFollowUpDate}
-                                                                    onChange={(e) => handleInputChange('clientWhatsAppRequest', 'nextFollowUpDate', e.target.value)}
+                                                                    value={formData.clientEmailRequest.nextFollowUpDate}
+                                                                    onChange={(e) => handleInputChange('clientEmailRequest', 'nextFollowUpDate', e.target.value)}
                                                                     disabled={forView}
 
                                                                 />
@@ -521,8 +666,8 @@ function EmployeeInterestedInformationDialog({
                                                                     class="form-control mt-1"
                                                                     placeholder="Add Remarks"
                                                                     id="text"
-                                                                    value={formData.clientWhatsAppRequest.remarks}
-                                                                    onChange={(e) => handleInputChange('clientWhatsAppRequest', 'remarks', e.target.value)}
+                                                                    value={formData.clientEmailRequest.remarks}
+                                                                    onChange={(e) => handleInputChange('clientEmailRequest', 'remarks', e.target.value)}
                                                                     disabled={forView}
 
                                                                 />
@@ -531,111 +676,45 @@ function EmployeeInterestedInformationDialog({
                                                     </div>
                                                 </div>
                                             </div>
-                                        )
-                                    }
-                                </div>)}
-                            {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.clientEmailRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientEmailRequest.remarks))) && (
-                                <div className="accordion-item int-accordion-item">
-                                    <div className="accordion-header p-2" id="accordionQuetwo">
-                                        <div className="d-flex align-items-center justify-content-between"  >
-                                            <div className="int-que">
-                                                <div className="question-container">
-                                                    <span>{calculateQuestionNumber("q2")}. Client asked to send documents/information via email for review.</span>
-                                                    <span className="date">{formData.clientEmailRequest.date || "No date available"}</span>
-                                                </div>
-                                            </div>
-                                            {forView ? (
-                                                <div className="custom-toggle d-flex align-items-center int-opt">
-                                                    <div className="custom-Yes-No d-flex align-items-center int-opt">
-                                                        <div
-                                                            className="yes-no"
-                                                            onClick={() => handleYesClickNew("q2")}
-                                                        >
-                                                            <button className="yes-no-alias">
-                                                                {visibleQuestions["q2"] ? <FaChevronUp /> : <FaChevronDown />}
-                                                            </button>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="custom-Yes-No d-flex align-items-center int-opt">
-                                                    <div className="yes-no" onClick={() => handleYesClick("q2")}>
-                                                        <input type="radio" name="rGroup2" value="3" id="r3" />
-                                                        <label
-                                                            className="yes-no-alias"
-                                                            for="r3"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#collapsetwoQue"
-                                                            aria-expanded="true"
-                                                            aria-controls="collapsetwoQue"
-                                                        >
-                                                            <div className="yes-alias-i"><FaCheck /></div>
-                                                            <div className="ml-1">Yes</div>
-                                                        </label>
-                                                    </div>
-                                                    <div className="yes-no ml-1" onClick={() => handleNoClick("q2")}>
-                                                        <input type="radio" name="rGroup2" value="4" id="r4" />
-                                                        <label className="yes-no-alias" for="r4">
-                                                            <div className="no-alias-i"><CgClose /></div>
-                                                            <div className="ml-1">No</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
                                             )}
-                                        </div>
                                     </div>
-                                    {visibleQuestions["q2"] &&
-                                        (<div
-                                            id="collapsetwoQue"
-                                            className="accordion-collapse collapse show"
-                                            aria-labelledby="accordionQuetwo"
-                                            data-bs-parent="#accordionQue"
-                                        >
-                                            <div className="accordion-body int-sub-que">
-                                                <div className="row">
-                                                    <div className="col-6">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="date">Next Follow-Up Date ?</label>
-                                                            <input type="date"
-                                                                class="form-control mt-1"
-                                                                id="date"
-                                                                value={formData.clientEmailRequest.nextFollowUpDate}
-                                                                onChange={(e) => handleInputChange('clientEmailRequest', 'nextFollowUpDate', e.target.value)}
-                                                                disabled={forView}
+                                </>
+                            )}
 
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-6">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="text">Remark Box: </label>
-                                                            <input type="text"
-                                                                class="form-control mt-1"
-                                                                placeholder="Add Remarks"
-                                                                id="text"
-                                                                value={formData.clientEmailRequest.remarks}
-                                                                onChange={(e) => handleInputChange('clientEmailRequest', 'remarks', e.target.value)}
-                                                                disabled={forView}
-
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        )}
-                                </div>)}
+                            <hr className="mb-2 mt-2" style={{ border: "1px solid #ddd" }} />
+                            {/* <div className="accordion-part">
+                                
+                                <div className="d-flex justify-content-end align-items-center mb-2">
+                                    <span className="part-date">
+                                        {visibleQuestions["q4"]
+                                            ? formatDatePro(prefilledData?.interestedButNotNow?.date)
+                                            : visibleQuestions["q3"]
+                                                ? formatDatePro(prefilledData?.interestedInServices?.date)
+                                                : ""}
+                                    </span>
+                                </div>
+                            </div> */}
                             {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.interestedInServices.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedInServices.remarks) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesPitched) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesInterestedIn) ||
-                                !isEmptyAnswer(formData.interestedInServices.offeredPrice))) && (<div className="accordion-item int-accordion-item">
+                                !isEmptyAnswer(formData.interestedInServices.offeredPrice))) && (
+                                    <>
+                                    <div className="accordion-part">
+                                            <div className="d-flex justify-content-end align-items-center mb-2">
+                                                <span className="part-date">
+                                                    {
+                                                     prefilledData?.interestedInServices?.date ?   formatDatePro(prefilledData?.interestedInServices?.date) :""
+                                                    }
+                                                </span>
+                                            </div>
+                                        </div>
+                                <div className="accordion-item int-accordion-item">
                                     <div className="accordion-header p-2" id="accordionQuethree">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                            <span>{calculateQuestionNumber("q3")}. Interested in one of our services</span>
-                                            <span className="date">{formData.interestedInServices.date || "No date available"}</span>
+                                                <span>{calculateQuestionNumber("q3")}. Interested in one of our services</span>
+                                                {/* <span className="date">{formatDatePro(prefilledData?.interestedInServices?.date) || ""}</span> */}
                                                 {/* {calculateQuestionNumber("q3")}. Interested in one of our services. */}
                                             </div>
                                             {forView ? (
@@ -787,165 +866,179 @@ function EmployeeInterestedInformationDialog({
                                                 </div>
                                             </div>
                                         </div>)}
-                                </div>)}
+                                </div>
+                                </>)}
                             {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.interestedButNotNow.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.remarks) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.servicesPitched) ||
                                 !isEmptyAnswer(formData.interestedButNotNow.servicesInterestedIn) ||
-                                !isEmptyAnswer(formData.interestedButNotNow.offeredPrice))) && (<div className="accordion-item int-accordion-item">
-                                    <div className="accordion-header p-2" id="accordionQueFour">
-                                        <div className="d-flex align-items-center justify-content-between"  >
-                                            <div className="int-que mr-2">
-                                            <span>{calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now.</span>
-                                            <span className="date">{formData.interestedButNotNow.date || "No date available"}</span>
-                                                {/* {calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now. */}
+                                !isEmptyAnswer(formData.interestedButNotNow.offeredPrice))) && (
+                                    <>
+                                        <div className="accordion-part">
+                                            <div className="d-flex justify-content-end align-items-center mb-2">
+                                                <span className="part-date">
+                                                    {
+                                                      prefilledData?.interestedButNotNow?.date?  formatDatePro(prefilledData?.interestedButNotNow?.date) :""
+                                                    }
+                                                </span>
                                             </div>
-                                            {forView ? (
-                                                <div className="custom-toggle d-flex align-items-center int-opt">
-                                                    <div className="custom-Yes-No d-flex align-items-center int-opt">
-                                                        <div
-                                                            className="yes-no"
-                                                            onClick={() => handleYesClickNew("q4")}
-                                                        >
-                                                            <button className="yes-no-alias">
-                                                                {visibleQuestions["q4"] ? <FaChevronUp /> : <FaChevronDown />}
-                                                            </button>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ) : (<div className="custom-Yes-No d-flex align-items-center int-opt">
-                                                <div className="yes-no" onClick={() => handleYesClick("q4")}>
-                                                    <input type="radio" name="rGroup4" value="7" id="r7" />
-                                                    <label
-                                                        className="yes-no-alias"
-                                                        for="r7"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseFourQue"
-                                                        aria-expanded="true"
-                                                        aria-controls="collapseFourQue">
-                                                        <div className="yes-alias-i"><FaCheck /></div>
-                                                        <div className="ml-1">Yes</div>
-                                                    </label>
-                                                </div>
-                                                <div className="yes-no ml-1" onClick={() => handleNoClick("q4")}>
-                                                    <input type="radio" name="rGroup4" value="8" id="r8" />
-                                                    <label className="yes-no-alias" for="r8">
-                                                        <div className="no-alias-i"><CgClose /></div>
-                                                        <div className="ml-1">No</div>
-                                                    </label>
-                                                </div>
-                                            </div>)}
-
                                         </div>
-                                    </div>
-                                    {visibleQuestions["q4"] && (
-                                        <div
-                                            id="collapseFourQue"
-                                            className="accordion-collapse collapse show"
-                                            aria-labelledby="accordionQueFour"
-                                            data-bs-parent="#accordionQue">
-                                            <div className="accordion-body int-sub-que">
-                                                <div className="row">
-                                                    <div className="col-6">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="date">Services Pitched:</label>
-                                                            {forView ? (<Select
-                                                                isMulti
-                                                                options={options}
-                                                                value={formData.interestedButNotNow.servicesPitched}
-                                                                onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesPitched', selectedOptions)}
-                                                                placeholder="Select Services..."
-                                                                isDisabled={forView}  // This will disable the select input
+                                        <div className="accordion-item int-accordion-item">
+                                            <div className="accordion-header p-2" id="accordionQueFour">
+                                                <div className="d-flex align-items-center justify-content-between"  >
+                                                    <div className="int-que mr-2">
+                                                        <span>{calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now.</span>
+                                                        {/* <span className="date">{formatDatePro(prefilledData?.interestedButNotNow?.date) || ""}</span> */}
+                                                        {/* {calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now. */}
+                                                    </div>
+                                                    {forView ? (
+                                                        <div className="custom-toggle d-flex align-items-center int-opt">
+                                                            <div className="custom-Yes-No d-flex align-items-center int-opt">
+                                                                <div
+                                                                    className="yes-no"
+                                                                    onClick={() => handleYesClickNew("q4")}
+                                                                >
+                                                                    <button className="yes-no-alias">
+                                                                        {visibleQuestions["q4"] ? <FaChevronUp /> : <FaChevronDown />}
+                                                                    </button>
 
-                                                            />) : (
-                                                                <Select
-                                                                    isMulti
-                                                                    options={options}
-                                                                    //value={formData.interestedButNotNow.servicesPitched}
-                                                                    onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesPitched', selectedOptions)}
-                                                                    placeholder="Select Services..."
-                                                                    isDisabled={forView}  // This will disable the select input
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (<div className="custom-Yes-No d-flex align-items-center int-opt">
+                                                        <div className="yes-no" onClick={() => handleYesClick("q4")}>
+                                                            <input type="radio" name="rGroup4" value="7" id="r7" />
+                                                            <label
+                                                                className="yes-no-alias"
+                                                                for="r7"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseFourQue"
+                                                                aria-expanded="true"
+                                                                aria-controls="collapseFourQue">
+                                                                <div className="yes-alias-i"><FaCheck /></div>
+                                                                <div className="ml-1">Yes</div>
+                                                            </label>
+                                                        </div>
+                                                        <div className="yes-no ml-1" onClick={() => handleNoClick("q4")}>
+                                                            <input type="radio" name="rGroup4" value="8" id="r8" />
+                                                            <label className="yes-no-alias" for="r8">
+                                                                <div className="no-alias-i"><CgClose /></div>
+                                                                <div className="ml-1">No</div>
+                                                            </label>
+                                                        </div>
+                                                    </div>)}
 
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-6">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="date">Services Interested In :</label>
-                                                            {forView ? (
-                                                                <Select
-                                                                    isMulti
-                                                                    options={options}
-                                                                    value={formData.interestedButNotNow.servicesInterestedIn}
-                                                                    onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesInterestedIn', selectedOptions)}
-                                                                    placeholder="Select Services..."
-                                                                    isDisabled={forView}  // This will disable the select input
-
-                                                                />) : (
-                                                                <Select
-                                                                    isMulti
-                                                                    options={options}
-                                                                    //value={formData.interestedButNotNow.servicesInterestedIn}
-                                                                    onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesInterestedIn', selectedOptions)}
-                                                                    placeholder="Select Services..."
-                                                                    isDisabled={forView}  // This will disable the select input
-
-                                                                />
-                                                            )
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="row">
-                                                    <div className="col-6">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="date">Offered Price: </label>
-                                                            <input
-                                                                type="text"
-                                                                class="form-control mt-1"
-                                                                placeholder="Offered Price"
-                                                                id="text"
-                                                                value={formData.interestedButNotNow.offeredPrice}
-                                                                onChange={(e) => handleInputChange('interestedButNotNow', 'offeredPrice', e.target.value)}
-                                                                disabled={forView}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-6">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="text">Next Follow-Up Date: </label>
-                                                            <input
-                                                                type="date"
-                                                                class="form-control mt-1"
-                                                                id="date"
-                                                                value={formData.interestedButNotNow.nextFollowUpDate}
-                                                                onChange={(e) => handleInputChange('interestedButNotNow', 'nextFollowUpDate', e.target.value)}
-                                                                disabled={forView}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="row">
-                                                    <div className="col-12">
-                                                        <div class="form-group mt-2 mb-2">
-                                                            <label for="date">Remarks: </label>
-                                                            <textarea
-                                                                type="text"
-                                                                class="form-control mt-1"
-                                                                placeholder="Add Remarks"
-                                                                id="text"
-                                                                value={formData.interestedButNotNow.remarks}
-                                                                onChange={(e) => handleInputChange('interestedButNotNow', 'remarks', e.target.value)}
-                                                                disabled={forView}
-                                                            />
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>)}
-                                </div>)}
+                                            {visibleQuestions["q4"] && (
+                                                <div
+                                                    id="collapseFourQue"
+                                                    className="accordion-collapse collapse show"
+                                                    aria-labelledby="accordionQueFour"
+                                                    data-bs-parent="#accordionQue">
+                                                    <div className="accordion-body int-sub-que">
+                                                        <div className="row">
+                                                            <div className="col-6">
+                                                                <div class="form-group mt-2 mb-2">
+                                                                    <label for="date">Services Pitched:</label>
+                                                                    {forView ? (<Select
+                                                                        isMulti
+                                                                        options={options}
+                                                                        value={formData.interestedButNotNow.servicesPitched}
+                                                                        onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesPitched', selectedOptions)}
+                                                                        placeholder="Select Services..."
+                                                                        isDisabled={forView}  // This will disable the select input
+
+                                                                    />) : (
+                                                                        <Select
+                                                                            isMulti
+                                                                            options={options}
+                                                                            //value={formData.interestedButNotNow.servicesPitched}
+                                                                            onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesPitched', selectedOptions)}
+                                                                            placeholder="Select Services..."
+                                                                            isDisabled={forView}  // This will disable the select input
+
+                                                                        />
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-6">
+                                                                <div class="form-group mt-2 mb-2">
+                                                                    <label for="date">Services Interested In :</label>
+                                                                    {forView ? (
+                                                                        <Select
+                                                                            isMulti
+                                                                            options={options}
+                                                                            value={formData.interestedButNotNow.servicesInterestedIn}
+                                                                            onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesInterestedIn', selectedOptions)}
+                                                                            placeholder="Select Services..."
+                                                                            isDisabled={forView}  // This will disable the select input
+
+                                                                        />) : (
+                                                                        <Select
+                                                                            isMulti
+                                                                            options={options}
+                                                                            //value={formData.interestedButNotNow.servicesInterestedIn}
+                                                                            onChange={(selectedOptions) => handleMultiSelectChange('interestedButNotNow', 'servicesInterestedIn', selectedOptions)}
+                                                                            placeholder="Select Services..."
+                                                                            isDisabled={forView}  // This will disable the select input
+
+                                                                        />
+                                                                    )
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-6">
+                                                                <div class="form-group mt-2 mb-2">
+                                                                    <label for="date">Offered Price: </label>
+                                                                    <input
+                                                                        type="text"
+                                                                        class="form-control mt-1"
+                                                                        placeholder="Offered Price"
+                                                                        id="text"
+                                                                        value={formData.interestedButNotNow.offeredPrice}
+                                                                        onChange={(e) => handleInputChange('interestedButNotNow', 'offeredPrice', e.target.value)}
+                                                                        disabled={forView}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-6">
+                                                                <div class="form-group mt-2 mb-2">
+                                                                    <label for="text">Next Follow-Up Date: </label>
+                                                                    <input
+                                                                        type="date"
+                                                                        class="form-control mt-1"
+                                                                        id="date"
+                                                                        value={formData.interestedButNotNow.nextFollowUpDate}
+                                                                        onChange={(e) => handleInputChange('interestedButNotNow', 'nextFollowUpDate', e.target.value)}
+                                                                        disabled={forView}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-12">
+                                                                <div class="form-group mt-2 mb-2">
+                                                                    <label for="date">Remarks: </label>
+                                                                    <textarea
+                                                                        type="text"
+                                                                        class="form-control mt-1"
+                                                                        placeholder="Add Remarks"
+                                                                        id="text"
+                                                                        value={formData.interestedButNotNow.remarks}
+                                                                        onChange={(e) => handleInputChange('interestedButNotNow', 'remarks', e.target.value)}
+                                                                        disabled={forView}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>)}
+                                        </div>
+                                    </>
+                                )}
                         </div>
                         <div className="accordion-item int-accordion-item">
                             <div className="accordion-header p-2" id="accordionQueFive">

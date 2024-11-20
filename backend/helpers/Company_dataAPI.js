@@ -3127,11 +3127,11 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
       console.log("Company not found for ID:", id);
       return res.status(404).json({ message: 'Company not found' });
     }
+
     // Extract `nextFollowUpDate` from `newInterestedInfo`
     let nextFollowUpDate = null;
 
     if (newInterestedInfo) {
-      // Look for the `nextFollowUpDate` field in all possible sub-objects
       nextFollowUpDate =
         newInterestedInfo.clientWhatsAppRequest?.nextFollowUpDate ||
         newInterestedInfo.clientEmailRequest?.nextFollowUpDate ||
@@ -3141,17 +3141,14 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
 
       console.log("Extracted Next Follow-Up Date:", nextFollowUpDate);
     }
-    console.log("nextFollowUpDate:", nextFollowUpDate);
 
     console.log("Existing Company Data:", existingCompany);
 
-    // Get the existing interestedInformation or initialize it as an empty array
     const existingInfoArray = existingCompany.interestedInformation || [];
     console.log("Existing Interested Information:", existingInfoArray);
 
     // Check if an entry with the same `ename` already exists
     const existingIndex = existingInfoArray.findIndex(info => info.ename === ename);
-    console.log("Index of existing ename:", existingIndex);
 
     if (existingIndex !== -1) {
       // If `ename` exists, update the existing object
@@ -3169,12 +3166,21 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
               Object.entries(newInterestedInfo[key]).map(([subKey, subValue]) => {
                 if (Array.isArray(subValue)) {
                   // Preserve existing array if new array is empty
-                  return [subKey, subValue.length > 0 ? subValue : existingInfo[key][subKey] || []];
+                  return [subKey, subValue.length > 0 ? subValue : existingInfo[key]?.[subKey] || []];
                 }
-                return [subKey, subValue !== '' && subValue !== null ? subValue : existingInfo[key][subKey]];
+                return [subKey, subValue !== '' && subValue !== null ? subValue : existingInfo[key]?.[subKey]];
               })
             ),
           };
+
+          // Update the `date` field if any other field within this object is updated
+          const isFieldUpdated = Object.entries(newInterestedInfo[key]).some(
+            ([innerKey, innerValue]) => innerKey !== 'date' && innerValue !== '' && innerValue !== null
+          );
+
+          if (isFieldUpdated) {
+            mergedInfo[key].date = new Date(); // Update date only if other fields in the object are updated
+          }
         } else if (Array.isArray(newInterestedInfo[key])) {
           // Handle array fields: retain existing array if the new array is empty
           mergedInfo[key] = newInterestedInfo[key].length > 0 ? newInterestedInfo[key] : existingInfo[key];
@@ -3184,7 +3190,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
         }
       }
 
-      console.log("Merged Existing Info:", mergedInfo);
+      console.log("Merged Existing Info with Updated Date Logic:", mergedInfo);
 
       // Replace the existing entry with the merged one
       existingInfoArray[existingIndex] = mergedInfo;
@@ -3214,9 +3220,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     const updatedCompany = await CompanyModel.findOneAndUpdate(
       { "Company Name": companyName },
       {
-        $set:
-          updateFields,
-
+        $set: updateFields,
       },
       { new: true, upsert: true } // Return updated document or create if not exists
     );
@@ -3224,34 +3228,25 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     console.log("Updated Company Data:", updatedCompany);
 
     if (status === "FollowUp" || status === "Interested") {
-
-      // Find the company in LeadHistoryForInterestedandFollowModel
       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
         "Company Name": companyName,
       });
-      // console.log("0 leadHistory", leadHistory)
 
       if (leadHistory) {
-        // console.log("1 leadHistory", leadHistory)
-        // If the record exists, update old status, new status, date, and time
         leadHistory.oldStatus = "Untouched";
         leadHistory.newStatus = status;
       } else {
-        // console.log("2 leadHistory", leadHistory)
-        // If the record does not exist, create a new one with the company name, ename, and statuses
         leadHistory = new LeadHistoryForInterestedandFollowModel({
           _id: id,
           "Company Name": companyName,
           ename: ename,
           oldStatus: "Untouched",
           newStatus: status,
-          date: new Date(),  // Convert the date string to a Date object
+          date: new Date(),
           time: time,
         });
       }
-      // console.log("3 leadHistory", leadHistory)
 
-      // Save the lead history update
       await leadHistory.save();
     }
 
@@ -3268,6 +3263,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 
