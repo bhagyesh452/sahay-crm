@@ -244,6 +244,18 @@ function Header({ name, id, designation, empProfile, gender }) {
       }
     });
 
+    socket.on("bdm-moved-to-notinterested", (res) => {
+      console.log("bdm-moved-to-notinterested", res)
+      if (name === res.ename) {
+        enqueueSnackbar(`${res.companyName} has been moved to Not Interested By BDM ! 🔄`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    });
+
     // socket.on("todays-projection-submmited", (res) => {
     //   console.log("res", res)
     //   if (name === res.name) {

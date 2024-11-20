@@ -152,6 +152,8 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     }, [data.ename]);
 
+    
+
 
     let fetchingId;
     if (userId) {
@@ -167,7 +169,7 @@ function EmployeePanelCopy({ fordesignation }) {
             // Set the retrieved data in the state
             const userData = response.data.data;
             setEmployeeName(userData.ename)
-            console.log("userData", userData);
+            // console.log("userData", userData);
             setData(userData);
             setmoreFilteredData(userData);
             setNewEmpData(completeEmployess.data);
@@ -191,17 +193,6 @@ function EmployeePanelCopy({ fordesignation }) {
             forwardedTabRef.current.click(); // Trigger the Matured tab click
         }
     }
-
-
-    // const fetchProjections = async () => {
-    //     try {
-    //         const response = await axios.get(`${secretKey}/projection/projection-data/${data.ename}`);
-    //         //console.log("forprojec" , response.data);
-    //         setProjectionData(response.data);
-    //     } catch (error) {
-    //         console.error("Error fetching Projection Data:", error.message);
-    //     }
-    // };
 
     const fetchNewProjections = async () => {
         try {
@@ -331,7 +322,7 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     );
 
-    console.log("queryData", queryData)
+    // console.log("queryData", queryData)
     // console.log("generalData", generalData)
 
     useEffect(() => {

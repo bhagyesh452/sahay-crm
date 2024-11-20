@@ -107,7 +107,7 @@ const EmployeeStatusChange = ({
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
-    setOpenBacdrop(true)
+    
     //setNewSubStatus(newStatus);
     if (newStatus === "Matured") {
       handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename);
@@ -122,7 +122,7 @@ const EmployeeStatusChange = ({
 
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
     try {
-
+      setOpenBacdrop(true)
       let response;
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
@@ -164,7 +164,12 @@ const EmployeeStatusChange = ({
 
       // Check if the API call was successful
       if (response.status === 200) {
-        console.log("Status updated successfully");
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Status updated successfully!',
+          confirmButtonText: 'OK'
+        });
         // Assuming `fetchNewData` is a function to fetch updated employee data
         refetch();
       } else {
@@ -190,16 +195,6 @@ const EmployeeStatusChange = ({
     const time = DT.toLocaleTimeString();
 
     try {
-      // console.log("Request payload:", {
-      //   newStatus,
-      //   title,
-      //   date,
-      //   time,
-      //   companyStatus,
-      //   previousStatus,
-      //   ename
-      // });
-
       const response = await axios.post(`${secretKey}/company-data/update-undo-status/${id}`, {
         newStatus,
         title,
@@ -373,9 +368,6 @@ const EmployeeStatusChange = ({
 
   return (<>
     <section className="rm_status_dropdown"
-    // style={{
-    //   width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
-    // }}
     >
       <div className={
         mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :

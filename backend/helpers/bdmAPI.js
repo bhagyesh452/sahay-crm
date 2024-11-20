@@ -362,7 +362,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
        CompanyModel.find({
           ...commonQuery,
-          bdmAcceptStatus: { $in: ["Accept", "NotForwarded", "MaturedAccepted"] },
+          bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] },
           $or: [
             { Status: { $in: ["Busy", "Not Picked Up"] } },
             { bdmStatus: { $in: ["Busy", "Not Picked Up"] } },
@@ -398,10 +398,15 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } })
+        CompanyModel.find({ 
+          ...commonQuery, 
+          bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, 
+          Status: { $in: ["Not Interested", "Junk"] },
+          bdmStatus: { $ne: "Not Interested" } // Exclude records where bdmStatus is "Not Interested"
+        })
         .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
     ]);
 
     // Count total for each status category
@@ -410,7 +415,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
       // CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded" , "MaturedAccepted"] }, Status: { $in: ["Busy", "Not Picked Up"] } }),
       CompanyModel.countDocuments({
         ...commonQuery,
-        bdmAcceptStatus: { $in: ["Accept", "NotForwarded", "MaturedAccepted"] },
+        bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] },
         $or: [
           { Status: { $in: ["Busy", "Not Picked Up"] }},
           { bdmStatus: { $in: ["Busy", "Not Picked Up"] } },
@@ -436,7 +441,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
       ],
     }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedDone"] }, Status: "Matured" }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } ,bdmStatus: { $ne: "Not Interested" } }),
     ]);
 
 // Total pages calculation based on the largest dataset (generalData as reference)

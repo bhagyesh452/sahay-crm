@@ -136,8 +136,8 @@ function EmployeeGeneralLeads({
     }, []);
 
     // console.log("activeFilterFieldsGeneral", activeFilterFields)
-    console.log("generalData" , generalData)
-
+    // console.log("generalData" , generalData)
+console.log("openBackdrop" , openBacdrop)
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
