@@ -14,6 +14,8 @@ const TeamLeadsModel = require("../models/TeamLeads.js");
 const RequestMaturedModel = require("../models/RequestMatured.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
+const { Socket } = require('dgram');
+
 
 
 router.get("/teamleadsdata", async (req, res) => {
@@ -979,8 +981,9 @@ router.get("/matured-get-requests-byBDM/:bdmName", async (req, res) => {
 
 router.post('/deletebdm-updatebdedata', async (req, res) => {
   const { companyId, companyName } = req.query; // Changed from req.params to req.body
-
+  const socketIO = req.io;
   try {
+    const exixtingData = await CompanyModel.findById(companyId);
     await CompanyModel.findOneAndUpdate(
       { _id: companyId }, // Corrected filter object
       {
@@ -1004,7 +1007,9 @@ router.post('/deletebdm-updatebdedata', async (req, res) => {
     await TeamLeadsModel.findOneAndDelete({ _id: companyId }); // Corrected filter object
     await FollowUpModel.findOneAndDelete({ companyName: companyName });
     await RemarksHistory.deleteOne({ companyID: companyId });
-
+    socketIO.emit("revert-back-request-acceptedByBDM" , {
+      data : exixtingData
+    });
     res.status(200).json({ message: "Company updated and deleted successfully" });
   } catch (error) {
     console.error("Error updating and deleting company:", error);
@@ -1064,6 +1069,8 @@ router.post("/delete-bdm-teamLeads", async (req, res) => {
 router.post(`/rejectrequestrevertbackcompany`, async (req, res) => {
   const { companyId } = req.query;
   try {
+    const company = await CompanyModel.findById(companyId);
+    const socketIO = req.io;
     await CompanyModel.findOneAndUpdate(
       { _id: companyId },
       {
@@ -1080,6 +1087,7 @@ router.post(`/rejectrequestrevertbackcompany`, async (req, res) => {
         }
       }
     )
+    socketIO.emit("rejectrequestrevertbackcompany", { data: company })
     res.status(200).json({ message: "Company Not Reverted Back" })
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" })

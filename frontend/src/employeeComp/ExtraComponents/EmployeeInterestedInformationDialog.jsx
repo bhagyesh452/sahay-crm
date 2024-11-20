@@ -92,13 +92,20 @@ function EmployeeInterestedInformationDialog({
             nextFollowUpDate: prefilledData?.clientWhatsAppRequest?.nextFollowUpDate
                 ? new Date(prefilledData.clientWhatsAppRequest.nextFollowUpDate).toISOString().split('T')[0]
                 : '',
-            remarks: prefilledData?.clientWhatsAppRequest?.remarks || ''
+            remarks: prefilledData?.clientWhatsAppRequest?.remarks || '',
+            date: prefilledData?.clientWhatsAppRequest?.date
+                ? new Date(prefilledData.clientWhatsAppRequest.date).toISOString().split('T')[0]
+                : ''
         },
         clientEmailRequest: {
             nextFollowUpDate: prefilledData?.clientEmailRequest?.nextFollowUpDate
                 ? new Date(prefilledData.clientEmailRequest.nextFollowUpDate).toISOString().split('T')[0]
                 : '',
-            remarks: prefilledData?.clientEmailRequest?.remarks || ''
+            remarks: prefilledData?.clientEmailRequest?.remarks || '',
+            date: prefilledData?.clientEmailRequest?.date
+                ? new Date(prefilledData.clientEmailRequest.date).toISOString().split('T')[0]
+                : ''
+
         },
         interestedInServices: {
             servicesPitched: mapServicesToSelectOptions(prefilledData?.interestedInServices?.servicesPitched || []),
@@ -107,7 +114,10 @@ function EmployeeInterestedInformationDialog({
             nextFollowUpDate: prefilledData?.interestedInServices?.nextFollowUpDate
                 ? new Date(prefilledData.interestedInServices.nextFollowUpDate).toISOString().split('T')[0]
                 : '',
-            remarks: prefilledData?.interestedInServices?.remarks || ''
+            remarks: prefilledData?.interestedInServices?.remarks || '',
+            date: prefilledData?.interestedInServices?.date
+                ? new Date(prefilledData.interestedInServices.date).toISOString().split('T')[0]
+                : ''
         },
         interestedButNotNow: {
             servicesPitched: mapServicesToSelectOptions(prefilledData?.interestedButNotNow?.servicesPitched || []),
@@ -116,7 +126,10 @@ function EmployeeInterestedInformationDialog({
             nextFollowUpDate: prefilledData?.interestedButNotNow?.nextFollowUpDate
                 ? new Date(prefilledData.interestedButNotNow.nextFollowUpDate).toISOString().split('T')[0]
                 : '',
-            remarks: prefilledData?.interestedButNotNow?.remarks || ''
+            remarks: prefilledData?.interestedButNotNow?.remarks || '',
+            date: prefilledData?.interestedButNotNow?.date
+                ? new Date(prefilledData.interestedButNotNow.date).toISOString().split('T')[0]
+                : ''
         },
         mainQuestion: [], // This tracks the Yes/No responses
         ename: ename,
@@ -237,25 +250,29 @@ function EmployeeInterestedInformationDialog({
                 setFormData({
                     clientWhatsAppRequest: {
                         nextFollowUpDate: '',
-                        remarks: ''
+                        remarks: '',
+                        date: ""
                     },
                     clientEmailRequest: {
                         nextFollowUpDate: '',
-                        remarks: ''
+                        remarks: '',
+                        date: ""
                     },
                     interestedInServices: {
                         servicesPitched: [],
                         servicesInterestedIn: [],
                         offeredPrice: '',
                         nextFollowUpDate: '',
-                        remarks: ''
+                        remarks: '',
+                        date: ""
                     },
                     interestedButNotNow: {
                         servicesPitched: [],
                         servicesInterestedIn: [],
                         offeredPrice: '',
                         nextFollowUpDate: '',
-                        remarks: ''
+                        remarks: '',
+                        date: ""
                     },
                     mainQuestion: [], // Reset the main questions tracking
                     ename: ename,
@@ -302,7 +319,8 @@ function EmployeeInterestedInformationDialog({
                     ...prevData,
                     clientWhatsAppRequest: {
                         nextFollowUpDate: '',
-                        remarks: ''
+                        remarks: '',
+                        date: ""
                     }
                 }));
                 break;
@@ -311,7 +329,8 @@ function EmployeeInterestedInformationDialog({
                     ...prevData,
                     clientEmailRequest: {
                         nextFollowUpDate: '',
-                        remarks: ''
+                        remarks: '',
+                        date: ""
                     }
                 }));
                 break;
@@ -323,7 +342,8 @@ function EmployeeInterestedInformationDialog({
                         servicesInterestedIn: [],
                         offeredPrice: '',
                         nextFollowUpDate: '',
-                        remarks: ''
+                        remarks: '',
+                        date: ""
                     }
                 }));
                 break;
@@ -335,7 +355,8 @@ function EmployeeInterestedInformationDialog({
                         servicesInterestedIn: [],
                         offeredPrice: '',
                         nextFollowUpDate: '',
-                        remarks: ''
+                        remarks: '',
+                        date: ""
                     }
                 }));
                 break;
@@ -414,7 +435,11 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQueOne">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                {calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review!
+                                            <div className="question-container">
+                                                    <span>{calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review!</span>
+                                                    <span className="date">{formData.clientWhatsAppRequest.date || "No date available"}</span>
+                                                </div>
+                                                {/* {calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review! */}
                                             </div>
                                             {(forView) ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -513,8 +538,11 @@ function EmployeeInterestedInformationDialog({
                                 <div className="accordion-item int-accordion-item">
                                     <div className="accordion-header p-2" id="accordionQuetwo">
                                         <div className="d-flex align-items-center justify-content-between"  >
-                                            <div className="int-que mr-2">
-                                                {calculateQuestionNumber("q2")}. Client asked to send documents/information via email for review.z
+                                            <div className="int-que">
+                                                <div className="question-container">
+                                                    <span>{calculateQuestionNumber("q2")}. Client asked to send documents/information via email for review.</span>
+                                                    <span className="date">{formData.clientEmailRequest.date || "No date available"}</span>
+                                                </div>
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -606,7 +634,9 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQuethree">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                {calculateQuestionNumber("q3")}. Interested in one of our services.
+                                            <span>{calculateQuestionNumber("q3")}. Interested in one of our services</span>
+                                            <span className="date">{formData.interestedInServices.date || "No date available"}</span>
+                                                {/* {calculateQuestionNumber("q3")}. Interested in one of our services. */}
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -766,7 +796,9 @@ function EmployeeInterestedInformationDialog({
                                     <div className="accordion-header p-2" id="accordionQueFour">
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
-                                                {calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now.
+                                            <span>{calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now.</span>
+                                            <span className="date">{formData.interestedButNotNow.date || "No date available"}</span>
+                                                {/* {calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now. */}
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">

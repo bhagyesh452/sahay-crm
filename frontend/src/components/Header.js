@@ -220,18 +220,42 @@ function Header({ name, id, designation, empProfile, gender }) {
       }
     });
 
-    socket.on("todays-projection-submmited", (res) => {
+    socket.on("revert-back-request-acceptedByBDM", (res) => {
       console.log("res", res)
-      if (name === res.name) {
-        // Set count to 3 and dismissed to true, ensuring no further popups
-        const newStoredData = JSON.parse(localStorage.getItem(userId))
-
-        // console.log("kyaidharchala", newStoredData)
-        // Update component state
-        setPopupCount(newStoredData.count || 0);
-        setLastPopupTime(new Date(newStoredData.lastShown) || null);
+      if (name === res.data.ename) {
+        enqueueSnackbar(`Your Revert Back Request ${res.data["Company Name"]} has been Accepted By BDM ! 🔄`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
       }
     });
+
+    socket.on("rejectrequestrevertbackcompany", (res) => {
+      console.log("res", res)
+      if (name === res.data.ename) {
+        enqueueSnackbar(`Your Revert Back Request ${res.data["Company Name"]} has been Rejected By BDM ! 🔄`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    });
+
+    // socket.on("todays-projection-submmited", (res) => {
+    //   console.log("res", res)
+    //   if (name === res.name) {
+    //     // Set count to 3 and dismissed to true, ensuring no further popups
+    //     const newStoredData = JSON.parse(localStorage.getItem(userId))
+
+    //     // console.log("kyaidharchala", newStoredData)
+    //     // Update component state
+    //     setPopupCount(newStoredData.count || 0);
+    //     setLastPopupTime(new Date(newStoredData.lastShown) || null);
+    //   }
+    // });
 
     // Clean up the socket connection when the component unmounts
     return () => {

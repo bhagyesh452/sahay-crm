@@ -850,10 +850,10 @@ function EmployeeForwardedLeads({
                                                             company.Status === "Busy" ? "dfault_busy-status" :
                                                                 company.Status === "Not Picked Up" ? "dfault_not-pickedup-status" :
                                                                     company.bdmStatus && company.bdmStatus === "Untouched" ? "dfault_untouched-status" :
-                                                                    company.bdmStatus && company.bdmStatus === "Interested" ? "dfault_interested-status" :
-                                                                    company.bdmStatus && company.bdmStatus === "FollowUp" ? "dfault_followup-status" :
-                                                                    company.bdmStatus && company.bdmStatus === "Busy" ? "dfault_busy-status" :
-                                                                        null}>
+                                                                        company.bdmStatus && company.bdmStatus === "Interested" ? "dfault_interested-status" :
+                                                                            company.bdmStatus && company.bdmStatus === "FollowUp" ? "dfault_followup-status" :
+                                                                                company.bdmStatus && company.bdmStatus === "Busy" ? "dfault_busy-status" :
+                                                                                    null}>
                                                     {company.bdmStatus ? company.bdmStatus : company.Status}
                                                 </div>
                                             </td>
@@ -913,7 +913,8 @@ function EmployeeForwardedLeads({
                                                             width: "17px",
                                                             height: "17px",
                                                         }}
-                                                        color="grey"
+                                                        className='disabled'
+                                                        color="lightgrey"
                                                     />
                                                 </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "MaturedPending" ? (<>
 
@@ -958,9 +959,10 @@ function EmployeeForwardedLeads({
                                                                         width: "17px",
                                                                         height: "17px",
                                                                     }}
+                                                                    className='disabled'
                                                                     color="lightgrey" />
                                                             </>) : (<>
-                                                                <TiArrowForward
+                                                                <TiArrowBack
                                                                     onClick={() => {
                                                                     }}
                                                                     style={{
@@ -968,7 +970,8 @@ function EmployeeForwardedLeads({
                                                                         width: "17px",
                                                                         height: "17px",
                                                                     }}
-                                                                    color="grey"
+                                                                    className='disabled'
+                                                                    color="lightgrey"
                                                                 />
                                                             </>)}
                                             </td>)}

@@ -67,7 +67,7 @@ const EmployeeStatusChange = ({
           time: time,
           bdmStatusChangeDate: bdmStatusChangeDate,
         });
-        console.log("bdmAcceptStatus", bdmAcceptStatus, newStatus);
+        //("bdmAcceptStatus", bdmAcceptStatus, newStatus);
 
         const response2 = await axios.post(`${secretKey}/company-data/update-status/${id}`, {
           newStatus,
@@ -190,15 +190,15 @@ const EmployeeStatusChange = ({
     const time = DT.toLocaleTimeString();
 
     try {
-      console.log("Request payload:", {
-        newStatus,
-        title,
-        date,
-        time,
-        companyStatus,
-        previousStatus,
-        ename
-      });
+      // console.log("Request payload:", {
+      //   newStatus,
+      //   title,
+      //   date,
+      //   time,
+      //   companyStatus,
+      //   previousStatus,
+      //   ename
+      // });
 
       const response = await axios.post(`${secretKey}/company-data/update-undo-status/${id}`, {
         newStatus,
@@ -210,7 +210,7 @@ const EmployeeStatusChange = ({
         ename
       });
 
-      console.log("API Response:", response);
+      // console.log("API Response:", response);
 
       // Check if the API call was successful
       if (response.status === 200) {
@@ -369,7 +369,7 @@ const EmployeeStatusChange = ({
   // console.log("modalId", modalId);
   
 
-  console.log("previousStatus", previousStatus)
+  // console.log("previousStatus", previousStatus)
 
   return (<>
     <section className="rm_status_dropdown"
