@@ -137,11 +137,11 @@ function EmployeeGeneralLeads({
 
     // console.log("activeFilterFieldsGeneral", activeFilterFields)
     // console.log("generalData" , generalData)
-console.log("openBackdrop" , openBacdrop)
+    console.log("openBackdrop", openBacdrop)
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
-             {openBacdrop && (<Backdrop
+            {openBacdrop && (<Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={openBacdrop}
                 onClick={() => setOpenBacdrop(false)}>

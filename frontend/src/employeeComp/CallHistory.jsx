@@ -113,9 +113,10 @@ function CallHistory({ handleCloseHistory, clientNumber , bdenumber , bdmName , 
 
                 // Process the POST response
                 const data = await response.json();
-                console.log("Calling history is :", bdenumber , data.result.filter((data)=>data.emp_number === bdenumber && bdmName === data.emp_name));
+                console.log("data.result is :", data.result);
+                console.log("Calling history is :", bdenumber ,bdmName, data.result.filter((data)=>data.emp_number === bdenumber && bdmName === data.emp_name));
                 if(bdenumber){
-                    setCallHistory(data.result.filter((data)=>data.emp_number === bdenumber));
+                    setCallHistory(data.result.filter((data)=>(data.emp_number === bdenumber) || (bdmName === data.emp_name)));
                 }else{
                     setCallHistory(data.result);
                 }

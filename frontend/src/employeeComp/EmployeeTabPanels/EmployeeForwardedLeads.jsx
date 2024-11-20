@@ -198,7 +198,7 @@ function EmployeeForwardedLeads({
     };
     const isActiveField = (field) => activeFilterFields.includes(field);
 
-    console.log("activeFilterFieldsInterested", activeFilterFields)
+    // console.log("activeFilterFieldsInterested", activeFilterFields)
 
     useEffect(() => {
         if (typeof document !== 'undefined') {
@@ -217,7 +217,7 @@ function EmployeeForwardedLeads({
         }
     }, []);
 
-    console.log(".bdmStatu", forwardedLeads)
+    // console.log(".bdmStatu", forwardedLeads)
 
 
     return (

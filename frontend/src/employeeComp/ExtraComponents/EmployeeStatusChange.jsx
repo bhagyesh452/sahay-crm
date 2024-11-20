@@ -499,7 +499,9 @@ const EmployeeStatusChange = ({
           </ul>
         ) : mainStatus === "Busy" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-            {!isBdmStatusChange && <li>
+            {!isBdmStatusChange && 
+          (  <>
+          <li>
               <a
                 className={`dropdown-item ${!previousStatus ? 'disabled' : ''}`} // Add 'disabled' class if previousStatus is undefined or empty
                 onClick={() =>
@@ -513,7 +515,56 @@ const EmployeeStatusChange = ({
               >
                 Undo
               </a>
-            </li>}
+            </li>
+             <li>
+             <button
+               className="dropdown-item"
+               data-bs-toggle="modal"
+               data-bs-target={`#${modalId}`} // Use dynamic modal ID
+               value={companyStatus}
+               onClick={(e) => {
+                 setStatus("Docs/Info Sent (W)");
+                 setStatusClass("created-status");
+                 console.log("Company Status:", e.target.value); // Log the companyStatus value
+               }}
+               href="#"
+             >
+               Docs/Info Sent (W)
+             </button>
+           </li>
+           <li>
+             <button
+               className="dropdown-item"
+               data-bs-toggle="modal"
+               data-bs-target={`#${modalId}`} // Use dynamic modal ID
+               value={companyStatus}
+               onClick={(e) => {
+                 setStatus("Docs/Info Sent (E)");
+                 setStatusClass("docs_sent_e-status");
+                 console.log("Company Status:", e.target.value); // Log the companyStatus value
+               }}
+               href="#"
+             >
+               Docs/Info Sent (E)
+             </button>
+           </li>
+           <li>
+             <button
+               className="dropdown-item"
+               data-bs-toggle="modal"
+               data-bs-target={`#${modalId}`} // Use dynamic modal ID
+               value={companyStatus}
+               onClick={(e) => {
+                 setStatus("Docs/Info Sent (W&E)");
+                 setStatusClass("incomplete_status");
+                 console.log("Company Status:", e.target.value); // Log the companyStatus value
+               }}
+               href="#"
+             >
+               Docs/Info Sent (W&E)
+             </button>
+           </li>
+          </>)}
             <li>
               <a
                 className="dropdown-item"
@@ -545,54 +596,6 @@ const EmployeeStatusChange = ({
                 href="#"
               >
                 Interested
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                data-bs-toggle="modal"
-                data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                value={companyStatus}
-                onClick={(e) => {
-                  setStatus("Docs/Info Sent (W)");
-                  setStatusClass("created-status");
-                  console.log("Company Status:", e.target.value); // Log the companyStatus value
-                }}
-                href="#"
-              >
-                Docs/Info Sent (W)
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                data-bs-toggle="modal"
-                data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                value={companyStatus}
-                onClick={(e) => {
-                  setStatus("Docs/Info Sent (E)");
-                  setStatusClass("docs_sent_e-status");
-                  console.log("Company Status:", e.target.value); // Log the companyStatus value
-                }}
-                href="#"
-              >
-                Docs/Info Sent (E)
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                data-bs-toggle="modal"
-                data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                value={companyStatus}
-                onClick={(e) => {
-                  setStatus("Docs/Info Sent (W&E)");
-                  setStatusClass("incomplete_status");
-                  console.log("Company Status:", e.target.value); // Log the companyStatus value
-                }}
-                href="#"
-              >
-                Docs/Info Sent (W&E)
               </button>
             </li>
             <li>

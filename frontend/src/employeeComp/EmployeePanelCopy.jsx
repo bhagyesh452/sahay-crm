@@ -82,6 +82,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const [showDialog, setShowDialog] = useState(false);
     const [dialogCount, setDialogCount] = useState(0);
     const [showCompanyProfile, setShowCompanyProfile] = useState(false);
+    const [callHistoryBdmName, setcallHistoryBdmName] = useState("")
 
     const handleOpenCompanyProfile = () => {
         setShowCompanyProfile(true);
@@ -299,7 +300,6 @@ function EmployeePanelCopy({ fordesignation }) {
     const [filteredDataForwraded, setFilteredDataForwraded] = useState([]);
     const [activeFilterFieldsForwarded, setActiveFilterFieldsForwraded] = useState([]); // New state for active filter fields
     const [activeFilterFieldForwarded, setActiveFilterFieldForwarded] = useState(null);
-
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
             queryKey: ['newData', cleanString(data.ename), currentPage, searchQuery, fetchingId], // Add searchQuery to the queryKey
@@ -395,10 +395,11 @@ function EmployeePanelCopy({ fordesignation }) {
     const maturedTabRef = useRef(null); // Ref for the Matured tab
     const forwardedTabRef = useRef(null); // Ref for the Forwarded tab
     const notInterestedTabRef = useRef(null); // Ref for the Not Interested tab
-    const handleShowCallHistory = (companyName, clientNumber) => {
+    const handleShowCallHistory = (companyName, clientNumber , bdenumber, bdmName) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
-        setCompanyName(companyName)
+        setCompanyName(companyName);
+        setcallHistoryBdmName(bdmName)
     }
 
     const hanleCloseCallHistory = () => {
@@ -1421,7 +1422,7 @@ function EmployeePanelCopy({ fordesignation }) {
                         handleCloseHistory={hanleCloseCallHistory}
                         clientNumber={clientNumber}
                         bdenumber={data.number}
-                        bdmName={data.bdmName}
+                        bdmName={callHistoryBdmName}
                         companyName={companyName}
                     />)
                     : formOpen ? (
