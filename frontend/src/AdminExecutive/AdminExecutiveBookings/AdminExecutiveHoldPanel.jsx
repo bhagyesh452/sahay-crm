@@ -1089,7 +1089,7 @@ function AdminExecutiveHoldPanel({ searchText, totalFilteredDataPortal,showFilte
                         </div>
                       </td>
                       <td>{obj.serviceName}</td>
-                      <td>
+                      <td style={{width:'150px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscLetterStatusDropdown
@@ -1140,7 +1140,7 @@ function AdminExecutiveHoldPanel({ searchText, totalFilteredDataPortal,showFilte
                           bdmName={obj.bdmName}
                         />
                       </td>
-                      <td>
+                      <td style={{width:'120px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscPortalDropdown
@@ -1155,7 +1155,7 @@ function AdminExecutiveHoldPanel({ searchText, totalFilteredDataPortal,showFilte
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td style={{width:'140px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscTypeDropdown
@@ -1170,7 +1170,7 @@ function AdminExecutiveHoldPanel({ searchText, totalFilteredDataPortal,showFilte
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td style={{width:'130px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscValidityDropdown

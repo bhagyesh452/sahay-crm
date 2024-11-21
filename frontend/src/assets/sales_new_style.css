@@ -282,3 +282,88 @@
 {
     width: 100%;
 }
+.History_Timeline_Main
+{
+    height: calc(100vh - 270px);
+    background: #fafafa;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-y: auto;
+    margin: 10px 0;
+}
+.History_Timeline
+{
+    padding: 0px 0;
+}
+.History_Timeline_item
+{
+    position: relative;
+    padding: 2px 0 15px 0;
+}
+.History_Timeline_item_l
+{
+    background: #fff0c4;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100px;
+    color: #d28412;
+    margin-right: 20px;
+    z-index: 1;
+    border: 2px solid #fafafa;
+}
+.History_Timeline_item_r
+{
+    width: calc(100% - 50px);
+    height: fit-content;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 10px;
+}
+.History_Timeline_item::before {
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 1px;
+    background: #c8d4da;
+    top: 4px;
+    left: 15px;
+    z-index: 0;
+}
+.History_Timeline_item:last-child::before
+{
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 1px;
+    background: #c8d4da00;
+    top: 4px;
+    left: 15px;
+    z-index: 0;
+}
+.Timeline_item_main_sentance p
+{ 
+    font-size: 12px;
+    font-weight: 400;
+}
+.Timeline_item_main_date p
+{
+    font-size: 12px;
+    font-weight: 400;
+    color: #ababab;
+}
+.per-icon
+{
+    font-size: 15px;
+    line-height: 4px;
+    margin-right: 2px;
+    color: #818181;
+}
+.per-name
+{
+    font-size: 12px;
+    color: #818181;
+}

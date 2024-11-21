@@ -3153,7 +3153,8 @@ td input {
 }
 
 .adminEx_table {
-  width: 3800px !important;
+  /* width: 3800px !important; */
+  width: max-content;
 }
 
 .AEP-sticky-left-1 {
