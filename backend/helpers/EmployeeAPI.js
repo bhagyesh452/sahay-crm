@@ -661,62 +661,74 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
   }
 });
 
-// router.post("/einfo", async (req, res) => {
-//   try {
-//     const { firstName, middleName, lastName, personalPhoneNo, personalEmail } = req.body;
-//     const updateData = {
-//       ...req.body,
-//       ename: `${firstName} ${middleName} ${lastName}`,
-//       personal_number: personalPhoneNo,
-//       personal_email: personalEmail,
-//       AddedOn: new Date()
-//     };
 
-//     // Check if the document already exists and update it, otherwise create a new one
-//     const result = await adminModel.findOneAndUpdate(
-//       { personal_email: personalEmail },
-//       updateData,
-//       { new: true, upsert: true } // upsert option creates a new document if no match is found
-//     );
 
-//     res.json(result);
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-// Fetch employees from id :
 // router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
 //   const { empId } = req.params;
 //   try {
-//     const emp = await adminModel.findById(empId);
+//     // Try finding the employee in adminModel firstnpm
+//     let emp = await adminModel.findById(empId);
+    
+//     // If employee not found in adminModel, search in deletedEmployeeModels
 //     if (!emp) {
-//       res.status(404).json({ result: false, message: "Employee not found" });
+//       emp = await deletedEmployeeModel.findById(empId);
+//     }
+
+//     // If employee is still not found, return an error message
+//     if (!emp) {
+//       return res.status(404).json({ result: false, message: "Employee not found" });
 //     } else {
-//       res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
+//       // If found, return the employee data
+//       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
 //     }
 //   } catch (error) {
-//     res.status(500).json({ result: true, message: "Error fetching employee", error: error });
+//     // Return an error if something goes wrong
+//     return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
 //   }
 // });
 
-router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
+
+
+// Fetch Profile Photo :
+
+router.get("/fetchEmployeeFromId/:empId", async (req, res) => { 
   const { empId } = req.params;
   try {
     // Try finding the employee in adminModel first
     let emp = await adminModel.findById(empId);
-    
+    let isActiveEmployee = true;  // Flag to indicate if emp is from adminModel
+
     // If employee not found in adminModel, search in deletedEmployeeModels
     if (!emp) {
       emp = await deletedEmployeeModel.findById(empId);
+      isActiveEmployee = false;  // Employee is not active
     }
 
     // If employee is still not found, return an error message
     if (!emp) {
       return res.status(404).json({ result: false, message: "Employee not found" });
     } else {
-      // If found, return the employee data
+      // If found, and emp is from adminModel (active employee)
+      if (isActiveEmployee) {
+        // Check if designation is "Sales Executive", "Sales Manager", or "Floor Manager"
+        const allowedDesignations = ["Sales Executive", "Sales Manager", "Floor Manager"];
+        if (allowedDesignations.includes(emp.designation)) {
+          // Check if probation period is over
+          const today = new Date();
+          const jdate = new Date(emp.jdate);  // Assuming emp.jdate is a valid date
+          const probationEndDate = new Date(jdate);
+          probationEndDate.setMonth(probationEndDate.getMonth() + 3); // Add 3 months
+
+          if (today >= probationEndDate) {
+            // Probation period is over
+            if (!emp.bdmWork) {  // Only update if bdmWork is not already true
+              emp.bdmWork = true;
+              await emp.save();  // Save the updated employee
+            }
+          }
+        }
+      }
+      // Return the employee data
       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
     }
   } catch (error) {
@@ -727,7 +739,6 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
 
 
 
-// Fetch Profile Photo :
 router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
   const { empId, filename } = req.params;
   const pdfPath = path.join(
