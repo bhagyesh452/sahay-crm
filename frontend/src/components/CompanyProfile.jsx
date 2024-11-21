@@ -1,6 +1,10 @@
 import React from 'react';
 import CmpnyPHlogo from "../static/sahayion.png";
 import { GoHistory } from "react-icons/go";
+import { MdDriveFileMoveOutline } from "react-icons/md";
+import { IoPersonCircleOutline } from "react-icons/io5";
+
+
 
 function CompanyProfile() {
   return (
@@ -121,7 +125,7 @@ function CompanyProfile() {
                 </div>
               </div>
             </div>
-            <div className='col-lg-9 col-md-8'>
+            <div className='col-lg-6 col-md-8'>
               <div>
                 <ul class="nav nav-tabs cmpnyP_nav_tabs" id="Cmpny_P_Main_tab" role="tablist">
                   <li class="nav-item" role="presentation">
@@ -144,7 +148,185 @@ function CompanyProfile() {
                   <div class="tab-pane fade show active" id="Overview" role="tabpanel" aria-labelledby="History-tab">...</div>
                   <div class="tab-pane fade" id="Activity" role="tabpanel" aria-labelledby="Activity-tab">...</div>
                   <div class="tab-pane fade" id="History" role="tabpanel" aria-labelledby="History-tab">
-                    
+                    <div className='History_Timeline_Main'>
+                        <div className='History_Timeline'>
+                          <div className='History_Timeline_item'>
+                            <div className='d-flex align-items-start'>
+                              <div className='History_Timeline_item_l'>
+                                <MdDriveFileMoveOutline />
+                              </div>
+                              <div className='History_Timeline_item_r'>
+                                <div className='d-flex align-items-center justify-content-between'>
+                                  <div className='Timeline_item_main_sentance'>
+                                    <p className='m-0'>Lead Assign To <b>Ravi Prajapati</b></p>
+                                  </div>  
+                                  <div className='Timeline_item_main_date'>
+                                    <p className='m-0'>2nd Jun 2024</p>
+                                  </div>
+                                </div>
+                                <div className='d-flex align-items-center mt-1'>
+                                  <div className='per-icon'>
+                                    <IoPersonCircleOutline />
+                                  </div> 
+                                  <div className='per-name'>
+                                    Assign By : Nimesh Parekh
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='History_Timeline_item'>
+                            <div className='d-flex align-items-start'>
+                              <div className='History_Timeline_item_l'>
+                                <MdDriveFileMoveOutline />
+                              </div>
+                              <div className='History_Timeline_item_r'>
+                                <div className='d-flex align-items-center justify-content-between'>
+                                  <div className='Timeline_item_main_sentance'>
+                                    <p className='m-0'><b>Ravi Prajapati</b> Forwarded this Lead to BDM</p>
+                                  </div>  
+                                  <div className='Timeline_item_main_date'>
+                                    <p className='m-0'>5th Jun 2024</p>
+                                  </div>
+                                </div>
+                                <div className='d-flex align-items-center mt-1'>
+                                  <div className='per-icon'>
+                                    <IoPersonCircleOutline />
+                                  </div> 
+                                  <div className='per-name'>
+                                    BDM : Vishal Gohel
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='History_Timeline_item'>
+                            <div className='d-flex align-items-start'>
+                              <div className='History_Timeline_item_l'>
+                                <MdDriveFileMoveOutline />
+                              </div>
+                              <div className='History_Timeline_item_r'>
+                                <div className='d-flex align-items-center justify-content-between'>
+                                  <div className='Timeline_item_main_sentance'>
+                                    <p className='m-0'><b>Data Analyst</b> Take Back this lead form <b>Ravi Prajapati</b></p>
+                                  </div>  
+                                  <div className='Timeline_item_main_date'>
+                                    <p className='m-0'>7th Jun 2024</p>
+                                  </div>
+                                </div>
+                                <div className='d-flex align-items-center mt-1'>
+                                  <div className='per-icon'>
+                                    <IoPersonCircleOutline />
+                                  </div> 
+                                  <div className='per-name'>
+                                    Data Analyst : Pavan Bhai   
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='History_Timeline_item'>
+                            <div className='d-flex align-items-start'>
+                              <div className='History_Timeline_item_l'>
+                                <MdDriveFileMoveOutline />
+                              </div>
+                              <div className='History_Timeline_item_r'>
+                                <div className='d-flex align-items-center justify-content-between'>
+                                  <div className='Timeline_item_main_sentance'>
+                                    <p className='m-0'>Lead Assign To <b>Khushi Gandhi</b></p>
+                                  </div>  
+                                  <div className='Timeline_item_main_date'>
+                                    <p className='m-0'>8th Jun 2024</p>
+                                  </div>
+                                </div>
+                                <div className='d-flex align-items-center mt-1'>
+                                  <div className='per-icon'>
+                                    <IoPersonCircleOutline />
+                                  </div> 
+                                  <div className='per-name'>
+                                    Assign By : Pavan Bhai 
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='History_Timeline_item'>
+                            <div className='d-flex align-items-start'>
+                              <div className='History_Timeline_item_l'>
+                                <MdDriveFileMoveOutline />
+                              </div>
+                              <div className='History_Timeline_item_r'>
+                                <div className='d-flex align-items-center justify-content-between'>
+                                  <div className='Timeline_item_main_sentance'>
+                                    <p className='m-0'>Lead Move in Interested Section By BDE</p>
+                                  </div>  
+                                  <div className='Timeline_item_main_date'>
+                                    <p className='m-0'>8th Jun 2024</p>
+                                  </div>
+                                </div>
+                                <div className='d-flex align-items-center mt-1'>
+                                  <div className='per-icon'>
+                                    <IoPersonCircleOutline />
+                                  </div> 
+                                  <div className='per-name'>
+                                    BDE : Khushi Gandhi
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='History_Timeline_item'>
+                            <div className='d-flex align-items-start'>
+                              <div className='History_Timeline_item_l'>
+                                <MdDriveFileMoveOutline />
+                              </div>
+                              <div className='History_Timeline_item_r'>
+                                <div className='d-flex align-items-center justify-content-between'>
+                                  <div className='Timeline_item_main_sentance'>
+                                    <p className='m-0'>Add Booking By BDE</p>
+                                  </div>  
+                                  <div className='Timeline_item_main_date'>
+                                    <p className='m-0'>11th Jun 2024</p>
+                                  </div>
+                                </div>
+                                <div className='d-flex align-items-center mt-1'>
+                                  <div className='per-icon'>
+                                    <IoPersonCircleOutline />
+                                  </div> 
+                                  <div className='per-name'>
+                                    BDE : Khushi Gandhi
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='History_Timeline_item'>
+                            <div className='d-flex align-items-start'>
+                              <div className='History_Timeline_item_l'>
+                                <MdDriveFileMoveOutline />
+                              </div>
+                              <div className='History_Timeline_item_r'>
+                                <div className='d-flex align-items-center justify-content-between'>
+                                  <div className='Timeline_item_main_sentance'>
+                                    <p className='m-0'>Greetings call done by RM</p>
+                                  </div>  
+                                  <div className='Timeline_item_main_date'>
+                                    <p className='m-0'>11th Jun 2024</p>
+                                  </div>
+                                </div>
+                                <div className='d-flex align-items-center mt-1'>
+                                  <div className='per-icon'>
+                                    <IoPersonCircleOutline />
+                                  </div> 
+                                  <div className='per-name'>
+                                    RM : Aiditi Bhatiya
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
                   </div>
                 </div>
               </div>
