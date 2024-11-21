@@ -741,6 +741,22 @@ router.delete("/leads/:id", async (req, res) => {
   }
 });
 
+router.get("/deleted-leads", async (req, res) => {
+  try {
+    const deletedLeads = await DeletedLeadsModel.find(); // Fetch data from the database
+    res.status(200).json({
+      message: "Data Fetched Successfully",
+      data: deletedLeads, // Return the fetched data
+    });
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).json({
+      message: "Failed to fetch data",
+      error: error.message, // Include error message for debugging
+    });
+  }
+});
+
 router.post("/leads", async (req, res) => {
   const csvData = req.body;
   const currentDate = new Date();
@@ -3530,7 +3546,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
           isPreviousMaturedCase: payload.isPreviousMaturedCase,
           addedOnDate: payload.addedOnDate,
         },
-        { new: true }
+        { new: true, upsert: true }
       );
 
       res.json({ result: true, message: "Projection updated and added to history", data: updatedCompany });

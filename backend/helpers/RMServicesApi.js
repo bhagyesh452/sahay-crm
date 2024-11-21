@@ -117,6 +117,11 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
           //console.log(`Email attachments: ${JSON.stringify(attachments)}`);
           const validationLink = 'https://www.startupindia.gov.in/content/sih/en/startupgov/validate-startup-recognition.html '; // Your validation link
           const number = bdmNumber ? bdmNumber : bdeNumber
+           // Handle duplicate BDE and BDM names
+           const contactDetails = bdeName === bdmName
+           ? `<li>${bdeName} - ${bdeNumber} (Your point of contact for initiating the service)</li>`
+           : `<li>${bdeName} - ${bdeNumber} (Your point of contact for initiating the service)</li>
+              <li>${bdmName} - ${bdmNumber} (Your point of contact for further support)</li>`;
           const subject = `Congratulations! Your Start-Up India Certificate is Approved!`;
           const text = `Dear ${companyName},\n\nPlease find attached the certificate generated for your company.\n\nBest regards,\nStart-Up Sahay Private Limited`
           const html = `
@@ -135,7 +140,7 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
                   <p>You can also verify your certification by visiting the official Start-Up India portal through this link: <a href="${validationLink}">Verify Start-Up Recognition</a></p>
                   <p>If you have any further questions or would like to explore additional services, you can reach out to the following team members who have been assisting you throughout the process:</p>
                   <ol>
-                  <li>${bdeName} - ${bdeNumber} And ${bdmName} - ${number} (Your points of contact for initiating the service)</li>
+                  ${contactDetails}
                   <li>Dhruvi Gohel - 9016928702 (Assisted with the certification process up to the issuance of your certificate)</li>
                   <li>General Support - 9601618727 (For any other inquiries or general assistance)</li>
                   </ol>
