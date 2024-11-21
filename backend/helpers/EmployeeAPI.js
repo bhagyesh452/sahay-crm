@@ -20,6 +20,7 @@ const fetch = require('node-fetch');
 const { previousDay } = require("date-fns");
 require('dotenv').config();
 const { sendMailEmployees } = require("./sendMailEmployees");
+const TeamLeadsModel = require("../models/TeamLeads.js");
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -135,7 +136,7 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
   const { bdmWork } = req.body;
 
   try {
-    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
+    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork , isForcefullyBdmWorkMadeFalse : true });
 
     res.status(200).json({ message: "Status Updated Successfully" });
   } catch (error) {
@@ -673,6 +674,12 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
     if (!emp) {
       emp = await deletedEmployeeModel.findById(empId);
     }
+    if(emp){
+      const teamLeadsData = await TeamLeadsModel.find({
+        bdmName: emp.ename,
+      }).select("ename").lean();
+    }
+   
 
     // If employee is still not found, return an error message
     if (!emp) {
@@ -689,7 +696,54 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
 
 
 
+
+
+// router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
+//   const { empId } = req.params;
+//   try {
+//     // Try finding the employee in adminModel first
+//     let emp = await adminModel.findById(empId);
+    
+//     // If employee not found in adminModel, search in deletedEmployeeModels
+//     if (!emp) {
+//       emp = await deletedEmployeeModel.findById(empId);
+//     }
+
+//     let isVisibleTeamLeads = false; // Default value
+
+//     if (emp) {
+//       // Fetch the team leads data
+//       const teamLeadsData = await TeamLeadsModel.find({
+//         bdmName: emp.ename,
+//       }).select("ename").lean();
+
+//       // Check the length of teamLeadsData and set isVisibleTeamLeads accordingly
+//       isVisibleTeamLeads = teamLeadsData.length > 0; 
+//     }
+
+//     // If employee is still not found, return an error message
+//     if (!emp) {
+//       return res.status(404).json({ result: false, message: "Employee not found" });
+//     } else {
+//       // If found, add the isVisibleTeamLeads field to the employee data
+//       const employeeData = {
+//         ...emp.toObject(), // Convert Mongoose document to plain object if needed
+//         isVisibleTeamLeads,
+//       };
+
+//       // Return the updated employee data
+//       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: employeeData });
+//     }
+//   } catch (error) {
+//     // Return an error if something goes wrong
+//     return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
+//   }
+// });
+
 // Fetch Profile Photo :
+
+
+
 router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
   const { empId, filename } = req.params;
   const pdfPath = path.join(
@@ -2369,24 +2423,26 @@ router.get("/einfo", async (req, res) => {
     const allowedDesignations = ["Sales Executive", "Sales Manager", "Floor Manager"];
     const today = new Date();
 
-    // Iterate through the employees and update `bdmWork` for eligible ones
+    // Iterate through the employees and update fields as necessary
     const updatePromises = employees.map(async (employee) => {
-      if (
-        allowedDesignations.includes(employee.designation) && // Check if designation is allowed
-        employee.jdate && // Ensure jdate exists
-        employee.bdmWork !== true // Only update if `bdmWork` is not already true
-      ) {
+      if (allowedDesignations.includes(employee.designation) && employee.jdate) {
         const jdate = new Date(employee.jdate); // Parse the joining date
         const probationEndDate = new Date(jdate);
         probationEndDate.setMonth(probationEndDate.getMonth() + 3); // Add 3 months to the joining date
 
-        // Check if the probation period is completed
-        if (today >= probationEndDate) {
-          // Update `bdmWork` field in the database
+        if (employee.bdmWork !== true && employee.isForcefullyBdmWorkMadeFalse !== true && today >= probationEndDate) {
+          // Update `bdmWork` if probation period is completed and conditions are met
           employee.bdmWork = true; // Update the in-memory object
           await adminModel.updateOne(
             { _id: employee._id },
-            { $set: { bdmWork: true } }
+            { $set: { bdmWork: true , isForcefullyBdmWorkMadeFalse: true } }
+          ); // Save the change to the database
+        } else if (employee.bdmWork === true) {
+          // If `bdmWork` is already true, set `isForcefullyMade` to true
+          employee.isForcefullyBdmWorkMadeFalse = true; // Update the in-memory object
+          await adminModel.updateOne(
+            { _id: employee._id },
+            { $set: { isForcefullyBdmWorkMadeFalse: true } }
           ); // Save the change to the database
         }
       }
@@ -2405,6 +2461,7 @@ router.get("/einfo", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 
