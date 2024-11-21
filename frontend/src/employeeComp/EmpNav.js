@@ -49,7 +49,7 @@ function EmpNav({ userId, bdmWork ,isTeamLeadsVisible }) {
     window.location.replace(`/employee-reports/${userId}`)
   }
 
-  console.log("isTeamLeadsVisible" , isTeamLeadsVisible)
+  // console.log("isTeamLeadsVisible" , isTeamLeadsVisible)
 
 
   return (

@@ -640,7 +640,9 @@ function EmployeeMaturedLeads({
                                                             company["Company Name"],
                                                             company["Company Number"],
                                                             bdenumber,
-                                                            company.bdmName
+                                                            company.bdmName,
+                                                            company.bdmAcceptStatus,
+                                                            company.bdeForwardDate
 
                                                         );
                                                         // setShowCallHistory(true);

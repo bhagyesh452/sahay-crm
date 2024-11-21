@@ -5,8 +5,8 @@ import Nodata from '../components/Nodata';
 import { IconChevronRight, IconChevronLeft } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
 
-function CallHistory({ handleCloseHistory, clientNumber , bdenumber , bdmName , companyName}) {
-    console.log(bdenumber , bdmName)
+function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, companyName, fordesignation, note, bdeForwardDate }) {
+    console.log(bdenumber, bdmName, fordesignation);
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -114,10 +114,10 @@ function CallHistory({ handleCloseHistory, clientNumber , bdenumber , bdmName , 
                 // Process the POST response
                 const data = await response.json();
                 console.log("data.result is :", data.result);
-                console.log("Calling history is :", bdenumber ,bdmName, data.result.filter((data)=>data.emp_number === bdenumber && bdmName === data.emp_name));
-                if(bdenumber){
-                    setCallHistory(data.result.filter((data)=>(data.emp_number === bdenumber) || (bdmName === data.emp_name)));
-                }else{
+                console.log("Calling history is :", bdenumber, bdmName, data.result.filter((data) => data.emp_number === bdenumber && bdmName === data.emp_name));
+                if (bdenumber) {
+                    setCallHistory(data.result.filter((data) => (data.emp_number === bdenumber) || (bdmName === data.emp_name)));
+                } else {
                     setCallHistory(data.result);
                 }
                 //setCallHistory(data.result.filter((data)=>data.emp_number === bdenumber));
@@ -137,7 +137,10 @@ function CallHistory({ handleCloseHistory, clientNumber , bdenumber , bdmName , 
         (currentPage + 1) * itemsPerPage
     );
 
-    console.log("currentData", currentData);
+    
+    // console.log("currentData", currentData);
+
+    console.log("note", note)
 
     return (
         <div>
@@ -155,8 +158,13 @@ function CallHistory({ handleCloseHistory, clientNumber , bdenumber , bdmName , 
                                     </button>
                                 </div>
                             </div>
+                            <div className={"d-flex align-items-center"}>
+                                <div className={fordesignation === "admin" || fordesignation === "datamanager" ? "ml-3" : "d-none"}>
+                                    <div className="selection-data" >
+                                     <b>{note}</b>
+                                    </div>
+                                </div>
 
-                            <div className="d-flex align-items-center">
                                 <div class="input-icon ml-1">
                                     <span class="input-icon-addon">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -315,7 +323,7 @@ function CallHistory({ handleCloseHistory, clientNumber , bdenumber , bdmName , 
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

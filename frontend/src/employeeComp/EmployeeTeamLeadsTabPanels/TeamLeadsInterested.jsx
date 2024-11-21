@@ -623,7 +623,17 @@ function TeamLeadsInterested({
                                     </td>
                                     <td>
                                         <LuHistory
-                                            onClick={() => handleShowCallHistory(company["Company Name"], company["Company Number"])}
+                                            onClick={() => 
+                                                handleShowCallHistory(
+                                                    company["Company Name"],
+                                                    company["Company Number"],
+                                                    //bdenumber,
+                                                    company.bdmName,
+                                                    company.bdmAcceptStatus,
+                                                    company.bdeForwardDate
+
+                                                )
+                                            }
                                             style={{
                                                 cursor: "pointer",
                                                 width: "15px",

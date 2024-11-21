@@ -44,7 +44,7 @@ function EmployeeLayout() {
         fetchData();
     }, [userId]);
 
-    console.log("data" , data)
+    // console.log("data" , data)
 
     return (
         <>

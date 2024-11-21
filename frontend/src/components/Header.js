@@ -221,7 +221,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     });
 
     socket.on("revert-back-request-acceptedByBDM", (res) => {
-      console.log("res", res)
+      // console.log("res", res)
       if (name === res.data.ename) {
         enqueueSnackbar(`Your Revert Back Request ${res.data["Company Name"]} has been Accepted By BDM ! 🔄`, {
           variant: 'reportComplete',
@@ -233,7 +233,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     });
 
     socket.on("rejectrequestrevertbackcompany", (res) => {
-      console.log("res", res)
+      // console.log("res", res)
       if (name === res.data.ename) {
         enqueueSnackbar(`Your Revert Back Request ${res.data["Company Name"]} has been Rejected By BDM ! 🔄`, {
           variant: 'reportComplete',
@@ -245,7 +245,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     });
 
     socket.on("bdm-moved-to-notinterested", (res) => {
-      console.log("bdm-moved-to-notinterested", res)
+      // console.log("bdm-moved-to-notinterested", res)
       if (name === res.ename) {
         enqueueSnackbar(`${res.companyName} has been moved to Not Interested By BDM ! 🔄`, {
           variant: 'reportComplete',
@@ -275,7 +275,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     };
   }, [name]);
 
-  console.log("popupcount", popupCount)
+  
 
   useEffect(() => {
     const checkAndRunActiveStatus = () => {

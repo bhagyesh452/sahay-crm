@@ -99,6 +99,22 @@ function TestLeads() {
         setCompleteLeads(response.data)
     }
 
+    const formatBdeForwardDate = (dateString) => {
+        if (!dateString) return "";
+
+        const date = new Date(dateString);
+        const options = { month: "short", day: "2-digit", year: "numeric" };
+        const formattedDate = date.toLocaleDateString("en-US", options);
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "pm" : "am";
+        const formattedTime = `${hours % 12 || 12}.${minutes} ${ampm}`;
+
+        return `${formattedDate} at ${formattedTime}`;
+    };
+
+
     //--------------------function to fetch Data ------------------------------
     const fetchData = async (page, sortType) => {
         try {
@@ -743,7 +759,7 @@ function TestLeads() {
             }
             // Process response
             const { data } = response;
-            console.log("data" , data)
+            console.log("data", data)
             // Handle response data as needed
             setAllIds(data.allIds);
             setSelectedRows((prevSelectedRows) =>
@@ -1398,7 +1414,7 @@ function TestLeads() {
                 }
             });
             if (!selectedStatus &&
-                !lastExtractedStatus&&
+                !lastExtractedStatus &&
                 !selectedState &&
                 !selectedNewCity &&
                 !selectedBDEName &&
@@ -1504,12 +1520,20 @@ function TestLeads() {
     // ---------------call history popup------------------------
     const [showCallHistory, setShowCallHistory] = useState(false);
     const [clientNumber, setClientNumber] = useState("");
+    const [callHistoryBdmName, setcallHistoryBdmName] = useState("");
+    const [callHistoryBdeName, setcallHistoryBdeName] = useState("");
+    const [callHistoryBdmAcceptStatus, setCallHistoryBdmAcceptStatus] = useState("");
+    const [callHistoryBdmForwardedDate, setCallHistoryBdmForwardedDate] = useState(null);
 
-
-    const handleShowCallHistory = (companyName, clientNumber) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate , bdeName) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
-        setCompanyName(companyName)
+        setCompanyName(companyName);
+        setcallHistoryBdmName(bdmName);
+        setCallHistoryBdmAcceptStatus(bdmAcceptStatus)
+        setCallHistoryBdmForwardedDate(bdeForwardDate)
+        setcallHistoryBdeName(bdeName)
+
     }
 
     const hanleCloseCallHistory = () => {
@@ -1766,12 +1790,12 @@ function TestLeads() {
                                                     {(dataStatus === "Assigned") && <th>Status</th>}
                                                     {(dataStatus === "Extracted") && <th>Last Status</th>}
                                                     {(dataStatus === "Assigned" || dataStatus === "Extracted") && <th>Remarks</th>}
-                                                    
+
                                                     <th>Uploaded By</th>
                                                     <th>Uploaded On</th>
                                                     {dataStatus === 'Extracted' && <th>Last Assigned To</th>}
                                                     {(dataStatus === "Extracted") && <th>BDM Name</th>}
-                                                    
+
                                                     {dataStatus === "Extracted" && <th>Extracted Date</th>}
                                                     {dataStatus === "Assigned" && <th>Assigned to</th>}
                                                     {(dataStatus === "Assigned") && <th>BDM Name</th>}
@@ -1878,8 +1902,11 @@ function TestLeads() {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
-
-
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename
                                                                         );
                                                                     }}
                                                                     style={{
@@ -1906,7 +1933,7 @@ function TestLeads() {
                                                                         companyName={company["Company Name"]}
 
                                                                     />
-                                                                    
+
                                                                 </td>}
 
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
@@ -1984,6 +2011,11 @@ function TestLeads() {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename
 
 
                                                                         );
@@ -2011,7 +2043,7 @@ function TestLeads() {
                                                                     secretKey={secretKey}
                                                                     companyName={company["Company Name"]}
                                                                 />
-                                                                
+
                                                             </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2089,6 +2121,12 @@ function TestLeads() {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename
+
 
 
                                                                         );
@@ -2193,6 +2231,12 @@ function TestLeads() {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename
+
 
 
                                                                         );
@@ -2221,7 +2265,7 @@ function TestLeads() {
                                                                         secretKey={secretKey}
                                                                         companyName={company["Company Name"]}
                                                                     />
-                                                                    
+
                                                                 </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2231,7 +2275,7 @@ function TestLeads() {
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
                                                             {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                            
+
                                                             <td>
                                                                 <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
                                                                     <MdDeleteOutline
@@ -2383,8 +2427,13 @@ function TestLeads() {
                     handleCloseHistory={hanleCloseCallHistory}
                     clientNumber={clientNumber}
                     companyName={companyName}
-                // bdenumber={data.number}
-                // bdmName={data.bdmName}
+                    fordesignation={"admin"}
+                    bdmName={callHistoryBdmName}
+                    bdmAcceptStatus={callHistoryBdmAcceptStatus}
+                    bdeForwardDate={callHistoryBdmForwardedDate}
+                    note={
+                        (callHistoryBdmAcceptStatus === "Accept" || callHistoryBdmAcceptStatus === "Pending" || callHistoryBdmAcceptStatus === "MaturedPending" || callHistoryBdmAcceptStatus === "Forwarded" || callHistoryBdmAcceptStatus === "MaturedAccepted") ?
+                        `${callHistoryBdeName} has forwarded this lead to ${callHistoryBdmName} on ${formatBdeForwardDate(callHistoryBdmForwardedDate)}` : "This Lead is Not Forwarded Yet"}
                 />)
             }
 

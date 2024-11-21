@@ -703,7 +703,7 @@ const EmployeeStatusChange = ({
                 Not Interested
               </a>
             </li>
-            <li>
+            {/* <li>
               <a
                 className="dropdown-item"
                 onClick={() => isBdmStatusChange ? handlebdmStatusChange("Busy", "dfaulter-status") : handleStatusChange("Busy", "dfaulter-status")}
@@ -711,7 +711,7 @@ const EmployeeStatusChange = ({
               >
                 Busy
               </a>
-            </li>
+            </li> */}
           </ul>
         ) : mainStatus === "Forwarded" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">

@@ -856,7 +856,7 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
       }
     );
     // Delete documents from TeamLeadsModel where the employee's name matches
-    await TeamLeadsModel.deleteMany({ bdeName: employeeData.ename });
+    await TeamLeadsModel.deleteMany({ bdeName: employeeData.ename  });
 
     // Delete the corresponding document from CompanyModel collection
     await CompanyModel.findByIdAndDelete(id);
@@ -887,9 +887,6 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
       { ename: employeeData.ename },
       {
         $set: {
-          //ename: "Not Alloted",
-          //bdmAcceptStatus: "NotForwarded",
-          //feedbackPoints: [],
           multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
           //Status: "Untouched",
           isDeletedEmployeeCompany: true
@@ -2495,6 +2492,10 @@ router.get("/employees-new/:ename", async (req, res) => {
           {
             Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
+          },
+          {
+            Status: { $in: ["Untouched" , "Busy", "Not Interested" , "Not Picked Up"] },
+            bdmAcceptStatus: { $in: [ "Pending"] }
           }
         ]
       })
@@ -2511,13 +2512,14 @@ router.get("/employees-new/:ename", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({
-        ...baseQuery,
-        Status: { $in: ["Not Interested", "Junk"] }
-      })
-        .sort({ lastActionDate: -1 })
-        .skip(skip)
-        .limit(limit),
+        CompanyModel.find({
+          ...baseQuery,
+          Status: { $in: ["Not Interested", "Junk"] },
+          bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] }, // Use $nin for excluding multiple values
+        })
+          .sort({ lastActionDate: -1 })
+          .skip(skip)
+          .limit(limit)
     ]);
     // Fetch redesigned data for matching companies
     const allCompanyIds = [
@@ -2547,7 +2549,11 @@ router.get("/employees-new/:ename", async (req, res) => {
     const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData, ...forwardedData];
     // Count documents for each category
     const [notInterestedCount, interestedCount, underdocsCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
-      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
+      CompanyModel.countDocuments({
+        ...baseQuery,
+        Status: { $in: ["Not Interested", "Junk"] },
+        bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] }, // Use $nin for excluding multiple values
+      }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
       CompanyModel.countDocuments({
         ...baseQuery,
@@ -2568,6 +2574,10 @@ router.get("/employees-new/:ename", async (req, res) => {
             Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
           },
+          {
+            Status: { $in: ["Untouched" , "Busy", "Not Interested" , "Not Picked Up"] },
+            bdmAcceptStatus: { $in: [ "Pending"] }
+          }
         ],
       }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Busy", "Not Picked Up"] }, bdmAcceptStatus: "NotForwarded" }),

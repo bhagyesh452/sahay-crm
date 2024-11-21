@@ -271,7 +271,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         await Promise.all(
           filteredCompanyData.map(async (item) => {
             // if (item.Status === 'Matured') {
-            if (item.Status) {
+            if (item.Status === "Matured") {
               await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
             } else {
               await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
@@ -1187,7 +1187,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                             onClick={async () => {
                               const dataToDelete = employeeData.filter(obj => obj._id === item._id);
                               setDataToDelete(dataToDelete);
-                              const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename || obj.bdmName === item.ename);
+                              const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
                               // console.log("filteredcompanydata", filteredCompanyData);
                               setCompanyDdata(filteredCompanyData);
                               handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
@@ -1410,7 +1410,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                                         personal_number: "0",
                                         personal_email: "example@gmail.com"
                                       });
-                                      const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename || obj.bdmName === item.ename);
+                                      const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
                                       setCompanyDdata(filteredCompanyData);
                                       handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
                                     }}

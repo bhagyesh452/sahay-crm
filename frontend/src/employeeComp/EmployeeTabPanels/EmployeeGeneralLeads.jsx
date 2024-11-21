@@ -137,7 +137,7 @@ function EmployeeGeneralLeads({
 
     // console.log("activeFilterFieldsGeneral", activeFilterFields)
     // console.log("generalData" , generalData)
-    console.log("openBackdrop", openBacdrop)
+    // console.log("openBackdrop", openBacdrop)
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -542,7 +542,9 @@ function EmployeeGeneralLeads({
                                                                 company["Company Name"],
                                                                 company["Company Number"],
                                                                 bdenumber,
-                                                                company.bdmName
+                                                                company.bdmName,
+                                                                company.bdmAcceptStatus,
+                                                                company.bdeForwardDate
 
                                                             );
                                                         }}

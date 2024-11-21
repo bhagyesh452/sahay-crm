@@ -176,11 +176,11 @@ function EmployeeInterestedLeads({
   return (
     <div className="sales-panels-main" onMouseUp={handleMouseUp}>
       {openBacdrop && (<Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={openBacdrop}
-                onClick={() => setOpenBacdrop(false)}>
-                <CircularProgress color="inherit" />
-            </Backdrop>)}
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBacdrop}
+        onClick={() => setOpenBacdrop(false)}>
+        <CircularProgress color="inherit" />
+      </Backdrop>)}
       <>
         <div className="table table-responsive e-Leadtable-style m-0">
           <table
@@ -653,7 +653,9 @@ function EmployeeInterestedLeads({
                             company["Company Name"],
                             company["Company Number"],
                             bdenumber,
-                            company.bdmName
+                            company.bdmName,
+                            company.bdmAcceptStatus,
+                            company.bdeForwardDate
 
                           );
                         }}
@@ -963,6 +965,7 @@ function EmployeeInterestedLeads({
                 bdeOldStatus={companyStatus}
                 bdmNewAcceptStatus={"Pending"}
                 fetchNewData={refetch}
+                forwardingPerson={"sales executive"}
               />
             )}
           </div>

@@ -41,6 +41,7 @@ import { useNavigate } from 'react-router-dom';
 import NewProjectionDialog from "./ExtraComponents/NewProjectionDialog.jsx";
 import { filter } from "lodash";
 import EmployeeUnderDocsLeads from "./EmployeeTabPanels/EmployeeUnderDocsLeads.jsx";
+import BdmMaturedCasesDialogBox from "./BdmMaturedCasesDialogBox.jsx";
 
 
 function EmployeePanelCopy({ fordesignation }) {
@@ -82,7 +83,81 @@ function EmployeePanelCopy({ fordesignation }) {
     const [showDialog, setShowDialog] = useState(false);
     const [dialogCount, setDialogCount] = useState(0);
     const [showCompanyProfile, setShowCompanyProfile] = useState(false);
-    const [callHistoryBdmName, setcallHistoryBdmName] = useState("")
+    const [callHistoryBdmName, setcallHistoryBdmName] = useState("");
+    const [callHistoryBdmAcceptStatus, setCallHistoryBdmAcceptStatus] = useState("");
+    const [callHistoryBdmForwardedDate, setCallHistoryBdmForwardedDate] = useState(null);
+    const [showForwardToBdmPopup, setShowForwardToBdmPopup] = useState(false);
+
+    const [generalData, setGeneralData] = useState([]);
+    const [generalDataCount, setGeneralDataCount] = useState(0);
+    const [completeGeneralData, setCompleteGeneralData] = useState([]);
+    const [dataToFilterGeneral, setDataToFilterGeneral] = useState([]);
+    const [filteredDataGeneral, setFilteredDataGeneral] = useState([]);
+    const [activeFilterFieldsGeneral, setActiveFilterFieldsGeneral] = useState([]); // New state for active filter fields
+    const [activeFilterFieldGeneral, setActiveFilterFieldGeneral] = useState(null);
+
+    const [busyData, setBusyData] = useState([]);
+    const [busyDataCount, setBusyDataCount] = useState(0);
+    const [completeBusyData, setCompleteBusyData] = useState([]);
+    const [dataToFilterBusy, setDataToFilterBusy] = useState([]);
+    const [filteredDataBusy, setFilteredDataBusy] = useState([]);
+    const [activeFilterFieldsBusy, setActiveFilterFieldsBusy] = useState([]); // New state for active filter fields
+    const [activeFilterFieldBusy, setActiveFilterFieldBusy] = useState(null);
+
+    const [underDocsData, setUnderDocsData] = useState([]);
+    const [underDocsDataCount, setUnderDocsDataCount] = useState(0);
+    const [completeUnderDocsData, setCompleteUnderDocsData] = useState([]);
+    const [dataToFilterUnderDocs, setDataToFilterUnderDocs] = useState([]);
+    const [filteredDataUnderDocs, setFilteredDataUnderDocs] = useState([]);
+    const [activeFilterFieldsUnderDocs, setActiveFilterFieldsUnderDocs] = useState([]); // New state for active filter fields
+    const [activeFilterFieldUnderDocs, setActiveFilterFieldUnderDocs] = useState(null);
+
+    const [interestedData, setInterestedData] = useState([]);
+    const [interestedDataCount, setInterestedDataCount] = useState(0);
+    const [completeInterestedData, setCompleteInterestedData] = useState([]);
+    const [dataToFilterInterested, setDataToFilterInterested] = useState([]);
+    const [filteredDataInterested, setFilteredDataInterested] = useState([]);
+    const [activeFilterFieldsInterested, setActiveFilterFieldsInterested] = useState([]); // New state for active filter fields
+    const [activeFilterFieldInterested, setActiveFilterFieldInterested] = useState(null);
+
+    const [maturedData, setMaturedData] = useState([]);
+    const [maturedDataCount, setMaturedDataCount] = useState(0);
+    const [completeMaturedData, setCompleteMaturedData] = useState([]);
+    const [dataToFilterMatured, setDataToFilterMatured] = useState([]);
+    const [filteredDataMatured, setFilteredDataMatured] = useState([]);
+    const [activeFilterFieldsMatured, setActiveFilterFieldsMatured] = useState([]); // New state for active filter fields
+    const [activeFilterFieldMatured, setActiveFilterFieldMatured] = useState(null);
+
+    const [notInterestedData, setNotInterestedData] = useState([]);
+    const [notInterestedDataCount, setNotInterestedDataCount] = useState(0);
+    const [completeNotInterestedData, setCompleteNotInterestedData] = useState([]);
+    const [dataToFilterNotInterested, setDataToFilterNotInterested] = useState([]);
+    const [filteredDataNotInterested, setFilteredDataNotInterested] = useState([]);
+    const [activeFilterFieldsNotInterested, setActiveFilterFieldsNotInterested] = useState([]); // New state for active filter fields
+    const [activeFilterFieldNotInterested, setActiveFilterFieldNotInterested] = useState(null);
+
+    const [forwardedData, setForwardedData] = useState([]);
+    const [forwardedDataCount, setForwardedDataCount] = useState(0);
+    const [completeForwardedData, setCompleteForwardedData] = useState([]);
+    const [dataToFilterForwarded, setDataToFilterForwarded] = useState([]);
+    const [filteredDataForwraded, setFilteredDataForwraded] = useState([]);
+    const [activeFilterFieldsForwarded, setActiveFilterFieldsForwraded] = useState([]); // New state for active filter fields
+    const [activeFilterFieldForwarded, setActiveFilterFieldForwarded] = useState(null);
+
+    const formatBdeForwardDate = (dateString) => {
+        if (!dateString) return "";
+
+        const date = new Date(dateString);
+        const options = { month: "short", day: "2-digit", year: "numeric" };
+        const formattedDate = date.toLocaleDateString("en-US", options);
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "pm" : "am";
+        const formattedTime = `${hours % 12 || 12}.${minutes} ${ampm}`;
+
+        return `${formattedDate} at ${formattedTime}`;
+    };
 
     const handleOpenCompanyProfile = () => {
         setShowCompanyProfile(true);
@@ -152,9 +227,6 @@ function EmployeePanelCopy({ fordesignation }) {
             document.title = `Employee-Sahay-CRM`;
         }
     }, [data.ename]);
-
-    
-
 
     let fetchingId;
     if (userId) {
@@ -245,61 +317,7 @@ function EmployeePanelCopy({ fordesignation }) {
         return typeof str === 'string' ? str.replace(/\u00A0/g, ' ').trim() : '';
     };
 
-    const [generalData, setGeneralData] = useState([]);
-    const [generalDataCount, setGeneralDataCount] = useState(0);
-    const [completeGeneralData, setCompleteGeneralData] = useState([]);
-    const [dataToFilterGeneral, setDataToFilterGeneral] = useState([]);
-    const [filteredDataGeneral, setFilteredDataGeneral] = useState([]);
-    const [activeFilterFieldsGeneral, setActiveFilterFieldsGeneral] = useState([]); // New state for active filter fields
-    const [activeFilterFieldGeneral, setActiveFilterFieldGeneral] = useState(null);
-
-    const [busyData, setBusyData] = useState([]);
-    const [busyDataCount, setBusyDataCount] = useState(0);
-    const [completeBusyData, setCompleteBusyData] = useState([]);
-    const [dataToFilterBusy, setDataToFilterBusy] = useState([]);
-    const [filteredDataBusy, setFilteredDataBusy] = useState([]);
-    const [activeFilterFieldsBusy, setActiveFilterFieldsBusy] = useState([]); // New state for active filter fields
-    const [activeFilterFieldBusy, setActiveFilterFieldBusy] = useState(null);
-
-    const [underDocsData, setUnderDocsData] = useState([]);
-    const [underDocsDataCount, setUnderDocsDataCount] = useState(0);
-    const [completeUnderDocsData, setCompleteUnderDocsData] = useState([]);
-    const [dataToFilterUnderDocs, setDataToFilterUnderDocs] = useState([]);
-    const [filteredDataUnderDocs, setFilteredDataUnderDocs] = useState([]);
-    const [activeFilterFieldsUnderDocs, setActiveFilterFieldsUnderDocs] = useState([]); // New state for active filter fields
-    const [activeFilterFieldUnderDocs, setActiveFilterFieldUnderDocs] = useState(null);
-
-    const [interestedData, setInterestedData] = useState([]);
-    const [interestedDataCount, setInterestedDataCount] = useState(0);
-    const [completeInterestedData, setCompleteInterestedData] = useState([]);
-    const [dataToFilterInterested, setDataToFilterInterested] = useState([]);
-    const [filteredDataInterested, setFilteredDataInterested] = useState([]);
-    const [activeFilterFieldsInterested, setActiveFilterFieldsInterested] = useState([]); // New state for active filter fields
-    const [activeFilterFieldInterested, setActiveFilterFieldInterested] = useState(null);
-
-    const [maturedData, setMaturedData] = useState([]);
-    const [maturedDataCount, setMaturedDataCount] = useState(0);
-    const [completeMaturedData, setCompleteMaturedData] = useState([]);
-    const [dataToFilterMatured, setDataToFilterMatured] = useState([]);
-    const [filteredDataMatured, setFilteredDataMatured] = useState([]);
-    const [activeFilterFieldsMatured, setActiveFilterFieldsMatured] = useState([]); // New state for active filter fields
-    const [activeFilterFieldMatured, setActiveFilterFieldMatured] = useState(null);
-
-    const [notInterestedData, setNotInterestedData] = useState([]);
-    const [notInterestedDataCount, setNotInterestedDataCount] = useState(0);
-    const [completeNotInterestedData, setCompleteNotInterestedData] = useState([]);
-    const [dataToFilterNotInterested, setDataToFilterNotInterested] = useState([]);
-    const [filteredDataNotInterested, setFilteredDataNotInterested] = useState([]);
-    const [activeFilterFieldsNotInterested, setActiveFilterFieldsNotInterested] = useState([]); // New state for active filter fields
-    const [activeFilterFieldNotInterested, setActiveFilterFieldNotInterested] = useState(null);
-
-    const [forwardedData, setForwardedData] = useState([]);
-    const [forwardedDataCount, setForwardedDataCount] = useState(0);
-    const [completeForwardedData, setCompleteForwardedData] = useState([]);
-    const [dataToFilterForwarded, setDataToFilterForwarded] = useState([]);
-    const [filteredDataForwraded, setFilteredDataForwraded] = useState([]);
-    const [activeFilterFieldsForwarded, setActiveFilterFieldsForwraded] = useState([]); // New state for active filter fields
-    const [activeFilterFieldForwarded, setActiveFilterFieldForwarded] = useState(null);
+    
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
             queryKey: ['newData', cleanString(data.ename), currentPage, searchQuery, fetchingId], // Add searchQuery to the queryKey
@@ -395,11 +413,14 @@ function EmployeePanelCopy({ fordesignation }) {
     const maturedTabRef = useRef(null); // Ref for the Matured tab
     const forwardedTabRef = useRef(null); // Ref for the Forwarded tab
     const notInterestedTabRef = useRef(null); // Ref for the Not Interested tab
-    const handleShowCallHistory = (companyName, clientNumber , bdenumber, bdmName) => {
+    const handleShowCallHistory = (companyName, clientNumber , bdenumber, bdmName , bdmAcceptStatus , bdeForwardDate) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
         setCompanyName(companyName);
-        setcallHistoryBdmName(bdmName)
+        setcallHistoryBdmName(bdmName);
+        setCallHistoryBdmAcceptStatus(bdmAcceptStatus)
+        setCallHistoryBdmForwardedDate(bdeForwardDate)
+
     }
 
     const hanleCloseCallHistory = () => {
@@ -645,49 +666,49 @@ function EmployeePanelCopy({ fordesignation }) {
     const handleCloseForwardBdmPopup = () => {
         setOpenAssignToBdm(false);
     };
-    const handleForwardDataToBDM = async (bdmName) => {
-        const data = queryData?.data.filter((employee) => selectedRows.includes(employee._id));
-        // console.log("data is:", data);
-        if (selectedRows.length === 0) {
-            Swal.fire("Please Select the Company to Forward", "", "Error");
-            setBdmName("Not Alloted");
-            handleCloseForwardBdmPopup();
-            return;
-        }
-        try {
-            Swal.fire({
-                title: 'Assigning...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
-                data: data,
-                name: bdmName
-            });
-            Swal.close();
-            Swal.fire({
-                title: "Data Sent!",
-                text: "Data sent successfully!",
-                icon: "success",
-            });
-            refetch()
-            setBdmName("Not Alloted");
-            handleCloseForwardBdmPopup();
-            setSelectedRows([]);
-            //setdataStatus("All");
+    // const handleForwardDataToBDM = async (bdmName) => {
+    //     const data = queryData?.data.filter((employee) => selectedRows.includes(employee._id));
+    //     // console.log("data is:", data);
+    //     if (selectedRows.length === 0) {
+    //         Swal.fire("Please Select the Company to Forward", "", "Error");
+    //         setBdmName("Not Alloted");
+    //         handleCloseForwardBdmPopup();
+    //         return;
+    //     }
+    //     try {
+    //         Swal.fire({
+    //             title: 'Assigning...',
+    //             allowOutsideClick: false,
+    //             didOpen: () => {
+    //                 Swal.showLoading();
+    //             }
+    //         });
+    //         const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+    //             data: data,
+    //             name: bdmName
+    //         });
+    //         Swal.close();
+    //         Swal.fire({
+    //             title: "Data Sent!",
+    //             text: "Data sent successfully!",
+    //             icon: "success",
+    //         });
+    //         refetch()
+    //         setBdmName("Not Alloted");
+    //         handleCloseForwardBdmPopup();
+    //         setSelectedRows([]);
+    //         //setdataStatus("All");
 
-        } catch (error) {
-            console.log("error fetching data", error.message);
-            Swal.close();
-            Swal.fire({
-                title: "Error!",
-                text: "Failed to update employee data. Please try again later.",
-                icon: "error",
-            });
-        }
-    };
+    //     } catch (error) {
+    //         console.log("error fetching data", error.message);
+    //         Swal.close();
+    //         Swal.fire({
+    //             title: "Error!",
+    //             text: "Failed to update employee data. Please try again later.",
+    //             icon: "error",
+    //         });
+    //     }
+    // };
 
     // -----------------------functions to change url--------------------------
     const handleChangeUrlPrev = () => {
@@ -922,16 +943,26 @@ function EmployeePanelCopy({ fordesignation }) {
                                                     </button>
                                                     {
                                                         openAssignToBdm && (
-                                                            <ForwardToBdmDialog
-                                                                openAssignToBdm={openAssignToBdm}
-                                                                handleCloseForwardBdmPopup={handleCloseForwardBdmPopup}
-                                                                handleForwardDataToBDM={handleForwardDataToBDM}
-
-                                                                setBdmName={setBdmName}
-                                                                bdmName={bdmName}
-                                                                newempData={newEmpData}
-                                                                id={(fordesignation === "admin" || fordesignation === "datamanager") ? id : userId}
-                                                                branchName={data.branchOffice}
+                                                            // <ForwardToBdmDialog
+                                                            //     openAssignToBdm={openAssignToBdm}
+                                                            //     handleCloseForwardBdmPopup={handleCloseForwardBdmPopup}
+                                                            //     handleForwardDataToBDM={handleForwardDataToBDM}
+                                                            //     setBdmName={setBdmName}
+                                                            //     bdmName={bdmName}
+                                                            //     newempData={newEmpData}
+                                                            //     id={(fordesignation === "admin" || fordesignation === "datamanager") ? id : userId}
+                                                            //     branchName={data.branchOffice}
+                                                            // />
+                                                            <BdmMaturedCasesDialogBox
+                                                            open={openAssignToBdm}
+                                                            closepopup={handleCloseForwardBdmPopup}
+                                                            currentData={queryData?.data}
+                                                            selectedRows={selectedRows}
+                                                            setSelectedRows={setSelectedRows}
+                                                            forwardedEName={data.ename}
+                                                            // handleForwardDataToBDM={handleForwardDataToBDM}
+                                                            forwardingPerson={"admin"}
+                                                            fetchNewData={refetch}
                                                             />
                                                         )
                                                     }
@@ -1424,6 +1455,12 @@ function EmployeePanelCopy({ fordesignation }) {
                         bdenumber={data.number}
                         bdmName={callHistoryBdmName}
                         companyName={companyName}
+                        bdeForwardDate={callHistoryBdmForwardedDate}
+                        fordesignation={fordesignation}
+                        bdmAcceptStatus={callHistoryBdmAcceptStatus}
+                        note={(fordesignation === "admin" || fordesignation === "datamanager") && 
+                            (callHistoryBdmAcceptStatus === "Accept" || callHistoryBdmAcceptStatus === "Pending" || callHistoryBdmAcceptStatus === "MaturedPending" || callHistoryBdmAcceptStatus === "Forwarded" || callHistoryBdmAcceptStatus === "MaturedAccepted") ? 
+                            `${data.ename} has forwarded this lead to ${callHistoryBdmName} on ${formatBdeForwardDate(callHistoryBdmForwardedDate)}` : "This Lead is Not Forwarded Yet"}
                     />)
                     : formOpen ? (
                         <RedesignedForm

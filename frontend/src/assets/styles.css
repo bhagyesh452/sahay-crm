@@ -98,11 +98,14 @@ body {
   border-radius: 0px 5px 5px 0px;
 }
 
-.btn.disabled, .btn:disabled, fieldset:disabled .btn {
+.btn.disabled,
+.btn:disabled,
+fieldset:disabled .btn {
   border: 1px solid #dadada;
   background: #eee;
-  color:#808080;
+  color: #808080;
 }
+
 /* 
 .css-13cymwt-control {
   border: 1px solid #ffb900 !important;
@@ -666,9 +669,11 @@ span.input-group-text {
   background: #fff9e8;
   color: #000;
 }
-#selected_admin td{
-  background: #fff7b4  !important;
+
+#selected_admin td {
+  background: #fff7b4 !important;
 }
+
 #selected_admin {
   background: #d9d9d9 !important;
   color: #000;
@@ -3495,6 +3500,7 @@ td input {
   font-weight: 600;
   width: 100%;
 }
+
 .dfault_untouched-status {
   background-color: #cfcfcf;
   border: 1px solid #9b9b9b;
@@ -3539,6 +3545,7 @@ td input {
   font-weight: 600;
   width: 100%;
 }
+
 .ep_docssent-w-status_status {
   background-color: #A7D6FF;
   border: 1px solid #2DBDCA;
@@ -3549,6 +3556,7 @@ td input {
   font-weight: 600;
   width: 100%;
 }
+
 .ep_docssent-we-status_status {
   background-color: #faadff;
   border: 1px solid #ae32ac;
@@ -3633,9 +3641,8 @@ td input {
   width: 240px;
 }
 
-.td_of_weblink .My_Text_Wrap
-{
-   width: calc(100% - 38px);
+.td_of_weblink .My_Text_Wrap {
+  width: calc(100% - 38px);
 }
 
 .rm-mybookingmain .table-style-3 table tbody tr td {
@@ -3736,6 +3743,35 @@ td input {
   /* Makes it look disabled */
   cursor: not-allowed;
   /* Changes the cursor to indicate the item is disabled */
+}
+
+.disclaimer-box {
+  padding: 6px 21px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  color: #e73131;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  /* Ensure the date-time positioning works properly */
+}
+
+.date-time {
+  font-size: 10px;
+  color: #756a6a;
+  margin-top: 1px;
+  white-space: nowrap;
+  /* Prevents wrapping of date/time */
+  position: absolute;
+  /* Position relative to the disclaimer box */
+  bottom: 5px;
+  /* Align near the bottom of the box */
+  right: 15px;
+  /* Align to the right side of the box */
+  white-space: nowrap;
+  /* Prevent wrapping of date/time */
 }
 
 /*****************************Basic Information Form******************************************/
@@ -4594,8 +4630,9 @@ div#table-default td {
   margin-left: 8px;
   font-size: 10px;
   color: #6f6f6f;
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .docs_w-history-btn {
   width: 32px;
   height: 22px;
@@ -4607,8 +4644,9 @@ div#table-default td {
   margin-left: 8px;
   font-size: 10px;
   color: #6f6f6f;
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .docs_e-history-btn {
   width: 32px;
   height: 22px;
@@ -4620,8 +4658,9 @@ div#table-default td {
   margin-left: 8px;
   font-size: 10px;
   color: #6f6f6f;
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .docs_eeew-history-btn {
   width: 32px;
   height: 22px;
@@ -4633,8 +4672,9 @@ div#table-default td {
   margin-left: 8px;
   font-size: 10px;
   color: #6f6f6f;
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .matured-history-btn {
   width: 32px;
   height: 22px;
@@ -4646,8 +4686,9 @@ div#table-default td {
   margin-left: 8px;
   font-size: 10px;
   color: #6f6f6f;
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .followup-history-btn {
   width: 32px;
   height: 22px;
