@@ -10,7 +10,6 @@ function AdminEmployeePerformanceReport() {
   const [isFilter, setIsFilter] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
-
   const [currentMonthNew, setCurrentMonth] = useState('');
   const [currentYearNew, setCurrentYear] = useState('');
 
@@ -24,6 +23,9 @@ function AdminEmployeePerformanceReport() {
   };
 
   const fetchEmployeePerformance = async () => {
+    const date = new Date();
+    const month = date.toLocaleString('default', { month: 'long' }); // e.g., 'November'
+    const year = date.getFullYear();
     try {
       setCurrentDataLoading(true);
       const response = await axios.get(`${secretKey}/employee/einfo`);
@@ -31,7 +33,7 @@ function AdminEmployeePerformanceReport() {
       const sortedData = response.data.map(employee => {
         // Filter target details for the current year
         const currentYearDetails = employee.targetDetails.filter(detail =>
-          parseInt(detail.year) === currentYearNew
+          parseInt(detail?.year) === year
         );
   
         // Calculate the total achieved amount and total target amount for the current year
@@ -58,9 +60,9 @@ function AdminEmployeePerformanceReport() {
     }
   };
 
-  useEffect(() => {
-    fetchCurrentMonthAndYear();
-  }, []);
+  // useEffect(() => {
+  //   fetchCurrentMonthAndYear();
+  // }, []);
 
   const toggleEmployeeDetails = (employeeId) => {
     setExpandedEmployee(expandedEmployee === employeeId ? null : employeeId);

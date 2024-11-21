@@ -47,29 +47,6 @@ function EmpNav({ userId, bdmWork }) {
     window.location.replace(`/employee-reports/${userId}`)
   }
 
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await axios.get(`${secretKey}/employee/einfo`);
-
-
-  //     // Set the retrieved data in the state
-  //     const tempData = response.data;
-  //     const userData = tempData.find((item) => item._id === userId);
-  //     setData(userData);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error.message);
-  //   }
-  // };
-  // const secretKey = process.env.REACT_APP_SECRET_KEY;
-
-  // useEffect(() => {
-  //   if (userId) {
-  //     fetchData()
-  //   }
-  // }, [userId])
-
-
-
 
   return (
     <div>
@@ -123,21 +100,7 @@ function EmpNav({ userId, bdmWork }) {
                 </Link>
                 {bdmWork && (
                   <>
-                    {/* <Link style={{ textDecoration: "none", color: "black" }} className={
-                      location.pathname === `/employee-team-leads-old/${userId}` ? "nav-item active" : "nav-item"
-                    }
-                      to={`/employee-team-leads-old/${userId}`}>
-
-                      <a className="nav-link" href="#">
-                        <span className="nav-link-icon d-md-none d-lg-inline-block">
-
-                          <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                        </span>
-                        <span className="nav-link-title">Team Leads Old</span>
-                      </a>
-                    </Link> */}
-
-                    <Link style={{ textDecoration: "none", color: "black" }} className={
+                   <Link style={{ textDecoration: "none", color: "black" }} className={
                       location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
                     }
                       to={`/employee-team-leads/${userId}`}>
@@ -181,22 +144,7 @@ function EmpNav({ userId, bdmWork }) {
                   </a>
 
                 </Link>
-                {/* <Link style={{ textDecoration: "none", color: "black" }}
-                  className={
-                    location.pathname === `/employee-assets/${userId}` ? "nav-item active" : "nav-item"
-                  }
-                  to={`/employee-assets/${userId}`}
-                >
-                  <a className="nav-link" href="#">
-                    <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <IoNewspaperOutline style={{ height: "24px", width: "19px" }} />
-                    </span>
-                    <span className="nav-link-title">Schemes & Services</span>
-                  </a>
-
-                </Link> */}
               </ul>
-
             </div>
           </div>
         </div>

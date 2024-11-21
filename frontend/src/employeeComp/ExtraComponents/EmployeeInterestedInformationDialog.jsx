@@ -446,10 +446,24 @@ function EmployeeInterestedInformationDialog({
                             <div className="company_name_int-_mod">
                                 {companyName}
                             </div>
-                           
+                            {/* <div className="company_name_int-_mod">
+                                {prefilledData?.updatedAt ? formatDatePro(prefilledData?.updatedAt) : ""}
+                            </div> */}
                         </div>
 
-                        <div className="accordion" id="accordionQue"> 
+                        <div className="accordion" id="accordionQue">
+                            {/* <div className="accordion-part">
+                          
+                                <div className="d-flex justify-content-end align-items-center mb-2">
+                                    <span className="part-date">
+                                        {visibleQuestions["q2"]
+                                            ? formatDatePro(prefilledData?.clientEmailRequest?.date)
+                                            : visibleQuestions["q1"]
+                                                ? formatDatePro(prefilledData?.clientWhatsAppRequest?.date)
+                                                : ""}
+                                    </span>
+                                </div>
+                            </div> */}
                             {((!forView) && (status !== "Interested") || (!isEmptyAnswer(formData.clientWhatsAppRequest.nextFollowUpDate) || !isEmptyAnswer(formData.clientWhatsAppRequest.remarks))) &&
                                 (
                                     <>
@@ -466,8 +480,9 @@ function EmployeeInterestedInformationDialog({
                                                     <div className="int-que mr-2">
                                                         <div className="question-container">
                                                             <span>{calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review!</span>
-                                                           
+                                                            {/* <span className="date">{formatDatePro(prefilledData?.clientWhatsAppRequest?.date) || ""}</span> */}
                                                         </div>
+                                                        {/* {calculateQuestionNumber("q1")}. Client asked to send documents/information on WhatsApp for review! */}
                                                     </div>
                                                     {(forView) ? (
                                                         <div className="custom-toggle d-flex align-items-center int-opt">
@@ -667,7 +682,18 @@ function EmployeeInterestedInformationDialog({
                             )}
 
                             <hr className="mb-2 mt-2" style={{ border: "1px solid #ddd" }} />
-                            
+                            {/* <div className="accordion-part">
+                                
+                                <div className="d-flex justify-content-end align-items-center mb-2">
+                                    <span className="part-date">
+                                        {visibleQuestions["q4"]
+                                            ? formatDatePro(prefilledData?.interestedButNotNow?.date)
+                                            : visibleQuestions["q3"]
+                                                ? formatDatePro(prefilledData?.interestedInServices?.date)
+                                                : ""}
+                                    </span>
+                                </div>
+                            </div> */}
                             {((!forView) && (status !== "Docs/Info Sent (W)" && status !== "Docs/Info Sent (E)" && status !== "Docs/Info Sent (W&E)") || (!isEmptyAnswer(formData.interestedInServices.nextFollowUpDate) ||
                                 !isEmptyAnswer(formData.interestedInServices.remarks) ||
                                 !isEmptyAnswer(formData.interestedInServices.servicesPitched) ||
@@ -688,6 +714,8 @@ function EmployeeInterestedInformationDialog({
                                         <div className="d-flex align-items-center justify-content-between"  >
                                             <div className="int-que mr-2">
                                                 <span>{calculateQuestionNumber("q3")}. Interested in one of our services</span>
+                                                {/* <span className="date">{formatDatePro(prefilledData?.interestedInServices?.date) || ""}</span> */}
+                                                {/* {calculateQuestionNumber("q3")}. Interested in one of our services. */}
                                             </div>
                                             {forView ? (
                                                 <div className="custom-toggle d-flex align-items-center int-opt">
@@ -860,6 +888,8 @@ function EmployeeInterestedInformationDialog({
                                                 <div className="d-flex align-items-center justify-content-between"  >
                                                     <div className="int-que mr-2">
                                                         <span>{calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now.</span>
+                                                        {/* <span className="date">{formatDatePro(prefilledData?.interestedButNotNow?.date) || ""}</span> */}
+                                                        {/* {calculateQuestionNumber("q4")}. Interested, but doesn't need the service right now. */}
                                                     </div>
                                                     {forView ? (
                                                         <div className="custom-toggle d-flex align-items-center int-opt">
