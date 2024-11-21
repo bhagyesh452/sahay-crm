@@ -9,6 +9,7 @@ function EmployeeLayout() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
     const [data, setData] = useState([]);
+    const [teamData, setTeamData] = useState([])
 
     const fetchData = async () => {
         try {
@@ -18,6 +19,24 @@ function EmployeeLayout() {
             console.error("Error fetching data:", error.message);
         }
     };
+
+    const fetchTeamLeadsData = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${data.ename}`);
+            setTeamData(response.data);
+        } catch (error) {
+            console.log(error)
+        }
+    };
+    
+    useEffect(() => {
+        if (data.ename) {
+            fetchTeamLeadsData();
+        }
+    }, [data.ename]);
+    
+    console.log("teamData" , teamData)
+    
 
     // Fetch data once and pass it to Header and EmpNav
     useEffect(() => {
@@ -34,7 +53,12 @@ function EmployeeLayout() {
                 designation={data.newDesignation}
                 data={data}
             />
-            <EmpNav userId={userId} bdmWork={data.bdmWork} />
+            <EmpNav 
+            userId={userId} 
+            bdmWork={data.bdmWork}
+            isTeamLeadsVisible={teamData && teamData.length > 0 ? true : false}
+            
+            />
             {/* This will render the specific page content */}
             <Outlet />
         </>

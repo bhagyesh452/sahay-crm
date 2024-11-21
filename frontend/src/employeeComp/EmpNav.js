@@ -21,7 +21,9 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-function EmpNav({ userId, bdmWork }) {
+
+
+function EmpNav({ userId, bdmWork ,isTeamLeadsVisible }) {
   const location = useLocation();
   const navigate = useNavigate();
   //console.log("bdmWORKON NAV", bdmWork)
@@ -46,6 +48,8 @@ function EmpNav({ userId, bdmWork }) {
   const handleClickReports = () => {
     window.location.replace(`/employee-reports/${userId}`)
   }
+
+  console.log("isTeamLeadsVisible" , isTeamLeadsVisible)
 
 
   return (
@@ -98,7 +102,7 @@ function EmpNav({ userId, bdmWork }) {
                   </a>
 
                 </Link>
-                {bdmWork && (
+                {bdmWork && isTeamLeadsVisible && (
                   <>
                    <Link style={{ textDecoration: "none", color: "black" }} className={
                       location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
