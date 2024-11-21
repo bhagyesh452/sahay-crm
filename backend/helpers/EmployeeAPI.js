@@ -664,81 +664,81 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
 
 
 
-router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
-  const { empId } = req.params;
-  try {
-    // Try finding the employee in adminModel firstnpm
-    let emp = await adminModel.findById(empId);
-    
-    // If employee not found in adminModel, search in deletedEmployeeModels
-    if (!emp) {
-      emp = await deletedEmployeeModel.findById(empId);
-    }
-    if(emp){
-      const teamLeadsData = await TeamLeadsModel.find({
-        bdmName: emp.ename,
-      }).select("ename").lean();
-    }
-   
-
-    // If employee is still not found, return an error message
-    if (!emp) {
-      return res.status(404).json({ result: false, message: "Employee not found" });
-    } else {
-      // If found, return the employee data
-      return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
-    }
-  } catch (error) {
-    // Return an error if something goes wrong
-    return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
-  }
-});
-
-
-
-
-
 // router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
 //   const { empId } = req.params;
 //   try {
-//     // Try finding the employee in adminModel first
+//     // Try finding the employee in adminModel firstnpm
 //     let emp = await adminModel.findById(empId);
     
 //     // If employee not found in adminModel, search in deletedEmployeeModels
 //     if (!emp) {
 //       emp = await deletedEmployeeModel.findById(empId);
 //     }
-
-//     let isVisibleTeamLeads = false; // Default value
-
-//     if (emp) {
-//       // Fetch the team leads data
+//     if(emp){
 //       const teamLeadsData = await TeamLeadsModel.find({
 //         bdmName: emp.ename,
 //       }).select("ename").lean();
-
-//       // Check the length of teamLeadsData and set isVisibleTeamLeads accordingly
-//       isVisibleTeamLeads = teamLeadsData.length > 0; 
 //     }
+   
 
 //     // If employee is still not found, return an error message
 //     if (!emp) {
 //       return res.status(404).json({ result: false, message: "Employee not found" });
 //     } else {
-//       // If found, add the isVisibleTeamLeads field to the employee data
-//       const employeeData = {
-//         ...emp.toObject(), // Convert Mongoose document to plain object if needed
-//         isVisibleTeamLeads,
-//       };
-
-//       // Return the updated employee data
-//       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: employeeData });
+//       // If found, return the employee data
+//       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
 //     }
 //   } catch (error) {
 //     // Return an error if something goes wrong
 //     return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
 //   }
 // });
+
+
+
+
+
+router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
+  const { empId } = req.params;
+  try {
+    // Try finding the employee in adminModel first
+    let emp = await adminModel.findById(empId);
+    
+    // If employee not found in adminModel, search in deletedEmployeeModels
+    if (!emp) {
+      emp = await deletedEmployeeModel.findById(empId);
+    }
+
+    let isVisibleTeamLeads = false; // Default value
+
+    if (emp) {
+      // Fetch the team leads data
+      const teamLeadsData = await TeamLeadsModel.find({
+        bdmName: emp.ename,
+      }).select("ename").lean();
+
+      // Check the length of teamLeadsData and set isVisibleTeamLeads accordingly
+      isVisibleTeamLeads = teamLeadsData.length > 0; 
+    }
+
+    // If employee is still not found, return an error message
+    if (!emp) {
+      return res.status(404).json({ result: false, message: "Employee not found" });
+    } else {
+      // If found, add the isVisibleTeamLeads field to the employee data
+      const employeeData = {
+        ...emp.toObject(), // Convert Mongoose document to plain object if needed
+        isVisibleTeamLeads,
+      };
+
+      // Return the updated employee data
+      return res.status(200).json({ result: true, message: "Employee fetched successfully", data: employeeData });
+    }
+  } catch (error) {
+    // Return an error if something goes wrong
+    return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
+  }
+});
 
 // Fetch Profile Photo :
 
