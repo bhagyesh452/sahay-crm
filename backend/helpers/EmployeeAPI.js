@@ -663,72 +663,22 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
 
 
 
-// router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
-//   const { empId } = req.params;
-//   try {
-//     // Try finding the employee in adminModel firstnpm
-//     let emp = await adminModel.findById(empId);
-    
-//     // If employee not found in adminModel, search in deletedEmployeeModels
-//     if (!emp) {
-//       emp = await deletedEmployeeModel.findById(empId);
-//     }
-
-//     // If employee is still not found, return an error message
-//     if (!emp) {
-//       return res.status(404).json({ result: false, message: "Employee not found" });
-//     } else {
-//       // If found, return the employee data
-//       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
-//     }
-//   } catch (error) {
-//     // Return an error if something goes wrong
-//     return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
-//   }
-// });
-
-
-
-// Fetch Profile Photo :
-
-router.get("/fetchEmployeeFromId/:empId", async (req, res) => { 
+router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   const { empId } = req.params;
   try {
-    // Try finding the employee in adminModel first
+    // Try finding the employee in adminModel firstnpm
     let emp = await adminModel.findById(empId);
-    let isActiveEmployee = true;  // Flag to indicate if emp is from adminModel
-
+    
     // If employee not found in adminModel, search in deletedEmployeeModels
     if (!emp) {
       emp = await deletedEmployeeModel.findById(empId);
-      isActiveEmployee = false;  // Employee is not active
     }
 
     // If employee is still not found, return an error message
     if (!emp) {
       return res.status(404).json({ result: false, message: "Employee not found" });
     } else {
-      // If found, and emp is from adminModel (active employee)
-      if (isActiveEmployee) {
-        // Check if designation is "Sales Executive", "Sales Manager", or "Floor Manager"
-        const allowedDesignations = ["Sales Executive", "Sales Manager", "Floor Manager"];
-        if (allowedDesignations.includes(emp.designation)) {
-          // Check if probation period is over
-          const today = new Date();
-          const jdate = new Date(emp.jdate);  // Assuming emp.jdate is a valid date
-          const probationEndDate = new Date(jdate);
-          probationEndDate.setMonth(probationEndDate.getMonth() + 3); // Add 3 months
-
-          if (today >= probationEndDate) {
-            // Probation period is over
-            if (!emp.bdmWork) {  // Only update if bdmWork is not already true
-              emp.bdmWork = true;
-              await emp.save();  // Save the updated employee
-            }
-          }
-        }
-      }
-      // Return the employee data
+      // If found, return the employee data
       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
     }
   } catch (error) {
@@ -739,6 +689,7 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
 
 
 
+// Fetch Profile Photo :
 router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
   const { empId, filename } = req.params;
   const pdfPath = path.join(
@@ -2396,12 +2347,59 @@ router.get('/achieved-details/:ename', async (req, res) => {
 
 
 // 2. Read the Employee
+// router.get("/einfo", async (req, res) => {
+//   try {
+
+//     const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
+
+//     res.json(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
 router.get("/einfo", async (req, res) => {
   try {
+    // Fetch all employees from the database
+    const employees = await adminModel.find();
 
-    const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
+    // Define allowed designations
+    const allowedDesignations = ["Sales Executive", "Sales Manager", "Floor Manager"];
+    const today = new Date();
 
-    res.json(data);
+    // Iterate through the employees and update `bdmWork` for eligible ones
+    const updatePromises = employees.map(async (employee) => {
+      if (
+        allowedDesignations.includes(employee.designation) && // Check if designation is allowed
+        employee.jdate && // Ensure jdate exists
+        employee.bdmWork !== true // Only update if `bdmWork` is not already true
+      ) {
+        const jdate = new Date(employee.jdate); // Parse the joining date
+        const probationEndDate = new Date(jdate);
+        probationEndDate.setMonth(probationEndDate.getMonth() + 3); // Add 3 months to the joining date
+
+        // Check if the probation period is completed
+        if (today >= probationEndDate) {
+          // Update `bdmWork` field in the database
+          employee.bdmWork = true; // Update the in-memory object
+          await adminModel.updateOne(
+            { _id: employee._id },
+            { $set: { bdmWork: true } }
+          ); // Save the change to the database
+        }
+      }
+      return employee; // Return the updated employee object
+    });
+
+    // Wait for all updates to complete
+    const updatedEmployees = await Promise.all(updatePromises);
+
+    console.log("updatedEmployees", updatedEmployees);
+
+    // Return all employees, including the updated ones
+    res.status(200).json(updatedEmployees);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
