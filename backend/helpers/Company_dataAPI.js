@@ -4125,6 +4125,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 
   try {
     const query = {
+      isDeletedCompany: false, // Ensure only non-deleted companies are included
       $or: [
         { bdeName: employeeName },
         { bdmName: employeeName },
