@@ -6176,6 +6176,184 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
 });
 
 // API to update the "isPreviousMaturedCase" and add "bookingAmount" field for the Projection collection when firsy booking is added :
+// router.put("/update-matured-case-in-projection-for-first-booking/:companyName", async (req, res) => {
+//   const { companyName } = req.params;
+
+//   try {
+//     // Fetch booking data and projection
+//     const bookingData = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+//     const projection = await ProjectionModel.findOne({ companyName: companyName });
+
+//     if (!bookingData || !projection) {
+//       console.log("no data projection")
+//       // return res.status(404).json({ result: false, message: "Company or Projection not found" });
+//     }
+
+//     // Define service mapping for generalization
+//     const serviceMappings = {
+//       "ISO Certificate": [
+//         "ISO Certificate IAF 9001 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 9001 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 9001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate IAF 14001 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 14001 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 14001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate IAF 45001 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 45001 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 45001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate IAF 22000 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 22000 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 22000 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate IAF 27001 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 27001 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 27001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate IAF 13485 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 13485 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 13485 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate IAF 20000-1 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 20000-1 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 20000-1 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate IAF 50001 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 50001 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 50001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate IAF 17025-2017 1 YEAR VALIDITY",
+//         "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY",
+//         "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+//         "ISO Certificate Non IAF 9001",
+//         "ISO Certificate Non IAF 14001",
+//         "ISO Certificate Non IAF 45001",
+//         "ISO Certificate Non IAF 22000",
+//         "ISO Certificate Non IAF 27001",
+//         "ISO Certificate Non IAF 27001",
+//         "ISO Certificate Non IAF 13485",
+//         "ISO Certificate Non IAF 13485",
+//         "ISO Certificate Non IAF 20000-1",
+//         "ISO Certificate Non IAF 50001",
+//         "ISO Certificate Non IAF 21001",
+//         "ISO Certificate Non IAF GMP",
+//         "ISO Certificate Non IAF GAP",
+//         "ISO Certificate Non IAF FDA",
+//         "ISO Certificate Non IAF HALAL",
+//         "ISO Certificate Non IAF ORGANIC",
+//         "ISO Certificate Non IAF FSSC",
+//         "ISO Certificate Non IAF FSC",
+//         "ISO Certificate Non IAF BIFMA",
+//         "ISO Certificate Non IAF CE",
+//         "ISO Certificate Non IAF HACCP",
+//         "ISO Certificate Non IAF GHP",
+//         "ISO Certificate Non IAF AIOTA",
+//         "ISO Certificate Non IAF GREEN GUARD",
+//         "ISO Certificate Non IAF SEDEX",
+//         "ISO Certificate Non IAF WHO-GMP",
+//         "ISO Certificate Non IAF BRC",
+//         "ISO Certificate Non IAF VEGAN",
+//         "ISO Certificate Non IAF SA 8000",
+//         "ISO Certificate Non IAF SA CMMI LEVEL 3",
+//         "ISO Certificate Non IAF SA CMMI LEVEL 5",
+//         "ISO Certificate Non IAF SA GO GREEN",
+//         "ISO Certificate Non IAF SA PCMM 5",
+//         "ISO Certificate Non IAF SA RIOS",
+//         "ISO Certificate Non IAF SA ROHS",
+//         "ISO Certificate Non IAF SA IEC 17020",
+//         "ISO Certificate Non IAF SA GFSI",
+//         "ISO Certificate Non IAF SA GMO",
+//         "ISO Certificate Non IAF SA 17025-2017",
+//         "ISO Certificate Non IAF Others",
+//       ],
+//       "Company Incorporation": [
+//         "OPC Private Limited Company Incorporation",
+//         "Private Limited Company Incorporation",
+//         "LLP Company Incorporation",
+//       ],
+//       "Organization DSC": [
+//         "Organization DSC Only Signature With 1 Year Validity",
+//         "Organization DSC Only Signature With 2 Year Validity",
+//         "Organization DSC Only Signature With 3 Year Validity",
+//         "Organization DSC Only Encryption With 1 Year Validity",
+//         "Organization DSC Only Encryption With 2 Year Validity",
+//         "Organization DSC Only Encryption With 3 Year Validity",
+//         "Organization DSC Combo With 1 Year Validity",
+//         "Organization DSC Combo With 2 Year Validity",
+//         "Organization DSC Combo With 3 Year Validity"
+//       ],
+//       "Director DSC": [
+//         "Director DSC Only Signature With 1 Year Validity",
+//         "Director DSC Only Signature With 2 Year Validity",
+//         "Director DSC Only Signature With 3 Year Validity",
+//         "Director DSC Only Encryption With 1 Year Validity",
+//         "Director DSC Only Encryption With 2 Year Validity",
+//         "Director DSC Only Encryption With 3 Year Validity",
+//         "Director DSC Combo With 1 Year Validity",
+//         "Director DSC Combo With 2 Year Validity",
+//         "Director DSC Combo With 3 Year Validity"
+//       ],
+//     };
+
+//     // Function to find generalized service name
+//     const getGeneralizedServiceName = (serviceName) => {
+//       for (const [generalName, variants] of Object.entries(serviceMappings)) {
+//         if (variants.some((variant) => serviceName.includes(variant))) {
+//           return generalName;
+//         }
+//       }
+//       return serviceName; // Return as-is if no match
+//     };
+
+//     // Flatten the services with their payment amounts and generalize names
+//     const servicesWithAmounts = bookingData.services.map((service) => ({
+//       serviceName: getGeneralizedServiceName(service.serviceName),
+//       totalPaymentWGST: service.totalPaymentWGST,
+//     }));
+
+//     let totalBookingAmount = 0;
+//     let isMatured = false;
+
+//     // Check if any generalized service matches the offeredServices and accumulate booking amounts
+//     servicesWithAmounts.forEach((service) => {
+//       if (projection.offeredServices.includes(service.serviceName)) {
+//         isMatured = true; // Mark as matured if a match is found
+//         totalBookingAmount += service.totalPaymentWGST; // Add to total amount
+//       }
+//     });
+
+//     // Update the main projection document
+//     if (isMatured) {
+//       projection.isPreviousMaturedCase = true;
+//       projection.bookingAmount = totalBookingAmount;
+//     }
+
+//     // Update history entries if applicable
+//     if (projection.history && projection.history.length > 0) {
+//       projection.history.forEach((historyEntry) => {
+//         let historyTotalBookingAmount = 0;
+//         let historyMatured = false;
+
+//         servicesWithAmounts.forEach((service) => {
+//           if (historyEntry.data.offeredServices.includes(service.serviceName)) {
+//             historyMatured = true;
+//             historyTotalBookingAmount += service.totalPaymentWGST;
+//           }
+//         });
+
+//         if (historyMatured) {
+//           historyEntry.data.isPreviousMaturedCase = true;
+//           historyEntry.data.bookingAmount = historyTotalBookingAmount;
+//         }
+//       });
+//     }
+//     await projection.save();
+
+//     res.status(200).json({ result: true, message: "Projection updated successfully" });
+
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({
+//       result: false,
+//       message: "Error updating matured case status",
+//     });
+//   }
+// });
+
 router.put("/update-matured-case-in-projection-for-first-booking/:companyName", async (req, res) => {
   const { companyName } = req.params;
 
@@ -6184,109 +6362,111 @@ router.put("/update-matured-case-in-projection-for-first-booking/:companyName", 
     const bookingData = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
     const projection = await ProjectionModel.findOne({ companyName: companyName });
 
+    // Skip the process if bookingData or projection is not available
     if (!bookingData || !projection) {
-      return res.status(404).json({ result: false, message: "Company or Projection not found" });
+      console.log("Booking data or projection not found for:", companyName);
+      return res.status(200).json({ result: false, message: "Skipped: Booking data or projection not available" });
     }
 
-    // Define service mapping for generalization
-    const serviceMappings = {
-      "ISO Certificate": [
-        "ISO Certificate IAF 9001 1 YEAR VALIDITY",
-        "ISO Certificate IAF 9001 3 YEAR VALIDITY",
-        "ISO Certificate IAF 9001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate IAF 14001 1 YEAR VALIDITY",
-        "ISO Certificate IAF 14001 3 YEAR VALIDITY",
-        "ISO Certificate IAF 14001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate IAF 45001 1 YEAR VALIDITY",
-        "ISO Certificate IAF 45001 3 YEAR VALIDITY",
-        "ISO Certificate IAF 45001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate IAF 22000 1 YEAR VALIDITY",
-        "ISO Certificate IAF 22000 3 YEAR VALIDITY",
-        "ISO Certificate IAF 22000 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate IAF 27001 1 YEAR VALIDITY",
-        "ISO Certificate IAF 27001 3 YEAR VALIDITY",
-        "ISO Certificate IAF 27001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate IAF 13485 1 YEAR VALIDITY",
-        "ISO Certificate IAF 13485 3 YEAR VALIDITY",
-        "ISO Certificate IAF 13485 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate IAF 20000-1 1 YEAR VALIDITY",
-        "ISO Certificate IAF 20000-1 3 YEAR VALIDITY",
-        "ISO Certificate IAF 20000-1 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate IAF 50001 1 YEAR VALIDITY",
-        "ISO Certificate IAF 50001 3 YEAR VALIDITY",
-        "ISO Certificate IAF 50001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate IAF 17025-2017 1 YEAR VALIDITY",
-        "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY",
-        "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-        "ISO Certificate Non IAF 9001",
-        "ISO Certificate Non IAF 14001",
-        "ISO Certificate Non IAF 45001",
-        "ISO Certificate Non IAF 22000",
-        "ISO Certificate Non IAF 27001",
-        "ISO Certificate Non IAF 27001",
-        "ISO Certificate Non IAF 13485",
-        "ISO Certificate Non IAF 13485",
-        "ISO Certificate Non IAF 20000-1",
-        "ISO Certificate Non IAF 50001",
-        "ISO Certificate Non IAF 21001",
-        "ISO Certificate Non IAF GMP",
-        "ISO Certificate Non IAF GAP",
-        "ISO Certificate Non IAF FDA",
-        "ISO Certificate Non IAF HALAL",
-        "ISO Certificate Non IAF ORGANIC",
-        "ISO Certificate Non IAF FSSC",
-        "ISO Certificate Non IAF FSC",
-        "ISO Certificate Non IAF BIFMA",
-        "ISO Certificate Non IAF CE",
-        "ISO Certificate Non IAF HACCP",
-        "ISO Certificate Non IAF GHP",
-        "ISO Certificate Non IAF AIOTA",
-        "ISO Certificate Non IAF GREEN GUARD",
-        "ISO Certificate Non IAF SEDEX",
-        "ISO Certificate Non IAF WHO-GMP",
-        "ISO Certificate Non IAF BRC",
-        "ISO Certificate Non IAF VEGAN",
-        "ISO Certificate Non IAF SA 8000",
-        "ISO Certificate Non IAF SA CMMI LEVEL 3",
-        "ISO Certificate Non IAF SA CMMI LEVEL 5",
-        "ISO Certificate Non IAF SA GO GREEN",
-        "ISO Certificate Non IAF SA PCMM 5",
-        "ISO Certificate Non IAF SA RIOS",
-        "ISO Certificate Non IAF SA ROHS",
-        "ISO Certificate Non IAF SA IEC 17020",
-        "ISO Certificate Non IAF SA GFSI",
-        "ISO Certificate Non IAF SA GMO",
-        "ISO Certificate Non IAF SA 17025-2017",
-        "ISO Certificate Non IAF Others",
-      ],
-      "Company Incorporation": [
-        "OPC Private Limited Company Incorporation",
-        "Private Limited Company Incorporation",
-        "LLP Company Incorporation",
-      ],
-      "Organization DSC": [
-        "Organization DSC Only Signature With 1 Year Validity",
-        "Organization DSC Only Signature With 2 Year Validity",
-        "Organization DSC Only Signature With 3 Year Validity",
-        "Organization DSC Only Encryption With 1 Year Validity",
-        "Organization DSC Only Encryption With 2 Year Validity",
-        "Organization DSC Only Encryption With 3 Year Validity",
-        "Organization DSC Combo With 1 Year Validity",
-        "Organization DSC Combo With 2 Year Validity",
-        "Organization DSC Combo With 3 Year Validity"
-      ],
-      "Director DSC": [
-        "Director DSC Only Signature With 1 Year Validity",
-        "Director DSC Only Signature With 2 Year Validity",
-        "Director DSC Only Signature With 3 Year Validity",
-        "Director DSC Only Encryption With 1 Year Validity",
-        "Director DSC Only Encryption With 2 Year Validity",
-        "Director DSC Only Encryption With 3 Year Validity",
-        "Director DSC Combo With 1 Year Validity",
-        "Director DSC Combo With 2 Year Validity",
-        "Director DSC Combo With 3 Year Validity"
-      ],
-    };
+        // Define service mapping for generalization
+        const serviceMappings = {
+          "ISO Certificate": [
+            "ISO Certificate IAF 9001 1 YEAR VALIDITY",
+            "ISO Certificate IAF 9001 3 YEAR VALIDITY",
+            "ISO Certificate IAF 9001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate IAF 14001 1 YEAR VALIDITY",
+            "ISO Certificate IAF 14001 3 YEAR VALIDITY",
+            "ISO Certificate IAF 14001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate IAF 45001 1 YEAR VALIDITY",
+            "ISO Certificate IAF 45001 3 YEAR VALIDITY",
+            "ISO Certificate IAF 45001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate IAF 22000 1 YEAR VALIDITY",
+            "ISO Certificate IAF 22000 3 YEAR VALIDITY",
+            "ISO Certificate IAF 22000 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate IAF 27001 1 YEAR VALIDITY",
+            "ISO Certificate IAF 27001 3 YEAR VALIDITY",
+            "ISO Certificate IAF 27001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate IAF 13485 1 YEAR VALIDITY",
+            "ISO Certificate IAF 13485 3 YEAR VALIDITY",
+            "ISO Certificate IAF 13485 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate IAF 20000-1 1 YEAR VALIDITY",
+            "ISO Certificate IAF 20000-1 3 YEAR VALIDITY",
+            "ISO Certificate IAF 20000-1 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate IAF 50001 1 YEAR VALIDITY",
+            "ISO Certificate IAF 50001 3 YEAR VALIDITY",
+            "ISO Certificate IAF 50001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate IAF 17025-2017 1 YEAR VALIDITY",
+            "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY",
+            "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
+            "ISO Certificate Non IAF 9001",
+            "ISO Certificate Non IAF 14001",
+            "ISO Certificate Non IAF 45001",
+            "ISO Certificate Non IAF 22000",
+            "ISO Certificate Non IAF 27001",
+            "ISO Certificate Non IAF 27001",
+            "ISO Certificate Non IAF 13485",
+            "ISO Certificate Non IAF 13485",
+            "ISO Certificate Non IAF 20000-1",
+            "ISO Certificate Non IAF 50001",
+            "ISO Certificate Non IAF 21001",
+            "ISO Certificate Non IAF GMP",
+            "ISO Certificate Non IAF GAP",
+            "ISO Certificate Non IAF FDA",
+            "ISO Certificate Non IAF HALAL",
+            "ISO Certificate Non IAF ORGANIC",
+            "ISO Certificate Non IAF FSSC",
+            "ISO Certificate Non IAF FSC",
+            "ISO Certificate Non IAF BIFMA",
+            "ISO Certificate Non IAF CE",
+            "ISO Certificate Non IAF HACCP",
+            "ISO Certificate Non IAF GHP",
+            "ISO Certificate Non IAF AIOTA",
+            "ISO Certificate Non IAF GREEN GUARD",
+            "ISO Certificate Non IAF SEDEX",
+            "ISO Certificate Non IAF WHO-GMP",
+            "ISO Certificate Non IAF BRC",
+            "ISO Certificate Non IAF VEGAN",
+            "ISO Certificate Non IAF SA 8000",
+            "ISO Certificate Non IAF SA CMMI LEVEL 3",
+            "ISO Certificate Non IAF SA CMMI LEVEL 5",
+            "ISO Certificate Non IAF SA GO GREEN",
+            "ISO Certificate Non IAF SA PCMM 5",
+            "ISO Certificate Non IAF SA RIOS",
+            "ISO Certificate Non IAF SA ROHS",
+            "ISO Certificate Non IAF SA IEC 17020",
+            "ISO Certificate Non IAF SA GFSI",
+            "ISO Certificate Non IAF SA GMO",
+            "ISO Certificate Non IAF SA 17025-2017",
+            "ISO Certificate Non IAF Others",
+          ],
+          "Company Incorporation": [
+            "OPC Private Limited Company Incorporation",
+            "Private Limited Company Incorporation",
+            "LLP Company Incorporation",
+          ],
+          "Organization DSC": [
+            "Organization DSC Only Signature With 1 Year Validity",
+            "Organization DSC Only Signature With 2 Year Validity",
+            "Organization DSC Only Signature With 3 Year Validity",
+            "Organization DSC Only Encryption With 1 Year Validity",
+            "Organization DSC Only Encryption With 2 Year Validity",
+            "Organization DSC Only Encryption With 3 Year Validity",
+            "Organization DSC Combo With 1 Year Validity",
+            "Organization DSC Combo With 2 Year Validity",
+            "Organization DSC Combo With 3 Year Validity"
+          ],
+          "Director DSC": [
+            "Director DSC Only Signature With 1 Year Validity",
+            "Director DSC Only Signature With 2 Year Validity",
+            "Director DSC Only Signature With 3 Year Validity",
+            "Director DSC Only Encryption With 1 Year Validity",
+            "Director DSC Only Encryption With 2 Year Validity",
+            "Director DSC Only Encryption With 3 Year Validity",
+            "Director DSC Combo With 1 Year Validity",
+            "Director DSC Combo With 2 Year Validity",
+            "Director DSC Combo With 3 Year Validity"
+          ],
+        };
 
     // Function to find generalized service name
     const getGeneralizedServiceName = (serviceName) => {
@@ -6340,6 +6520,8 @@ router.put("/update-matured-case-in-projection-for-first-booking/:companyName", 
         }
       });
     }
+
+    // Save the updated projection
     await projection.save();
 
     res.status(200).json({ result: true, message: "Projection updated successfully" });
@@ -6352,6 +6534,7 @@ router.put("/update-matured-case-in-projection-for-first-booking/:companyName", 
     });
   }
 });
+
 
 
 //  *****************************************************************  DELETE REQUESTS OF BOOKINGS *****************************************************************

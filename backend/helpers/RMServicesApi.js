@@ -115,7 +115,7 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
             }
           ];
           //console.log(`Email attachments: ${JSON.stringify(attachments)}`);
-          const validationLink = 'https://www.startupindia.gov.in/ '; // Your validation link
+          const validationLink = 'https://www.startupindia.gov.in/content/sih/en/startupgov/validate-startup-recognition.html'; // Your validation link
           const servicesLink = 'https://www.startupsahay.com/all-services.html'; // Your validation link
           const reviewLink = 'https://www.google.com/maps/place/START-UP+SAHAY+PRIVATE+LIMITED/@23.045476,72.5077064,17z/data=!3m1!4b1!4m6!3m5!1s0x395e852283f27bc3:0x2e4b16825e436926!8m2!3d23.045476!4d72.5077064!16s%2Fg%2F11q3xws689?entry=ttu&g_ep=EgoyMDI0MTExOC4wIKXMDSoASAFQAw%3D%3D'; // Your validation link
           const number = bdmNumber ? bdmNumber : bdeNumber

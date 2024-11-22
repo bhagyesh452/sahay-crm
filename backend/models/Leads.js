@@ -238,6 +238,9 @@ const CompanySchema = new mongoose.Schema({
   previousStatusToUndo: {
     type: String,
     default: ""
+  },
+  maturedCaseUploaded:{
+    type:Boolean,
   }
 });
 

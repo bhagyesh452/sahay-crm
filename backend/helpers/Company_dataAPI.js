@@ -2511,7 +2511,6 @@ router.get("/employees-new/:ename", async (req, res) => {
         .sort({ lastActionDate: -1 })
         .skip(skip)
         .limit(limit),
-
         CompanyModel.find({
           ...baseQuery,
           Status: { $in: ["Not Interested", "Junk"] },
@@ -4126,6 +4125,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 
   try {
     const query = {
+      isDeletedCompany: false, // Ensure only non-deleted companies are included
       $or: [
         { bdeName: employeeName },
         { bdmName: employeeName },

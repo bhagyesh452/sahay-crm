@@ -1631,17 +1631,6 @@ function TestLeads() {
 
     const hanleCloseCallHistory = () => {
         setShowCallHistory(false);
-        // if (activeTabId === "Interested" && interestedTabRef.current) {
-        //     interestedTabRef.current.click(); // Trigger the Interested tab click
-        // } else if (activeTabId === "Matured" && maturedTabRef.current) {
-        //     maturedTabRef.current.click(); // Trigger the Matured tab click
-        // } else if (activeTabId === "All" && allTabRef.current) {
-        //     allTabRef.current.click(); // Trigger the Matured tab click
-        // } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
-        //     notInterestedTabRef.current.click(); // Trigger the Matured tab click
-        // } else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
-        //     forwardedTabRef.current.click(); // Trigger the Matured tab click
-        // }
     };
 
 
@@ -1682,13 +1671,13 @@ function TestLeads() {
                                         <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
                                             <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
                                         </button>
-                                        {/* <div>
+                                        <div>
                                             <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
                                             <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
                                                 <LiaPagerSolid className="mr-1" />
                                                 Update Leads
                                             </button>
-                                        </div>  */}
+                                        </div> 
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center">
