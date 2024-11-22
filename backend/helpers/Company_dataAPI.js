@@ -2293,7 +2293,6 @@ router.get("/employees-new/:ename", async (req, res) => {
         Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
       }),
       CompanyModel.countDocuments({
-       
         $or: [
           // Match maturedBdmName regardless of Status
           {
@@ -2319,6 +2318,24 @@ router.get("/employees-new/:ename", async (req, res) => {
             Status: { $in: ["Matured"] },
           },
         ],
+        // Apply search condition only if it exists
+        ...(search
+          ? {
+              $or: [
+                { 'Company Name': { $regex: new RegExp(escapeRegex(search), "i") } },
+                { 'Company Email': { $regex: new RegExp(escapeRegex(search), "i") } },
+                {
+                  $expr: {
+                    $regexMatch: {
+                      input: { $toString: "$Company Number" }, // Convert Company Number to string
+                      regex: `^${escapeRegex(search)}`,
+                      options: "i",
+                    },
+                  },
+                },
+              ],
+            }
+          : {}),
       }),
       CompanyModel.countDocuments({
         ...baseQuery,
