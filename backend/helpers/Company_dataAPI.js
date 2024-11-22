@@ -2410,8 +2410,8 @@ router.get("/employees-new/:ename", async (req, res) => {
       ename: employeeName, // Always filter by the provided ename
       $or: [
         { ename: employeeName },
-        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+        { $and: [{ maturedBdmName: employeeName }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }] }
       ]
     };
 
