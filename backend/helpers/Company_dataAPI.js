@@ -2293,7 +2293,6 @@ router.get("/employees-new/:ename", async (req, res) => {
         Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
       }),
       CompanyModel.countDocuments({
-        ...baseQuery,
         $or: [
           // Match maturedBdmName regardless of Status
           {
