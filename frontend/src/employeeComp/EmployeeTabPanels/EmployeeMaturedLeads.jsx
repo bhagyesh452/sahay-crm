@@ -659,18 +659,18 @@ function EmployeeMaturedLeads({
                                             <td >
                                                 <div className="d-flex align-items-center justify-content-between">
                                                     <div className="dfault_approved-status">
-                                                        {company.Status}
+                                                        {company.Status === "Matured" ? "Matured" : "Matured"}
                                                     </div>
                                                     <div
                                                         className={
                                                             (company.interestedInformation === null || company.interestedInformation.length === 0)
                                                                 ? (company.Status === "Matured"
                                                                     ? "matured-history-btn disabled"
-                                                                    : "")
+                                                                    : "matured-history-btn disabled")
                                                                 : (company.Status === "Matured"
                                                                     ? "matured-history-btn"
 
-                                                                    : "")
+                                                                    : "matured-history-btn")
                                                         }
                                                     >
 

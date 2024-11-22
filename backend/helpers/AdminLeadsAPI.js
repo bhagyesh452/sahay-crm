@@ -320,7 +320,7 @@ router.post('/update-ename', async (req, res) => {
             UploadDate: new Date(),
             isUploadedManually: true,
             UploadedBy: "Ronak Kumar",
-            isDeletedEmployeeCompany: true,
+            //isDeletedEmployeeCompany: true,
             maturedCaseUploaded:true
           },
         },
