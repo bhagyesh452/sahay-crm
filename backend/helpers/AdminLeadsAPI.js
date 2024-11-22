@@ -74,10 +74,12 @@ router.delete("/deleteLeadsUsingCsv", upload.single("deletedLeadsCsv"), async (r
     const maturedCompanies = await RedesignedLeadformModel.find({ $or: conditions });
 
     if (!companiesToDelete.length) {
+      fs.unlinkSync(filePath); // Delete the uploaded file
       return res.status(404).json({result: false, message: "No matching companies found in newcdatas collection"});
     }
 
     if (maturedCompanies.length) {
+      fs.unlinkSync(filePath); // Delete the uploaded file
       return res.status(405).json({result: false, message: "Matured companies cannot be deleted", data: maturedCompanies});
     }
 
