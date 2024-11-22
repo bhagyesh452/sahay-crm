@@ -996,7 +996,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                       <td className="rm-sticky-left-2">
                         <b>{obj["Company Name"]}</b>
                       </td>
-                      <td>
+                      <td style={{width:'158px'}}>
                         <div className="d-flex align-items-center justify-content-center wApp">
                           <div>{obj["Company Number"]}</div>
                           <a
@@ -1014,7 +1014,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                         </div>
                       </td>
                       <td>{obj["Company Email"]}</td>
-                      <td>
+                      <td style={{width:'158px'}}>
                         <div className="d-flex align-items-center justify-content-center wApp">
                           <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
                           <a
@@ -1032,7 +1032,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                         </div>
                       </td>
                       <td>{obj.serviceName}</td>
-                      <td>
+                      <td style={{width:'150px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscLetterStatusDropdown
@@ -1049,7 +1049,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td style={{width:'160px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscStatusDropdown
@@ -1083,7 +1083,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           bdmName={obj.bdmName}
                         />
                       </td>
-                      <td>
+                      <td style={{width:'120px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscPortalDropdown
@@ -1098,7 +1098,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td style={{width:'140px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscTypeDropdown
@@ -1113,7 +1113,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td style={{width:'130px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscValidityDropdown
@@ -1128,7 +1128,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td style={{width:'160px'}}>
                         <DscPhoneNo
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}

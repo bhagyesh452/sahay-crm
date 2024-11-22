@@ -111,6 +111,22 @@ function TestLeads() {
         setCompleteLeads(response.data)
     };
 
+    const formatBdeForwardDate = (dateString) => {
+        if (!dateString) return "";
+
+        const date = new Date(dateString);
+        const options = { month: "short", day: "2-digit", year: "numeric" };
+        const formattedDate = date.toLocaleDateString("en-US", options);
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "pm" : "am";
+        const formattedTime = `${hours % 12 || 12}.${minutes} ${ampm}`;
+
+        return `${formattedDate} at ${formattedTime}`;
+    };
+
+
     //--------------------function to fetch Data ------------------------------
     const fetchData = async (page, sortType) => {
         try {
@@ -1586,12 +1602,20 @@ function TestLeads() {
     // ---------------call history popup------------------------
     const [showCallHistory, setShowCallHistory] = useState(false);
     const [clientNumber, setClientNumber] = useState("");
+    const [callHistoryBdmName, setcallHistoryBdmName] = useState("");
+    const [callHistoryBdeName, setcallHistoryBdeName] = useState("");
+    const [callHistoryBdmAcceptStatus, setCallHistoryBdmAcceptStatus] = useState("");
+    const [callHistoryBdmForwardedDate, setCallHistoryBdmForwardedDate] = useState(null);
 
-
-    const handleShowCallHistory = (companyName, clientNumber) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate , bdeName) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
-        setCompanyName(companyName)
+        setCompanyName(companyName);
+        setcallHistoryBdmName(bdmName);
+        setCallHistoryBdmAcceptStatus(bdmAcceptStatus)
+        setCallHistoryBdmForwardedDate(bdeForwardDate)
+        setcallHistoryBdeName(bdeName)
+
     }
 
     const hanleCloseCallHistory = () => {
@@ -1960,8 +1984,11 @@ function TestLeads() {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
-
-
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename
                                                                         );
                                                                     }}
                                                                     style={{
@@ -2066,6 +2093,11 @@ function TestLeads() {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename
 
 
                                                                         );
@@ -2171,6 +2203,12 @@ function TestLeads() {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename
+
 
 
                                                                         );
@@ -2275,6 +2313,12 @@ function TestLeads() {
                                                                         handleShowCallHistory(
                                                                             company["Company Name"],
                                                                             company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename
+
 
 
                                                                         );
@@ -2465,8 +2509,13 @@ function TestLeads() {
                     handleCloseHistory={hanleCloseCallHistory}
                     clientNumber={clientNumber}
                     companyName={companyName}
-                // bdenumber={data.number}
-                // bdmName={data.bdmName}
+                    fordesignation={"admin"}
+                    bdmName={callHistoryBdmName}
+                    bdmAcceptStatus={callHistoryBdmAcceptStatus}
+                    bdeForwardDate={callHistoryBdmForwardedDate}
+                    note={
+                        (callHistoryBdmAcceptStatus === "Accept" || callHistoryBdmAcceptStatus === "Pending" || callHistoryBdmAcceptStatus === "MaturedPending" || callHistoryBdmAcceptStatus === "Forwarded" || callHistoryBdmAcceptStatus === "MaturedAccepted") ?
+                        `${callHistoryBdeName} has forwarded this lead to ${callHistoryBdmName} on ${formatBdeForwardDate(callHistoryBdmForwardedDate)}` : "This Lead is Not Forwarded Yet"}
                 />)
             }
 

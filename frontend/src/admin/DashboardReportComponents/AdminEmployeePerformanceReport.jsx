@@ -10,20 +10,59 @@ function AdminEmployeePerformanceReport() {
   const [isFilter, setIsFilter] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
+  const [currentMonthNew, setCurrentMonth] = useState('');
+  const [currentYearNew, setCurrentYear] = useState('');
+
+  // Function to fetch the current month and year
+  const fetchCurrentMonthAndYear = () => {
+    const date = new Date();
+    const month = date.toLocaleString('default', { month: 'long' }); // e.g., 'November'
+    const year = date.getFullYear();
+    setCurrentMonth(month);
+    setCurrentYear(year);
+  };
 
   const fetchEmployeePerformance = async () => {
+    const date = new Date();
+    const month = date.toLocaleString('default', { month: 'long' }); // e.g., 'November'
+    const year = date.getFullYear();
     try {
       setCurrentDataLoading(true);
       const response = await axios.get(`${secretKey}/employee/einfo`);
-      console.log("Employee data is :", response.data);
-      setEmpPerformanceData(response.data);
-      setFilteredData(response.data);
+      // console.log("Employee data is :", response.data);
+      const sortedData = response.data.map(employee => {
+        // Filter target details for the current year
+        const currentYearDetails = employee.targetDetails.filter(detail =>
+          parseInt(detail?.year) === year
+        );
+  
+        // Calculate the total achieved amount and total target amount for the current year
+        const totalAchievedAmount = currentYearDetails.reduce((sum, detail) => sum + parseFloat(detail.achievedAmount || 0), 0);
+        const totalTargetAmount = currentYearDetails.reduce((sum, detail) => sum + parseFloat(detail.amount || 0), 0);
+  
+        // Calculate the yearly ratio (default to 0 if totalTargetAmount is 0 to avoid division by zero)
+        const yearlyRatio = totalTargetAmount > 0 ? (totalAchievedAmount / totalTargetAmount) * 100 : 0;
+  
+        return {
+          ...employee,
+          yearlyRatio, // Add yearlyRatio to the employee object
+        };
+      }).sort((a, b) => b.yearlyRatio - a.yearlyRatio); // Sort by yearly ratio in descending order
+  
+      
+      console.log("soreteddata" , sortedData)
+      setEmpPerformanceData(sortedData);
+      setFilteredData(sortedData.filter(emp=>emp.newDesignation === "Business Development Executive" || emp.newDesignation === "Business Development Manager" || emp.newDesignation === "Floor Manager"));
     } catch (error) {
       console.error('Error fetching employee performance:', error);
     } finally {
       setCurrentDataLoading(false);
     }
   };
+
+  // useEffect(() => {
+  //   fetchCurrentMonthAndYear();
+  // }, []);
 
   const toggleEmployeeDetails = (employeeId) => {
     setExpandedEmployee(expandedEmployee === employeeId ? null : employeeId);
@@ -60,6 +99,7 @@ function AdminEmployeePerformanceReport() {
   }, []);
 
   console.log("filtered" , filteredData)
+  console.log("empperformancedata" , empPerformanceData)
 
   return (
     <div className="card">
@@ -178,7 +218,7 @@ function AdminEmployeePerformanceReport() {
       <div className="card-body">
         <div id="table-default" className="row tbl-scroll">
           <table className="table-vcenter table-nowrap admin-dash-tbl"  >
-            
+
             <thead className="admin-dash-tbl-thead">
               <tr>
                 <th>Sr. No</th>

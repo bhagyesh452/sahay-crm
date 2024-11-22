@@ -23,6 +23,8 @@ import { FaCircleChevronRight } from "react-icons/fa6";
 import { MdOutlinePersonPin } from "react-icons/md";
 import { AiOutlineTeam } from "react-icons/ai";
 import { IoIosArrowDropleft } from "react-icons/io";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import io from "socket.io-client";
 
 function EmployeeTeamLeadsCopy({ designation }) {
 
@@ -65,6 +67,9 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [teamData, setTeamData] = useState([]);
     const [bdmName, setbdmName] = useState("");
     const [showProjection, setShowProjection] = useState(false);
+    const [revertBackRequestData, setRevertBackRequestData] = useState([]);
+    const [openRevertBackRequestDialog, setOpenRevertBackRequestDialog] = useState(false)
+
 
     // Filter States
     const [generalDataCount, setGeneralDataCount] = useState(0);
@@ -214,6 +219,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const fetchTeamLeadsData = async () => {
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${employeeName}`);
+            const revertBackRequestData = response.data.filter((company) => company.RevertBackAcceptedCompanyRequest === "Send");
+            setRevertBackRequestData(revertBackRequestData);
             setTeamData(response.data);
         } catch (error) {
             console.log(error)
@@ -226,14 +233,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     }, [employeeName]);
 
-    // const fetchProjections = async () => {
-    //     try {
-    //         const response = await axios.get(`${secretKey}/projection/projection-data`);
-    //         setProjectionData(response.data);
-    //     } catch (error) {
-    //         console.error("Error fetching Projection Data:", error.message);
-    //     }
-    // };
 
     const fetchNewProjections = async () => {
         try {
@@ -245,23 +244,6 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     };
 
-    // const { data: teamLeadsData, isLoading: isTeamLeadsLoading, isError: isTeamLeadsError, refetch: refetchTeamLeads } = useQuery({
-    //     queryKey: ["teamLeadsData", data.ename, dataStatus, currentPage, searchQuery],
-    //     queryFn: async () => {
-    //         const res = await axios.get(`${secretKey}/bdm-data/teamLeadsData/${data.ename}`, {
-    //             params: {
-    //                 status: dataStatus,
-    //                 companyName: searchQuery, // Send the search query as a parameter
-    //                 page: currentPage + 1, // Send current page for pagination
-    //                 limit: itemsPerPage, // Set the limit of records per page
-    //             }
-    //         });
-    //         return res;
-    //     },
-    //     enabled: !!data.ename,  // Only fetch data when ename is available
-    //     refetchOnWindowFocus: false,  // Prevent fetching on window focus
-    //     keepPreviousData: true, // This helps prevent a loading state when moving between pages
-    // });
 
     const { data: teamLeadsData, isLoading: isTeamLeadsLoading, isError: isTeamLeadsError, refetch: refetchTeamLeads } = useQuery({
         queryKey: ["teamLeadsData", data.ename, currentPage, searchQuery],
@@ -640,490 +622,600 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     };
 
+    // ----------------revert back lead function------------------------
+    const handleRevertBackCompany = async (companyId, companyName, bdmStatus) => {
+
+        try {
+            const reponse = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, null, {
+                params: {
+                    companyId,
+                    companyName
+                }
+            })
+            Swal.fire(
+                'Reverted!',
+                'The company has been reverted.',
+                'success'
+            );
+            setOpenRevertBackRequestDialog(false)
+            refetchTeamLeads()
+        } catch (error) {
+
+            console.log("Error deletetind company", error)
+        }
+
+    }
+
+    const handleRejectRevertBackCompany = async (companyId, bdmStatus) => {
+        try {
+            const response = await axios.post(`${secretKey}/bdm-data/rejectrequestrevertbackcompany`, null, {
+                params: {
+                    companyId,
+                }
+            })
+            Swal.fire(
+                'Success!',
+                'The companynis not reverted.',
+                'success'
+            );
+            setOpenRevertBackRequestDialog(false)
+            fetchTeamLeadsData(bdmStatus)
+        } catch (error) {
+            console.log("Error rejecting revert request", error)
+        }
+    };
+
+    useEffect(() => {
+        if (revertBackRequestData.length !== 0) {
+            setOpenRevertBackRequestDialog(true);
+        } else {
+            refetchTeamLeads();
+        }
+    }, [data.ename, revertBackRequestData.length]);
+
+console.log("revertBackRequestData",revertBackRequestData)
+console.log("open" , openRevertBackRequestDialog)
+
+useEffect(() => {
+    fetchData();
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path: '/socket.io',
+      reconnection: true,
+      transports: ['websocket'],
+    });
+
+    socket.on("rejectrequestrevertbackcompany", (res) => {
+      console.log("res", res)
+      if (data.ename === res.data.ename) {
+       setOpenRevertBackRequestDialog(true)
+       
+      }
+    });
+
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, [data.ename]);
+
+
+
+
     return (
         <div>
             {!showCallHistory && !formOpen && !addFormOpen ? (
-                <div className="page-wrapper">
+                <>
+                    {revertBackRequestData.length !== 0 && revertBackRequestData.map((item) => (
+                        <Dialog key={item._id} open={openRevertBackRequestDialog} className='My_Mat_Dialog'>
+                            <DialogContent sx={{ width: "lg" }}>
+                                <div>
+                                    <div className="request-title m-2 d-flex justify-content-between">
+                                        <div className="request-content mr-2 text-center">
+                                            <h3 className="m-0">{item.ename} has requested to revert back .
+                                                <b>{item["Company Name"]}</b> From you. Do you want accept his request?</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </DialogContent>
+                            <div className="request-reply d-flex justify-content-center align-items-center">
+                                <button
+                                    onClick={() => handleRevertBackCompany(item._id, item["Company Name"], item.bdmStatus)}
+                                    className="btn btn-success bdr-radius-none w-100"
+                                >
+                                    Yes
+                                </button>
+                                <button
+                                    onClick={() => handleRejectRevertBackCompany(item._id, item.bdmStatus)}
+                                    className="btn btn-danger bdr-radius-none w-100"
+                                >
+                                    No
+                                </button>
+                            </div>
+                        </Dialog>
+                    ))}
                     <div className="page-wrapper">
-                        <div className="page-header mt-3">
-                            <div className="container-xl">
-                                <div className="d-flex align-items-center justify-content-between">
+                        <div className="page-wrapper">
+                            <div className="page-header mt-3">
+                                <div className="container-xl">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div className="d-flex align-items-center">
+                                            <div>
+                                                {(designation === "admin" || designation === "datamanager") && (
+                                                    <>
+                                                        <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                            <button className="btn mybtn">
+                                                                <FaCircleChevronLeft className="ep_right_button" onClick={handleChangeUrlPrev} />
+                                                            </button>
+                                                            <button className="btn mybtn"><b>{data.ename}</b></button>
+                                                            <button className="btn mybtn">
+                                                                <FaCircleChevronRight className="ep_left_button" onClick={handleChangeUrlNext} />
+                                                            </button>
+                                                        </div>
 
-                                    <div className="d-flex align-items-center">
-                                        <div>
-                                            {(designation === "admin" || designation === "datamanager") && (
-                                                <>
-                                                    <div className="btn-group mr-1" role="group" aria-label="Basic example">
-                                                        <button className="btn mybtn">
-                                                            <FaCircleChevronLeft className="ep_right_button" onClick={handleChangeUrlPrev} />
-                                                        </button>
-                                                        <button className="btn mybtn"><b>{data.ename}</b></button>
-                                                        <button className="btn mybtn">
-                                                            <FaCircleChevronRight className="ep_left_button" onClick={handleChangeUrlNext} />
-                                                        </button>
-                                                    </div>
-
-                                                    <div className="btn-group" role="group" aria-label="Basic example">
-                                                        <button type="button"
-                                                            onClick={() => {
-                                                                if (designation === "admin") {
-                                                                    navigate(`/managing-director/employees/${userId}`);
-                                                                } else if (designation === "datamanager") {
-                                                                    navigate(`/dataanalyst/employeeLeads/${userId}`);
-                                                                }
-                                                            }}
-                                                            className={
-                                                                ((designation === "admin" && window.location.pathname === `/managing-director/employees/${userId}`) ||
-                                                                    (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeLeads/${userId}`)) &&
-                                                                    data.bdmWork ? "btn mybtn active" : "btn mybtn"
-                                                            }
-                                                        >
-                                                            <MdOutlinePersonPin className='mr-1' />
-                                                            Leads
-                                                        </button>
-
-                                                        {data.bdmWork &&
-                                                            <button
-                                                                type="button"
-                                                                className={
-                                                                    (designation === "admin" && window.location.pathname === `/managing-director/employeeleads/${userId}`) ||
-                                                                        (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${userId}`)
-                                                                        ? "btn mybtn active"
-                                                                        : "btn mybtn"
-                                                                }
+                                                        <div className="btn-group" role="group" aria-label="Basic example">
+                                                            <button type="button"
                                                                 onClick={() => {
                                                                     if (designation === "admin") {
-                                                                        navigate(`/managing-director/employeeleads/${userId}`);
+                                                                        navigate(`/managing-director/employees/${userId}`);
                                                                     } else if (designation === "datamanager") {
-                                                                        navigate(`/dataanalyst/employeeteamleads/${userId}`);
+                                                                        navigate(`/dataanalyst/employeeLeads/${userId}`);
                                                                     }
                                                                 }}
+                                                                className={
+                                                                    ((designation === "admin" && window.location.pathname === `/managing-director/employees/${userId}`) ||
+                                                                        (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeLeads/${userId}`)) &&
+                                                                        data.bdmWork ? "btn mybtn active" : "btn mybtn"
+                                                                }
                                                             >
-                                                                <AiOutlineTeam
-                                                                    className='mr-1' /> Team Leads
-                                                            </button>}
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
+                                                                <MdOutlinePersonPin className='mr-1' />
+                                                                Leads
+                                                            </button>
 
-                                        {designation !== "admin" && designation !== "datamanager" && <div className="btn-group" role="group" aria-label="Basic example">
-                                            <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                                            // onClick={() => setOpenFilterDrawer(true)}
-                                            >
-                                                <IoFilterOutline className='mr-1' /> Filter
-                                            </button>
-                                            <button type="button" className="btn mybtn" onClick={() => setShowProjection(true)}>
-                                                <MdOutlinePostAdd className='mr-1' /> Add Projection
-                                            </button>
-                                            {/* {open &&
+                                                            {data.bdmWork &&
+                                                                <button
+                                                                    type="button"
+                                                                    className={
+                                                                        (designation === "admin" && window.location.pathname === `/managing-director/employeeleads/${userId}`) ||
+                                                                            (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${userId}`)
+                                                                            ? "btn mybtn active"
+                                                                            : "btn mybtn"
+                                                                    }
+                                                                    onClick={() => {
+                                                                        if (designation === "admin") {
+                                                                            navigate(`/managing-director/employeeleads/${userId}`);
+                                                                        } else if (designation === "datamanager") {
+                                                                            navigate(`/dataanalyst/employeeteamleads/${userId}`);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <AiOutlineTeam
+                                                                        className='mr-1' /> Team Leads
+                                                                </button>}
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+
+                                            {designation !== "admin" && designation !== "datamanager" && <div className="btn-group" role="group" aria-label="Basic example">
+                                                <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                                                // onClick={() => setOpenFilterDrawer(true)}
+                                                >
+                                                    <IoFilterOutline className='mr-1' /> Filter
+                                                </button>
+                                                <button type="button" className="btn mybtn" onClick={() => setShowProjection(true)}>
+                                                    <MdOutlinePostAdd className='mr-1' /> Add Projection
+                                                </button>
+                                                {/* {open &&
                                             <EmployeeRequestDataDialog
                                                 secretKey={secretKey}
                                                 ename={data.ename}
                                                 setOpenChange={openchange}
                                                 open={open}
                                             />} */}
-                                        </div>}
-                                    </div>
+                                            </div>}
+                                        </div>
 
-                                    <div className="d-flex align-items-center">
-                                        {(designation === "admin" || designation === "datamanager") && (
-                                            <>
-                                                {selectedRows.length !== 0 && (
-                                                    <div className="selection-data mr-1" >
-                                                        Total Data Selected : <b>{selectedRows.length}</b>
+                                        <div className="d-flex align-items-center">
+                                            {(designation === "admin" || designation === "datamanager") && (
+                                                <>
+                                                    {selectedRows.length !== 0 && (
+                                                        <div className="selection-data mr-1" >
+                                                            Total Data Selected : <b>{selectedRows.length}</b>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="btn-group mr-1" role="group" aria-label="Basic example">
+                                                        <Link style={{ marginLeft: "10px" }}
+                                                            to={designation === "admin" ? `/managing-director/user` : `/dataanalyst/newEmployees`}>
+                                                            <button type="button" className="btn mybtn">
+                                                                <IoIosArrowDropleft className='mr-1' /> Back
+                                                            </button>
+                                                        </Link>
                                                     </div>
-                                                )}
 
-                                                <div className="btn-group mr-1" role="group" aria-label="Basic example">
-                                                    <Link style={{ marginLeft: "10px" }}
-                                                        to={designation === "admin" ? `/managing-director/user` : `/dataanalyst/newEmployees`}>
-                                                        <button type="button" className="btn mybtn">
-                                                            <IoIosArrowDropleft className='mr-1' /> Back
-                                                        </button>
-                                                    </Link>
-                                                </div>
+                                                    <button type="button" className="btn mybtn cursor-pointer mr-1" disabled={!selectedRows.length} onClick={() => setShowAssignLeadsFromBdm(true)}>
+                                                        <MdOutlinePostAdd className='mr-1' />Assign Leads
+                                                    </button>
 
-                                                <button type="button" className="btn mybtn cursor-pointer mr-1" disabled={!selectedRows.length} onClick={() => setShowAssignLeadsFromBdm(true)}>
-                                                    <MdOutlinePostAdd className='mr-1' />Assign Leads
-                                                </button>
+                                                    <button type="button" className="btn mybtn cursor-pointer" disabled={!selectedRows.length} onClick={handleDeleteLeadsFromBdm}>
+                                                        <MdOutlinePostAdd className='mr-1' />Delete Leads
+                                                    </button>
 
-                                                <button type="button" className="btn mybtn cursor-pointer" disabled={!selectedRows.length} onClick={handleDeleteLeadsFromBdm}>
-                                                    <MdOutlinePostAdd className='mr-1' />Delete Leads
-                                                </button>
+                                                    {showAssignLeadsFromBdm && (
+                                                        <AssignLeads
+                                                            openAssign={showAssignLeadsFromBdm}
+                                                            closepopupAssign={handleCloseAssignLeadsFromBdm}
+                                                            selectedOption={selectedOption}
+                                                            setSelectedOption={setSelectedOption}
+                                                            newemployeeSelection={newemployeeSelection}
+                                                            setnewEmployeeSelection={setnewEmployeeSelection}
+                                                            handleOptionChange={handleOptionChange}
+                                                            handleUploadData={handleUploadData}
+                                                            newempData={newEmpData}
+                                                            isAssignFromBdm={true}
+                                                        />
+                                                    )}
+                                                </>
+                                            )}
 
-                                                {showAssignLeadsFromBdm && (
-                                                    <AssignLeads
-                                                        openAssign={showAssignLeadsFromBdm}
-                                                        closepopupAssign={handleCloseAssignLeadsFromBdm}
-                                                        selectedOption={selectedOption}
-                                                        setSelectedOption={setSelectedOption}
-                                                        newemployeeSelection={newemployeeSelection}
-                                                        setnewEmployeeSelection={setnewEmployeeSelection}
-                                                        handleOptionChange={handleOptionChange}
-                                                        handleUploadData={handleUploadData}
-                                                        newempData={newEmpData}
-                                                        isAssignFromBdm={true}
-                                                    />
-                                                )}
-                                            </>
-                                        )}
-
-                                        <div class="input-icon ml-1">
-                                            <span class="input-icon-addon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                                    <path d="M21 21l-6 -6"></path>
-                                                </svg>
-                                            </span>
-                                            <input
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="form-control search-cantrol mybtn"
-                                                placeholder="Search…"
-                                                type="text"
-                                                name="bdeName-search"
-                                                id="bdeName-search" />
+                                            <div class="input-icon ml-1">
+                                                <span class="input-icon-addon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                        <path d="M21 21l-6 -6"></path>
+                                                    </svg>
+                                                </span>
+                                                <input
+                                                    value={searchQuery}
+                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                    className="form-control search-cantrol mybtn"
+                                                    placeholder="Search…"
+                                                    type="text"
+                                                    name="bdeName-search"
+                                                    id="bdeName-search" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div onCopy={(e) => !designation && e.preventDefault()} className="page-body">
-                            <div className="container-xl">
-                                <div class="card-header my-tab">
-                                    <ul class="nav nav-tabs sales-nav-tabs card-header-tabs nav-fill p-0" data-bs-toggle="tabs">
-                                        <li class="nav-item sales-nav-item data-heading" ref={allTabRef}>
-                                            <a
-                                                href="#general"
-                                                ref={allTabRef} // Attach the ref to the anchor tag
-                                                // onClick={() => handleDataStatusChange("All", allTabRef)}
-                                                onClick={() => {
-                                                    setDataStatus("General");
-                                                    setActiveTabId("General");
-                                                    setSelectedRows([]);
-                                                    setCurrentPage(0);
-                                                }}
-                                                className={`nav-link  ${dataStatus === "General" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
-                                                <div>General</div>
-                                                <div className="no_badge">
-                                                    {generalDataCount || 0}
-                                                </div>
-                                            </a>
-                                        </li>
+                            <div onCopy={(e) => !designation && e.preventDefault()} className="page-body">
+                                <div className="container-xl">
+                                    <div class="card-header my-tab">
+                                        <ul class="nav nav-tabs sales-nav-tabs card-header-tabs nav-fill p-0" data-bs-toggle="tabs">
+                                            <li class="nav-item sales-nav-item data-heading" ref={allTabRef}>
+                                                <a
+                                                    href="#general"
+                                                    ref={allTabRef} // Attach the ref to the anchor tag
+                                                    // onClick={() => handleDataStatusChange("All", allTabRef)}
+                                                    onClick={() => {
+                                                        setDataStatus("General");
+                                                        setActiveTabId("General");
+                                                        setSelectedRows([]);
+                                                        setCurrentPage(0);
+                                                    }}
+                                                    className={`nav-link  ${dataStatus === "General" ? "active item-act" : ""}`}
+                                                    data-bs-toggle="tab"
+                                                >
+                                                    <div>General</div>
+                                                    <div className="no_badge">
+                                                        {generalDataCount || 0}
+                                                    </div>
+                                                </a>
+                                            </li>
 
-                                        <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
-                                            <a
-                                                href="#Interested"
-                                                ref={interestedTabRef}
-                                                // onClick={() => handleDataStatusChange("Interested", interestedTabRef)}
-                                                onClick={() => {
-                                                    setDataStatus("Interested");
-                                                    setActiveTabId("Interested");
-                                                    setSelectedRows([]);
-                                                    setCurrentPage(0);
-                                                }}
-                                                className={`nav-link ${dataStatus === "Interested" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
-                                                Interested
-                                                <span className="no_badge">
-                                                    {interestedDataCount || 0}
-                                                </span>
-                                            </a>
-                                        </li>
+                                            <li class="nav-item sales-nav-item data-heading" ref={interestedTabRef}>
+                                                <a
+                                                    href="#Interested"
+                                                    ref={interestedTabRef}
+                                                    // onClick={() => handleDataStatusChange("Interested", interestedTabRef)}
+                                                    onClick={() => {
+                                                        setDataStatus("Interested");
+                                                        setActiveTabId("Interested");
+                                                        setSelectedRows([]);
+                                                        setCurrentPage(0);
+                                                    }}
+                                                    className={`nav-link ${dataStatus === "Interested" ? "active item-act" : ""}`}
+                                                    data-bs-toggle="tab"
+                                                >
+                                                    Interested
+                                                    <span className="no_badge">
+                                                        {interestedDataCount || 0}
+                                                    </span>
+                                                </a>
+                                            </li>
 
-                                        <li class="nav-item sales-nav-item data-heading" ref={maturedTabRef}>
-                                            <a
-                                                href="#Matured"
-                                                ref={maturedTabRef}
-                                                // onClick={() => handleDataStatusChange("Matured", maturedTabRef)}
-                                                onClick={() => {
-                                                    setDataStatus("Matured");
-                                                    setActiveTabId("Matured");
-                                                    setSelectedRows([]);
-                                                    setCurrentPage(0);
-                                                }}
-                                                className={`nav-link ${dataStatus === "Matured" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
-                                                Matured
-                                                <span className="no_badge">
-                                                    {maturedDataCount || 0}
-                                                </span>
-                                            </a>
-                                        </li>
+                                            <li class="nav-item sales-nav-item data-heading" ref={maturedTabRef}>
+                                                <a
+                                                    href="#Matured"
+                                                    ref={maturedTabRef}
+                                                    // onClick={() => handleDataStatusChange("Matured", maturedTabRef)}
+                                                    onClick={() => {
+                                                        setDataStatus("Matured");
+                                                        setActiveTabId("Matured");
+                                                        setSelectedRows([]);
+                                                        setCurrentPage(0);
+                                                    }}
+                                                    className={`nav-link ${dataStatus === "Matured" ? "active item-act" : ""}`}
+                                                    data-bs-toggle="tab"
+                                                >
+                                                    Matured
+                                                    <span className="no_badge">
+                                                        {maturedDataCount || 0}
+                                                    </span>
+                                                </a>
+                                            </li>
 
-                                        <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
-                                            <a
-                                                href="#busy"
-                                                ref={busyTabRef} // Attach the ref to the anchor tag
-                                                // onClick={() => handleDataStatusChange("All", allTabRef)}
-                                                onClick={() => {
-                                                    setDataStatus("Busy");
-                                                    setActiveTabId("Busy");
-                                                    setSelectedRows([]);
-                                                    setCurrentPage(0);
-                                                }}
-                                                className={`nav-link  ${dataStatus === "Busy" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
-                                                <div>Busy</div>
-                                                <div className="no_badge">
-                                                    {busyDataCount || 0}
-                                                </div>
-                                            </a>
-                                        </li>
+                                            <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
+                                                <a
+                                                    href="#busy"
+                                                    ref={busyTabRef} // Attach the ref to the anchor tag
+                                                    // onClick={() => handleDataStatusChange("All", allTabRef)}
+                                                    onClick={() => {
+                                                        setDataStatus("Busy");
+                                                        setActiveTabId("Busy");
+                                                        setSelectedRows([]);
+                                                        setCurrentPage(0);
+                                                    }}
+                                                    className={`nav-link  ${dataStatus === "Busy" ? "active item-act" : ""}`}
+                                                    data-bs-toggle="tab"
+                                                >
+                                                    <div>Busy</div>
+                                                    <div className="no_badge">
+                                                        {busyDataCount || 0}
+                                                    </div>
+                                                </a>
+                                            </li>
 
-                                        <li class="nav-item sales-nav-item data-heading">
-                                            <a
-                                                href="#NotInterested"
-                                                ref={notInterestedTabRef}
-                                                // onClick={() => handleDataStatusChange("Not Interested", notInterestedTabRef)}
-                                                onClick={() => {
-                                                    setDataStatus("Not Interested");
-                                                    setActiveTabId("Not Interested");
-                                                    setSelectedRows([]);
-                                                    setCurrentPage(0);
-                                                }}
-                                                className={`nav-link ${dataStatus === "Not Interested" ? "active item-act" : ""}`}
-                                                data-bs-toggle="tab"
-                                            >
-                                                Not Interested
-                                                <span className="no_badge">
-                                                    {notInterestedDataCount || 0}
-                                                </span>
-                                            </a>
-                                        </li>
-                                    </ul>
+                                            <li class="nav-item sales-nav-item data-heading">
+                                                <a
+                                                    href="#NotInterested"
+                                                    ref={notInterestedTabRef}
+                                                    // onClick={() => handleDataStatusChange("Not Interested", notInterestedTabRef)}
+                                                    onClick={() => {
+                                                        setDataStatus("Not Interested");
+                                                        setActiveTabId("Not Interested");
+                                                        setSelectedRows([]);
+                                                        setCurrentPage(0);
+                                                    }}
+                                                    className={`nav-link ${dataStatus === "Not Interested" ? "active item-act" : ""}`}
+                                                    data-bs-toggle="tab"
+                                                >
+                                                    Not Interested
+                                                    <span className="no_badge">
+                                                        {notInterestedDataCount || 0}
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="tab-content card-body">
+                                        <div className={`tab-pane ${dataStatus === "General" ? "active" : ""}`} id="general">
+                                            {activeTabId === "General" && dataStatus === "General" && (
+                                                <TeamLeadsGeneral
+                                                    secretKey={secretKey}
+                                                    // generalData={teamLeadsData?.data?.data}
+                                                    generalData={generalData}
+                                                    setGeneralData={setGeneralData}
+                                                    setGeneralDataCount={setGeneralDataCount}
+                                                    dataToFilterGeneral={dataToFilterGeneral}
+                                                    completeGeneralData={completeGeneralData}
+                                                    filteredDataGeneral={filteredDataGeneral}
+                                                    setFilteredDataGeneral={setFilteredDataGeneral}
+                                                    activeFilterFieldGeneral={activeFilterFieldGeneral}
+                                                    setActiveFilterFieldGeneral={setActiveFilterFieldGeneral}
+                                                    activeFilterFieldsGeneral={activeFilterFieldsGeneral}
+                                                    setActiveFilterFieldsGeneral={setActiveFilterFieldsGeneral}
+                                                    isLoading={isTeamLeadsLoading}
+                                                    refetchTeamLeads={refetchTeamLeads}
+                                                    formatDateNew={formatDateNew}
+                                                    startIndex={startIndex}
+                                                    endIndex={endIndex}
+                                                    totalPages={teamLeadsData?.data?.totalGeneralPages}
+                                                    setCurrentPage={setCurrentPage}
+                                                    currentPage={currentPage}
+                                                    dataStatus={dataStatus}
+                                                    setDataStatus={setDataStatus}
+                                                    ename={data.ename}
+                                                    email={data.email}
+                                                    designation={data.designation}
+                                                    handleShowCallHistory={handleShowCallHistory}
+                                                    projectionData={projectionData}
+                                                    newDesignation={designation}
+                                                    selectedRows={selectedRows}
+                                                    setSelectedRows={setSelectedRows}
+                                                    handleCheckboxChange={handleCheckboxChange}
+                                                    handleMouseDown={handleMouseDown}
+                                                    handleMouseEnter={handleMouseEnter}
+                                                    handleMouseUp={handleMouseUp}
+                                                />
+                                            )}
+                                        </div>
+
+                                        <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
+                                            {activeTabId === "Interested" && dataStatus === "Interested" && (
+                                                <TeamLeadsInterested
+                                                    secretKey={secretKey}
+                                                    employeeName={employeeName}
+                                                    // interestedData={teamLeadsData?.data?.data}
+                                                    interestedData={interestedData}
+                                                    setInterestedData={setInterestedData}
+                                                    setInterestedDataCount={setInterestedDataCount}
+                                                    dataToFilterInterested={dataToFilterInterested}
+                                                    completeInterestedData={completeInterestedData}
+                                                    filteredDataInterested={filteredDataInterested}
+                                                    setFilteredDataInterested={setFilteredDataInterested}
+                                                    activeFilterFieldInterested={activeFilterFieldInterested}
+                                                    setActiveFilterFieldInterested={setActiveFilterFieldInterested}
+                                                    activeFilterFieldsInterested={activeFilterFieldsInterested}
+                                                    setActiveFilterFieldsInterested={setActiveFilterFieldsInterested}
+                                                    isLoading={isTeamLeadsLoading}
+                                                    refetchTeamLeads={refetchTeamLeads}
+                                                    formatDateNew={formatDateNew}
+                                                    startIndex={startIndex}
+                                                    endIndex={endIndex}
+                                                    totalPages={teamLeadsData?.data?.totalInterestedPages}
+                                                    setCurrentPage={setCurrentPage}
+                                                    currentPage={currentPage}
+                                                    dataStatus={dataStatus}
+                                                    setDataStatus={setDataStatus}
+                                                    ename={data.ename}
+                                                    email={data.email}
+                                                    designation={data.designation}
+                                                    handleShowCallHistory={handleShowCallHistory}
+                                                    fetchProjections={fetchNewProjections}
+                                                    projectionData={projectionData}
+                                                    teamData={teamData}
+                                                    handleOpenFormOpen={handleOpenFormOpen}
+                                                    newDesignation={designation}
+                                                    selectedRows={selectedRows}
+                                                    setSelectedRows={setSelectedRows}
+                                                    handleCheckboxChange={handleCheckboxChange}
+                                                    handleMouseDown={handleMouseDown}
+                                                    handleMouseEnter={handleMouseEnter}
+                                                    handleMouseUp={handleMouseUp}
+                                                />
+                                            )}
+                                        </div>
+
+                                        <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
+                                            {activeTabId === "Matured" && (
+                                                <TeamLeadsMatured
+                                                    secretKey={secretKey}
+                                                    // maturedData={teamLeadsData?.data?.data}
+                                                    maturedData={maturedData}
+                                                    setMaturedData={setMaturedData}
+                                                    setMaturedDataCount={setMaturedDataCount}
+                                                    dataToFilterMatured={dataToFilterMatured}
+                                                    completeMaturedData={completeMaturedData}
+                                                    filteredDataMatured={filteredDataMatured}
+                                                    setFilteredDataMatured={setFilteredDataMatured}
+                                                    activeFilterFieldMatured={activeFilterFieldMatured}
+                                                    setActiveFilterFieldMatured={setActiveFilterFieldMatured}
+                                                    activeFilterFieldsMatured={activeFilterFieldsMatured}
+                                                    setActiveFilterFieldsMatured={setActiveFilterFieldsMatured}
+                                                    isLoading={isTeamLeadsLoading}
+                                                    refetchTeamLeads={refetchTeamLeads}
+                                                    formatDateNew={formatDateNew}
+                                                    startIndex={startIndex}
+                                                    endIndex={endIndex}
+                                                    totalPages={teamLeadsData?.data?.totalMaturedPages}
+                                                    setCurrentPage={setCurrentPage}
+                                                    currentPage={currentPage}
+                                                    dataStatus={dataStatus}
+                                                    setDataStatus={setDataStatus}
+                                                    ename={data.ename}
+                                                    email={data.email}
+                                                    designation={data.designation}
+                                                    handleShowCallHistory={handleShowCallHistory}
+                                                    fetchProjections={fetchNewProjections}
+                                                    projectionData={projectionData}
+                                                    newDesignation={designation}
+                                                    selectedRows={selectedRows}
+                                                    setSelectedRows={setSelectedRows}
+                                                    handleCheckboxChange={handleCheckboxChange}
+                                                    handleMouseDown={handleMouseDown}
+                                                    handleMouseEnter={handleMouseEnter}
+                                                    handleMouseUp={handleMouseUp}
+                                                />
+                                            )}
+                                        </div>
+
+                                        <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
+                                            {activeTabId === "Busy" && dataStatus === "Busy" && (
+                                                <TeamLeadsBusy
+                                                    secretKey={secretKey}
+                                                    // busyData={teamLeadsData?.data?.data}
+                                                    busyData={busyData}
+                                                    setBusyData={setGeneralData}
+                                                    setBusyDataCount={setBusyDataCount}
+                                                    dataToFilterBusy={dataToFilterBusy}
+                                                    completeBusyData={completeBusyData}
+                                                    filteredDataBusy={filteredDataBusy}
+                                                    setFilteredDataBusy={setFilteredDataBusy}
+                                                    activeFilterFieldBusy={activeFilterFieldBusy}
+                                                    setActiveFilterFieldBusy={setActiveFilterFieldBusy}
+                                                    activeFilterFieldsBusy={activeFilterFieldsBusy}
+                                                    setActiveFilterFieldsBusy={setActiveFilterFieldsBusy}
+                                                    isLoading={isTeamLeadsLoading}
+                                                    refetchTeamLeads={refetchTeamLeads}
+                                                    formatDateNew={formatDateNew}
+                                                    startIndex={startIndex}
+                                                    endIndex={endIndex}
+                                                    totalPages={teamLeadsData?.data?.totalBusyPages}
+                                                    setCurrentPage={setCurrentPage}
+                                                    currentPage={currentPage}
+                                                    dataStatus={dataStatus}
+                                                    setDataStatus={setDataStatus}
+                                                    ename={data.ename}
+                                                    email={data.email}
+                                                    designation={data.designation}
+                                                    handleShowCallHistory={handleShowCallHistory}
+                                                    projectionData={projectionData}
+                                                    teamData={teamData}
+                                                    handleOpenFormOpen={handleOpenFormOpen}
+                                                    newDesignation={designation}
+                                                    selectedRows={selectedRows}
+                                                    setSelectedRows={setSelectedRows}
+                                                    handleCheckboxChange={handleCheckboxChange}
+                                                    handleMouseDown={handleMouseDown}
+                                                    handleMouseEnter={handleMouseEnter}
+                                                    handleMouseUp={handleMouseUp}
+                                                />
+                                            )}
+                                        </div>
+
+                                        <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
+                                            {activeTabId === "Not Interested" && (
+                                                <TeamLeadsNotInterested
+                                                    secretKey={secretKey}
+                                                    // notInterestedData={teamLeadsData?.data?.data}
+                                                    notInterestedData={notInterestedData}
+                                                    setNotInterestedData={setNotInterestedData}
+                                                    setNotInterestedDataCount={setNotInterestedDataCount}
+                                                    dataToFilterNotInterested={dataToFilterNotInterested}
+                                                    completeNotInterestedData={completeNotInterestedData}
+                                                    filteredDataNotInterested={filteredDataNotInterested}
+                                                    setFilteredDataNotInterested={setFilteredDataNotInterested}
+                                                    activeFilterFieldNotInterested={activeFilterFieldNotInterested}
+                                                    setActiveFilterFieldNotInterested={setActiveFilterFieldNotInterested}
+                                                    activeFilterFieldsNotInterested={activeFilterFieldsNotInterested}
+                                                    setActiveFilterFieldsNotInterested={setActiveFilterFieldsNotInterested}
+                                                    isLoading={isTeamLeadsLoading}
+                                                    refetchTeamLeads={refetchTeamLeads}
+                                                    formatDateNew={formatDateNew}
+                                                    startIndex={startIndex}
+                                                    endIndex={endIndex}
+                                                    totalPages={teamLeadsData?.data?.totalNotInterestedPages}
+                                                    setCurrentPage={setCurrentPage}
+                                                    currentPage={currentPage}
+                                                    dataStatus={dataStatus}
+                                                    setDataStatus={setDataStatus}
+                                                    ename={data.ename}
+                                                    email={data.email}
+                                                    designation={data.designation}
+                                                    handleShowCallHistory={handleShowCallHistory}
+                                                    newDesignation={designation}
+                                                    selectedRows={selectedRows}
+                                                    setSelectedRows={setSelectedRows}
+                                                    handleCheckboxChange={handleCheckboxChange}
+                                                    handleMouseDown={handleMouseDown}
+                                                    handleMouseEnter={handleMouseEnter}
+                                                    handleMouseUp={handleMouseUp}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+
                                 </div>
-
-                                <div className="tab-content card-body">
-                                    <div className={`tab-pane ${dataStatus === "General" ? "active" : ""}`} id="general">
-                                        {activeTabId === "General" && dataStatus === "General" && (
-                                            <TeamLeadsGeneral
-                                                secretKey={secretKey}
-                                                // generalData={teamLeadsData?.data?.data}
-                                                generalData={generalData}
-                                                setGeneralData={setGeneralData}
-                                                setGeneralDataCount={setGeneralDataCount}
-                                                dataToFilterGeneral={dataToFilterGeneral}
-                                                completeGeneralData={completeGeneralData}
-                                                filteredDataGeneral={filteredDataGeneral}
-                                                setFilteredDataGeneral={setFilteredDataGeneral}
-                                                activeFilterFieldGeneral={activeFilterFieldGeneral}
-                                                setActiveFilterFieldGeneral={setActiveFilterFieldGeneral}
-                                                activeFilterFieldsGeneral={activeFilterFieldsGeneral}
-                                                setActiveFilterFieldsGeneral={setActiveFilterFieldsGeneral}
-                                                isLoading={isTeamLeadsLoading}
-                                                refetchTeamLeads={refetchTeamLeads}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={teamLeadsData?.data?.totalGeneralPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                dataStatus={dataStatus}
-                                                setDataStatus={setDataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                designation={data.designation}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                projectionData={projectionData}
-                                                newDesignation={designation}
-                                                selectedRows={selectedRows}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                            />
-                                        )}
-                                    </div>
-
-                                    <div className={`tab-pane ${dataStatus === "Interested" ? "active" : ""}`} id="Interested">
-                                        {activeTabId === "Interested" && dataStatus === "Interested" && (
-                                            <TeamLeadsInterested
-                                                secretKey={secretKey}
-                                                employeeName={employeeName}
-                                                // interestedData={teamLeadsData?.data?.data}
-                                                interestedData={interestedData}
-                                                setInterestedData={setInterestedData}
-                                                setInterestedDataCount={setInterestedDataCount}
-                                                dataToFilterInterested={dataToFilterInterested}
-                                                completeInterestedData={completeInterestedData}
-                                                filteredDataInterested={filteredDataInterested}
-                                                setFilteredDataInterested={setFilteredDataInterested}
-                                                activeFilterFieldInterested={activeFilterFieldInterested}
-                                                setActiveFilterFieldInterested={setActiveFilterFieldInterested}
-                                                activeFilterFieldsInterested={activeFilterFieldsInterested}
-                                                setActiveFilterFieldsInterested={setActiveFilterFieldsInterested}
-                                                isLoading={isTeamLeadsLoading}
-                                                refetchTeamLeads={refetchTeamLeads}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={teamLeadsData?.data?.totalInterestedPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                dataStatus={dataStatus}
-                                                setDataStatus={setDataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                designation={data.designation}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                fetchProjections={fetchNewProjections}
-                                                projectionData={projectionData}
-                                                teamData={teamData}
-                                                handleOpenFormOpen={handleOpenFormOpen}
-                                                newDesignation={designation}
-                                                selectedRows={selectedRows}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                            />
-                                        )}
-                                    </div>
-
-                                    <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
-                                        {activeTabId === "Matured" && (
-                                            <TeamLeadsMatured
-                                                secretKey={secretKey}
-                                                // maturedData={teamLeadsData?.data?.data}
-                                                maturedData={maturedData}
-                                                setMaturedData={setMaturedData}
-                                                setMaturedDataCount={setMaturedDataCount}
-                                                dataToFilterMatured={dataToFilterMatured}
-                                                completeMaturedData={completeMaturedData}
-                                                filteredDataMatured={filteredDataMatured}
-                                                setFilteredDataMatured={setFilteredDataMatured}
-                                                activeFilterFieldMatured={activeFilterFieldMatured}
-                                                setActiveFilterFieldMatured={setActiveFilterFieldMatured}
-                                                activeFilterFieldsMatured={activeFilterFieldsMatured}
-                                                setActiveFilterFieldsMatured={setActiveFilterFieldsMatured}
-                                                isLoading={isTeamLeadsLoading}
-                                                refetchTeamLeads={refetchTeamLeads}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={teamLeadsData?.data?.totalMaturedPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                dataStatus={dataStatus}
-                                                setDataStatus={setDataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                designation={data.designation}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                fetchProjections={fetchNewProjections}
-                                                projectionData={projectionData}
-                                                newDesignation={designation}
-                                                selectedRows={selectedRows}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                            />
-                                        )}
-                                    </div>
-
-                                    <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
-                                        {activeTabId === "Busy" && dataStatus === "Busy" && (
-                                            <TeamLeadsBusy
-                                                secretKey={secretKey}
-                                                // busyData={teamLeadsData?.data?.data}
-                                                busyData={busyData}
-                                                setBusyData={setGeneralData}
-                                                setBusyDataCount={setBusyDataCount}
-                                                dataToFilterBusy={dataToFilterBusy}
-                                                completeBusyData={completeBusyData}
-                                                filteredDataBusy={filteredDataBusy}
-                                                setFilteredDataBusy={setFilteredDataBusy}
-                                                activeFilterFieldBusy={activeFilterFieldBusy}
-                                                setActiveFilterFieldBusy={setActiveFilterFieldBusy}
-                                                activeFilterFieldsBusy={activeFilterFieldsBusy}
-                                                setActiveFilterFieldsBusy={setActiveFilterFieldsBusy}
-                                                isLoading={isTeamLeadsLoading}
-                                                refetchTeamLeads={refetchTeamLeads}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={teamLeadsData?.data?.totalBusyPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                dataStatus={dataStatus}
-                                                setDataStatus={setDataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                designation={data.designation}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                projectionData={projectionData}
-                                                teamData={teamData}
-                                                handleOpenFormOpen={handleOpenFormOpen}
-                                                newDesignation={designation}
-                                                selectedRows={selectedRows}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                            />
-                                        )}
-                                    </div>
-
-                                    <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
-                                        {activeTabId === "Not Interested" && (
-                                            <TeamLeadsNotInterested
-                                                secretKey={secretKey}
-                                                // notInterestedData={teamLeadsData?.data?.data}
-                                                notInterestedData={notInterestedData}
-                                                setNotInterestedData={setNotInterestedData}
-                                                setNotInterestedDataCount={setNotInterestedDataCount}
-                                                dataToFilterNotInterested={dataToFilterNotInterested}
-                                                completeNotInterestedData={completeNotInterestedData}
-                                                filteredDataNotInterested={filteredDataNotInterested}
-                                                setFilteredDataNotInterested={setFilteredDataNotInterested}
-                                                activeFilterFieldNotInterested={activeFilterFieldNotInterested}
-                                                setActiveFilterFieldNotInterested={setActiveFilterFieldNotInterested}
-                                                activeFilterFieldsNotInterested={activeFilterFieldsNotInterested}
-                                                setActiveFilterFieldsNotInterested={setActiveFilterFieldsNotInterested}
-                                                isLoading={isTeamLeadsLoading}
-                                                refetchTeamLeads={refetchTeamLeads}
-                                                formatDateNew={formatDateNew}
-                                                startIndex={startIndex}
-                                                endIndex={endIndex}
-                                                totalPages={teamLeadsData?.data?.totalNotInterestedPages}
-                                                setCurrentPage={setCurrentPage}
-                                                currentPage={currentPage}
-                                                dataStatus={dataStatus}
-                                                setDataStatus={setDataStatus}
-                                                ename={data.ename}
-                                                email={data.email}
-                                                designation={data.designation}
-                                                handleShowCallHistory={handleShowCallHistory}
-                                                newDesignation={designation}
-                                                selectedRows={selectedRows}
-                                                setSelectedRows={setSelectedRows}
-                                                handleCheckboxChange={handleCheckboxChange}
-                                                handleMouseDown={handleMouseDown}
-                                                handleMouseEnter={handleMouseEnter}
-                                                handleMouseUp={handleMouseUp}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>
-                </div>
+                </>
+
             ) : showCallHistory ? (
                 <CallHistory
                     handleCloseHistory={hanleCloseCallHistory}

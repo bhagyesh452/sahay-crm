@@ -21,6 +21,7 @@ const fetch = require('node-fetch');
 const { previousDay } = require("date-fns");
 require('dotenv').config();
 const { sendMailEmployees } = require("./sendMailEmployees");
+const TeamLeadsModel = require("../models/TeamLeads.js");
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -136,7 +137,7 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
   const { bdmWork } = req.body;
 
   try {
-    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
+    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork , isForcefullyBdmWorkMadeFalse : true });
 
     res.status(200).json({ message: "Status Updated Successfully" });
   } catch (error) {
@@ -335,10 +336,11 @@ router.post('/addemployee/hrside', async (req, res) => {
       bdmWork
     } = req.body;
     console.log("adddedOn", AddedOn)
+    // console.log("adddedOn" , AddedOn)
     const newAddedOn = new Date(AddedOn);
     // Remove spaces from the number
     const sanitizedNumber = number.replace(/\s+/g, '');
-    console.log("Received request for adding employee:", req.body);
+    // console.log("Received request for adding employee:", req.body);
     // Step 1: Find the record of the last generated employee ID
     let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
 
@@ -393,6 +395,7 @@ router.post('/addemployee/hrside', async (req, res) => {
     });
 
     console.log("newemployee", newEmployee);
+  // console.log("newemployee" , newEmployee);
 
     // Step 5: Save the new employee to the database
     const result = await newEmployee.save();
@@ -451,7 +454,7 @@ router.post('/addemployee/hrside', async (req, res) => {
         html
       );
 
-      console.log(`Email sent: ${emailInfo.messageId}`);
+      // console.log(`Email sent: ${emailInfo.messageId}`);
     } catch (emailError) {
       console.error('Error sending email:', emailError);
       return res.status(500).json({ message: 'Employee added but email sending failed.' });
@@ -589,6 +592,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
     const { employeesData } = req.body;
 
     console.log("employeesData", employeesData)
+    // console.log("employeesData" , employeesData)
 
     if (!employeesData || !Array.isArray(employeesData)) {
       return res.status(400).json({ message: 'Invalid data format' });
@@ -650,7 +654,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
 
         try {
           const emailInfo = await sendMailEmployees([employee.email], subject, "", html);
-          console.log(`Email sent: ${emailInfo.messageId}`);
+          // console.log(`Email sent: ${emailInfo.messageId}`);
         } catch (emailError) {
           console.error('Error sending email:', emailError);
         }
@@ -686,45 +690,41 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
   }
 });
 
-// router.post("/einfo", async (req, res) => {
-//   try {
-//     const { firstName, middleName, lastName, personalPhoneNo, personalEmail } = req.body;
-//     const updateData = {
-//       ...req.body,
-//       ename: `${firstName} ${middleName} ${lastName}`,
-//       personal_number: personalPhoneNo,
-//       personal_email: personalEmail,
-//       AddedOn: new Date()
-//     };
 
-//     // Check if the document already exists and update it, otherwise create a new one
-//     const result = await adminModel.findOneAndUpdate(
-//       { personal_email: personalEmail },
-//       updateData,
-//       { new: true, upsert: true } // upsert option creates a new document if no match is found
-//     );
 
-//     res.json(result);
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-// Fetch employees from id :
 // router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
 //   const { empId } = req.params;
 //   try {
-//     const emp = await adminModel.findById(empId);
+//     // Try finding the employee in adminModel firstnpm
+//     let emp = await adminModel.findById(empId);
+    
+//     // If employee not found in adminModel, search in deletedEmployeeModels
 //     if (!emp) {
-//       res.status(404).json({ result: false, message: "Employee not found" });
+//       emp = await deletedEmployeeModel.findById(empId);
+//     }
+//     if(emp){
+//       const teamLeadsData = await TeamLeadsModel.find({
+//         bdmName: emp.ename,
+//       }).select("ename").lean();
+//     }
+   
+
+//     // If employee is still not found, return an error message
+//     if (!emp) {
+//       return res.status(404).json({ result: false, message: "Employee not found" });
 //     } else {
-//       res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
+//       // If found, return the employee data
+//       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
 //     }
 //   } catch (error) {
-//     res.status(500).json({ result: true, message: "Error fetching employee", error: error });
+//     // Return an error if something goes wrong
+//     return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
 //   }
 // });
+
+
+
+
 
 router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   const { empId } = req.params;
@@ -737,12 +737,30 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
       emp = await deletedEmployeeModel.findById(empId);
     }
 
+    let isVisibleTeamLeads = false; // Default value
+
+    if (emp) {
+      // Fetch the team leads data
+      const teamLeadsData = await TeamLeadsModel.find({
+        bdmName: emp.ename,
+      }).select("ename").lean();
+
+      // Check the length of teamLeadsData and set isVisibleTeamLeads accordingly
+      isVisibleTeamLeads = teamLeadsData.length > 0; 
+    }
+
     // If employee is still not found, return an error message
     if (!emp) {
       return res.status(404).json({ result: false, message: "Employee not found" });
     } else {
-      // If found, return the employee data
-      return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
+      // If found, add the isVisibleTeamLeads field to the employee data
+      const employeeData = {
+        ...emp.toObject(), // Convert Mongoose document to plain object if needed
+        isVisibleTeamLeads,
+      };
+
+      // Return the updated employee data
+      return res.status(200).json({ result: true, message: "Employee fetched successfully", data: employeeData });
     }
   } catch (error) {
     // Return an error if something goes wrong
@@ -750,9 +768,10 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   }
 });
 
-
-
 // Fetch Profile Photo :
+
+
+
 router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
   const { empId, filename } = req.params;
   const pdfPath = path.join(
@@ -1191,7 +1210,7 @@ router.get("/deletedemployeeinfo", async (req, res) => {
 
 router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) => {
   const { id: itemId } = req.params; // Correct destructuring
-  console.log(itemId);
+  // console.log(itemId);
   try {
     const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
 
@@ -2104,7 +2123,7 @@ const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
         if (condition) {
           // Find the service from mainBooking.services
           const findService = mainBooking.services.find(service => service.serviceName === remainingObj.serviceName);
-          console.log("findService", mainBooking["Company Name"], findService)
+          // console.log("findService", mainBooking["Company Name"], findService)
           // Check if findService is defined
           if (findService) {
             // Calculate the tempAmount based on whether GST is included
@@ -2428,17 +2447,115 @@ router.get('/achieved-details/:ename', async (req, res) => {
 
 
 // 2. Read the Employee
+// router.get("/einfo", async (req, res) => {
+//   try {
+
+//     const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
+
+//     res.json(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
+// router.get("/einfo", async (req, res) => {
+//   try {
+//     // Fetch all employees from the database
+//     const employees = await adminModel.find();
+
+//     // Define allowed designations
+//     const allowedDesignations = ["Sales Executive", "Sales Manager", "Floor Manager"];
+//     const today = new Date();
+
+//     // Iterate through the employees and update fields as necessary
+//     const updatePromises = employees.map(async (employee) => {
+//       if (allowedDesignations.includes(employee.designation) && employee.jdate) {
+//         // const jdate = new Date(employee.jdate); // Parse the joining date
+//         // const probationEndDate = new Date(jdate);
+//         // probationEndDate.setMonth(probationEndDate.getMonth() + 3); // Add 3 months to the joining date
+
+//         if (employee.bdmWork !== true && employee.isForcefullyBdmWorkMadeFalse !== true) {
+//           // Update `bdmWork` if probation period is completed and conditions are met
+//           employee.bdmWork = true; // Update the in-memory object
+//           await adminModel.updateOne(
+//             { _id: employee._id },
+//             { $set: { bdmWork: true } }
+//           ); // Save the change to the database
+//         } else if (employee.bdmWork === true) {
+//           // If `bdmWork` is already true, set `isForcefullyMade` to true
+//           employee.isForcefullyBdmWorkMadeFalse = true; // Update the in-memory object
+//           await adminModel.updateOne(
+//             { _id: employee._id },
+//             { $set: { isForcefullyBdmWorkMadeFalse: true } }
+//           ); // Save the change to the database
+//         }
+//       }
+//       return employee; // Return the updated employee object
+//     });
+
+//     // Wait for all updates to complete
+//     const updatedEmployees = await Promise.all(updatePromises);
+
+//     // console.log("updatedEmployees", updatedEmployees);
+
+//     // Return all employees, including the updated ones
+//     res.status(200).json(updatedEmployees);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 router.get("/einfo", async (req, res) => {
   try {
+    // Fetch all employees from the database
+    const employees = await adminModel.find();
 
-    const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
+    // Define allowed designations
+    const allowedDesignations = ["Sales Executive", "Sales Manager"];
+    const today = new Date();
 
-    res.json(data);
+    // Iterate through the employees and update fields as necessary
+    const updatePromises = employees.map(async (employee) => {
+      // Check if the employee designation is allowed and the conditions are met
+      if (
+        allowedDesignations.includes(employee.designation) && 
+        employee.bdmWork !== true && 
+        employee.isForcefullyBdmWorkMadeFalse !== true
+      ) {
+        // Update `bdmWork` to true if the conditions are satisfied
+        employee.bdmWork = true; // Update the in-memory object
+        await adminModel.updateOne(
+          { _id: employee._id },
+          { $set: { bdmWork: true  } }
+        ); // Save the change to the database
+      }
+
+      // If `bdmWork` is already true, mark `isForcefullyMade` if applicable
+      if (employee.bdmWork === true) {
+        employee.isForcefullyBdmWorkMadeFalse = true; // Update the in-memory object
+        await adminModel.updateOne(
+          { _id: employee._id },
+          { $set: { isForcefullyBdmWorkMadeFalse: true } }
+        ); // Save the change to the database
+      }
+
+      return employee; // Return the updated employee object
+    });
+
+    // Wait for all updates to complete
+    const updatedEmployees = await Promise.all(updatePromises);
+
+    // Return all employees, including the updated ones
+    res.status(200).json(updatedEmployees);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 
@@ -2494,7 +2611,7 @@ router.put("/einfo/:id", async (req, res) => {
 router.post('/addbulktargetemployees', async (req, res) => {
   try {
     const { employeeData } = req.body;
-    console.log("employeeData", employeeData)
+    // console.log("employeeData", employeeData)
 
     if (!employeeData || !Array.isArray(employeeData)) {
       return res.status(400).json({ message: 'Invalid data format' });
@@ -2628,7 +2745,7 @@ router.patch("/permanentDelete/:id", async (req, res) => {
 
 router.get("/einfo/:email/:password", async (req, res) => {
   const { email, password } = req.params;
-  console.log(email, password)
+  // console.log(email, password)
   try {
     const data = await adminModel.findOne({ email: email, password: password })
       .select("email password").lean();
@@ -3164,9 +3281,9 @@ router.get(`/employee-calling-fetch/:number`, async (req, res) => {
 router.get('/employee-calling/filter', async (req, res) => {
   const { emp_number, year, month } = req.query;
 
-  console.log("emp_number:", emp_number);
-  console.log("year:", year);
-  console.log("month:", month);
+  // console.log("emp_number:", emp_number);
+  // console.log("year:", year);
+  // console.log("month:", month);
 
   try {
     // Find the employee by number and filter by year and month
@@ -3211,8 +3328,8 @@ const fetchDailyData = async (date, employeeNumber) => {
 
   const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);  // 9:30 AM
   const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);  // 7:30 PM
-  console.log("start", startTimestamp)
-  console.log("end", endTimestamp)
+  // console.log("start", startTimestamp)
+  // console.log("end", endTimestamp)
   const body = {
     "call_from": startTimestamp,
     "call_to": endTimestamp,
@@ -3294,7 +3411,7 @@ const saveDailyDataToDatabase = async (employeeNumber, dailyData) => {
       });
     }
 
-    console.log(`Data saved successfully for employee ${employeeNumber}`);
+    // console.log(`Data saved successfully for employee ${employeeNumber}`);
   } catch (err) {
     console.error(`Error saving data for employee ${employeeNumber}:`, err.message);
   }

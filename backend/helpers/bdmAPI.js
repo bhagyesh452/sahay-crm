@@ -14,6 +14,8 @@ const TeamLeadsModel = require("../models/TeamLeads.js");
 const RequestMaturedModel = require("../models/RequestMatured.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
+const { Socket } = require('dgram');
+
 
 
 router.get("/teamleadsdata", async (req, res) => {
@@ -360,7 +362,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
 
        CompanyModel.find({
           ...commonQuery,
-          bdmAcceptStatus: { $in: ["Accept", "NotForwarded", "MaturedAccepted"] },
+          bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] },
           $or: [
             { Status: { $in: ["Busy", "Not Picked Up"] } },
             { bdmStatus: { $in: ["Busy", "Not Picked Up"] } },
@@ -396,10 +398,15 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } })
+        CompanyModel.find({ 
+          ...commonQuery, 
+          bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, 
+          Status: { $in: ["Not Interested", "Junk"] },
+          bdmStatus: { $ne: "Not Interested" } // Exclude records where bdmStatus is "Not Interested"
+        })
         .sort({ bdmStatusChangeDate: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
     ]);
 
     // Count total for each status category
@@ -408,7 +415,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
       // CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "NotForwarded" , "MaturedAccepted"] }, Status: { $in: ["Busy", "Not Picked Up"] } }),
       CompanyModel.countDocuments({
         ...commonQuery,
-        bdmAcceptStatus: { $in: ["Accept", "NotForwarded", "MaturedAccepted"] },
+        bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] },
         $or: [
           { Status: { $in: ["Busy", "Not Picked Up"] }},
           { bdmStatus: { $in: ["Busy", "Not Picked Up"] } },
@@ -434,7 +441,7 @@ router.get("/teamLeadsData/:bdmName", async (req, res) => {
       ],
     }),
       CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedDone"] }, Status: "Matured" }),
-      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } }),
+      CompanyModel.countDocuments({ ...commonQuery, bdmAcceptStatus: { $in: ["Accept", "MaturedAccepted"] }, Status: { $in: ["Not Interested", "Junk"] } ,bdmStatus: { $ne: "Not Interested" } }),
     ]);
 
 // Total pages calculation based on the largest dataset (generalData as reference)
@@ -551,12 +558,106 @@ router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
 });
 
 
+// router.post("/update-bdm-status/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const socketIO = req.io;
+
+
+//   //console.log(id)
+//   const {
+//     newBdmStatus,
+//     companyId,
+//     oldStatus,
+//     bdmAcceptStatus,
+//     bdmStatusChangeDate,
+//     bdmStatusChangeTime,
+//   } = req.body; // Destructure the required properties from req.body
+
+//   console.log(req.body , oldStatus)
+//   try {
+//     // Update the status field in the database based on the employee id
+//     await TeamLeadsModel.findByIdAndUpdate(id, {
+//       bdmStatus: oldStatus === "Matured" || oldStatus === "Untouched" ? "Interested"  : oldStatus,
+//       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
+//       bdmStatusChangeTime: bdmStatusChangeTime,
+//     });
+
+//     const companyToFind = await CompanyModel.findById(id).lean();
+//     // console.log("companyToFind", companyToFind)
+//     const company = await CompanyModel.findByIdAndUpdate(id, {
+//       bdmStatus: oldStatus === "Matured" || oldStatus === "Untouched" ? "Interested"  : oldStatus,
+//       bdmAcceptStatus: bdmAcceptStatus,
+//       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
+//       bdmStatusChangeTime: bdmStatusChangeTime,
+//       isDeletedEmployeeCompany: oldStatus === "Matured" ? true : companyToFind.isDeletedEmployeeCompany
+//     });
+
+
+//     socketIO.emit("bdmDataAcceptedRequest", {
+//       ename: company.ename,
+//       companyName: company["Company Name"]
+//     });
+
+//     //console.log(company.ename);
+
+//     res.status(200).json({ message: "Status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating status:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+
+//   //   // Fetch the BDM name and company name
+//   //   const ename = company.ename;
+//   //   const bdmName = company.bdmName;
+//   //   const companyName = company["Company Name"];
+
+//   //   // Fetch the ratio for the specific BDM from the `/bdmMaturedCases` aggregation
+//   //   const bdmStats = await CompanyModel.aggregate([
+//   //     { $match: { bdmAcceptStatus: "Accept", bdmName: bdmName } },
+//   //     {
+//   //       $group: {
+//   //         _id: "$bdmName",
+//   //         receivedCases: { $sum: 1 },
+//   //         maturedCases: {
+//   //           $sum: {
+//   //             $cond: [{ $eq: ["$Status", "Matured"] }, 1, 0],
+//   //           },
+//   //         },
+//   //       },
+//   //     },
+//   //     {
+//   //       $addFields: {
+//   //         ratio: {
+//   //           $cond: [
+//   //             { $eq: ["$receivedCases", 0] },
+//   //             0,
+//   //             { $multiply: [{ $divide: ["$maturedCases", "$receivedCases"] }, 100] },
+//   //           ],
+//   //         },
+//   //       },
+//   //     },
+//   //   ]);
+
+//   //   const ratio = bdmStats[0]?.ratio || 0;
+
+//   //   // Emit socket event with BDM name, company name, and ratio
+//   //   socketIO.emit("bdmDataAcceptedRequest", {
+//   //     ename: ename,
+//   //     companyName: companyName,
+//   //     ratio: ratio.toFixed(2), // Send the ratio as a formatted value
+//   //   });
+
+//   //   res.status(200).json({ message: "Status updated successfully" });
+//   // } catch (error) {
+//   //   console.error("Error updating status:", error);
+//   //   res.status(500).json({ error: "Internal Server Error" });
+//   // }
+// });
+
 router.post("/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
   const socketIO = req.io;
 
-
-  //console.log(id)
   const {
     newBdmStatus,
     companyId,
@@ -564,88 +665,52 @@ router.post("/update-bdm-status/:id", async (req, res) => {
     bdmAcceptStatus,
     bdmStatusChangeDate,
     bdmStatusChangeTime,
-  } = req.body; // Destructure the required properties from req.body
+  } = req.body;
 
-  //console.log(req.body)
   try {
-    // Update the status field in the database based on the employee id
+    // Update the status field in the TeamLeadsModel based on the employee id
     await TeamLeadsModel.findByIdAndUpdate(id, {
-      bdmStatus: oldStatus === "Matured" ? "Interested" : oldStatus,
+      bdmStatus: oldStatus === "Untouched" || oldStatus === "Not Interested" || oldStatus === "Not Picked Up" || oldStatus === "Busy" ? "Interested" : oldStatus,
       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
       bdmStatusChangeTime: bdmStatusChangeTime,
     });
 
+    // Fetch the company to determine the current value of isDeletedEmployeeCompany
     const companyToFind = await CompanyModel.findById(id).lean();
-    // console.log("companyToFind", companyToFind)
-    const company = await CompanyModel.findByIdAndUpdate(id, {
-      bdmStatus: oldStatus === "Matured" ? "Interested" : oldStatus,
+
+    // Prepare the update object
+    const updateFields = {
+      bdmStatus: oldStatus === "Untouched" || oldStatus === "Not Interested" || oldStatus === "Not Picked Up" || oldStatus === "Busy" ? "Interested" : oldStatus,
       bdmAcceptStatus: bdmAcceptStatus,
       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
       bdmStatusChangeTime: bdmStatusChangeTime,
-      isDeletedEmployeeCompany: oldStatus === "Matured" ? true : companyToFind.isDeletedEmployeeCompany
+      isDeletedEmployeeCompany: oldStatus === "Matured" ? true : companyToFind.isDeletedEmployeeCompany,
+    };
+
+    // If oldStatus is "Untouched", also update the status field to "Interested"
+    if (oldStatus === "Untouched" || oldStatus === "Not Interested" || oldStatus === "Not Picked Up" || oldStatus === "Busy") {
+      updateFields.Status = "Interested";
+    }
+
+    // Update the company model with the prepared fields
+    const company = await CompanyModel.findByIdAndUpdate(id, {
+      $set: updateFields,
     });
 
-
+    // Emit socket event
     socketIO.emit("bdmDataAcceptedRequest", {
       ename: company.ename,
-      companyName: company["Company Name"]
+      companyName: company["Company Name"],
     });
-
-    //console.log(company.ename);
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
     console.error("Error updating status:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-
-  //   // Fetch the BDM name and company name
-  //   const ename = company.ename;
-  //   const bdmName = company.bdmName;
-  //   const companyName = company["Company Name"];
-
-  //   // Fetch the ratio for the specific BDM from the `/bdmMaturedCases` aggregation
-  //   const bdmStats = await CompanyModel.aggregate([
-  //     { $match: { bdmAcceptStatus: "Accept", bdmName: bdmName } },
-  //     {
-  //       $group: {
-  //         _id: "$bdmName",
-  //         receivedCases: { $sum: 1 },
-  //         maturedCases: {
-  //           $sum: {
-  //             $cond: [{ $eq: ["$Status", "Matured"] }, 1, 0],
-  //           },
-  //         },
-  //       },
-  //     },
-  //     {
-  //       $addFields: {
-  //         ratio: {
-  //           $cond: [
-  //             { $eq: ["$receivedCases", 0] },
-  //             0,
-  //             { $multiply: [{ $divide: ["$maturedCases", "$receivedCases"] }, 100] },
-  //           ],
-  //         },
-  //       },
-  //     },
-  //   ]);
-
-  //   const ratio = bdmStats[0]?.ratio || 0;
-
-  //   // Emit socket event with BDM name, company name, and ratio
-  //   socketIO.emit("bdmDataAcceptedRequest", {
-  //     ename: ename,
-  //     companyName: companyName,
-  //     ratio: ratio.toFixed(2), // Send the ratio as a formatted value
-  //   });
-
-  //   res.status(200).json({ message: "Status updated successfully" });
-  // } catch (error) {
-  //   console.error("Error updating status:", error);
-  //   res.status(500).json({ error: "Internal Server Error" });
-  // }
 });
+
+
 
 router.get(`/api/completeLeadsData`, async (req, res) => {
   try {
@@ -979,8 +1044,9 @@ router.get("/matured-get-requests-byBDM/:bdmName", async (req, res) => {
 
 router.post('/deletebdm-updatebdedata', async (req, res) => {
   const { companyId, companyName } = req.query; // Changed from req.params to req.body
-
+  const socketIO = req.io;
   try {
+    const exixtingData = await CompanyModel.findById(companyId);
     await CompanyModel.findOneAndUpdate(
       { _id: companyId }, // Corrected filter object
       {
@@ -1004,7 +1070,9 @@ router.post('/deletebdm-updatebdedata', async (req, res) => {
     await TeamLeadsModel.findOneAndDelete({ _id: companyId }); // Corrected filter object
     await FollowUpModel.findOneAndDelete({ companyName: companyName });
     await RemarksHistory.deleteOne({ companyID: companyId });
-
+    socketIO.emit("revert-back-request-acceptedByBDM" , {
+      data : exixtingData
+    });
     res.status(200).json({ message: "Company updated and deleted successfully" });
   } catch (error) {
     console.error("Error updating and deleting company:", error);
@@ -1064,6 +1132,8 @@ router.post("/delete-bdm-teamLeads", async (req, res) => {
 router.post(`/rejectrequestrevertbackcompany`, async (req, res) => {
   const { companyId } = req.query;
   try {
+    const company = await CompanyModel.findById(companyId);
+    const socketIO = req.io;
     await CompanyModel.findOneAndUpdate(
       { _id: companyId },
       {
@@ -1080,6 +1150,7 @@ router.post(`/rejectrequestrevertbackcompany`, async (req, res) => {
         }
       }
     )
+    socketIO.emit("rejectrequestrevertbackcompany", { data: company })
     res.status(200).json({ message: "Company Not Reverted Back" })
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" })
@@ -1131,6 +1202,7 @@ router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
         bdmName: name,
         bdeForwardDate: new Date(),
         bdeOldStatus: company.Status,
+        bdmStatus:"Untouched"
       });
 
       console.log("CompanyModel response:", response);
@@ -1142,6 +1214,7 @@ router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
           ...company,
           bdmName: name,
           bdeForwardDate: new Date(),
+          bdmStatus:"Untouched"
         },
         { upsert: true, new: true } // Create new entry if not found, return the updated/new document
       );

@@ -167,6 +167,10 @@ const yourSchema = new mongoose.Schema({
   projectionDate:{
     type:Date,
     default:new Date()
+  },
+  isForcefullyBdmWorkMadeFalse:{
+    type: Boolean,
+    default:false
   }
 });
 

@@ -136,12 +136,12 @@ function EmployeeGeneralLeads({
     }, []);
 
     // console.log("activeFilterFieldsGeneral", activeFilterFields)
-    console.log("generalData" , generalData)
-
+    // console.log("generalData" , generalData)
+    // console.log("openBackdrop", openBacdrop)
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
-             {openBacdrop && (<Backdrop
+            {openBacdrop && (<Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={openBacdrop}
                 onClick={() => setOpenBacdrop(false)}>
@@ -542,7 +542,9 @@ function EmployeeGeneralLeads({
                                                                 company["Company Name"],
                                                                 company["Company Number"],
                                                                 bdenumber,
-                                                                company.bdmName
+                                                                company.bdmName,
+                                                                company.bdmAcceptStatus,
+                                                                company.bdeForwardDate
 
                                                             );
                                                         }}

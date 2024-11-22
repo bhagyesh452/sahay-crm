@@ -148,7 +148,7 @@ function EmployeeBusyLeads({
                 onClick={() => setOpenBacdrop(false)}>
                 <CircularProgress color="inherit" />
             </Backdrop>)}
-            {!formOpen && !addFormOpen && (
+            {!formOpen && !addFormOpen && !openBacdrop && (
                 <>
                     <div className="table table-responsive e-Leadtable-style m-0">
                         <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
@@ -543,7 +543,9 @@ function EmployeeBusyLeads({
                                                                 company["Company Name"],
                                                                 company["Company Number"],
                                                                 bdenumber,
-                                                                company.bdmName
+                                                                company.bdmName,
+                                                                company.bdmAcceptStatus,
+                                                                company.bdeForwardDate
 
                                                             );
                                                             // setShowCallHistory(true);

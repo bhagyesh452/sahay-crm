@@ -54,7 +54,7 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
   console.log("Company Name:", companyName, companyEmail);
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
-  //const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
+  // const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
 
   const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
   console.log(command)
@@ -115,32 +115,26 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
             }
           ];
           //console.log(`Email attachments: ${JSON.stringify(attachments)}`);
-          const validationLink = 'https://www.startupindia.gov.in/content/sih/en/startupgov/validate-startup-recognition.html '; // Your validation link
+          const validationLink = 'https://www.startupindia.gov.in/ '; // Your validation link
+          const servicesLink = 'https://www.startupsahay.com/all-services.html'; // Your validation link
+          const reviewLink = 'https://www.google.com/maps/place/START-UP+SAHAY+PRIVATE+LIMITED/@23.045476,72.5077064,17z/data=!3m1!4b1!4m6!3m5!1s0x395e852283f27bc3:0x2e4b16825e436926!8m2!3d23.045476!4d72.5077064!16s%2Fg%2F11q3xws689?entry=ttu&g_ep=EgoyMDI0MTExOC4wIKXMDSoASAFQAw%3D%3D'; // Your validation link
           const number = bdmNumber ? bdmNumber : bdeNumber
-          const subject = `Congratulations! Your Start-Up India Certificate is Approved!`;
+           // Handle duplicate BDE and BDM names
+           const contactDetails = bdeName === bdmName
+           ? `<li>${bdeName} - ${bdeNumber} (Your point of contact for initiating the service)</li>`
+           : `<li>${bdeName} - ${bdeNumber} (Your point of contact for initiating the service)</li>
+              <li>${bdmName} - ${bdmNumber} (Your point of contact for further support)</li>`;
+          const subject = `Congratulations on Your Start-Up India Certification! 🎉`;
           const text = `Dear ${companyName},\n\nPlease find attached the certificate generated for your company.\n\nBest regards,\nStart-Up Sahay Private Limited`
           const html = `
                   <p>Dear ${companyName},</p>
-                  <p>We are pleased to inform you that your Start-Up India Certificate has been successfully approved, and it is attached to this email for your reference. Congratulations on this important step in your startup journey!</p>
-                  <p>We would also like to take this opportunity to share more about our services. We operate and provide support in the following areas:</p>
-                  <ul>
-                  <li>Certification Services</li>
-                  <li>Fund Raising Support Services</li>
-                  <li>Documentation Services</li>
-                  <li>IT Services</li>
-                  <li>Business Registration</li>
-                  <li>Digital Marketing</li>
-                  </ul>
-                  <p>The detailed information about these services is available in attached company brochure of Start-Up Sahay. Whenever you have some time, please feel free to explore it.</p>
-                  <p>You can also verify your certification by visiting the official Start-Up India portal through this link: <a href="${validationLink}">Verify Start-Up Recognition</a></p>
-                  <p>If you have any further questions or would like to explore additional services, you can reach out to the following team members who have been assisting you throughout the process:</p>
-                  <ol>
-                  <li>${bdeName} - ${bdeNumber} And ${bdmName} - ${number} (Your points of contact for initiating the service)</li>
-                  <li>Dhruvi Gohel - 9016928702 (Assisted with the certification process up to the issuance of your certificate)</li>
-                  <li>General Support - 9601618727 (For any other inquiries or general assistance)</li>
-                  </ol>
-                  <p>Thank you for choosing Start-Up Sahay. We look forward to continuing to support you!</p>
-<p>Please find attached the certificate generated for your company.</p><p>Best regards,<br>Start-Up Sahay Private Limited</p>
+                  <p>Warm congratulations on successfully obtaining your Start-Up India Certification! This is a significant milestone for your business, and we are thrilled to be a part of your journey.</p>
+                  <p>Please find your Start-Up India certificate attached to this email. We also encourage you to verify the certificate on the official Start-Up India portal for your records. 👉 <a href="${validationLink}">Verify Start-Up Recognition</a></p>
+                  <p>Additionally, we offer a variety of services designed to support your business's growth and success. Please refer to the attached company brochure and visit our website to explore all our services: 👉 <a href="${servicesLink}">Explore All Our Services Here.</a></p>
+                  <p>We truly hope you are happy with the services we’ve provided, and if we have lived up to your expectations, we have one small request. It would mean the world to us if you could spare just 2 minutes to share your experience through a review. 👉 <a href="${reviewLink}">Click here to Leave a review.</a></p>
+                  <p>We understand your schedule might be packed, but we trust that you’ll take a moment to show your appreciation if our efforts have truly made a difference for you.</p>
+                  <p>Once again, congratulations and best wishes for your entrepreneurial journey!</p>
+                <p>Thanks & Regards<br>Start-Up Sahay Private Limited<br>www.startupsahay.com</p>
                   `;
           // Emit socket message indicating the email is in the process of being sent
           let updatedcompany;

@@ -256,8 +256,8 @@ function EmployeePerformanceReport({ redesignedData, data }) {
     const fetchPerformanceData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/achieved-details/${data.ename}`)
-            console.log("response for performance", response.data)
-            console.log("performance report")
+            // console.log("response for performance", response.data)
+            // console.log("performance report")
         } catch (error) {
             console.log("Error fetching data", error.message)
         }
@@ -284,7 +284,7 @@ function EmployeePerformanceReport({ redesignedData, data }) {
         return b.year - a.year || monthB - monthA; // descending order
     }) : [];
 
-    console.log(sortedTargetDetails)
+    // console.log(sortedTargetDetails)
 
 
     return (

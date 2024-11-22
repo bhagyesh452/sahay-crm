@@ -21645,6 +21645,7 @@ Icon input
   pointer-events: none;
   font-size: 1.2em;
 }
+
 .input-icon-addon:last-child {
   right: 0;
   left: auto;

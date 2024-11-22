@@ -143,7 +143,7 @@ function EmployeeMaturedBookings() {
   };
 
   useEffect(() => {
-    console.log("Current Company Name:", currentCompanyName);
+    // console.log("Current Company Name:", currentCompanyName);
 
     if (currentCompanyName === "") {
       setCurrentLeadform(formData[0]);
@@ -180,7 +180,7 @@ function EmployeeMaturedBookings() {
 
 
     socket.on("delete-request-done", (res) => {
-      console.log("Delete request done")
+      // console.log("Delete request done")
       fetchRedesignedFormData1(); // Same condition
       enqueueSnackbar(`Delete Request Accepted`, {
         variant: 'success'
@@ -326,7 +326,7 @@ function EmployeeMaturedBookings() {
 
   const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
-    console.log(pathname);
+    // console.log(pathname);
     window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
 
@@ -356,7 +356,7 @@ function EmployeeMaturedBookings() {
   const handleotherdocsAttachment = async () => {
     try {
       const files = selectedDocuments;
-      console.log(files);
+      // console.log(files);
 
       if (files.length === 0) {
         // No files selected
@@ -367,7 +367,7 @@ function EmployeeMaturedBookings() {
       for (let i = 0; i < files.length; i++) {
         formData.append("otherDocs", files[i]);
       }
-      console.log(currentLeadform["Company Name"], sendingIndex);
+      // console.log(currentLeadform["Company Name"], sendingIndex);
       setCurrentCompanyName(currentLeadform["Company Name"])
 
       const response = await axios.post(`${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`, formData);
@@ -753,16 +753,16 @@ function EmployeeMaturedBookings() {
                         </div>
                         {(() => {
                           // Log the values to check which condition is being evaluated
-                          console.log("isDeletedStatus:", isDeletedStatus);
-                          console.log("currentBdeName:", currentBdeName);
-                          console.log("data.ename:", data.ename);
-                          console.log("currentLeadForm", currentLeadform);
+                          // console.log("isDeletedStatus:", isDeletedStatus);
+                          // console.log("currentBdeName:", currentBdeName);
+                          // console.log("data.ename:", data.ename);
+                          // console.log("currentLeadForm", currentLeadform);
 
                           const condition1 = isDeletedStatus === true && currentBdeName === data.ename;
                           const condition2 = (isDeletedStatus === false || isDeletedStatus === undefined) && currentBdeName === data.ename;
 
-                          console.log("Condition 1 (isDeletedStatus === true && currentBdeName === data.ename):", condition1);
-                          console.log("Condition 2 ((isDeletedStatus === false || isDeletedStatus === undefined) && currentBdeName === data.ename):", condition2);
+                          // console.log("Condition 1 (isDeletedStatus === true && currentBdeName === data.ename):", condition1);
+                          // console.log("Condition 2 ((isDeletedStatus === false || isDeletedStatus === undefined) && currentBdeName === data.ename):", condition2);
 
                           // Return the JSX only if either condition is true
                           return (condition1 || condition2) && (

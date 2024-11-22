@@ -1135,7 +1135,7 @@ function AdminExecutiveDefaulterPanel({ searchText,totalFilteredDataPortal, show
                           bdmName={obj.bdmName}
                         />
                       </td>
-                      <td>
+                      <td style={{width:'120px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscPortalDropdown
@@ -1150,7 +1150,7 @@ function AdminExecutiveDefaulterPanel({ searchText,totalFilteredDataPortal, show
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td style={{width:'140px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscTypeDropdown
@@ -1165,7 +1165,7 @@ function AdminExecutiveDefaulterPanel({ searchText,totalFilteredDataPortal, show
                           )}
                         </div>
                       </td>
-                      <td>
+                      <td style={{width:'130px'}}>
                         <div>
                           {obj.mainCategoryStatus && obj.subCategoryStatus && (
                             <DscValidityDropdown

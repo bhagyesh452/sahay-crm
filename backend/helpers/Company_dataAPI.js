@@ -94,106 +94,255 @@ router.get("/leads/interestedleads/followupleads", async (req, res) => {
   }
 });
 
+// router.post("/update-status/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const { newStatus, title, date, time, oldStatus } = req.body;
+//   const socketIO = req.io;
+
+//   try {
+//     // Find the company by ID in the CompanyModel to get the company details
+//     const company = await CompanyModel.findById(id);
+//     let shouldEmitSocket = false; // Flag to track if socket event should be emitted
+//     // if (!company) {
+//     //   return res.status(404).json({ error: "Company not found" });
+//     // }
+
+//     console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, company.Status)
+
+//     //Update the status field in the CompanyModel
+//     if ((newStatus === "Not Interested") && (company.bdmAcceptStatus === "MaturedAccepted")) {
+//       console.log("if", newStatus, title, date, time, oldStatus);
+//       shouldEmitSocket = true; // Set the flag for socket emission
+//       await CompanyModel.findByIdAndUpdate(id, {
+//         $set: {
+//           // Status: newStatus,
+//           lastActionDate: new Date(),
+//           bdmAcceptStatus: "NotForwarded"
+//         },
+//         $unset: {
+//           bdmStatus: ""
+//         }
+
+//       });
+//       await TeamLeadsModel.findByIdAndDelete(id);
+//     } else if ((newStatus === "Busy" || newStatus === "Not Picked Up" || newStatus === "FollowUp" || newStatus === "Interested") && (company.bdmAcceptStatus === "MaturedAccepted")) {
+//       console.log("yahan elseif", newStatus, title, date, time, oldStatus);
+//       await CompanyModel.findByIdAndUpdate(id, {
+//         $set: {
+//           bdmStatus: newStatus,
+//           lastActionDate: new Date(),
+//           // bdmAcceptStatus:"NotForwarded"
+//         },
+//         // $unset : {
+//         //   bdmStatus : ""
+//         // }
+
+//       });
+//     } else {
+//       console.log("yahan else", newStatus, title, date, time, oldStatus);
+//       await CompanyModel.findByIdAndUpdate(id, {
+//         Status: newStatus,
+//         AssignDate: new Date(),
+//         bdmStatus: newStatus,
+//         lastActionDate: new Date(),
+//         previousStatusToUndo: company.Status
+//       });
+//       console.log("else", newStatus, title, date, time, oldStatus);
+//     }
+
+//     // Define an array of statuses for which the lead history should be deleted
+//     const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched", "Not Picked Up"];
+
+//     if (deleteStatuses.includes(newStatus)) {
+//       // Find the company in LeadHistoryForInterestedandFollowModel
+//       const leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+//         "Company Name": company["Company Name"],
+//       });
+
+//       // If lead history exists, delete the document
+//       if (leadHistory) {
+//         await LeadHistoryForInterestedandFollowModel.deleteOne({
+//           "Company Name": company["Company Name"],
+//         });
+//       }
+
+//     } else if (newStatus === "FollowUp" || newStatus === "Interested") {
+
+//       // Find the company in LeadHistoryForInterestedandFollowModel
+//       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+//         "Company Name": company["Company Name"],
+//       });
+//       // console.log("0 leadHistory", leadHistory)
+
+//       if (leadHistory) {
+//         // console.log("1 leadHistory", leadHistory)
+//         // If the record exists, update old status, new status, date, and time
+//         leadHistory.oldStatus = "Interested";
+//         leadHistory.newStatus = newStatus;
+//       } else {
+//         // console.log("2 leadHistory", leadHistory)
+//         // If the record does not exist, create a new one with the company name, ename, and statuses
+//         leadHistory = new LeadHistoryForInterestedandFollowModel({
+//           _id: id,
+//           "Company Name": company["Company Name"],
+//           ename: company.ename,
+//           oldStatus: oldStatus,
+//           newStatus: newStatus,
+//           date: new Date(),  // Convert the date string to a Date object
+//           time: time,
+//         });
+//       }
+//       // console.log("3 leadHistory", leadHistory)
+
+//       // Save the lead history update
+//       await leadHistory.save();
+//     }
+//     // Emit the socket message only if the flag is set
+//     if (shouldEmitSocket) {
+//       console.log("Emitting socket event");
+//       socketIO.emit("bdm-moved-to-notinterested", {
+//         message: `Status updated to "Not Interested" for company: ${company["Company Name"]}`,
+//         companyName: company["Company Name"],
+//         ename: company.ename,
+//         newStatus,
+//         date,
+//         time,
+//       });
+//     }
+
+
+//     res.status(200).json({ message: "Status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating status:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
   const { newStatus, title, date, time, oldStatus } = req.body;
-
+  const socketIO = req.io;
 
   try {
-    // Find the company by ID in the CompanyModel to get the company details
-    const company = await CompanyModel.findById(id);
-    // if (!company) {
-    //   return res.status(404).json({ error: "Company not found" });
-    // }
-
-    console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, company.Status)
-
-    //Update the status field in the CompanyModel
-    if ((newStatus === "Not Interested") && (company.bdmAcceptStatus === "MaturedAccepted")) {
-      console.log("if", newStatus, title, date, time, oldStatus);
-      await CompanyModel.findByIdAndUpdate(id, {
-        $set: {
-          // Status: newStatus,
-          lastActionDate: new Date(),
-          bdmAcceptStatus: "NotForwarded"
-        },
-        $unset: {
-          bdmStatus: ""
-        }
-
-      });
-      await TeamLeadsModel.findByIdAndDelete(id);
-    } else if ((newStatus === "Busy" || newStatus === "Not Picked Up" || newStatus === "FollowUp" || newStatus === "Interested") && (company.bdmAcceptStatus === "MaturedAccepted")) {
-      console.log("yahan elseif", newStatus, title, date, time, oldStatus);
-      await CompanyModel.findByIdAndUpdate(id, {
-        $set: {
-          bdmStatus: newStatus,
-          lastActionDate: new Date(),
-          // bdmAcceptStatus:"NotForwarded"
-        },
-        // $unset : {
-        //   bdmStatus : ""
-        // }
-
-      });
-    } else {
-      console.log("yahan else", newStatus, title, date, time, oldStatus);
-      await CompanyModel.findByIdAndUpdate(id, {
-        Status: newStatus,
-        AssignDate: new Date(),
-        bdmStatus: newStatus,
-        lastActionDate: new Date(),
-        previousStatusToUndo: company.Status
-      });
-      console.log("else", newStatus, title, date, time, oldStatus);
+    // Fetch the company and perform validations
+    const company = await CompanyModel.findById(id)
+    .lean()
+    .select({ "bdmAcceptStatus": 1, "Status": 1, "ename": 1, "Company Name": 1 });
+    if (!company) {
+      return res.status(404).json({ error: "Company not found" });
     }
 
-    // Define an array of statuses for which the lead history should be deleted
+    let shouldEmitSocket = false; // Flag for socket emission
+    const updates = {}; // Object to collect updates for CompanyModel
     const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched", "Not Picked Up"];
+    const promises = []; // Array to collect all async operations
 
+    console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, company.Status);
+
+    // Case: Not Interested with MaturedAccepted
+    if (newStatus === "Not Interested" && (company.bdmAcceptStatus === "Accept")) {
+      
+      shouldEmitSocket = true; // Set flag for socket emission
+      updates.lastActionDate = new Date();
+      updates.bdmStatus = newStatus;
+      // updates.bdmAcceptStatus = "NotForwarded";
+      updates.Status = newStatus;
+      console.log("workinghere" , updates)
+      promises.push(
+        CompanyModel.findByIdAndUpdate(id, {
+          $set: updates,
+          $unset: { 
+            // bdmStatus: newStatus , 
+            previousStatusToUndo : "" 
+          },
+        }),
+        TeamLeadsModel.findByIdAndDelete(id)
+      );
+    } else if (newStatus === "Not Interested" && (company.bdmAcceptStatus === "MaturedAccepted")) {
+      
+      shouldEmitSocket = true; // Set flag for socket emission
+      updates.lastActionDate = new Date();
+      // updates.bdmStatus = newStatus;
+      updates.bdmAcceptStatus = "NotForwarded";
+      //updates.Status = newStatus;
+      console.log("workinghere" , updates)
+      promises.push(
+        CompanyModel.findByIdAndUpdate(id, {
+          $set: updates,
+          $unset: { 
+            bdmStatus: "" , 
+            previousStatusToUndo : "" 
+          },
+        }),
+        TeamLeadsModel.findByIdAndDelete(id)
+      );
+    }
+    // Case: Busy/FollowUp/Interested with MaturedAccepted
+    else if (
+      ["Busy", "Not Picked Up", "FollowUp", "Interested"].includes(newStatus) &&
+      company.bdmAcceptStatus === "MaturedAccepted"
+    ) {
+      updates.bdmStatus = newStatus;
+      updates.lastActionDate = new Date();
+
+      promises.push(
+        CompanyModel.findByIdAndUpdate(id, {
+          $set: updates,
+        })
+      );
+    }
+    // Default case
+    else {
+      updates.Status = newStatus;
+      updates.AssignDate = new Date();
+      updates.bdmStatus = newStatus;
+      updates.lastActionDate = new Date();
+      updates.previousStatusToUndo = company.Status;
+      console.log("workinghereelse" , updates)
+      promises.push(
+        CompanyModel.findByIdAndUpdate(id, {
+          $set: updates,
+        })
+      );
+    }
+
+    // Handle lead history for specific statuses
     if (deleteStatuses.includes(newStatus)) {
-      // Find the company in LeadHistoryForInterestedandFollowModel
-      const leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
-        "Company Name": company["Company Name"],
-      });
-
-      // If lead history exists, delete the document
-      if (leadHistory) {
-        await LeadHistoryForInterestedandFollowModel.deleteOne({
+      promises.push(
+        LeadHistoryForInterestedandFollowModel.deleteOne({
           "Company Name": company["Company Name"],
-        });
-      }
+        })
+      );
+    } else if (["FollowUp", "Interested"].includes(newStatus)) {
+      promises.push(
+        LeadHistoryForInterestedandFollowModel.updateOne(
+          { "Company Name": company["Company Name"] },
+          {
+            $set: {
+              oldStatus: oldStatus || "Interested",
+              newStatus: newStatus,
+              date: new Date(),
+              time: time,
+            },
+          },
+          { upsert: true }
+        )
+      );
+    }
 
-    } else if (newStatus === "FollowUp" || newStatus === "Interested") {
-
-      // Find the company in LeadHistoryForInterestedandFollowModel
-      let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
-        "Company Name": company["Company Name"],
+    // Execute all async operations concurrently
+    await Promise.all(promises);
+    console.log("company", company)
+    // Emit the socket message only if the flag is set
+    if (shouldEmitSocket) {
+      socketIO.emit("bdm-moved-to-notinterested", {
+        message: `Status updated to "Not Interested" for company: ${company["Company Name"]}`,
+        companyName: company["Company Name"],
+        ename: company.ename,
+        newStatus,
+        date,
+        time,
       });
-      // console.log("0 leadHistory", leadHistory)
-
-      if (leadHistory) {
-        // console.log("1 leadHistory", leadHistory)
-        // If the record exists, update old status, new status, date, and time
-        leadHistory.oldStatus = "Interested";
-        leadHistory.newStatus = newStatus;
-      } else {
-        // console.log("2 leadHistory", leadHistory)
-        // If the record does not exist, create a new one with the company name, ename, and statuses
-        leadHistory = new LeadHistoryForInterestedandFollowModel({
-          _id: id,
-          "Company Name": company["Company Name"],
-          ename: company.ename,
-          oldStatus: oldStatus,
-          newStatus: newStatus,
-          date: new Date(),  // Convert the date string to a Date object
-          time: time,
-        });
-      }
-      // console.log("3 leadHistory", leadHistory)
-
-      // Save the lead history update
-      await leadHistory.save();
     }
 
     res.status(200).json({ message: "Status updated successfully" });
@@ -368,7 +517,7 @@ router.post("/update-undo-status/:id", async (req, res) => {
             interestedInformation: { ename: ename }, // Remove the entire object with matching `ename`
           },
         },
-        
+
         { new: true } // Return the updated document
       );
       if (leadHistory) {
@@ -592,6 +741,22 @@ router.delete("/leads/:id", async (req, res) => {
   }
 });
 
+router.get("/deleted-leads", async (req, res) => {
+  try {
+    const deletedLeads = await DeletedLeadsModel.find(); // Fetch data from the database
+    res.status(200).json({
+      message: "Data Fetched Successfully",
+      data: deletedLeads, // Return the fetched data
+    });
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).json({
+      message: "Failed to fetch data",
+      error: error.message, // Include error message for debugging
+    });
+  }
+});
+
 router.post("/leads", async (req, res) => {
   const csvData = req.body;
   const currentDate = new Date();
@@ -691,7 +856,7 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
       }
     );
     // Delete documents from TeamLeadsModel where the employee's name matches
-    await TeamLeadsModel.deleteMany({ bdeName: employeeData.ename });
+    await TeamLeadsModel.deleteMany({ bdeName: employeeData.ename  });
 
     // Delete the corresponding document from CompanyModel collection
     await CompanyModel.findByIdAndDelete(id);
@@ -710,7 +875,7 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
   try {
     const employeeData = await CompanyModel.findById(itemId)
 
-    console.log("employeeData" , employeeData)
+    console.log("employeeData", employeeData)
 
     //console.log(employeeData)
     if (!employeeData) {
@@ -719,12 +884,9 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
 
     // Update companies where the employee's name matches
     const data = await CompanyModel.updateMany(
-      { ename: employeeData.ename  },
+      { ename: employeeData.ename },
       {
         $set: {
-          //ename: "Not Alloted",
-          //bdmAcceptStatus: "NotForwarded",
-          //feedbackPoints: [],
           multiBdmName: [...employeeData.multiBdmName, employeeData.ename],
           //Status: "Untouched",
           isDeletedEmployeeCompany: true
@@ -742,7 +904,7 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
     );
 
     const data2 = await CompanyModel.updateMany(
-      { bdmName: employeeData.bdmName  },
+      { bdmName: employeeData.bdmName },
       {
         $set: {
           //ename: "Not Alloted",
@@ -756,7 +918,7 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
     );
 
     const data3 = await TeamLeadsModel.deleteMany(
-      { bdmName: employeeData.bdmName  }
+      { bdmName: employeeData.bdmName }
     )
   } catch (error) {
     console.error("Error deleting employee data:", error.message);
@@ -769,7 +931,7 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
 //   const { dataToDelete } = req.body; // Ensure dataToDelete is passed in the request body
 
 //   try {
-     
+
 //       const bdmName = dataToDelete.ename;
 
 //       // Update the BDMAcceptStatus to 'Pending' in the Company model
@@ -2330,6 +2492,10 @@ router.get("/employees-new/:ename", async (req, res) => {
           {
             Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
+          },
+          {
+            Status: { $in: ["Untouched" , "Busy", "Not Interested" , "Not Picked Up"] },
+            bdmAcceptStatus: { $in: [ "Pending"] }
           }
         ]
       })
@@ -2346,13 +2512,14 @@ router.get("/employees-new/:ename", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-      CompanyModel.find({
-        ...baseQuery,
-        Status: { $in: ["Not Interested", "Junk"] }
-      })
-        .sort({ lastActionDate: -1 })
-        .skip(skip)
-        .limit(limit),
+        CompanyModel.find({
+          ...baseQuery,
+          Status: { $in: ["Not Interested", "Junk"] },
+          bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] }, // Use $nin for excluding multiple values
+        })
+          .sort({ lastActionDate: -1 })
+          .skip(skip)
+          .limit(limit)
     ]);
     // Fetch redesigned data for matching companies
     const allCompanyIds = [
@@ -2382,7 +2549,11 @@ router.get("/employees-new/:ename", async (req, res) => {
     const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData, ...forwardedData];
     // Count documents for each category
     const [notInterestedCount, interestedCount, underdocsCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
-      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Not Interested", "Junk"] } }),
+      CompanyModel.countDocuments({
+        ...baseQuery,
+        Status: { $in: ["Not Interested", "Junk"] },
+        bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] }, // Use $nin for excluding multiple values
+      }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
       CompanyModel.countDocuments({
         ...baseQuery,
@@ -2403,6 +2574,10 @@ router.get("/employees-new/:ename", async (req, res) => {
             Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
           },
+          {
+            Status: { $in: ["Untouched" , "Busy", "Not Interested" , "Not Picked Up"] },
+            bdmAcceptStatus: { $in: [ "Pending"] }
+          }
         ],
       }),
       CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Busy", "Not Picked Up"] }, bdmAcceptStatus: "NotForwarded" }),
@@ -3127,11 +3302,11 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
       console.log("Company not found for ID:", id);
       return res.status(404).json({ message: 'Company not found' });
     }
+
     // Extract `nextFollowUpDate` from `newInterestedInfo`
     let nextFollowUpDate = null;
 
     if (newInterestedInfo) {
-      // Look for the `nextFollowUpDate` field in all possible sub-objects
       nextFollowUpDate =
         newInterestedInfo.clientWhatsAppRequest?.nextFollowUpDate ||
         newInterestedInfo.clientEmailRequest?.nextFollowUpDate ||
@@ -3141,17 +3316,14 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
 
       console.log("Extracted Next Follow-Up Date:", nextFollowUpDate);
     }
-    console.log("nextFollowUpDate:", nextFollowUpDate);
 
     console.log("Existing Company Data:", existingCompany);
 
-    // Get the existing interestedInformation or initialize it as an empty array
     const existingInfoArray = existingCompany.interestedInformation || [];
     console.log("Existing Interested Information:", existingInfoArray);
 
     // Check if an entry with the same `ename` already exists
     const existingIndex = existingInfoArray.findIndex(info => info.ename === ename);
-    console.log("Index of existing ename:", existingIndex);
 
     if (existingIndex !== -1) {
       // If `ename` exists, update the existing object
@@ -3169,12 +3341,21 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
               Object.entries(newInterestedInfo[key]).map(([subKey, subValue]) => {
                 if (Array.isArray(subValue)) {
                   // Preserve existing array if new array is empty
-                  return [subKey, subValue.length > 0 ? subValue : existingInfo[key][subKey] || []];
+                  return [subKey, subValue.length > 0 ? subValue : existingInfo[key]?.[subKey] || []];
                 }
-                return [subKey, subValue !== '' && subValue !== null ? subValue : existingInfo[key][subKey]];
+                return [subKey, subValue !== '' && subValue !== null ? subValue : existingInfo[key]?.[subKey]];
               })
             ),
           };
+
+          // Update the `date` field if any other field within this object is updated
+          const isFieldUpdated = Object.entries(newInterestedInfo[key]).some(
+            ([innerKey, innerValue]) => innerKey !== 'date' && innerValue !== '' && innerValue !== null
+          );
+
+          if (isFieldUpdated) {
+            mergedInfo[key].date = new Date(); // Update date only if other fields in the object are updated
+          }
         } else if (Array.isArray(newInterestedInfo[key])) {
           // Handle array fields: retain existing array if the new array is empty
           mergedInfo[key] = newInterestedInfo[key].length > 0 ? newInterestedInfo[key] : existingInfo[key];
@@ -3184,7 +3365,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
         }
       }
 
-      console.log("Merged Existing Info:", mergedInfo);
+      console.log("Merged Existing Info with Updated Date Logic:", mergedInfo);
 
       // Replace the existing entry with the merged one
       existingInfoArray[existingIndex] = mergedInfo;
@@ -3214,9 +3395,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     const updatedCompany = await CompanyModel.findOneAndUpdate(
       { "Company Name": companyName },
       {
-        $set:
-          updateFields,
-
+        $set: updateFields,
       },
       { new: true, upsert: true } // Return updated document or create if not exists
     );
@@ -3224,34 +3403,25 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     console.log("Updated Company Data:", updatedCompany);
 
     if (status === "FollowUp" || status === "Interested") {
-
-      // Find the company in LeadHistoryForInterestedandFollowModel
       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
         "Company Name": companyName,
       });
-      // console.log("0 leadHistory", leadHistory)
 
       if (leadHistory) {
-        // console.log("1 leadHistory", leadHistory)
-        // If the record exists, update old status, new status, date, and time
         leadHistory.oldStatus = "Untouched";
         leadHistory.newStatus = status;
       } else {
-        // console.log("2 leadHistory", leadHistory)
-        // If the record does not exist, create a new one with the company name, ename, and statuses
         leadHistory = new LeadHistoryForInterestedandFollowModel({
           _id: id,
           "Company Name": companyName,
           ename: ename,
           oldStatus: "Untouched",
           newStatus: status,
-          date: new Date(),  // Convert the date string to a Date object
+          date: new Date(),
           time: time,
         });
       }
-      // console.log("3 leadHistory", leadHistory)
 
-      // Save the lead history update
       await leadHistory.save();
     }
 
@@ -3268,6 +3438,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 
@@ -3385,7 +3556,7 @@ router.post('/addProjection/:companyName', async (req, res) => {
           isPreviousMaturedCase: payload.isPreviousMaturedCase,
           addedOnDate: payload.addedOnDate,
         },
-        { new: true }
+        { new: true, upsert: true }
       );
 
       res.json({ result: true, message: "Projection updated and added to history", data: updatedCompany });
@@ -3726,80 +3897,6 @@ router.get('/getProjection', async (req, res) => {
   }
 });
 
-// Fetching projection data for current date for a specific employee :
-// router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
-//   const { employeeName } = req.params;
-//   const { companyName } = req.query;
-
-//   try {
-//     // Get the start and end of the current day
-//     const startOfDay = new Date();
-//     startOfDay.setHours(0, 0, 0, 0);
-//     const endOfDay = new Date();
-//     endOfDay.setHours(23, 59, 59, 999);
-
-//     // Build the query with dynamic filtering
-//     const query = {
-//       $or: [
-//         { bdeName: employeeName },
-//         { bdmName: employeeName },
-//         { "history.data.bdeName": employeeName },
-//         { "history.data.bdmName": employeeName }
-//       ],
-//       estPaymentDate: { $gte: startOfDay, $lte: endOfDay }
-//     };
-
-//     // Add company name filter if provided
-//     if (companyName) {
-//       query.companyName = { $regex: companyName, $options: 'i' }; // 'i' for case-insensitive search
-//     }
-
-//     // Fetch data from the database
-//     const projections = await ProjectionModel.find(query);
-
-//     // Array to hold filtered results for the specific employee
-//     const projectionSummary = [];
-
-//     // Process each projection document
-//     projections.forEach(projection => {
-//       const { bdeName, bdmName, totalPayment, estPaymentDate, history, _id } = projection;
-
-//       // Check main entry for employee relevance and date range
-//       if ((bdeName === employeeName || bdmName === employeeName) &&
-//         estPaymentDate >= startOfDay && estPaymentDate <= endOfDay) {
-
-//         let mainEmployeePayment = 0;
-//         if (bdeName === bdmName && bdeName === employeeName) {
-//           mainEmployeePayment = totalPayment;
-//         } else if (bdeName === employeeName || bdmName === employeeName) {
-//           mainEmployeePayment = totalPayment / 2;
-//         }
-
-//         projectionSummary.push({
-//           _id,
-//           companyName: projection.companyName,
-//           offeredServices: projection.offeredServices,
-//           offeredPrice: projection.offeredPrice,
-//           totalPayment: projection.totalPayment,
-//           employeePayment: mainEmployeePayment,
-//           bdeName,
-//           bdmName,
-//           lastFollowUpdate: projection.lastFollowUpdate,
-//           estPaymentDate: projection.estPaymentDate,
-//           remarks: projection.remarks,
-//           caseType: projection.caseType,
-//           isPreviousMaturedCase: projection.isPreviousMaturedCase,
-//           history:projection.history
-//         });
-//       }
-//     });
-
-//     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
-//   } catch (error) {
-//     res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
-//   }
-// });
-
 router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
   const { employeeName } = req.params;
   const { companyName, date } = req.query;
@@ -4019,377 +4116,9 @@ router.get('/getDailyEmployeeProjections', async (req, res) => {
 
 
 
-// Fetch projections for a specific employee :
-// router.get('/getProjection/:employeeName', async (req, res) => {
-//   const { employeeName } = req.params;
-//   const { companyName, startDate, endDate } = req.query;
 
-//   try {
-//     // Build the query with dynamic filtering
-//     const query = {
-//       $or: [
-//         { bdeName: employeeName },
-//         { bdmName: employeeName },
-//         { "history.data.bdeName": employeeName },
-//         { "history.data.bdmName": employeeName }
-//       ]
-//     };
 
-//     // Add company name filter if provided
-//     if (companyName) {
-//       query.companyName = { $regex: companyName, $options: 'i' }; // 'i' for case-insensitive search
-//     }
-
-//     // Fetch data from the database
-//     const projections = await ProjectionModel.find(query);
-
-//     // Array to hold filtered results for the specific employee
-//     const projectionSummary = [];
-
-//     // Define date range filter if startDate and endDate are provided
-//     const start = startDate ? new Date(startDate) : null;
-//     const end = endDate ? new Date(endDate) : null;
-
-//     // Process each projection document
-//     projections.forEach(projection => {
-//       const { bdeName, bdmName, totalPayment, estPaymentDate, history, _id } = projection;
-
-//       // Check main entry for employee relevance and date range
-//       if ((bdeName === employeeName || bdmName === employeeName) &&
-//         (!start || !end || (new Date(estPaymentDate) >= start && new Date(estPaymentDate) <= end))) {
-
-//         let mainEmployeePayment = 0;
-//         if (bdeName === bdmName && bdeName === employeeName) {
-//           mainEmployeePayment = totalPayment;
-//         } else if (bdeName === employeeName || bdmName === employeeName) {
-//           mainEmployeePayment = totalPayment / 2;
-//         }
-
-//         projectionSummary.push({
-//           _id,  // Use main document ID here
-//           projectionDate: projection.date,
-//           companyName: projection.companyName,
-//           companyId: projection.companyId,
-//           offeredServices: projection.offeredServices,
-//           offeredPrice: projection.offeredPrice,
-//           totalPayment: projection.totalPayment,
-//           employeePayment: mainEmployeePayment,
-//           bdeName,
-//           bdmName,
-//           lastFollowUpdate: projection.lastFollowUpdate,
-//           estPaymentDate: projection.estPaymentDate,
-//           remarks: projection.remarks,
-//           caseType: projection.caseType,
-//           isPreviousMaturedCase: projection.isPreviousMaturedCase,
-//           addedOnDate: projection.addedOnDate,
-//           // history: history || []
-//         });
-//       }
-
-//       // Process each history entry relevant to the employee and date range
-//       history.forEach(entry => {
-//         const { bdeName: historyBde, bdmName: historyBdm, estPaymentDate: historyPaymentDate, totalPayment: historyTotal } = entry.data;
-
-//         if ((historyBde === employeeName || historyBdm === employeeName) &&
-//           (!start || !end || (new Date(historyPaymentDate) >= start && new Date(historyPaymentDate) <= end))) {
-
-//           let historyEmployeePayment = 0;
-//           if (historyBde === historyBdm && historyBde === employeeName) {
-//             historyEmployeePayment = historyTotal;
-//           } else if (historyBde === employeeName || historyBdm === employeeName) {
-//             historyEmployeePayment = historyTotal / 2;
-//           }
-
-//           projectionSummary.push({
-//             _id: entry._id || _id, // Use history entry's _id if it exists, otherwise main _id
-//             projectionDate: entry.data.date,
-//             companyName: projection.companyName,
-//             companyId: projection.companyId,
-//             offeredServices: entry.data.offeredServices,
-//             offeredPrice: entry.data.offeredPrice,
-//             totalPayment: entry.data.totalPayment,
-//             employeePayment: historyEmployeePayment,
-//             bdeName: entry.data.bdeName,
-//             bdmName: entry.data.bdmName,
-//             lastFollowUpdate: entry.data.lastFollowUpdate,
-//             estPaymentDate: entry.data.estPaymentDate,
-//             remarks: entry.data.remarks,
-//             caseType: entry.data.caseType,
-//             isPreviousMaturedCase: entry.data.isPreviousMaturedCase,
-//             addedOnDate: projection.addedOnDate,
-//           });
-//         }
-//       });
-//     });
-
-//     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
-//   } catch (error) {
-//     res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
-//   }
-// });
-
-// router.get('/getProjection/:employeeName', async (req, res) => {
-//   const { employeeName } = req.params;
-//   const { companyName, startDate, endDate } = req.query;
-
-//   try {
-//     // Build the query with dynamic filtering
-//     const query = {
-//       $or: [
-//         { bdeName: employeeName },
-//         { bdmName: employeeName },
-//         { "history.data.bdeName": employeeName },
-//         { "history.data.bdmName": employeeName }
-//       ]
-//     };
-
-//     // Add company name filter if provided
-//     if (companyName) {
-//       query.companyName = { $regex: companyName, $options: 'i' }; // 'i' for case-insensitive search
-//     }
-
-//     // Fetch data from the database
-//     const projections = await ProjectionModel.find(query);
-
-//     // Array to hold filtered results for the specific employee
-//     const projectionSummary = [];
-
-//     // Define date range filter if startDate and endDate are provided
-//     const start = startDate ? new Date(startDate) : null;
-//     const end = endDate ? new Date(endDate) : null;
-
-//     // Process each projection document
-//     projections.forEach(projection => {
-//       const { bdeName, bdmName, totalPayment, estPaymentDate, history, _id, date } = projection;
-
-//       // Check main entry for employee relevance and date range
-//       if ((bdeName === employeeName || bdmName === employeeName) &&
-//         (!start || !end || (new Date(estPaymentDate) >= start && new Date(estPaymentDate) <= end))) {
-
-//         let mainEmployeePayment = 0;
-//         if (bdeName === bdmName && bdeName === employeeName) {
-//           mainEmployeePayment = totalPayment;
-//         } else if (bdeName === employeeName || bdmName === employeeName) {
-//           mainEmployeePayment = totalPayment / 2;
-//         }
-
-//         // Collect dates for calculating `addedOnDate`
-//         const relevantDates = [new Date(date)]; // Start with main document date
-
-//         // Add history dates up to `estPaymentDate`
-//         history.forEach(entry => {
-//           const historyDate = new Date(entry.data.date);
-//           if (historyDate <= new Date(estPaymentDate)) {
-//             relevantDates.push(historyDate);
-//           }
-//         });
-
-//         // Find the oldest date in relevant dates
-//         const addedOnDate = new Date(Math.min(...relevantDates.map(d => d.getTime())));
-
-//         projectionSummary.push({
-//           _id,  // Use main document ID here
-//           projectionDate: projection.date,
-//           companyName: projection.companyName,
-//           companyId: projection.companyId,
-//           offeredServices: projection.offeredServices,
-//           offeredPrice: projection.offeredPrice,
-//           totalPayment: projection.totalPayment,
-//           employeePayment: mainEmployeePayment,
-//           bdeName,
-//           bdmName,
-//           lastFollowUpdate: projection.lastFollowUpdate,
-//           estPaymentDate: projection.estPaymentDate,
-//           remarks: projection.remarks,
-//           caseType: projection.caseType,
-//           isPreviousMaturedCase: projection.isPreviousMaturedCase,
-//           // history: history || [],
-//           addedOnDate // The oldest date found up to `estPaymentDate`
-//         });
-//       }
-//     });
-
-//     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
-//   } catch (error) {
-//     res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
-//   }
-// });
-
-// router.get('/getProjection/:employeeName', async (req, res) => {
-//   const { employeeName } = req.params;
-//   const { companyName } = req.query;
-
-//   try {
-//     const query = {
-//       $or: [
-//         { bdeName: employeeName },
-//         { bdmName: employeeName },
-//         { "history.data.bdeName": employeeName },
-//         { "history.data.bdmName": employeeName }
-//       ]
-//     };
-
-//     if (companyName) {
-//       query.companyName = { $regex: companyName, $options: 'i' };
-//     }
-
-//     const projections = await ProjectionModel.find(query);
-//     const projectionSummary = [];
-
-//     projections.forEach(projection => {
-//       const { bdeName, bdmName, totalPayment, history, _id, addedOnDate, companyName } = projection;
-
-//       // Set employee payment calculation for main object
-//       let mainEmployeePayment = 0;
-//       if (bdeName === bdmName && bdeName === employeeName) {
-//         mainEmployeePayment = totalPayment;
-//       } else if (bdeName === employeeName || bdmName === employeeName) {
-//         mainEmployeePayment = totalPayment / 2;
-//       }
-
-//       // Normalize addedOnDate to 00:00:00
-//       const addedOnDateOnly = new Date(addedOnDate);
-//       addedOnDateOnly.setHours(0, 0, 0, 0);
-
-//       // Main data
-//       const mainData = {
-//         _id,
-//         projectionDate: projection.date,
-//         companyName,
-//         offeredServices: projection.offeredServices,
-//         offeredPrice: projection.offeredPrice,
-//         totalPayment: projection.totalPayment,
-//         employeePayment: mainEmployeePayment,
-//         bdeName,
-//         bdmName,
-//         lastFollowUpdate: projection.lastFollowUpdate,
-//         estPaymentDate: projection.estPaymentDate,
-//         remarks: projection.remarks,
-//         caseType: projection.caseType,
-//         isPreviousMaturedCase: projection.isPreviousMaturedCase,
-//         addedOnDate: projection.addedOnDate,
-//       };
-
-//       // Group history records by lastAddedOnDate
-//       const historyByDate = history.reduce((acc, entry) => {
-//         const lastAddedOnDateOnly = new Date(entry.data.lastAddedOnDate);
-//         lastAddedOnDateOnly.setHours(0, 0, 0, 0);
-//         const dateKey = lastAddedOnDateOnly.toISOString();
-
-//         if (!acc[dateKey]) {
-//           acc[dateKey] = [];
-//         }
-//         acc[dateKey].push(entry.data);
-//         return acc;
-//       }, {});
-
-//       // Add main data first if there's no exact match in history for addedOnDate
-//       const mainDateKey = addedOnDateOnly.toISOString();
-//       projectionSummary.push(mainData);
-
-//       // Add only the latest history record for each unique lastAddedOnDate, skipping if it matches addedOnDate
-//       Object.entries(historyByDate).forEach(([dateKey, records]) => {
-//         if (dateKey !== mainDateKey) { // Skip history if date matches main data's addedOnDate
-//           const latestRecord = records.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-
-//           let historyEmployeePayment = 0;
-//           if (latestRecord.bdeName === latestRecord.bdmName && latestRecord.bdeName === employeeName) {
-//             historyEmployeePayment = latestRecord.totalPayment;
-//           } else if (latestRecord.bdeName === employeeName || latestRecord.bdmName === employeeName) {
-//             historyEmployeePayment = latestRecord.totalPayment / 2;
-//           }
-
-//           projectionSummary.push({
-//             _id: latestRecord._id || _id,
-//             projectionDate: latestRecord.date,
-//             companyName,
-//             offeredServices: latestRecord.offeredServices,
-//             offeredPrice: latestRecord.offeredPrice,
-//             totalPayment: latestRecord.totalPayment,
-//             employeePayment: historyEmployeePayment,
-//             bdeName: latestRecord.bdeName,
-//             bdmName: latestRecord.bdmName,
-//             lastFollowUpdate: latestRecord.lastFollowUpdate,
-//             estPaymentDate: latestRecord.estPaymentDate,
-//             remarks: latestRecord.remarks,
-//             caseType: latestRecord.caseType,
-//             isPreviousMaturedCase: latestRecord.isPreviousMaturedCase,
-//             addedOnDate: latestRecord.lastAddedOnDate,
-//           });
-//         }
-//       });
-//     });
-
-//     res.status(200).json({ result: true, message: "Projection data fetched successfully", data: projectionSummary });
-//   } catch (error) {
-//     res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
-//     console.log(error)
-//   }
-// });
-
-// router.post('/employee-projection/:employeeId', async (req, res) => {
-//   const { employeeId } = req.params;
-//   const { addProjection, projectionData } = req.body;
-
-//   try {
-//     const { companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks } = projectionData || {};
-
-//     if (!projectionData.date) {
-//       return res.status(400).json({ success: false, message: 'Projection date is required' });
-//     }
-
-//     // Set the provided date to the start of the day for consistency
-//     const date = new Date(projectionData.date);
-//     date.setHours(0, 0, 0, 0);
-
-//     // Find or create a daily projection report for the employee on the specific date
-//     let report = await DailyEmployeeProjection.findOne({ employeeId, date });
-
-//     if (addProjection) {
-//       if (!report) {
-//         // Create new report for the specified date if none exists
-//         report = new DailyEmployeeProjection({
-//           employeeId,
-//           date,
-//           totalProjectionsFed: 1,
-//           totalEstimatedPayment: expectedPrice,
-//           projections: [{ companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks }]
-//         });
-//       } else {
-//         // Update existing report for the specified date
-//         report.totalProjectionsFed += 1;
-//         report.totalEstimatedPayment += expectedPrice;
-//         report.projections.push({ companyId, estimatedPaymentDate, offeredPrice, expectedPrice, remarks });
-//       }
-
-//       await report.save();
-//       return res.status(200).json({ success: true, message: 'Projection data recorded', report });
-
-//     } else {
-//       // Handle the case when the employee chooses to set projections to zero for the day
-//       if (!report) {
-//         // Create new report with zero projection count if none exists for the date
-//         report = new DailyEmployeeProjection({
-//           employeeId,
-//           date,
-//           totalProjectionsFed: 0,
-//           totalEstimatedPayment: 0,
-//           projections: []
-//         });
-//         await report.save();
-//         return res.status(200).json({ success: true, message: 'No projections set for this date', report });
-//       } else {
-//         // If projections already exist, return an error indicating projections already set for this date
-//         return res.status(400).json({ success: false, message: 'Projections already exist for this date' });
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error handling projection data:", error);
-//     return res.status(500).json({ success: false, message: 'Internal server error' });
-//   }
-// });
-
-// Update projection and add to history :
+// Update projection and add to history : previous get projection deleted on 20-11-2024
 
 router.get('/getProjection/:employeeName', async (req, res) => {
   const { employeeName } = req.params;

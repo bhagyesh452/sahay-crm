@@ -159,7 +159,7 @@ const CompanySchema = new mongoose.Schema({
     },
   }],
 });
-
+CompanySchema.index({ companyName: 1 }, { unique: true });
 
 const NewFollowUpModel = mongoose.model('Projection', CompanySchema);
 

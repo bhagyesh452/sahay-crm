@@ -20,7 +20,7 @@ const informationSchema = new mongoose.Schema({
     },
     date: {
       type: Date, // Date for when this information was added
-      default: Date.now,
+      // default: Date.now,
     },
   },
   // Option 2: Client asked to send documents/information via email for review
@@ -33,7 +33,7 @@ const informationSchema = new mongoose.Schema({
     },
     date: {
       type: Date, // Date for when this information was added
-      default: Date.now,
+      // default: Date.now,
     },
   },
   // Option 3: Interested in one of our services
@@ -55,7 +55,7 @@ const informationSchema = new mongoose.Schema({
     },
     date: {
       type: Date, // Date for when this information was added
-      default: Date.now,
+      // default: Date.now,
     },
   },
   // Option 4: Interested, but doesn't need the service right now
@@ -77,7 +77,7 @@ const informationSchema = new mongoose.Schema({
     },
     date: {
       type: Date, // Date for when this information was added
-      default: Date.now,
+      // default: Date.now,
     },
   },
 }, {

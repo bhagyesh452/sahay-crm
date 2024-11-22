@@ -67,7 +67,7 @@ const EmployeeStatusChange = ({
           time: time,
           bdmStatusChangeDate: bdmStatusChangeDate,
         });
-        console.log("bdmAcceptStatus", bdmAcceptStatus, newStatus);
+        //("bdmAcceptStatus", bdmAcceptStatus, newStatus);
 
         const response2 = await axios.post(`${secretKey}/company-data/update-status/${id}`, {
           newStatus,
@@ -107,7 +107,7 @@ const EmployeeStatusChange = ({
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
-    setOpenBacdrop(true)
+    
     //setNewSubStatus(newStatus);
     if (newStatus === "Matured") {
       handleFormOpen(companyName, cemail, cindate, id, cnum, isDeletedEmployeeCompany, ename);
@@ -122,7 +122,7 @@ const EmployeeStatusChange = ({
 
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
     try {
-
+      setOpenBacdrop(true)
       let response;
       if (bdmAcceptStatus === "Accept") {
         if (newStatus === "Interested" || newStatus === "FollowUp" || newStatus === "Busy" || newStatus === "Not Picked Up") {
@@ -164,7 +164,12 @@ const EmployeeStatusChange = ({
 
       // Check if the API call was successful
       if (response.status === 200) {
-        console.log("Status updated successfully");
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Status updated successfully!',
+          confirmButtonText: 'OK'
+        });
         // Assuming `fetchNewData` is a function to fetch updated employee data
         refetch();
       } else {
@@ -190,16 +195,6 @@ const EmployeeStatusChange = ({
     const time = DT.toLocaleTimeString();
 
     try {
-      console.log("Request payload:", {
-        newStatus,
-        title,
-        date,
-        time,
-        companyStatus,
-        previousStatus,
-        ename
-      });
-
       const response = await axios.post(`${secretKey}/company-data/update-undo-status/${id}`, {
         newStatus,
         title,
@@ -210,7 +205,7 @@ const EmployeeStatusChange = ({
         ename
       });
 
-      console.log("API Response:", response);
+      // console.log("API Response:", response);
 
       // Check if the API call was successful
       if (response.status === 200) {
@@ -369,13 +364,10 @@ const EmployeeStatusChange = ({
   // console.log("modalId", modalId);
   
 
-  console.log("previousStatus", previousStatus)
+  // console.log("previousStatus", previousStatus)
 
   return (<>
     <section className="rm_status_dropdown"
-    // style={{
-    //   width: mainStatus === "Interested" ? "calc(100% - 32px)" : ""
-    // }}
     >
       <div className={
         mainStatus === "Forwarded" ? `disabled dropdown custom-dropdown status_dropdown ${statusClass}` :
@@ -507,7 +499,9 @@ const EmployeeStatusChange = ({
           </ul>
         ) : mainStatus === "Busy" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-            {!isBdmStatusChange && <li>
+            {!isBdmStatusChange && 
+          (  <>
+          <li>
               <a
                 className={`dropdown-item ${!previousStatus ? 'disabled' : ''}`} // Add 'disabled' class if previousStatus is undefined or empty
                 onClick={() =>
@@ -521,7 +515,56 @@ const EmployeeStatusChange = ({
               >
                 Undo
               </a>
-            </li>}
+            </li>
+             <li>
+             <button
+               className="dropdown-item"
+               data-bs-toggle="modal"
+               data-bs-target={`#${modalId}`} // Use dynamic modal ID
+               value={companyStatus}
+               onClick={(e) => {
+                 setStatus("Docs/Info Sent (W)");
+                 setStatusClass("created-status");
+                 console.log("Company Status:", e.target.value); // Log the companyStatus value
+               }}
+               href="#"
+             >
+               Docs/Info Sent (W)
+             </button>
+           </li>
+           <li>
+             <button
+               className="dropdown-item"
+               data-bs-toggle="modal"
+               data-bs-target={`#${modalId}`} // Use dynamic modal ID
+               value={companyStatus}
+               onClick={(e) => {
+                 setStatus("Docs/Info Sent (E)");
+                 setStatusClass("docs_sent_e-status");
+                 console.log("Company Status:", e.target.value); // Log the companyStatus value
+               }}
+               href="#"
+             >
+               Docs/Info Sent (E)
+             </button>
+           </li>
+           <li>
+             <button
+               className="dropdown-item"
+               data-bs-toggle="modal"
+               data-bs-target={`#${modalId}`} // Use dynamic modal ID
+               value={companyStatus}
+               onClick={(e) => {
+                 setStatus("Docs/Info Sent (W&E)");
+                 setStatusClass("incomplete_status");
+                 console.log("Company Status:", e.target.value); // Log the companyStatus value
+               }}
+               href="#"
+             >
+               Docs/Info Sent (W&E)
+             </button>
+           </li>
+          </>)}
             <li>
               <a
                 className="dropdown-item"
@@ -553,54 +596,6 @@ const EmployeeStatusChange = ({
                 href="#"
               >
                 Interested
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                data-bs-toggle="modal"
-                data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                value={companyStatus}
-                onClick={(e) => {
-                  setStatus("Docs/Info Sent (W)");
-                  setStatusClass("created-status");
-                  console.log("Company Status:", e.target.value); // Log the companyStatus value
-                }}
-                href="#"
-              >
-                Docs/Info Sent (W)
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                data-bs-toggle="modal"
-                data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                value={companyStatus}
-                onClick={(e) => {
-                  setStatus("Docs/Info Sent (E)");
-                  setStatusClass("docs_sent_e-status");
-                  console.log("Company Status:", e.target.value); // Log the companyStatus value
-                }}
-                href="#"
-              >
-                Docs/Info Sent (E)
-              </button>
-            </li>
-            <li>
-              <button
-                className="dropdown-item"
-                data-bs-toggle="modal"
-                data-bs-target={`#${modalId}`} // Use dynamic modal ID
-                value={companyStatus}
-                onClick={(e) => {
-                  setStatus("Docs/Info Sent (W&E)");
-                  setStatusClass("incomplete_status");
-                  console.log("Company Status:", e.target.value); // Log the companyStatus value
-                }}
-                href="#"
-              >
-                Docs/Info Sent (W&E)
               </button>
             </li>
             <li>
@@ -708,7 +703,7 @@ const EmployeeStatusChange = ({
                 Not Interested
               </a>
             </li>
-            <li>
+            {/* <li>
               <a
                 className="dropdown-item"
                 onClick={() => isBdmStatusChange ? handlebdmStatusChange("Busy", "dfaulter-status") : handleStatusChange("Busy", "dfaulter-status")}
@@ -716,7 +711,7 @@ const EmployeeStatusChange = ({
               >
                 Busy
               </a>
-            </li>
+            </li> */}
           </ul>
         ) : mainStatus === "Forwarded" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
