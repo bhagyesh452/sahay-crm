@@ -1,5 +1,89 @@
 const mongoose = require('mongoose');
 
+const informationSchema = new mongoose.Schema({
+  "Company Name": {
+    type: String,
+  },
+  ename: {
+    type: String
+  },
+  mainQuestion: {
+    type: Array,
+  },
+  // Option 1: Client asked to send documents/information on WhatsApp for review
+  clientWhatsAppRequest: {
+    nextFollowUpDate: {
+      type: Date, // Calendar field for follow-up date
+    },
+    remarks: {
+      type: String, // Remark Box for additional comments
+    },
+    date: {
+      type: Date, // Date for when this information was added
+      default: Date.now,
+    },
+  },
+  // Option 2: Client asked to send documents/information via email for review
+  clientEmailRequest: {
+    nextFollowUpDate: {
+      type: Date, // Calendar field for follow-up date
+    },
+    remarks: {
+      type: String, // Remark Box for additional comments
+    },
+    date: {
+      type: Date, // Date for when this information was added
+      default: Date.now,
+    },
+  },
+  // Option 3: Interested in one of our services
+  interestedInServices: {
+    servicesPitched: {
+      type: Array, // Checkbox list for services pitched
+    },
+    servicesInterestedIn: {
+      type: Array, // Checkbox list for services client is interested in
+    },
+    offeredPrice: {
+      type: String, // Text field for offered price
+    },
+    nextFollowUpDate: {
+      type: Date, // Calendar field for follow-up date
+    },
+    remarks: {
+      type: String, // Remark Box for additional comments
+    },
+    date: {
+      type: Date, // Date for when this information was added
+      default: Date.now,
+    },
+  },
+  // Option 4: Interested, but doesn't need the service right now
+  interestedButNotNow: {
+    servicesPitched: {
+      type: Array, // Checkbox list for services pitched
+    },
+    servicesInterestedIn: {
+      type: [String], // Checkbox list for services client is interested in
+    },
+    offeredPrice: {
+      type: String, // Text field for offered price
+    },
+    nextFollowUpDate: {
+      type: Date, // Calendar field for follow-up date
+    },
+    remarks: {
+      type: String, // Remark Box for additional comments
+    },
+    date: {
+      type: Date, // Date for when this information was added
+      default: Date.now,
+    },
+  },
+}, {
+  timestamps: true,
+});
+
 const DeletedLeadsSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
@@ -13,8 +97,8 @@ const DeletedLeadsSchema = new mongoose.Schema({
   "Company Incorporation Date  ": {
     type: Date,
   },
-  CInumber:{
-    type:Number,
+  CInumber: {
+    type: Number,
   },
   City: {
     type: String,
@@ -22,123 +106,142 @@ const DeletedLeadsSchema = new mongoose.Schema({
   State: {
     type: String,
   },
-  ename:{
-    type:String,
-    default:"Not Alloted"
+  ename: {
+    type: String,
+    default: "Not Alloted"
   },
   AssignDate: {
     type: Date
-  }, 
+  },
   UploadDate: {
     type: Date
-  }, 
-  Status:{
-    type:String,
-    default:"Untouched"
   },
-  Remarks:{
-    type:String,
-    default:"No Remarks Added"
+  Status: {
+    type: String,
+    default: "Untouched"
   },
-  lastActionDate:{
-    type:String
+  Remarks: {
+    type: String,
+    default: "No Remarks Added"
   },
-  "Company Address":{
-    type:String
+  lastActionDate: {
+    type: String
   },
-  'Director Name(First)':{
-    type:String
+  "Company Address": {
+    type: String
   },
-  'Director Number(First)':{
-    type:Number
+  'Director Name(First)': {
+    type: String
   },
-  'Director Email(First)':{
-    type:String
+  'Director Number(First)': {
+    type: Number
   },
-  'Director Name(Second)':{
-    type:String
+  'Director Email(First)': {
+    type: String
   },
-  'Director Number(Second)':{
-    type:Number
+  'Director Name(Second)': {
+    type: String
   },
-  'Director Email(Second)':{
-    type:String
+  'Director Number(Second)': {
+    type: Number
   },
-  'Director Name(Third)':{
-    type:String
+  'Director Email(Second)': {
+    type: String
   },
-  'Director Number(Third)':{
-    type:Number
+  'Director Name(Third)': {
+    type: String
   },
-  'Director Email(Third)':{
-    type:String
+  'Director Number(Third)': {
+    type: Number
   },
-  bdmAcceptStatus:{
-    type:String,
-    default:"NotForwarded"
+  'Director Email(Third)': {
+    type: String
   },
-  bdeForwardDate:{
-    type: String, 
-    
+  bdmAcceptStatus: {
+    type: String,
+    default: "NotForwarded"
   },
-  bdeOldStatus:{
-    type:String
+  bdeForwardDate: {
+    type: String,
+  },
+  bdeOldStatus: {
+    type: String
   },
   // feedbackPoints:{
   //   type:Number
   // },
   feedbackPoints: {
-    type:Array, // Define feedbackPoints as an array of numbers
+    type: Array, // Define feedbackPoints as an array of numbers
     // Default array with five elements initialized to 0
   },
-  feedbackRemarks:{
-    type:String
+  feedbackRemarks: {
+    type: String
   },
-  UploadedBy:{
-    type:String
+  UploadedBy: {
+    type: String
   },
-  bdmName:{
-    type :String,
-    default:"NoOne"
+  bdmName: {
+    type: String,
+    default: "NoOne"
   },
-  bdeNextFollowUpDate:{
+  bdeNextFollowUpDate: {
     type: Date
   },
-  maturedBdmName:{
-    type:String
+  maturedBdmName: {
+    type: String
   },
-  multiBdmName:{
-    type:Array
+  multiBdmName: {
+    type: Array
   },
-  bdmRemarks:{
-    type:String
+  bdmRemarks: {
+    type: String
   },
-  bdmStatusChangeDate:{
-    type:String,
+  bdmStatus: {
+    type: String,
+    default: ""
   },
-  bdmStatusChangeTime:{
-    type:String,
+  bdmStatusChangeDate: {
+    type: String,
   },
-   RevertBackAcceptedCompanyRequest:{
-    type:String,
+  bdmStatusChangeTime: {
+    type: String,
   },
-  isDeletedEmployeeCompany:{
-    type:Boolean,
-    default:false,
+  RevertBackAcceptedCompanyRequest: {
+    type: String,
   },
-  extractedMultipleBde:{
-    type:Array,
+  isDeletedEmployeeCompany: {
+    type: Boolean,
+    default: false,
   },
-  lastAssignedEmployee:{
-    type:String
+  extractedMultipleBde: {
+    type: Array,
   },
-  extractedDate:{
-    type:Date
+  lastAssignedEmployee: {
+    type: String
   },
-  deletedAt: { 
-    type: Date, 
-    default: Date.now 
-}
+  extractedDate: {
+    type: Date
+  },
+  isUploadedManually: {
+    type: Boolean,
+  },
+  lastActionDate: {
+    type: Date,
+    default: new Date()
+  },
+  interestedInformation: [informationSchema],
+  lastStatusOfExtractedEmployee: {
+    type: String,
+    default: ""
+  },
+  previousStatusToUndo: {
+    type: String,
+    default: ""
+  },
+  deletedAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 const DeletedLeadsModel = mongoose.model('deletedleadsmodel', DeletedLeadsSchema);

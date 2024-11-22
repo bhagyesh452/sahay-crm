@@ -52,6 +52,7 @@ import InterestedFollowUpLeads from './InterestedFollowUpLeads';
 import AdminRemarksDialog from './ExtraComponent/AdminRemarksDialog';
 import { LuHistory } from "react-icons/lu";
 import CallHistory from '../employeeComp/CallHistory';
+import { set } from 'lodash';
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -79,25 +80,36 @@ function TestLeads() {
         incoDate: "none",
         assignDate: "none"
     })
-    const [sortPattern, setSortPattern] = useState("IncoDate")
-    const [isFilter, setIsFilter] = useState(false)
-    const [assignedData, setAssignedData] = useState([])
-    const [unAssignedData, setunAssignedData] = useState([])
-    const [searchTerm, setSearchTerm] = useState("")
-    const [totalExtractedCount, setTotalExtractedCount] = useState(0)
-    const [extractedData, setExtractedData] = useState([])
-    const [openInterestFollowPage, setOpenInterestFollowPage] = useState(false)
+    const [sortPattern, setSortPattern] = useState("IncoDate");
+    const [isFilter, setIsFilter] = useState(false);
+    const [assignedData, setAssignedData] = useState([]);
+    const [unAssignedData, setunAssignedData] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [totalExtractedCount, setTotalExtractedCount] = useState(0);
+    const [extractedData, setExtractedData] = useState([]);
+    const [openInterestFollowPage, setOpenInterestFollowPage] = useState(false);
 
-    //--------------------function to fetch Total Leads ------------------------------
+    // States for deleting selected leads or uploading by csv :
+    const [showDeleteLeadsDialog, setShowDeleteLeadsDialog] = useState(false);
+    const [isSelectedLeadsToBeDelete, setIsSelectedLeadsToBeDelete] = useState(false);
+    const [isLeadsDeletedUsingCsv, setIsLeadsDeletedUsingCsv] = useState(false);
+    const [deletedLeadsCsv, setDeletedLeadsCsv] = useState(null);
+
+    const handleCloseDeleteLeadsDialog = () => {
+        setShowDeleteLeadsDialog(false);
+        setIsSelectedLeadsToBeDelete(false);
+        setIsLeadsDeletedUsingCsv(false);
+    };
 
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
     }, []);
 
+    //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
-    }
+    };
 
     //--------------------function to fetch Data ------------------------------
     const fetchData = async (page, sortType) => {
@@ -743,7 +755,7 @@ function TestLeads() {
             }
             // Process response
             const { data } = response;
-            console.log("data" , data)
+            console.log("data", data)
             // Handle response data as needed
             setAllIds(data.allIds);
             setSelectedRows((prevSelectedRows) =>
@@ -1039,7 +1051,13 @@ function TestLeads() {
     //-------------------------function to delete leads-------------------------
 
     const handleDeleteSelection = async () => {
-        if (selectedRows.length !== 0) {
+        if (!isSelectedLeadsToBeDelete && !isLeadsDeletedUsingCsv) {
+            Swal.fire("Warning", "Please select an option to delete the leads", "warning")
+            return;
+        } else if (selectedRows.length !== 0 && isSelectedLeadsToBeDelete) {
+            setShowDeleteLeadsDialog(false);
+            setIsSelectedLeadsToBeDelete(false);
+            setIsLeadsDeletedUsingCsv(false);
             // Show confirmation dialog using SweetAlert2
             Swal.fire({
                 title: "Confirm Deletion",
@@ -1081,7 +1099,71 @@ function TestLeads() {
             });
         } else {
             // If no rows are selected, show an alert
-            Swal.fire("Select some rows first!");
+            Swal.fire("Please select some rows first!");
+            setShowDeleteLeadsDialog(false);
+            setIsSelectedLeadsToBeDelete(false);
+            setIsLeadsDeletedUsingCsv(false);
+        }
+    };
+
+    // Validation function to check weather excel file is uploaded or not :
+    const handleUploadDeletedLeadsCsv = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            // Validate the file extension
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (fileExtension === 'xlsx') {
+                setDeletedLeadsCsv(file); // Store the file in state
+            } else {
+                Swal.fire("Error", "Please upload an Excel file with .xlsx extension.", "error");
+                event.target.value = ""; // Clear the file input
+            }
+        }
+    };
+
+    // Function to delete leads by uploading excel file :
+    const handleDeleteLeadsUsingCsv = async () => {
+        if (!isSelectedLeadsToBeDelete && !isLeadsDeletedUsingCsv) {
+            Swal.fire("Warning", "Please select an option to delete the leads", "warning")
+            return;
+        }
+        if (!deletedLeadsCsv && isLeadsDeletedUsingCsv) {
+            Swal.fire("Warning", "Please upload a file before deleting leads.", "warning")
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("deletedLeadsCsv", deletedLeadsCsv);
+
+        try {
+            const res = await axios.delete(`${secretKey}/admin-leads/deleteLeadsUsingCsv`, {
+                data: formData,
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            // console.log("Leads to be delete :", res.data.data);
+            Swal.fire("Success", "Leads processed successfully!", "success");
+            await fetchData(1, latestSortCount);
+            setShowDeleteLeadsDialog(false);
+            setIsSelectedLeadsToBeDelete(false);
+            setIsLeadsDeletedUsingCsv(false);
+            setDeletedLeadsCsv(null);
+            
+        } catch (error) {
+            if (error.response && error.response.status === 405) {
+                // Extract company names from the data and join them into a string
+                const maturedCompanies = error.response.data.data;
+                const maturedCompanyNames = maturedCompanies.map(company => company["Company Name"]).join(", ");
+                Swal.fire("Error", `Excel data contains matured companies. You cannot delete matured companies. Following are the matured companies : ${maturedCompanyNames}`, "error");
+                // console.log("Matured companies data :", error.response.data.data);
+            } else {
+                console.error("Error deleting leads :", error);
+                Swal.fire("Error", "Error deleting leads!", "error");
+            }
+            setShowDeleteLeadsDialog(false);
+            setIsSelectedLeadsToBeDelete(false);
+            setIsLeadsDeletedUsingCsv(false);
+            setDeletedLeadsCsv(null);
         }
     };
 
@@ -1398,7 +1480,7 @@ function TestLeads() {
                 }
             });
             if (!selectedStatus &&
-                !lastExtractedStatus&&
+                !lastExtractedStatus &&
                 !selectedState &&
                 !selectedNewCity &&
                 !selectedBDEName &&
@@ -1559,7 +1641,7 @@ function TestLeads() {
                                         <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
                                             <MdOutlinePostAdd className='mr-1' />Assign Leads
                                         </button>
-                                        <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
+                                        <button type="button" className="btn mybtn" onClick={() => setShowDeleteLeadsDialog(true)}>
                                             <MdOutlineDeleteSweep className='mr-1' />Delete Leads
                                         </button>
                                         <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
@@ -1766,12 +1848,12 @@ function TestLeads() {
                                                     {(dataStatus === "Assigned") && <th>Status</th>}
                                                     {(dataStatus === "Extracted") && <th>Last Status</th>}
                                                     {(dataStatus === "Assigned" || dataStatus === "Extracted") && <th>Remarks</th>}
-                                                    
+
                                                     <th>Uploaded By</th>
                                                     <th>Uploaded On</th>
                                                     {dataStatus === 'Extracted' && <th>Last Assigned To</th>}
                                                     {(dataStatus === "Extracted") && <th>BDM Name</th>}
-                                                    
+
                                                     {dataStatus === "Extracted" && <th>Extracted Date</th>}
                                                     {dataStatus === "Assigned" && <th>Assigned to</th>}
                                                     {(dataStatus === "Assigned") && <th>BDM Name</th>}
@@ -1906,7 +1988,7 @@ function TestLeads() {
                                                                         companyName={company["Company Name"]}
 
                                                                     />
-                                                                    
+
                                                                 </td>}
 
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
@@ -2011,7 +2093,7 @@ function TestLeads() {
                                                                     secretKey={secretKey}
                                                                     companyName={company["Company Name"]}
                                                                 />
-                                                                
+
                                                             </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2221,7 +2303,7 @@ function TestLeads() {
                                                                         secretKey={secretKey}
                                                                         companyName={company["Company Name"]}
                                                                     />
-                                                                    
+
                                                                 </td>}
                                                             <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
@@ -2231,7 +2313,7 @@ function TestLeads() {
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
                                                             {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
                                                             {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                            
+
                                                             <td>
                                                                 <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
                                                                     <MdDeleteOutline
@@ -2741,6 +2823,121 @@ function TestLeads() {
                     onClick={handleSubmitData}
                 >
                     Submit
+                </button>
+            </Dialog>
+
+            {/* Dialog to delete selected leads or multiple leads by upload csv */}
+            <Dialog className='My_Mat_Dialog' open={showDeleteLeadsDialog} onClose={handleCloseDeleteLeadsDialog} fullWidth maxWidth="sm">
+                <DialogTitle>
+                    Delete Leads
+                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={handleCloseDeleteLeadsDialog}>
+                        <IoIosClose style={{
+                            height: "36px",
+                            width: "32px",
+                            color: "grey"
+                        }} />
+                    </button>
+                </DialogTitle>
+
+                <DialogContent>
+                    <div className="maincon">
+                        {isLeadsDeletedUsingCsv && <>
+                            <div style={{ justifyContent: "space-between" }} className="con1 d-flex">
+                                <div style={{ paddingTop: "9px" }} className="uploadcsv">
+                                    <label style={{ margin: "0px 0px 6px 0px" }} htmlFor="upload">
+                                        Upload CSV File To Delete The Leads
+                                    </label>
+                                </div>
+                                <a href={frontendKey + "/Deletedleads_Sample.xlsx"} download>
+                                    Download Sample
+                                </a>
+                            </div>
+
+                            <div style={{ margin: "5px 0px 0px 0px" }} className="form-control">
+                                <input
+                                    type="file"
+                                    name="csvfile"
+                                    id="csvfile"
+                                    accept=".xlsx"
+                                    onChange={handleUploadDeletedLeadsCsv}
+                                />
+                            </div>
+                        </>}
+
+                        <div className="con2 d-flex">
+                            <div
+                                style={
+                                    isSelectedLeadsToBeDelete
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                onClick={() => {
+                                    setIsSelectedLeadsToBeDelete(true);
+                                    setIsLeadsDeletedUsingCsv(false);
+                                }}
+                                className="direct form-control"
+                            >
+                                <input
+                                    type="radio"
+                                    id="direct"
+                                    value="direct"
+                                    style={{ display: "none" }}
+                                    checked={isSelectedLeadsToBeDelete}
+                                    onChange={() => {
+                                        setIsSelectedLeadsToBeDelete(true);
+                                        setIsLeadsDeletedUsingCsv(false);
+                                    }}
+                                />
+                                <label htmlFor="direct">Delete Selected Leads</label>
+                            </div>
+
+                            <div
+                                style={
+                                    isLeadsDeletedUsingCsv
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                className="indirect form-control"
+                                onClick={() => {
+                                    setIsLeadsDeletedUsingCsv(true);
+                                    setIsSelectedLeadsToBeDelete(false);
+                                }}
+                            >
+                                <input
+                                    type="radio"
+                                    id="someoneElse"
+                                    value="someoneElse"
+                                    style={{ display: "none" }}
+                                    checked={isLeadsDeletedUsingCsv}
+                                    onChange={() => {
+                                        setIsLeadsDeletedUsingCsv(true);
+                                        setIsSelectedLeadsToBeDelete(false);
+                                    }}
+                                />
+                                <label htmlFor="someoneElse">Delete By Uploading CSV</label>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+
+                <button className="btn btn-danger bdr-radius-none" onClick={isSelectedLeadsToBeDelete ? handleDeleteSelection : handleDeleteLeadsUsingCsv}>
+                    Delete
                 </button>
             </Dialog>
 

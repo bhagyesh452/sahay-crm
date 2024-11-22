@@ -48,7 +48,7 @@ function HrEmployees() {
     navigate("/hr/add/employee");
   };
 
-  const handleAddRecentEmployee=()=>{
+  const handleAddRecentEmployee = () => {
     setOpenRecentEmployee(true)
   }
 
@@ -97,7 +97,7 @@ function HrEmployees() {
 
   // const fetchEmployee = async () => {
   //     try {
-        
+
   //       let res;
   //         res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
   //         sethrData(res.data.data)
@@ -106,7 +106,7 @@ function HrEmployees() {
   //     } 
   // };
 
-  
+
 
   const fetchRecruiterData = async (searchQuery = "", page = 1) => {
     try {
@@ -352,7 +352,7 @@ function HrEmployees() {
             'Deleted!',
             'success'
           );
-          
+
           refetchActive();
           refetchDeleted();
         } catch (error) {
@@ -424,8 +424,8 @@ function HrEmployees() {
                 </div>
               </div>
               <div>
-                <DialogAddRecentEmployee 
-                refetch={refetchActive}/>
+                <DialogAddRecentEmployee
+                  refetch={refetchActive} />
               </div>
               {/* <div>
                 <button onClick={handleAddEmployee} className="btn btn-primary">+ Add Employee</button>
@@ -523,8 +523,8 @@ function HrEmployees() {
                                 const profilePhotoUrl = emp.profilePhoto?.length !== 0
                                   ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                   : emp.gender === "Male" ? EmpDfaullt : FemaleEmployee;
-
                                 return (
+
                                   <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>

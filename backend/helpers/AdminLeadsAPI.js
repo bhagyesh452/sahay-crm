@@ -1,15 +1,105 @@
 var express = require('express');
-var router = express.Router()
-const dotenv = require('dotenv')
+var router = express.Router();
+const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 dotenv.config();
+const { exec } = require("child_process");
 const CompanyModel = require("../models/Leads.js");
 const RecentUpdatesModel = require('../models/RecentUpdates.js')
-const { exec } = require("child_process");
 const TeamLeadsModel = require('../models/TeamLeads.js');
 const FollowUpModel = require("../models/FollowUp");
-const { Parser } = require('json2csv');
+const RemarksHistory = require('../models/RemarksHistory.js');
+const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
+const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
 const NotiModel = require('../models/Notifications.js');
+const { Parser } = require('json2csv');
+const multer = require('multer');
+const XLSX = require('xlsx');
+const fs = require('fs');
+const path = require('path');
+
+// Ensure the upload directory exists
+const deletedLeadsDir = path.join(__dirname, "deletedLeads");
+if (!fs.existsSync(deletedLeadsDir)) {
+  fs.mkdirSync(deletedLeadsDir, { recursive: true }); // Create the directory
+  // console.log("Upload directory created :", deletedLeadsDir);
+}
+
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, deletedLeadsDir);
+  },
+  filename: (req, file, cb) => {
+    // const timestamp = Date.now();
+    // cb(null, `${timestamp}-${file.originalname}`);
+    cb(null, `${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+// Delete leads using CSV :
+router.delete("/deleteLeadsUsingCsv", upload.single("deletedLeadsCsv"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  try {
+    // Read the uploaded file
+    const filePath = req.file.path;
+    const workbook = XLSX.readFile(filePath);
+
+    // Assume the first sheet contains the data
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+
+    // Convert the sheet to JSON
+    const leadsData = XLSX.utils.sheet_to_json(sheet);
+    // console.log('Deleted leads data :', leadsData);
+
+    // Prepare search conditions to match all relevant companies
+    const conditions = leadsData.map((lead) => ({
+      $or: [
+        { "Company Name": lead["Company Name"] },
+        { "Company Number": lead["Company Number"] },
+        { "Company Email": lead["Company Email"] }
+      ],
+    }));
+
+    // Find matching documents in newcdatas, team leads and redesigned leads
+    const companiesToDelete = await CompanyModel.find({ $or: conditions });
+    const deleteFromTeamLeads = await TeamLeadsModel.find({ $or: conditions });
+    const maturedCompanies = await RedesignedLeadformModel.find({ $or: conditions });
+
+    if (!companiesToDelete.length) {
+      return res.status(404).json({result: false, message: "No matching companies found in newcdatas collection"});
+    }
+
+    if (maturedCompanies.length) {
+      return res.status(405).json({result: false, message: "Matured companies cannot be deleted", data: maturedCompanies});
+    }
+
+    // Insert matching companies into `deletedLeads`
+    await DeletedLeadsModel.insertMany(companiesToDelete);
+
+    // Delete the matching companies from `newcdatas`
+    const deleteResult = await CompanyModel.deleteMany({ $or: conditions });
+    const deleteFromTeamLeadsResult = await TeamLeadsModel.deleteMany({ $or: conditions });
+    // console.log(`Deleted ${deleteResult.deletedCount} companies from newcdatas`);
+    // console.log(`Deleted ${deleteFromTeamLeadsResult.deletedCount} companies from team leads`);
+
+    // Send the parsed data as the response
+    res.status(200).json({ result: true,message: "Companies successfully deleted from newcdatas and added to deletedleadsmodels", data: leadsData });
+
+    // Clean up the uploaded file. Delete the file once data save in deleted leads model.
+    fs.unlinkSync(filePath);
+  } catch (error) {
+    console.error("Error deleting companies :", error);
+    res.status(500).json({ result: false, message: "Error deleting companies", error: error });
+  }
+});
 
 function formatDateFinal(timestamp) {
   const date = new Date(timestamp);
@@ -1180,11 +1270,6 @@ router.post("/fetch-by-ids", async (req, res) => {
 
 //   res.json({ message: "Data posted successfully" });
 // });
-
-const mongoose = require('mongoose');
-const RemarksHistory = require('../models/RemarksHistory.js');
-const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
-const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
 
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;

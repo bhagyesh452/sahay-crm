@@ -74,6 +74,24 @@ router.get("/fetchEmployeeDraft/", async (req, res) => {
     }
 });
 
+router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
+    const { empId } = req.params;
+    try {
+      const emp = await EmployeeDraftModel.findById(empId);
+  
+      // If employee is still not found, return an error message
+      if (!emp) {
+        return res.status(404).json({ result: false, message: "Employee not found" });
+      } else {
+        // If found, return the employee data
+        return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
+      }
+    } catch (error) {
+      // Return an error if something goes wrong
+      return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
+    }
+  });
+
 router.put("/updateEmployeeDraft/:empId", upload.fields([
     { name: "offerLetter", maxCount: 1 },
     { name: "aadharCard", maxCount: 1 },
@@ -89,11 +107,12 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
         firstName, 
         middleName, 
         lastName, 
-        dob, 
-        gender, 
+        dob,
+        bloodGroup,
+        gender,
         personalPhoneNo, 
         personalEmail, 
-        employeeID, 
+        employeeID,
         designation, 
         officialNo, 
         officialEmail, 
@@ -106,7 +125,7 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
         personName, 
         relationship, 
         personPhoneNo, 
-        activeStep 
+        activeStep
     } = req.body;
     // console.log("Reqest file is :", req.files);
     // console.log("Emp id is :", employeeID);
@@ -132,9 +151,9 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
     const profilePhotoDetails = getFileDetails(req.files ? req.files["profilePhoto"] : []);
 
     try {
-        if (!empId) {
-            return res.status(404).json({ result: false, message: "Employee not found" });
-        }
+        // if (!empId) {
+        //     return res.status(404).json({ result: false, message: "Employee not found" });
+        // }
 
         let newDesignation = designation;
 
@@ -157,10 +176,12 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
             ...(activeStep && { activeStep: activeStep }),
 
             ...(firstName || middleName || lastName) && {
+                ename: `${firstName} ${lastName}`,
                 empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
             },
-            ...(dob && { dob }),
-            ...(gender && { gender }),
+            ...(dob && { dob: dob }),
+            ...(bloodGroup && { bloodGroup: bloodGroup }),
+            ...(gender && { gender: gender }),
             ...(personalPhoneNo && { personal_number: personalPhoneNo }),
             ...(personalEmail && { personal_email: personalEmail }),
 
@@ -193,12 +214,12 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
         const emp = await EmployeeDraftModel.findOneAndUpdate(
             { _id: empId },
             updateFields,
-            { new: true } // Return the updated document
+            { new: true, upsert: true },  // Return the updated document or create a new one if no match is found
         );
 
-        if (!emp) {
-            return res.status(404).json({ result: false, message: "Employee not found" });
-        }
+        // if (!emp) {
+        //     return res.status(404).json({ result: false, message: "Employee not found" });
+        // }
 
         res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
     } catch (error) {

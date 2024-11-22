@@ -4,8 +4,8 @@ const informationSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
   },
-  ename:{
-    type:String
+  ename: {
+    type: String
   },
   mainQuestion: {
     type: Array,
@@ -87,7 +87,7 @@ const informationSchema = new mongoose.Schema({
 const CompanySchema = new mongoose.Schema({
   "Company Name": {
     type: String,
-    unique:true,
+    unique: true,
   },
   "Company Number": {
     type: Number,
@@ -98,8 +98,8 @@ const CompanySchema = new mongoose.Schema({
   "Company Incorporation Date  ": {
     type: Date,
   },
-  CInumber:{
-    type:Number,
+  CInumber: {
+    type: Number,
   },
   City: {
     type: String,
@@ -107,141 +107,139 @@ const CompanySchema = new mongoose.Schema({
   State: {
     type: String,
   },
-  ename:{
-    type:String,
-    default:"Not Alloted"
+  ename: {
+    type: String,
+    default: "Not Alloted"
   },
   AssignDate: {
     type: Date
-  }, 
+  },
   UploadDate: {
     type: Date
-  }, 
-  Status:{
-    type:String,
-    default:"Untouched"
   },
-  Remarks:{
-    type:String,
-    default:"No Remarks Added"
+  Status: {
+    type: String,
+    default: "Untouched"
   },
-  lastActionDate:{
-    type:String
+  Remarks: {
+    type: String,
+    default: "No Remarks Added"
   },
-  "Company Address":{
-    type:String
+  lastActionDate: {
+    type: String
   },
-  'Director Name(First)':{
-    type:String
+  "Company Address": {
+    type: String
   },
-  'Director Number(First)':{
-    type:Number
+  'Director Name(First)': {
+    type: String
   },
-  'Director Email(First)':{
-    type:String
+  'Director Number(First)': {
+    type: Number
   },
-  'Director Name(Second)':{
-    type:String
+  'Director Email(First)': {
+    type: String
   },
-  'Director Number(Second)':{
-    type:Number
+  'Director Name(Second)': {
+    type: String
   },
-  'Director Email(Second)':{
-    type:String
+  'Director Number(Second)': {
+    type: Number
   },
-  'Director Name(Third)':{
-    type:String
+  'Director Email(Second)': {
+    type: String
   },
-  'Director Number(Third)':{
-    type:Number
+  'Director Name(Third)': {
+    type: String
   },
-  'Director Email(Third)':{
-    type:String
+  'Director Number(Third)': {
+    type: Number
   },
-  bdmAcceptStatus:{
-    type:String,
-    default:"NotForwarded"
+  'Director Email(Third)': {
+    type: String
   },
-  bdeForwardDate:{
-    type: String, 
-    
+  bdmAcceptStatus: {
+    type: String,
+    default: "NotForwarded"
   },
-  bdeOldStatus:{
-    type:String
+  bdeForwardDate: {
+    type: String,
+  },
+  bdeOldStatus: {
+    type: String
   },
   // feedbackPoints:{
   //   type:Number
   // },
   feedbackPoints: {
-    type:Array, // Define feedbackPoints as an array of numbers
+    type: Array, // Define feedbackPoints as an array of numbers
     // Default array with five elements initialized to 0
   },
-  feedbackRemarks:{
-    type:String
+  feedbackRemarks: {
+    type: String
   },
-  UploadedBy:{
-    type:String
+  UploadedBy: {
+    type: String
   },
-  bdmName:{
-    type :String,
-    default:"NoOne"
+  bdmName: {
+    type: String,
+    default: "NoOne"
   },
-  bdeNextFollowUpDate:{
+  bdeNextFollowUpDate: {
     type: Date
   },
-  maturedBdmName:{
-    type:String
+  maturedBdmName: {
+    type: String
   },
-  multiBdmName:{
-    type:Array
+  multiBdmName: {
+    type: Array
   },
-  bdmRemarks:{
-    type:String
+  bdmRemarks: {
+    type: String
   },
-  bdmStatus:{
-    type:String,
-    default : ""
+  bdmStatus: {
+    type: String,
+    default: ""
   },
-  bdmStatusChangeDate:{
-    type:String,
+  bdmStatusChangeDate: {
+    type: String,
   },
-  bdmStatusChangeTime:{
-    type:String,
+  bdmStatusChangeTime: {
+    type: String,
   },
-   RevertBackAcceptedCompanyRequest:{
-    type:String,
+  RevertBackAcceptedCompanyRequest: {
+    type: String,
   },
-  isDeletedEmployeeCompany:{
-    type:Boolean,
-    default:false,
+  isDeletedEmployeeCompany: {
+    type: Boolean,
+    default: false,
   },
-  extractedMultipleBde:{
-    type:Array,
+  extractedMultipleBde: {
+    type: Array,
   },
-  lastAssignedEmployee:{
-    type:String
+  lastAssignedEmployee: {
+    type: String
   },
-  extractedDate:{
-    type:Date
+  extractedDate: {
+    type: Date
   },
-  isUploadedManually:{
-    type:Boolean,
+  isUploadedManually: {
+    type: Boolean,
   },
-  lastActionDate:{
-    type:Date,
-    default:new Date()
+  lastActionDate: {
+    type: Date,
+    default: new Date()
   },
-  interestedInformation:[informationSchema],
-  lastStatusOfExtractedEmployee:{
-    type:String,
-    default:""
+  interestedInformation: [informationSchema],
+  lastStatusOfExtractedEmployee: {
+    type: String,
+    default: ""
   },
-  previousStatusToUndo:{
-    type:String,
-    default:""
+  previousStatusToUndo: {
+    type: String,
+    default: ""
   }
 });
-
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);
 

@@ -1343,7 +1343,7 @@ function EmployeeView() {
                       <CallingReportView employeeInformation={data} />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">
-                      <EmployeeDocumentsView employeeInformation={data} />
+                      <EmployeeDocumentsView employeeInformation={data} fetchEmployeeData={fetchEmployeeData} />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>

@@ -3,6 +3,7 @@ var router = express.Router();
 const dotenv = require("dotenv");
 dotenv.config();
 const adminModel = require("../models/Admin.js");
+const EmployeeDraftModel = require("../models/EmployeeDraftModel.js");
 const PerformanceReportModel = require("../models/MonthlyPerformanceReportModel.js");
 const TodaysProjectionModel = require("../models/TodaysGeneralProjection.js");
 const path = require("path");
@@ -248,7 +249,7 @@ router.post("/einfo", upload.fields([
       ...req.body,
       AddedOn: new Date(),
       _id: empId,
-      employeeID: employeeID || newEmployeeID,
+      employeeID: employeeID || newEmployeeID || employeementInfo.employeeID,
 
       ...(personalInfo?.firstName || personalInfo?.middleName || personalInfo?.lastName) && {
         ename: `${personalInfo?.firstName || ""} ${personalInfo?.lastName || ""}`,
@@ -333,7 +334,7 @@ router.post('/addemployee/hrside', async (req, res) => {
       gender,
       bdmWork
     } = req.body;
-    console.log("adddedOn" , AddedOn)
+    console.log("adddedOn", AddedOn)
     const newAddedOn = new Date(AddedOn);
     // Remove spaces from the number
     const sanitizedNumber = number.replace(/\s+/g, '');
@@ -391,10 +392,34 @@ router.post('/addemployee/hrside', async (req, res) => {
       gender
     });
 
-  console.log("newemployee" , newEmployee);
+    console.log("newemployee", newEmployee);
 
     // Step 5: Save the new employee to the database
     const result = await newEmployee.save();
+
+    // Also creating employee in employee draft model
+    const newEmployeeDraft = new EmployeeDraftModel({
+      _id: result._id,  // Use the same _id
+      number: sanitizedNumber, // Save sanitized number
+      employeeID: newEmployeeID,
+      ename,
+      empFullName,
+      department,
+      designation: oldDesignation,
+      newDesignation,
+      branchOffice,
+      reportingManager,
+      email,
+      password,
+      jdate,
+      AddedOn: newAddedOn,
+      bdmWork,
+      salary,
+      gender
+    });
+
+    const savedEmployeeDraft = await newEmployeeDraft.save();
+
     // Step 6: Send welcome email to the new employee
     const subject = `Welcome to Startup Sahay! Your CRM Login Details`;
     const html = `
@@ -563,7 +588,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
   try {
     const { employeesData } = req.body;
 
-    console.log("employeesData" , employeesData)
+    console.log("employeesData", employeesData)
 
     if (!employeesData || !Array.isArray(employeesData)) {
       return res.status(400).json({ message: 'Invalid data format' });
@@ -582,8 +607,8 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
     // Array to hold the promises for inserting each employee
     const employeeInsertPromises = employeesData.map(async (employee) => {
       try {
-        
-       
+
+
         // Increment the employee number for each new employee
         employeeNumber += 1;
         let newEmployeeID = `SSPL${employeeNumber.toString().padStart(4, '0')}`;
@@ -706,7 +731,7 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   try {
     // Try finding the employee in adminModel first
     let emp = await adminModel.findById(empId);
-    
+
     // If employee not found in adminModel, search in deletedEmployeeModels
     if (!emp) {
       emp = await deletedEmployeeModel.findById(empId);
@@ -777,32 +802,42 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 ]), async (req, res) => {
 
   const { empId } = req.params;
+
   const {
     firstName,
     middleName,
     lastName,
     dob,
     bloodGroup,
+    gender,
     personalPhoneNo,
     personalEmail,
+    currentAddress,
+    permanentAddress,
     employeeID,
-    department,
-    designation,
-    oldDesignation,
-    employeementType,
     officialNo,
     officialEmail,
     joiningDate,
     branch,
+    department,
+    designation,
+    oldDesignation,
+    employeementType,
     manager,
     nameAsPerBankRecord,
+    accountNo,
+    ifscCode,
     salary,
     firstMonthSalaryCondition,
     firstMonthSalary,
+    panNumber,
+    aadharNumber,
+    uanNumber,
     personName,
     relationship,
     personPhoneNo
   } = req.body;
+
   // console.log("Reqest file is :", req.files);
 
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
@@ -852,21 +887,24 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
         ename: `${firstName || ""} ${lastName || ""}`,
         empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
       },
-      ...(dob && { dob }),
+      ...(dob && { dob: dob }),
       ...(bloodGroup && { bloodGroup: bloodGroup }),
+      ...(gender && { gender: gender }),
       ...(personalPhoneNo && { personal_number: personalPhoneNo }),
       ...(personalEmail && { personal_email: personalEmail }),
+      ...(currentAddress && { currentAddress: currentAddress }),
+      ...(permanentAddress && { permanentAddress: permanentAddress }),
 
+      ...(employeeID && { employeeID: employeeID }),
       ...(officialNo && { number: officialNo }),
       ...(officialEmail && { email: officialEmail }),
       ...(joiningDate && { jdate: joiningDate }),
       ...(branch && { branchOffice: branch }),
-      ...(manager && { reportingManager: manager }),
-      ...(employeeID && { employeeID: employeeID }),
       ...(department && { department: department }),
       ...(employeementType && { employeementType: employeementType }),
       ...(designation && { newDesignation: designation }),
       ...(designation && { designation: newDesignation }),
+      ...(manager && { reportingManager: manager }),
       ...(designation && {
         bdmWork:
           designation === "Business Development Manager" ||
@@ -876,9 +914,14 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       }),
 
       ...(nameAsPerBankRecord && { nameAsPerBankRecord: nameAsPerBankRecord }),
+      ...(accountNo && { accountNo: accountNo }),
+      ...(ifscCode && { ifscCode: ifscCode }),
       ...(salary && { salary }),
       ...(firstMonthSalaryCondition && { firstMonthSalaryCondition: firstMonthSalaryCondition }),
       ...(firstMonthSalary && { firstMonthSalary: firstMonthSalary }),
+      ...(panNumber && { panNumber: panNumber }),
+      ...(aadharNumber && { aadharNumber: aadharNumber }),
+      ...(uanNumber && { uanNumber: uanNumber }),
 
       ...(personName && { personal_contact_person: personName }),
       ...(relationship && { personal_contact_person_relationship: relationship }),
@@ -2588,7 +2631,7 @@ router.get("/einfo/:email/:password", async (req, res) => {
   console.log(email, password)
   try {
     const data = await adminModel.findOne({ email: email, password: password })
-    .select("email password").lean();
+      .select("email password").lean();
 
     if (data) {
       res.status(200).json(data);
@@ -3286,24 +3329,24 @@ router.post("/projectionstatustoday/:userId", async (req, res) => {
   const userId = req.params.userId; // Correctly access userId from params
 
   try {
-      // Ensure _id is correctly set if you're using ObjectId for userId
-      const result = await adminModel.findOneAndUpdate(
-          { _id: userId }, // Ensure you search using the correct field
-          { 
-            projectionStatusForToday: projectionStatusForToday, 
-            projectionDate: projectionDate 
-          },
-          { new: true } // Return the updated document
-      );
-      
-      if (!result) {
-          return res.status(404).json({ success: false, message: "User not found" });
-      }
+    // Ensure _id is correctly set if you're using ObjectId for userId
+    const result = await adminModel.findOneAndUpdate(
+      { _id: userId }, // Ensure you search using the correct field
+      {
+        projectionStatusForToday: projectionStatusForToday,
+        projectionDate: projectionDate
+      },
+      { new: true } // Return the updated document
+    );
 
-      res.status(200).json({ success: true, result: result });
+    if (!result) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, result: result });
   } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -3312,24 +3355,24 @@ router.post("/projectionstatustoday-no/:userId", async (req, res) => {
   const userId = req.params.userId; // Correctly access userId from params
 
   try {
-      // Ensure _id is correctly set if you're using ObjectId for userId
-      const result = await adminModel.findOneAndUpdate(
-          { _id: userId }, // Ensure you search using the correct field
-          { 
-            projectionStatusForToday: projectionStatusForToday, 
-            projectionDate: projectionDate 
-          },
-          { new: true } // Return the updated document
-      );
-      
-      if (!result) {
-          return res.status(404).json({ success: false, message: "User not found" });
-      }
+    // Ensure _id is correctly set if you're using ObjectId for userId
+    const result = await adminModel.findOneAndUpdate(
+      { _id: userId }, // Ensure you search using the correct field
+      {
+        projectionStatusForToday: projectionStatusForToday,
+        projectionDate: projectionDate
+      },
+      { new: true } // Return the updated document
+    );
 
-      res.status(200).json({ success: true, result: result });
+    if (!result) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, result: result });
   } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

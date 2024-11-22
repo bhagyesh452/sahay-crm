@@ -568,7 +568,7 @@ export default function HorizontalNonLinearStepper() {
 
       // If creation is successful, delete from draft
       if (res1.status === 200) {
-        const res2 = await axios.delete(`${secretKey}/employeeDraft/deleteEmployeeDraft/${empId}`);
+        // const res2 = await axios.delete(`${secretKey}/employeeDraft/deleteEmployeeDraft/${empId}`);
         // console.log("Employee successfully deleted from draft model :", res2.data);
 
         Swal.fire("success", "Employee created successfully!", "success");
@@ -1271,6 +1271,7 @@ export default function HorizontalNonLinearStepper() {
                                       className="form-control mt-1"
                                       name="offerLetter"
                                       id="offerLetter"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isPayrollInfoEditable}
                                     />
@@ -1422,6 +1423,7 @@ export default function HorizontalNonLinearStepper() {
                                       className="form-control mt-1"
                                       name="aadharCard"
                                       id="aadharCard"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
@@ -1444,6 +1446,7 @@ export default function HorizontalNonLinearStepper() {
                                       className="form-control mt-1"
                                       name="panCard"
                                       id="panCard"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
@@ -1466,6 +1469,7 @@ export default function HorizontalNonLinearStepper() {
                                       className="form-control mt-1"
                                       name="educationCertificate"
                                       id="educationCertificate"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
@@ -1491,6 +1495,7 @@ export default function HorizontalNonLinearStepper() {
                                       className="form-control mt-1"
                                       name="relievingCertificate"
                                       id="relievingCertificate"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
@@ -1516,6 +1521,7 @@ export default function HorizontalNonLinearStepper() {
                                       className="form-control mt-1"
                                       name="salarySlip"
                                       id="salarySlip"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
@@ -1538,6 +1544,7 @@ export default function HorizontalNonLinearStepper() {
                                       className="form-control mt-1"
                                       name="profilePhoto"
                                       id="profilePhoto"
+                                      accept=".jpg, .jpeg, .png"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />

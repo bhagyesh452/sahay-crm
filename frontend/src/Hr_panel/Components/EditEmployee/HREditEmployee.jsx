@@ -18,7 +18,6 @@ const steps = ['Personal Information', 'Employment Information',
 
 export default function HREditEmployee() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const userId = localStorage.getItem("hrUserId");
   const [myInfo, setMyInfo] = useState([]);
 
   const { empId } = useParams();
@@ -108,12 +107,12 @@ export default function HREditEmployee() {
     middleName: "",
     lastName: "",
     dob: "",
+    bloodGroup: "",
     gender: "",
     personalPhoneNo: "",
     personalEmail: "",
     currentAddress: "",
     permanentAddress: "",
-    bloodGroup: "",
   });
   const validatePersonalInfo = () => {
     const newErrors = {};
@@ -357,9 +356,9 @@ export default function HREditEmployee() {
   const fetchEmployee = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
+      const res = await axios.get(`${secretKey}/employeeDraft/fetchEmployeeFromId/${empId}`);
       const data = res.data.data;
-      // console.log("Fetched employee is :", res.data.data);
+      console.log("Fetched employee is :", res.data.data);
       // setEmployee(res.data.data);
 
       // Update personalInfo state with fetched data
@@ -437,32 +436,13 @@ export default function HREditEmployee() {
   }, [activeStep]);
 
   useEffect(() => {
-    if (activeStep === 0 && !isPersonalInfoEditable && personalInfo) {
-      setCompleted((prevCompleted) => ({
-        ...prevCompleted,
-        [activeStep]: true
-      }));
-    } else if (activeStep === 1 && !isEmployeementInfoEditable && employeementInfo) {
-      setCompleted((prevCompleted) => ({
-        ...prevCompleted,
-        [activeStep]: true
-      }));
-    } else if (activeStep === 2 && !isPayrollInfoEditable && payrollInfo) {
-      setCompleted((prevCompleted) => ({
-        ...prevCompleted,
-        [activeStep]: true
-      }));
-    } else if (activeStep === 3 && !isEmergencyInfoEditable && emergencyInfo) {
-      setCompleted((prevCompleted) => ({
-        ...prevCompleted,
-        [activeStep]: true
-      }));
-    } else if (activeStep === 4 && !isEmployeeDocsInfoEditable && empDocumentInfo) {
-      setCompleted((prevCompleted) => ({
-        ...prevCompleted,
-        [activeStep]: true
-      }));
-    }
+    setCompleted((prevCompleted) => {
+      const updatedCompleted = { ...prevCompleted };
+      for (let i = 0; i < activeStep; i++) {
+        updatedCompleted[i] = true;
+      }
+      return updatedCompleted;
+    });
   }, [activeStep]);
 
   const calculateSalary = (salary, condition) => {
@@ -474,9 +454,9 @@ export default function HREditEmployee() {
   const handleInputChange = (e) => {
     const { name, value } = e.target; // name is the name attribute of the input field and value is the current value of the input field.
     setPersonalInfo((prevState) => ({
-    ...prevState,
-    [name]: name === "personalPhoneNo" ? value.replace(/\s+/g, '') : value, // Remove spaces for phone number
-  }));
+      ...prevState,
+      [name]: name === "personalPhoneNo" ? value.replace(/\s+/g, '') : value, // Remove spaces for phone number
+    }));
 
     setEmployeementInfo(prevState => ({
       ...prevState,
@@ -560,7 +540,8 @@ export default function HREditEmployee() {
   };
 
   const handleFileRemove = (fileName, docType) => {
-    console.log("filename", fileName)
+    // console.log("filename", fileName);
+
     // Remove file based on its original name
     setPayrollInfo((prevState) => ({
       ...prevState,
@@ -578,19 +559,19 @@ export default function HREditEmployee() {
       setEducationCertificateDocument([])
     } else if (docType === "relievingCertificate") {
       setRelievingCertificateDocument([])
-    }else if(docType === "salarySlip"){
+    } else if (docType === "salarySlip") {
       setSalarySlipDocument([])
-    }else if(docType === "profilePhoto"){
+    } else if (docType === "profilePhoto") {
       setProfilePhotoDocument([])
-    }else if(docType === "offerLetter"){
+    } else if (docType === "offerLetter") {
       setOfferLetterDocument([])
-      
+
     }
     // Clear the input field
     document.getElementById(docType).value = "";
   };
 
-  console.log("empInfo", empDocumentInfo)
+  // console.log("empInfo", empDocumentInfo);
 
   const totalSteps = () => steps.length;
 
@@ -657,7 +638,7 @@ export default function HREditEmployee() {
   const saveDraft = async () => {
     if (activeStep === 0) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, personalInfo);
+        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...personalInfo, activeStep });
         // console.log("Employee updated successfully at step-0 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -670,7 +651,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 1) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, employeementInfo);
+        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...employeementInfo, activeStep });
         // console.log("Employee updated successfully at step-1 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -683,7 +664,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 2) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, payrollInfo, {
+        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...payrollInfo, activeStep }, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -700,7 +681,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 3) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, emergencyInfo);
+        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...emergencyInfo, activeStep });
         // console.log("Emergency info updated successfully at step-3 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -713,7 +694,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 4) {
       try {
-        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, empDocumentInfo, {
+        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...empDocumentInfo, activeStep }, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -731,20 +712,87 @@ export default function HREditEmployee() {
     }
   };
 
-  const handleComplete = () => {
-    if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
-      Swal.fire({
-        icon: "success",
-        title: "Form Submitted",
-        text: "Employee updated successfully!",
+  // const handleComplete = () => {
+  //   if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "Form Submitted",
+  //       text: "Employee updated successfully!",
+  //     });
+  //     navigate("/hr/employees");
+  //   } else {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Error",
+  //       text: "There was an error updating the form. Please try again later.",
+  //     });
+  //   }
+  // };
+
+  const handleComplete = async () => {
+    // console.log("personalInfo before sending :", personalInfo);
+    // console.log("employeementInfo before sending :", employeementInfo);
+    // console.log("payrollInfo before sending :", payrollInfo);
+    // console.log("emergencyInfo before sending :", emergencyInfo);
+    // console.log("empDocumentInfo before sending :", empDocumentInfo);
+
+    const payload = {
+      firstName: personalInfo.firstName,
+      middleName: personalInfo.middleName,
+      lastName: personalInfo.lastName,
+      dob: personalInfo.dob,
+      bloodGroup: personalInfo.bloodGroup,
+      gender: personalInfo.gender,
+      personalPhoneNo: personalInfo.personalPhoneNo,
+      personalEmail: personalInfo.personalEmail,
+
+      employeeID: employeementInfo.employeeID,
+      officialNo: employeementInfo.officialNo,
+      officialEmail: employeementInfo.officialEmail,
+      joiningDate: employeementInfo.joiningDate,
+      branch: employeementInfo.branch,
+      department: employeementInfo.department,
+      designation: employeementInfo.designation,
+      employeementType: employeementInfo.employeementType,
+      manager: employeementInfo.manager,
+
+      nameAsPerBankRecord: payrollInfo.nameAsPerBankRecord,
+      accountNo: payrollInfo.accountNo,
+      ifscCode: payrollInfo.ifscCode,
+      salary: payrollInfo.salary,
+      firstMonthSalaryCondition: payrollInfo.firstMonthSalaryCondition,
+      firstMonthSalary: payrollInfo.firstMonthSalary,
+      offerLetter: offerLetterDocument,
+      panNumber: payrollInfo.panNumber,
+      aadharNumber: payrollInfo.aadharNumber,
+      uanNumber: payrollInfo.uanNumber,
+
+      personName: emergencyInfo.personName,
+      relationship: emergencyInfo.relationship,      
+      personPhoneNo: emergencyInfo.personPhoneNo,
+
+      aadharCard: aadharCardDocument,
+      panCard: panCardDocument,
+      educationCertificate: educationCertificateDocument,
+      relievingCertificate: relievingCertificateDocument,
+      salarySlip: salarySlipDocument,
+      profilePhoto: profilePhotoDocument
+    };
+
+    try {
+      // Update the employee into main database
+      const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
+
+      console.log("Updated employee is :", res.data);
+      Swal.fire("success", "Employee updated successfully!", "success");
       navigate("/hr/employees");
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "There was an error updating the form. Please try again later.",
-      });
+    } catch (error) {
+      console.log("Error updating employee:", error);
+      Swal.fire("error", "Error updating employee", "error");
     }
   };
 
@@ -755,9 +803,20 @@ export default function HREditEmployee() {
 
   const fetchPersonalInfo = async () => {
     try {
-      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+      const res = await axios.get(`${secretKey}/employeeDraft/fetchEmployeeFromId/${empId}`);
+      const data = res.data.data;
       // console.log("Fetched details is :", res.data.data);
-      setMyInfo(res.data.data);
+      setMyInfo(data);
+      setActiveStep(data.activeStep);
+
+      // Mark previous steps as completed
+      setCompleted((prevCompleted) => {
+        const updatedCompleted = { ...prevCompleted };
+        for (let i = 0; i < data.activeStep; i++) {
+          updatedCompleted[i] = true;
+        }
+        return updatedCompleted;
+      });
     } catch (error) {
       console.log("Error fetching employee details :", error);
     }
@@ -824,7 +883,7 @@ export default function HREditEmployee() {
                                 <div className="row">
                                   <div className="col-sm-5">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="fullName">Full Name<span style={{ color: "red" }}> * </span></label>
+                                      <label htmlFor="fullName">Full Name<span style={{ color: "red" }}> * </span></label>
                                       <div className="row">
                                         <div className="col">
                                           <input
@@ -867,7 +926,7 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-2">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="dob">Date of Birth<span style={{ color: "red" }}> * </span></label>
+                                      <label htmlFor="dob">Date of Birth<span style={{ color: "red" }}> * </span></label>
                                       <input
                                         type="date"
                                         name="dob"
@@ -881,7 +940,7 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-2">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="geneder">Select Gender<span style={{ color: "red" }}> * </span></label>
+                                      <label htmlFor="geneder">Select Gender<span style={{ color: "red" }}> * </span></label>
                                       <select
                                         className="form-select mt-1"
                                         name="gender"
@@ -899,7 +958,7 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="phoneno">Phone No<span style={{ color: "red" }}> * </span></label>
+                                      <label htmlFor="phoneno">Phone No<span style={{ color: "red" }}> * </span></label>
                                       <input
                                         type="tel"
                                         name="personalPhoneNo"
@@ -917,7 +976,7 @@ export default function HREditEmployee() {
                                 <div className="row">
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="email">Email Address<span style={{ color: "red" }}> * </span></label>
+                                      <label htmlFor="email">Email Address<span style={{ color: "red" }}> * </span></label>
                                       <input
                                         type="email"
                                         name="personalEmail"
@@ -933,7 +992,7 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="bloodGroup">Blood Group<span style={{ color: "red" }}> * </span></label>
+                                      <label htmlFor="bloodGroup">Blood Group<span style={{ color: "red" }}> * </span></label>
                                       <select
                                         className="form-select mt-1"
                                         name="bloodGroup"
@@ -957,7 +1016,7 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
+                                      <label htmlFor="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
                                       <div>
                                         <textarea
                                           rows={1}
@@ -1026,7 +1085,7 @@ export default function HREditEmployee() {
                               <div className="row">
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="employeeID">Employee ID<span style={{ color: "red" }}> * </span></label><input
+                                    <label htmlFor="employeeID">Employee ID<span style={{ color: "red" }}> * </span></label><input
                                       type="text"
                                       className="form-control mt-1"
                                       name="employeeID"
@@ -1040,7 +1099,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Department">Department<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="Department">Department<span style={{ color: "red" }}> * </span></label>
                                     <select
                                       className="form-select mt-1"
                                       name="department"
@@ -1062,7 +1121,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Designation">Designation/Job Title<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="Designation">Designation/Job Title<span style={{ color: "red" }}> * </span></label>
                                     <select
                                       className="form-select mt-1"
                                       name="designation"
@@ -1079,7 +1138,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="DateofJoinin">Date of Joining<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="DateofJoinin">Date of Joining<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="date"
                                       className="form-control mt-1"
@@ -1095,7 +1154,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Location">Branch/Location<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="Location">Branch/Location<span style={{ color: "red" }}> * </span></label>
                                     <select
                                       className="form-select mt-1"
                                       name="branch"
@@ -1113,7 +1172,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Employmenttype">Employment Type<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="Employmenttype">Employment Type<span style={{ color: "red" }}> * </span></label>
                                     <select
                                       className="form-select mt-1"
                                       name="employeementType"
@@ -1134,7 +1193,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Reporting">Reporting Manager
+                                    <label htmlFor="Reporting">Reporting Manager
                                       <span style={{ color: "red" }}> * </span>
                                     </label>
                                     <select
@@ -1155,7 +1214,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Officialno">Official Mobile Number<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="Officialno">Official Mobile Number<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="tel"
                                       className="form-control mt-1"
@@ -1171,7 +1230,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Officialemail">Official Email ID<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="Officialemail">Official Email ID<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="email"
                                       className="form-control mt-1"
@@ -1259,7 +1318,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-3">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Company">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="Company">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
                                     <div className="d-flex align-items-center">
                                       <div className="stepper_radio_custom mr-1">
                                         <select
@@ -1296,12 +1355,13 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-3">
                                   <div class="form-group mt-2">
-                                    <label for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
                                       name="offerLetter"
                                       id="offerLetter"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isPayrollInfoEditable}
                                     />
@@ -1318,7 +1378,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="PANNumber">PAN Number<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="PANNumber">PAN Number<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="text"
                                       className="form-control mt-1"
@@ -1334,7 +1394,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="AdharNumber">Adhar Number<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="AdharNumber">Adhar Number<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="text"
                                       className="form-control mt-1"
@@ -1350,7 +1410,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="UANNumber">UAN  Number
+                                    <label htmlFor="UANNumber">UAN  Number
                                       {/* <span style={{ color: "red" }}> * </span> */}
                                     </label>
                                     <input
@@ -1382,7 +1442,7 @@ export default function HREditEmployee() {
                               <div className="row">
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="personName">Person Name<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="personName">Person Name<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="text"
                                       className="form-control mt-1"
@@ -1398,7 +1458,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="relationship">Relationship<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="relationship">Relationship<span style={{ color: "red" }}> * </span></label>
                                     <select
                                       className="form-select mt-1"
                                       name="relationship"
@@ -1417,7 +1477,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="personPhoneNo">Emergency Contact Number<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="personPhoneNo">Emergency Contact Number<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="text"
                                       className="form-control mt-1"
@@ -1447,12 +1507,13 @@ export default function HREditEmployee() {
                               <div className="row">
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label for="aadharCard">Adhar Card<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="aadharCard">Adhar Card<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
                                       name="aadharCard"
                                       id="aadharCard"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
@@ -1477,19 +1538,20 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label for="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
                                       name="panCard"
                                       id="panCard"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
                                     {errors.panCard && <p style={{ color: "red" }}>{errors.panCard}</p>}
                                   </div>
                                   {panCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    <div class="uploaded-fileItem d-flex align-items-center"
                                     //onClick={() => openDocument(panCardDocument[0]?.filename)}
                                     >
                                       <p class="m-0 cursor-pointer">{panCardDocument[0]?.originalname}</p>
@@ -1498,27 +1560,28 @@ export default function HREditEmployee() {
                                         handleFileRemove(panCardDocument[0]?.originalname, 'panCard')
                                       }}
                                         class="fileItem-dlt-btn" disabled="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
-                                        <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                          <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
                                   </div>}
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label for="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
+                                    <label htmlFor="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
                                       name="educationCertificate"
                                       id="educationCertificate"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
                                     {errors.educationCertificate && <p style={{ color: "red" }}>{errors.educationCertificate}</p>}
                                   </div>
                                   {educationCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    <div class="uploaded-fileItem d-flex align-items-center"
                                     //onClick={() => openDocument(educationCertificateDocument[0]?.filename)}
                                     >
                                       <p class="m-0 cursor-pointer">{educationCertificateDocument[0]?.originalname}</p>
@@ -1527,15 +1590,15 @@ export default function HREditEmployee() {
                                         handleFileRemove(educationCertificateDocument[0]?.originalname, 'educationCertificate')
                                       }}
                                         class="fileItem-dlt-btn" disabled="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
-                                        <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                          <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
                                   </div>}
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label for="relievingCertificate">
+                                    <label htmlFor="relievingCertificate">
                                       Relieving Certificate
                                       {/* <span style={{ color: "red" }}> * </span> */}
                                     </label>
@@ -1544,13 +1607,14 @@ export default function HREditEmployee() {
                                       className="form-control mt-1"
                                       name="relievingCertificate"
                                       id="relievingCertificate"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
                                     {/* {errors.relievingCertificate && <p style={{ color: "red" }}>{errors.relievingCertificate}</p>} */}
                                   </div>
                                   {relievingCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    <div class="uploaded-fileItem d-flex align-items-center"
                                     //onClick={() => openDocument(relievingCertificateDocument[0]?.filename)}
                                     >
                                       <p class="m-0 cursor-pointer">{relievingCertificateDocument[0]?.originalname}</p>
@@ -1559,15 +1623,15 @@ export default function HREditEmployee() {
                                         handleFileRemove(relievingCertificateDocument[0]?.originalname, 'relievingCertificate')
                                       }}
                                         class="fileItem-dlt-btn" disabled="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
-                                        <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                          <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
                                   </div>}
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label for="salarySlip">
+                                    <label htmlFor="salarySlip">
                                       Salary Slip
                                       {/* <span style={{ color: "red" }}> * </span> */}
                                     </label>
@@ -1576,13 +1640,14 @@ export default function HREditEmployee() {
                                       className="form-control mt-1"
                                       name="salarySlip"
                                       id="salarySlip"
+                                      accept=".jpg, .jpeg, .png, .pdf"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
                                     {/* {errors.salarySlip && <p style={{ color: "red" }}>{errors.salarySlip}</p>} */}
                                   </div>
                                   {salarySlipDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    <div class="uploaded-fileItem d-flex align-items-center"
                                     //onClick={() => openDocument(salarySlipDocument[0]?.filename)}
                                     >
                                       <p class="m-0 cursor-pointer">{salarySlipDocument[0]?.originalname}</p>
@@ -1591,26 +1656,27 @@ export default function HREditEmployee() {
                                         handleFileRemove(salarySlipDocument[0]?.originalname, 'salarySlip')
                                       }}
                                         class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
-                                        <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                          <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
                                   </div>}
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label for="profilePhoto">Profile Photo</label>
+                                    <label htmlFor="profilePhoto">Profile Photo</label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
                                       name="profilePhoto"
                                       id="profilePhoto"
+                                      accept=".jpg, .jpeg, .png,"
                                       onChange={handleFileChange}
                                       disabled={!isEmployeeDocsInfoEditable}
                                     />
                                     {/* {errors.profilePhoto && <p style={{ color: "red" }}>{errors.profilePhoto}</p>} */}
                                   </div>
                                   {profilePhotoDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center" 
+                                    <div class="uploaded-fileItem d-flex align-items-center"
                                     //onClick={() => openDocument(profilePhotoDocument[0]?.filename)}
                                     >
                                       <p class="m-0 cursor-pointer">{profilePhotoDocument[0]?.originalname}</p>
@@ -1619,7 +1685,7 @@ export default function HREditEmployee() {
                                         handleFileRemove(profilePhotoDocument[0]?.originalname, 'profilePhoto')
                                       }}
                                         class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
-                                        <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                          <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
                                     </div>
                                   </div>}
