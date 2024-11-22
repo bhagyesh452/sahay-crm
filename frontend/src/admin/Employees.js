@@ -960,7 +960,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const handleChecked = async (employeeId, bdmWork, item) => {
     // console.log("BDM Condition is :", bdmWork);
     // console.log("Data to be updated :", item);
-    const updatedDesignation = bdmWork ? "Business Development Executive" : "Business Development Manager";
+    const updatedDesignation = "Business Development Executive";
 
     const dataToUpdate = {
       ...item,
