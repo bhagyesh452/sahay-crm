@@ -1109,16 +1109,27 @@ function TestLeads() {
                         await fetchData(1, latestSortCount);
                         setSelectedRows([]); // Clear selectedRows state
                     } catch (error) {
-                        console.error("Error deleting rows:", error.message);
+                        if (error.response && error.response.status === 405) {
+                            // Extract company names from the data and join them into a string
+                            const maturedCompanies = error.response.data.data;
+                            const maturedCompanyNames = maturedCompanies.map(company => company["Company Name"]).join(", ");
+                            Swal.fire("Error", `Selected data contains matured companies. You cannot delete matured companies. Following are the matured companies : ${maturedCompanyNames}`, "error");
+                            // console.log("Matured companies data :", error.response.data.data);
+                        } else {
+                            console.error("Error deleting leads :", error);
+                            Swal.fire("Error", "Error deleting leads!", "error");
+                        }
+                        setShowDeleteLeadsDialog(false);
+                        setIsSelectedLeadsToBeDelete(false);
+                        setIsLeadsDeletedUsingCsv(false);
+                        setDeletedLeadsCsv(null);
                     }
                 }
             });
         } else {
             // If no rows are selected, show an alert
-            Swal.fire("Please select some rows first!");
+            Swal.fire("Warning","Please select some rows first before deleting the leads!","warning");
             setShowDeleteLeadsDialog(false);
-            setIsSelectedLeadsToBeDelete(false);
-            setIsLeadsDeletedUsingCsv(false);
         }
     };
 
@@ -1164,7 +1175,7 @@ function TestLeads() {
             setIsSelectedLeadsToBeDelete(false);
             setIsLeadsDeletedUsingCsv(false);
             setDeletedLeadsCsv(null);
-            
+
         } catch (error) {
             if (error.response && error.response.status === 405) {
                 // Extract company names from the data and join them into a string
@@ -1607,7 +1618,7 @@ function TestLeads() {
     const [callHistoryBdmAcceptStatus, setCallHistoryBdmAcceptStatus] = useState("");
     const [callHistoryBdmForwardedDate, setCallHistoryBdmForwardedDate] = useState(null);
 
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate , bdeName) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
         setCompanyName(companyName);
@@ -2515,7 +2526,7 @@ function TestLeads() {
                     bdeForwardDate={callHistoryBdmForwardedDate}
                     note={
                         (callHistoryBdmAcceptStatus === "Accept" || callHistoryBdmAcceptStatus === "Pending" || callHistoryBdmAcceptStatus === "MaturedPending" || callHistoryBdmAcceptStatus === "Forwarded" || callHistoryBdmAcceptStatus === "MaturedAccepted") ?
-                        `${callHistoryBdeName} has forwarded this lead to ${callHistoryBdmName} on ${formatBdeForwardDate(callHistoryBdmForwardedDate)}` : "This Lead is Not Forwarded Yet"}
+                            `${callHistoryBdeName} has forwarded this lead to ${callHistoryBdmName} on ${formatBdeForwardDate(callHistoryBdmForwardedDate)}` : "This Lead is Not Forwarded Yet"}
                 />)
             }
 

@@ -82,6 +82,10 @@ const CompanySchema = new mongoose.Schema({
     type: Date,
     // default: Date.now()
   },
+  isDeletedCompany: {
+    type: Boolean,
+    default: false
+  },
   history: [{
     modifiedAt: { 
       type: Date, 

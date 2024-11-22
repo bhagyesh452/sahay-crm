@@ -12,6 +12,7 @@ const RemarksHistory = require('../models/RemarksHistory.js');
 const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
+const ProjectionModel = require('../models/NewProjections.js');
 const NotiModel = require('../models/Notifications.js');
 const { Parser } = require('json2csv');
 const multer = require('multer');
@@ -20,7 +21,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Ensure the upload directory exists
-const deletedLeadsDir = path.join(__dirname, "deletedLeads");
+const deletedLeadsDir = path.join(__dirname, "..", "deletedLeads");
 if (!fs.existsSync(deletedLeadsDir)) {
   fs.mkdirSync(deletedLeadsDir, { recursive: true }); // Create the directory
   // console.log("Upload directory created :", deletedLeadsDir);
@@ -68,19 +69,29 @@ router.delete("/deleteLeadsUsingCsv", upload.single("deletedLeadsCsv"), async (r
       ],
     }));
 
+    const conditionsToFindInProjection = leadsData.map((lead) => ({
+      "companyName": lead["Company Name"],
+    }));
+
     // Find matching documents in newcdatas, team leads and redesigned leads
     const companiesToDelete = await CompanyModel.find({ $or: conditions });
     const deleteFromTeamLeads = await TeamLeadsModel.find({ $or: conditions });
     const maturedCompanies = await RedesignedLeadformModel.find({ $or: conditions });
 
+    // Update `isDeletedCompany` field for matching companies in ProjectionModel
+    await ProjectionModel.updateMany(
+      { $or: conditionsToFindInProjection },
+      { $set: { isDeletedCompany: true } }
+    );
+
     if (!companiesToDelete.length) {
       fs.unlinkSync(filePath); // Delete the uploaded file
-      return res.status(404).json({result: false, message: "No matching companies found in newcdatas collection"});
+      return res.status(404).json({ result: false, message: "No matching companies found in newcdatas collection" });
     }
 
     if (maturedCompanies.length) {
       fs.unlinkSync(filePath); // Delete the uploaded file
-      return res.status(405).json({result: false, message: "Matured companies cannot be deleted", data: maturedCompanies});
+      return res.status(405).json({ result: false, message: "Matured companies cannot be deleted", data: maturedCompanies });
     }
 
     // Insert matching companies into `deletedLeads`
@@ -93,12 +104,18 @@ router.delete("/deleteLeadsUsingCsv", upload.single("deletedLeadsCsv"), async (r
     // console.log(`Deleted ${deleteFromTeamLeadsResult.deletedCount} companies from team leads`);
 
     // Send the parsed data as the response
-    res.status(200).json({ result: true,message: "Companies successfully deleted from newcdatas and added to deletedleadsmodels", data: leadsData });
+    res.status(200).json({ result: true, message: "Companies successfully deleted from newcdatas and added to deletedleadsmodels", data: leadsData });
 
     // Clean up the uploaded file. Delete the file once data save in deleted leads model.
     fs.unlinkSync(filePath);
   } catch (error) {
     console.error("Error deleting companies :", error);
+
+    // Clean up the uploaded file in case of an error
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
     res.status(500).json({ result: false, message: "Error deleting companies", error: error });
   }
 });
@@ -1575,10 +1592,10 @@ router.post("/postExtractedData", async (req, res) => {
 router.delete("/deleteAdminSelectedLeads", async (req, res) => {
   const { selectedRows } = req.body;
 
-
   try {
     // Step 1: Find the documents to be deleted
     const companiesToDelete = await CompanyModel.find({ _id: { $in: selectedRows } });
+    // console.log("Companies to be deleted :", companiesToDelete);
 
     // Step 2: Create entries in DeletedLeadsModel with the same data
     const deletedLeads = companiesToDelete.map(company => ({
@@ -1586,11 +1603,29 @@ router.delete("/deleteAdminSelectedLeads", async (req, res) => {
       deletedAt: new Date(), // Add a timestamp of deletion
     }));
 
+    // Step 3: Check if any company exists in matured bookings
+    const maturedCompanies = await RedesignedLeadformModel.find({
+      "Company Name": { $in: companiesToDelete.map((c) => c["Company Name"]) },
+    });
+
+    if (maturedCompanies.length > 0) {
+      // Warning for matured companies
+      return res.status(405).json({ result: false, message: "Matured companies cannot be deleted", data: maturedCompanies });
+    }
+
+    // Step 4: Update `isDeletedCompany` to true in projections if found
+    const projectionUpdateResult = await ProjectionModel.updateMany(
+      {
+        companyName: { $in: companiesToDelete.map((c) => c["Company Name"]) },
+      },
+      { $set: { isDeletedCompany: true } }
+    );
+
     if (deletedLeads.length > 0) {
       await DeletedLeadsModel.insertMany(deletedLeads); // Insert multiple documents
     }
 
-    // Step 3: Perform deletion from CompanyModel
+    // Step 5: Perform deletion from CompanyModel
     await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
 
     // Optional: Perform other deletions or updates as needed
@@ -1604,9 +1639,7 @@ router.delete("/deleteAdminSelectedLeads", async (req, res) => {
       return null;
     }));
 
-    res.status(200).json({
-      message: "Rows deleted successfully and backup created successfully.",
-    });
+    res.status(200).json({message: "Rows deleted successfully and backup created successfully."});
   } catch (error) {
     console.error("Error deleting rows:", error.message);
     res.status(500).json({ error: "Internal Server Error" });

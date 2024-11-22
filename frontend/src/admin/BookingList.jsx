@@ -162,11 +162,14 @@ function BookingList() {
   const { data: bookingData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
     queryKey: ["bookingData", page, searchText],
     queryFn: async () => {
+      // Normalize searchText by replacing non-breaking spaces with regular spaces
+      const normalizedSearchText = searchText.replace(/\u00A0/g, " ");
+
       const res = await axios.get(`${secretKey}/bookings/admin-redesigned-final-leadData`, {
         params: {
           page: page,
           pageSize: pageSize,
-          searchText: searchText
+          searchText: normalizedSearchText,
         }
       });
       return res.data;
