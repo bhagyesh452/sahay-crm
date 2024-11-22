@@ -2410,8 +2410,8 @@ router.get("/employees-new/:ename", async (req, res) => {
       ename: employeeName, // Always filter by the provided ename
       $or: [
         { ename: employeeName },
-        { $and: [{ maturedBdmName: employeeName }] },
-        { $and: [{ multiBdmName: { $in: [employeeName] } }] }
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
       ]
     };
 
@@ -2511,7 +2511,6 @@ router.get("/employees-new/:ename", async (req, res) => {
         .sort({ lastActionDate: -1 })
         .skip(skip)
         .limit(limit),
-
         CompanyModel.find({
           ...baseQuery,
           Status: { $in: ["Not Interested", "Junk"] },
@@ -3177,10 +3176,7 @@ router.get("/bdmMaturedCases", async (req, res) => {
   try {
     // Step 1: Fetch employees who are BDM or Floor Managers
     const employees = await adminModel.find({
-      $or: [
-        { newDesignation: { $in: ["Business Development Manager", "Floor Manager"] } },
-        { newDesignation: "Business Development Executive", bdmWork: true }
-      ]
+      newDesignation: { $in: ["Business Development Manager", "Floor Manager"] }
     }).select("ename number"); // Select both ename and number fields
 
     const employeeData = employees.map(emp => ({

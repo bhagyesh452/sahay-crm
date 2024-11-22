@@ -80,19 +80,6 @@ router.post("/update-remarks/:id", async (req, res) => {
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
     await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
-    // // // Create a new RemarksHistory instance
-    // const newRemarksHistory = new RemarksHistory({
-    //   time,
-    //   date,
-    //   companyID: id,
-    //   remarks: Remarks,
-    //   bdeName: bdeName,
-    //   companyName: currentCompanyName,
-    // });
-
-    // // Save the new remarks history entry to MongoDB
-    // await newRemarksHistory.save();
-
     // New object to be pushed
     const newCompleteRemarks = {
       companyID: id,

@@ -37,131 +37,7 @@ router.get('/', async function (req, res) {
   }
 
 })
-// router.post("/exportLeads/", async (req, res) => {
-//   try {
-//     const selectedIds = req.body;
 
-//     const leads = await CompanyModel.find({
-//       _id: { $in: selectedIds },
-//     });
-
-//     const csvData = [];
-//     // Push the headers as the first row
-//     csvData.push([
-//       "SR. NO",
-//       "Company Name",
-//       "Company Number",
-//       "Company Email",
-//       "Company Incorporation Date  ",
-//       "City",
-//       "State",
-//       "Company Address",
-//       "Director Name(First)",
-//       "Director Number(First)",
-//       "Director Email(First)",
-//       "Director Name(Second)",
-//       "Director Number(Second)",
-//       "Director Email(Second)",
-//       "Director Name(Third)",
-//       "Director Number(Third)",
-//       "Director Email(Third)",
-//       "ename",
-//       "AssignDate",
-//       "Status",
-//       "Remarks",
-//     ]);
-
-//     function formatDateFinal(timestamp) {
-//       const date = new Date(timestamp);
-//       const day = date.getDate().toString().padStart(2, "0");
-//       const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
-//       const year = date.getFullYear();
-//       return `${day}/${month}/${year}`;
-//   }
-
-//     // Push each lead as a row into the csvData array
-//     leads.forEach((lead, index) => {
-//       const rowData = [
-//         index + 1,
-//         lead["Company Name"],
-//         lead["Company Number"],
-//         lead["Company Email"],
-//         formatDateFinal(lead["Company Incorporation Date  "]),
-//         lead["City"],
-//         lead["State"],
-//         lead["Company Address"],
-//         lead["Director Name(First)"],
-//         lead["Director Number(First)"],
-//         lead["Director Email(First)"],
-//         lead["Director Name(Second)"],
-//         lead["Director Number(Second)"],
-//         lead["Director Email(Second)"],
-//         lead["Director Name(Third)"],
-//         lead["Director Number(Third)"],
-//         lead["Director Email(Third)"],
-//         lead["ename"],
-//         formatDateFinal(lead["AssignDate"]),
-//         lead["Status"],
-//         `"${lead["Remarks"]}"`,
-//       ];
-//       csvData.push(rowData);
-//       // console.log("rowData:" , rowData)
-//     });
-
-//     // Use fast-csv to stringify the csvData array
-//     res.setHeader("Content-Type", "text/csv");
-//     res.setHeader(
-//       "Content-Disposition",
-//       "attachment; filename=UnAssignedLeads_Admin.csv"
-//     );
-
-//     const csvString = csvData.map((row) => row.join(",")).join("\n");
-//     // Send response with CSV data
-//     // Send response with CSV data
-//     //console.log(csvString)
-//     res.status(200).end(csvString);
-//     // console.log(csvString)
-//     // Here you're ending the response
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
-
-// -----------------update-leads-button-function-for emergency-use-only------------
-// router.post('/update-ename', async (req, res) => {
-//   const data = req.body;
-
-//   try {
-//     const updates = data.map(async (item) => {
-//       const { 'Company Name': companyName } = item;
-//       await CompanyModel.updateOne(
-//         { "Company Name": companyName },
-//         {
-//           $set:
-//           {
-//             ename: ename,
-//             "Company Number": item["Company Number"],
-//             "Company Email": item["Company Email"],
-//             "Company Incorporation Date  ": item["Company Incorporation Date"] ? new Date(item["Company Incorporation Date"]) : new Date(),
-//             City: item["City"],
-//             State: item["State"],
-//             Status: item["Status"],
-//             Remarks: item["Remarks"],
-//             AssignDate: new Date()
-//           }
-//         }
-//       );
-//     });
-
-//     await Promise.all(updates);
-
-//     res.status(200).json({ message: 'Ename updated successfully' });
-//   } catch (error) {
-//     console.error('Error updating ename:', error);
-//     res.status(500).json({ error: 'Failed to update ename' });
-//   }
-// });
 
 // router.post('/update-ename', async (req, res) => {
 //   const data = req.body;
@@ -169,6 +45,7 @@ router.get('/', async function (req, res) {
 //   try {
 //     const updates = data.map(async (item) => {
 //       const { 'Company Name': companyName } = item;
+
 //       // Function to convert DD-MM-YYYY or Excel serial number to ISO format
 //       const convertToISODate = (dateValue) => {
 //         if (typeof dateValue === 'string') {
@@ -185,37 +62,110 @@ router.get('/', async function (req, res) {
 //         }
 //         return new Date(); // Fallback to current date if dateValue is invalid
 //       };
-//       console.log(`Updating company: ${companyName} with data:`, item);
-//       // Check if the company exists, if not, create a new entry
-//       await CompanyModel.updateOne(
-//         { "Company Name": companyName }, // Condition to find the company
 
+//       // Parse the date if provided in either DD-MM-YYYY format or as a serial number
+//       const companyIncorporationDate = item["Company Incorporation Date"]
+//         ? convertToISODate(item["Company Incorporation Date"])
+//         : new Date(); // Default to current date if not provided
+
+//       // Logging the incoming item for debugging
+
+
+//       // Update or insert the company
+//       const updateResult = await CompanyModel.findOneAndUpdate(
+//         { "Company Name": companyName }, // Condition to find the company
 //         {
 //           $set: {
 //             ename: item['ename'] || '', // Default ename or update from data
 //             "Company Number": item["Company Number"] || '',
 //             "Company Email": item["Company Email"] || '',
-//             "Company Incorporation Date  ": item["Company Incorporation Date"] ? convertToISODate(item["Company Incorporation Date"]) : new Date(),
+//             "Company Incorporation Date  ": companyIncorporationDate,  // Use the converted date
 //             City: item["City"] || '',
 //             State: item["State"] || '',
 //             Status: item["Status"] || '',
 //             Remarks: item["Remarks"] || '',
 //             AssignDate: new Date(),
-//             UploadDate:new Date()
+//             UploadDate: new Date(),
+//             isUploadedManually: true,
+//             UploadedBy: "Ronak Kumar",
+//             isDeletedEmployeeCompany:true
 //           }
 //         },
-//         { upsert: true } // Insert a new document if no match is found
+//         { upsert: true, new: true } // Insert a new document if no match is found and return the updated/new doc
 //       );
+
+//       // After updating/creating the company, log it
+
+
+//       // Create a new entry in RemarksHistory for this company
+//       const newRemark = new RemarksHistory({
+//         time: new Date().toLocaleTimeString(), // Set the current time
+//         date: new Date().toISOString().split('T')[0], // Set the current date (ISO format)
+//         companyID: updateResult._id, // Use the company's _id field
+//         companyName: companyName, // Save the company name
+//         remarks: item["Remarks"] || '', // Remarks from the input data
+//         bdmName: item["bdmName"] || '', // Example, you can include more data if needed
+//         bdmRemarks: item["bdmRemarks"] || '',
+//         bdeName: item["ename"] || '',
+//       });
+
+//       // Save the remarks history entry
+//       await newRemark.save();
+
+//       const newCompleteRemarks = {
+//         companyID: updateResult._id,
+//         "Company Name": companyName,
+//         employeeName: item["ename"],
+//         designation: "Business Development Manager",
+//         remarks: item["Remarks"],
+//         bdeName: item["ename"],
+//         addedOn: new Date()
+//       };
+
+//       // Find existing remarks history for the company
+//     const existingCompleteRemarksHistory = await CompleteRemarksHistoryLeads.findOne({ companyID: updateResult._id })
+//     .select("companyID"); // Only select companyID and remarks
+
+//   if (existingCompleteRemarksHistory) {
+
+//     // Check if the remarks array exists, and if not, initialize it
+//     if (!existingCompleteRemarksHistory.remarks) {
+//       existingCompleteRemarksHistory.remarks = [];
+//     }
+//     const saveEntry = await CompleteRemarksHistoryLeads.findOneAndUpdate(
+//       {
+//         companyID: updateResult._id
+//       },
+//       {
+//         $push: {
+//           remarks: [newCompleteRemarks]
+
+//         }
+//       }
+//     )
+//   } else {
+//     // If the company doesn't exist, create a new entry with the new object
+//     const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
+//       companyID: updateResult._id,
+//       "Company Name": companyName,
+//       remarks: [newCompleteRemarks], // Store the general remarks
 //     });
 
-//     // Wait for all updates or inserts to complete
+//     await newCompleteRemarksHistory.save();
+//   }
+  
+
+//     });
+
+   
+//     // Wait for all updates and remarks to complete
 //     await Promise.all(updates);
 
-
-//     res.status(200).json({ message: 'Ename updated or inserted successfully' });
+//     //console.log('All companies and remarks updated/inserted successfully.');
+//     res.status(200).json({ message: 'Ename and remarks updated or inserted successfully' });
 //   } catch (error) {
-//     console.error('Error updating or inserting ename:', error);
-//     res.status(500).json({ error: 'Failed to update or insert ename' });
+//     console.error('Error updating or inserting ename/remarks:', error);
+//     res.status(500).json({ error: 'Failed to update or insert ename and remarks' });
 //   }
 // });
 
@@ -226,40 +176,33 @@ router.post('/update-ename', async (req, res) => {
     const updates = data.map(async (item) => {
       const { 'Company Name': companyName } = item;
 
-      // Function to convert DD-MM-YYYY or Excel serial number to ISO format
+      // Convert various date formats to ISO
       const convertToISODate = (dateValue) => {
         if (typeof dateValue === 'string') {
-          // Handle string in DD-MM-YYYY format
           const [day, month, year] = dateValue.split('-');
           return new Date(`${year}-${month}-${day}T00:00:00.000Z`);
         } else if (typeof dateValue === 'number') {
-          // Handle Excel serial numbers
-          const excelBaseDate = new Date(1900, 0, 1); // Excel base date: January 1, 1900
-          return new Date(excelBaseDate.getTime() + (dateValue - 2) * 86400000); // Adjust for 2-day difference
+          const excelBaseDate = new Date(1900, 0, 1);
+          return new Date(excelBaseDate.getTime() + (dateValue - 2) * 86400000);
         } else if (dateValue instanceof Date) {
-          // If it's already a Date object
           return dateValue;
         }
-        return new Date(); // Fallback to current date if dateValue is invalid
+        return null; // Return null for invalid dates
       };
 
-      // Parse the date if provided in either DD-MM-YYYY format or as a serial number
       const companyIncorporationDate = item["Company Incorporation Date"]
         ? convertToISODate(item["Company Incorporation Date"])
-        : new Date(); // Default to current date if not provided
+        : null;
 
-      // Logging the incoming item for debugging
-
-
-      // Update or insert the company
+      // Update or insert company
       const updateResult = await CompanyModel.findOneAndUpdate(
-        { "Company Name": companyName }, // Condition to find the company
+        { "Company Name": companyName },
         {
           $set: {
-            ename: item['ename'] || '', // Default ename or update from data
+            ename: item['ename'] || '',
             "Company Number": item["Company Number"] || '',
             "Company Email": item["Company Email"] || '',
-            "Company Incorporation Date  ": companyIncorporationDate,  // Use the converted date
+            "Company Incorporation Date": companyIncorporationDate,
             City: item["City"] || '',
             State: item["State"] || '',
             Status: item["Status"] || '',
@@ -267,42 +210,65 @@ router.post('/update-ename', async (req, res) => {
             AssignDate: new Date(),
             UploadDate: new Date(),
             isUploadedManually: true,
-            UploadedBy: "Ronak Kumar"
-          }
+            UploadedBy: "Ronak Kumar",
+            isDeletedEmployeeCompany: true,
+            maturedCaseUploaded:true
+          },
         },
-        { upsert: true, new: true } // Insert a new document if no match is found and return the updated/new doc
+        { upsert: true, new: true }
       );
 
-      // After updating/creating the company, log it
-
-
-      // Create a new entry in RemarksHistory for this company
+      // Insert remarks history
       const newRemark = new RemarksHistory({
-        time: new Date().toLocaleTimeString(), // Set the current time
-        date: new Date().toISOString().split('T')[0], // Set the current date (ISO format)
-        companyID: updateResult._id, // Use the company's _id field
-        companyName: companyName, // Save the company name
-        remarks: item["Remarks"] || '', // Remarks from the input data
-        bdmName: item["bdmName"] || '', // Example, you can include more data if needed
+        time: new Date().toLocaleTimeString(),
+        date: new Date().toISOString().split('T')[0],
+        companyID: updateResult._id,
+        companyName: companyName,
+        remarks: item["Remarks"] || '',
+        bdmName: item["bdmName"] || '',
         bdmRemarks: item["bdmRemarks"] || '',
         bdeName: item["ename"] || '',
       });
 
-      // Save the remarks history entry
       await newRemark.save();
 
+      // Insert or update CompleteRemarksHistoryLeads
+      const newCompleteRemark = {
+        companyID: updateResult._id,
+        "Company Name": companyName,
+        employeeName: item["ename"],
+        designation: "Business Development Manager",
+        remarks: item["Remarks"],
+        bdeName: item["ename"],
+        addedOn: new Date(),
+      };
+
+      const existingHistory = await CompleteRemarksHistoryLeads.findOne({ companyID: updateResult._id });
+      if (existingHistory) {
+        await CompleteRemarksHistoryLeads.updateOne(
+          { companyID: updateResult._id },
+          { $push: { remarks: newCompleteRemark } }
+        );
+      } else {
+        const newHistory = new CompleteRemarksHistoryLeads({
+          companyID: updateResult._id,
+          "Company Name": companyName,
+          remarks: [newCompleteRemark],
+        });
+        await newHistory.save();
+      }
     });
 
-    // Wait for all updates and remarks to complete
+    // Wait for all updates to complete
     await Promise.all(updates);
 
-    //console.log('All companies and remarks updated/inserted successfully.');
     res.status(200).json({ message: 'Ename and remarks updated or inserted successfully' });
   } catch (error) {
     console.error('Error updating or inserting ename/remarks:', error);
     res.status(500).json({ error: 'Failed to update or insert ename and remarks' });
   }
 });
+
 
 
 
@@ -1185,6 +1151,7 @@ const mongoose = require('mongoose');
 const RemarksHistory = require('../models/RemarksHistory.js');
 const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
 const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
+const CompleteRemarksHistoryLeads = require('../models/CompleteRemarksHistoryLeads.js');
 
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
