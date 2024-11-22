@@ -3177,7 +3177,10 @@ router.get("/bdmMaturedCases", async (req, res) => {
   try {
     // Step 1: Fetch employees who are BDM or Floor Managers
     const employees = await adminModel.find({
-      newDesignation: { $in: ["Business Development Manager", "Floor Manager"] }
+      $or: [
+        { newDesignation: { $in: ["Business Development Manager", "Floor Manager"] } },
+        { newDesignation: "Business Development Executive", bdmWork: true }
+      ]
     }).select("ename number"); // Select both ename and number fields
 
     const employeeData = employees.map(emp => ({
