@@ -52,6 +52,7 @@ import { TbArrowBackUp } from "react-icons/tb";
 import { RiShareForwardFill } from "react-icons/ri";
 import EmployeeInterestedInformationDialog from '../employeeComp/ExtraComponents/EmployeeInterestedInformationDialog';
 import { MdDownload } from "react-icons/md";
+import BdmMaturedCasesDialogBox from '../employeeComp/BdmMaturedCasesDialogBox';
 
 function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -1396,6 +1397,21 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                 >
                                     <RiShareForwardFill className='mr-1' /> Forward to BDM
                                 </button>
+                                {
+                                                        openAssignToBdm && (
+                                                            <BdmMaturedCasesDialogBox
+                                                            open={openAssignToBdm}
+                                                            closepopup={handleCloseForwardBdmPopup}
+                                                            currentData={employeeData}
+                                                            selectedRows={selectedRows}
+                                                            setSelectedRows={setSelectedRows}
+                                                            forwardedEName={data.ename}
+                                                            // handleForwardDataToBDM={handleForwardDataToBDM}
+                                                            forwardingPerson={"admin"}
+                                                            fetchNewData={fetchData}
+                                                            />
+                                                        )
+                                                    }
                                 <button type="button" className="btn mybtn"
                                     onClick={handleDownloadCSV}
                                 >
@@ -2440,7 +2456,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             </Drawer>
 
             {/* ------------------------------- Forward to BDM -------------------------- */}
-            <Dialog
+            {/* <Dialog
                 open={openAssignToBdm}
                 onClose={handleCloseForwardBdmPopup}
                 fullWidth
@@ -2489,7 +2505,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                 <button onClick={() => handleForwardDataToBDM(bdmName)} className="btn btn-primary">
                     Submit
                 </button>
-            </Dialog>
+            </Dialog> */}
 
             {/* --------------------------------backedrop------------------------- */}
             {openBacdrop && (<Backdrop

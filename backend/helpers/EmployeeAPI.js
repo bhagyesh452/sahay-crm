@@ -2401,17 +2401,17 @@ router.get('/achieved-details/:ename', async (req, res) => {
 
 
 // 2. Read the Employee
-router.get("/einfo", async (req, res) => {
-  try {
+// router.get("/einfo", async (req, res) => {
+//   try {
 
-    const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
+//     const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
 
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     res.json(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 // router.get("/einfo", async (req, res) => {
@@ -2426,16 +2426,16 @@ router.get("/einfo", async (req, res) => {
 //     // Iterate through the employees and update fields as necessary
 //     const updatePromises = employees.map(async (employee) => {
 //       if (allowedDesignations.includes(employee.designation) && employee.jdate) {
-//         const jdate = new Date(employee.jdate); // Parse the joining date
-//         const probationEndDate = new Date(jdate);
-//         probationEndDate.setMonth(probationEndDate.getMonth() + 3); // Add 3 months to the joining date
+//         // const jdate = new Date(employee.jdate); // Parse the joining date
+//         // const probationEndDate = new Date(jdate);
+//         // probationEndDate.setMonth(probationEndDate.getMonth() + 3); // Add 3 months to the joining date
 
-//         if (employee.bdmWork !== true && employee.isForcefullyBdmWorkMadeFalse !== true && today >= probationEndDate) {
+//         if (employee.bdmWork !== true && employee.isForcefullyBdmWorkMadeFalse !== true) {
 //           // Update `bdmWork` if probation period is completed and conditions are met
 //           employee.bdmWork = true; // Update the in-memory object
 //           await adminModel.updateOne(
 //             { _id: employee._id },
-//             { $set: { bdmWork: true , isForcefullyBdmWorkMadeFalse: true } }
+//             { $set: { bdmWork: true } }
 //           ); // Save the change to the database
 //         } else if (employee.bdmWork === true) {
 //           // If `bdmWork` is already true, set `isForcefullyMade` to true
@@ -2461,6 +2461,54 @@ router.get("/einfo", async (req, res) => {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // });
+
+router.get("/einfo", async (req, res) => {
+  try {
+    // Fetch all employees from the database
+    const employees = await adminModel.find();
+
+    // Define allowed designations
+    const allowedDesignations = ["Sales Executive", "Sales Manager"];
+    const today = new Date();
+
+    // Iterate through the employees and update fields as necessary
+    const updatePromises = employees.map(async (employee) => {
+      // Check if the employee designation is allowed and the conditions are met
+      if (
+        allowedDesignations.includes(employee.designation) && 
+        employee.bdmWork !== true && 
+        employee.isForcefullyBdmWorkMadeFalse !== true
+      ) {
+        // Update `bdmWork` to true if the conditions are satisfied
+        employee.bdmWork = true; // Update the in-memory object
+        await adminModel.updateOne(
+          { _id: employee._id },
+          { $set: { bdmWork: true  } }
+        ); // Save the change to the database
+      }
+
+      // If `bdmWork` is already true, mark `isForcefullyMade` if applicable
+      if (employee.bdmWork === true) {
+        employee.isForcefullyBdmWorkMadeFalse = true; // Update the in-memory object
+        await adminModel.updateOne(
+          { _id: employee._id },
+          { $set: { isForcefullyBdmWorkMadeFalse: true } }
+        ); // Save the change to the database
+      }
+
+      return employee; // Return the updated employee object
+    });
+
+    // Wait for all updates to complete
+    const updatedEmployees = await Promise.all(updatePromises);
+
+    // Return all employees, including the updated ones
+    res.status(200).json(updatedEmployees);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 
