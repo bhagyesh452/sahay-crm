@@ -238,6 +238,9 @@ const DeletedLeadsSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  maturedCaseUploaded:{
+    type:Boolean,
+  },
   deletedAt: {
     type: Date,
     default: Date.now

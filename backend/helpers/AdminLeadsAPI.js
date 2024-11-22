@@ -1256,12 +1256,6 @@ router.post("/fetch-by-ids", async (req, res) => {
 //   res.json({ message: "Data posted successfully" });
 // });
 
-const mongoose = require('mongoose');
-const RemarksHistory = require('../models/RemarksHistory.js');
-const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
-const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
-const CompleteRemarksHistoryLeads = require('../models/CompleteRemarksHistoryLeads.js');
-
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
   const socketIO = req.io;
