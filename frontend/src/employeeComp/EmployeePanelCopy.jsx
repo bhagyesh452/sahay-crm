@@ -1472,6 +1472,7 @@ function EmployeePanelCopy({ fordesignation }) {
                             companysInco={companyInco}
                             employeeName={data.ename}
                             employeeEmail={data.email}
+                            isCompanyForwarded={false}
                             handleCloseFormOpen={handleCloseFormOpen}
                         />
                     ) : addFormOpen ? (
