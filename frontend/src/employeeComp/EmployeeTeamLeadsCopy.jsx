@@ -1232,6 +1232,7 @@ useEffect(() => {
                     bdmName={data.ename}
                     employeeName={newBdeName}
                     employeeEmail={newEmpData.find(employee => employee.ename === newBdeName)?.email}
+                    isCompanyForwarded={true}
                     handleCloseFormOpen={handleCloseFormOpen}
                 />
             ) : addFormOpen ? (
