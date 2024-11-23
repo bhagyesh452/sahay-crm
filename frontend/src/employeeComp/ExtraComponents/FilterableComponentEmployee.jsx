@@ -79,8 +79,8 @@ const FilterableComponentEmployee = ({
     }, [filterField, filteredData]);
 
 
-    console.log("selectedFilters", selectedFilters);
-    console.log("columnValues", columnValues);
+    // console.log("selectedFilters", selectedFilters);
+    // console.log("columnValues", columnValues);
 
 
 
