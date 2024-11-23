@@ -102,7 +102,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
             setIsLoading(true);
             // Manually format date to YYYY-MM-DD to avoid timezone shifts
             const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-            console.log("formattedDate", formattedDate)
+            // console.log("formattedDate", formattedDate)
             const currentDayProjectionRes = await axios.get(`${secretKey}/company-data/getCurrentDayProjection`, {
                 params: { companyName, date: formattedDate },
             });
@@ -241,7 +241,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
                     date: formattedDate
                 }
             });
-            console.log("Projection data is todays :", res.data.data);
+            // console.log("Projection data is todays :", res.data.data);
             setEmployeeProjectionData(res.data.data);
             setOpenProjectionTable(true); // Open the dialog
         } catch (error) {
@@ -286,7 +286,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
 
         // Set history data if found; otherwise, set an empty array
         setHistoryData(selectedProjection ? selectedProjection.history || [] : []);
-        console.log("History data is :", historyData)
+        // console.log("History data is :", historyData)
 
         // Open the history dialog
         setOpenHistoryDialog(true);
@@ -721,7 +721,7 @@ function EmployeesTodayProjectionSummary({ isFloorManagerView, floorManagerBranc
 
                                     {projection && projection.length > 0 ? (
                                         projection.map((data, index) => {
-                                            console.log("Data is :", data);
+                                            // console.log("Data is :", data);
                                             // Find the branch office for each employee in totalEmployees
                                             const employee = totalEmployees.find((emp) => emp.ename === data.ename);
                                             const branchOffice = employee ? employee.branchOffice : '-';

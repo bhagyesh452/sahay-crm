@@ -3902,13 +3902,23 @@ router.get('/getProjection/:employeeName', async (req, res) => {
 
   try {
     const query = {
-      isDeletedCompany: false, // Ensure only non-deleted companies are included
-      $or: [
-        { bdeName: employeeName },
-        { bdmName: employeeName },
-        { "history.data.bdeName": employeeName },
-        { "history.data.bdmName": employeeName }
-      ]
+      $and: [
+        // Ensure the employee is not deleted or the field does not exist
+        {
+          $or: [
+            { isDeletedEmployee: false }, // Explicitly check if it's false
+            { isDeletedEmployee: { $exists: false } }, // Check if the field does not exist
+          ],
+        },
+        {
+          $or: [
+            { bdeName: employeeName },
+            { bdmName: employeeName },
+            { "history.data.bdeName": employeeName },
+            { "history.data.bdmName": employeeName },
+          ],
+        },
+      ],
     };
 
     if (companyName) {

@@ -340,7 +340,7 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     );
 
-    // console.log("queryData", queryData)
+    console.log("queryData", queryData)
     // console.log("generalData", generalData)
 
     useEffect(() => {
