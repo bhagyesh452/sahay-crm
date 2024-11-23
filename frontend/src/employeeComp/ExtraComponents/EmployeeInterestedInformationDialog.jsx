@@ -222,7 +222,7 @@ function EmployeeInterestedInformationDialog({
             ...updatedFormData, // Send all sections including unchanged ones
         };
 
-        console.log("payload", payload)
+        // console.log("payload", payload)
 
         try {
             const response = await axios.post(`${secretKey}/company-data/company/${companyName}/interested-info`, {
@@ -237,30 +237,28 @@ function EmployeeInterestedInformationDialog({
             if (response.status === 200) {
                 Swal.fire("Data saved successfully");
 
-                // Handle modal and UI cleanup
-                const modalElement = document.getElementById(modalId);
-                modalElement.classList.remove("show");
-                modalElement.setAttribute("aria-hidden", "true");
-                modalElement.style.display = "none";
+                // // Handle modal and UI cleanup
+                // const modalElement = document.getElementById(modalId);
+                // modalElement.classList.remove("show");
+                // modalElement.setAttribute("aria-hidden", "true");
+                // modalElement.style.display = "none";
 
-                const modalBackdrop = document.querySelector(".modal-backdrop");
-                if (modalBackdrop) {
-                    modalBackdrop.parentNode.removeChild(modalBackdrop);
-                }
+                // const modalBackdrop = document.querySelector(".modal-backdrop");
+                // if (modalBackdrop) {
+                //     modalBackdrop.parentNode.removeChild(modalBackdrop);
+                // }
 
-                document.body.classList.remove("modal-open");
-                document.body.style.removeProperty("overflow");
-                document.body.style.removeProperty("padding-right");
+                // document.body.classList.remove("modal-open");
+                // document.body.style.removeProperty("overflow");
+                // document.body.style.removeProperty("padding-right");
 
                 handleClearInterestedInformation();
-                refetch();
+                // refetch();
             }
         } catch (error) {
             console.error("Error saving data:", error);
         }
     };
-
-
 
 
     // Reset form data to initial state
@@ -302,16 +300,16 @@ function EmployeeInterestedInformationDialog({
             // Call setStatus and setStatusClass only if they are available
             if (typeof setStatus === 'function' && typeof refetch === 'function') {
                 setStatus(companyStatus);
-                refetch();
+                // refetch();
             }
             if (typeof setStatusClass === 'function') {
                 setStatusClass(companyStatus === "Untouched" ? "untouched_status" : companyStatus === "Busy" ? "dfaulter-status" : "cdbp-status");
             }
             if (typeof refetch === 'function') {
-                refetch();
+                // refetch();
             }
             setVisibleQuestions({})
-            refetch();
+            // refetch();
         }
         // // Manually hide the modal
         // const modalElement = document.getElementById(modalId);
@@ -329,7 +327,7 @@ function EmployeeInterestedInformationDialog({
         // document.body.classList.remove('modal-open');
         // document.body.style.removeProperty('overflow');
         // document.body.style.removeProperty('padding-right');
-        refetch();
+        // refetch();
     };
 
     // Clear fields related to a specific question
@@ -1061,7 +1059,7 @@ function EmployeeInterestedInformationDialog({
                             <button
                                 type="button"
                                 class="btn btn-primary w-50 m-0"
-                                // data-bs-dismiss="modal"
+                                data-bs-dismiss="modal"
                                 style={{ border: "none", borderRadius: "0px" }} onClick={handleSubmitInformation} disabled={forView}>Submit</button>
                         </div>
                     </div>

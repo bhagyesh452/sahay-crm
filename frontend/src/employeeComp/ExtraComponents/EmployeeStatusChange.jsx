@@ -32,8 +32,11 @@ const EmployeeStatusChange = ({
   isBdmStatusChange,
   bdmStatus,
   setOpenBacdrop,
-  previousStatus
+  previousStatus,
+  activeFilterFields
 }) => {
+
+  // console.log("activeFilterFields" , activeFilterFields)
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -171,7 +174,7 @@ const EmployeeStatusChange = ({
           confirmButtonText: 'OK'
         });
         // Assuming `fetchNewData` is a function to fetch updated employee data
-        refetch();
+        // refetch();
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);

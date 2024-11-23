@@ -50,7 +50,7 @@ function EmployeeUnderDocsLeads({
     //handleFilter,
     completeUnderDocsData,
     dataToFilter,
-    setunderDocsData,
+    setUnderDocsData,
     setFilteredData,
     activeFilterField,
     setActiveFilterField,
@@ -102,7 +102,7 @@ function EmployeeUnderDocsLeads({
     const handleFilter = (newData) => {
 
         setFilteredData(newData)
-        setunderDocsData(newData);
+        setUnderDocsData(newData);
         setUnderDocsDataCount(newData.length);
     };
 

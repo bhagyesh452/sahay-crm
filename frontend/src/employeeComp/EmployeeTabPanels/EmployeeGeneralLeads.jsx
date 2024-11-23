@@ -588,6 +588,7 @@ function EmployeeGeneralLeads({
                                                             ename={company.ename}
                                                             bdmAcceptStatus={company.bdmAcceptStatus}
                                                             setOpenBacdrop={setOpenBacdrop}
+                                                            activeFilterFields={activeFilterFields}
                                                         />
                                                     )}
                                                 </td>

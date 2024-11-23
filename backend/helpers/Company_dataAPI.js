@@ -332,7 +332,9 @@ router.post("/update-status/:id", async (req, res) => {
 
     // Execute all async operations concurrently
     await Promise.all(promises);
-    console.log("company", company)
+
+    // Fetch the updated company document
+    const updatedCompany = await CompanyModel.findById(id).lean();
     // Emit the socket message only if the flag is set
     if (shouldEmitSocket) {
       socketIO.emit("bdm-moved-to-notinterested", {
@@ -344,7 +346,15 @@ router.post("/update-status/:id", async (req, res) => {
         time,
       });
     }
-
+    socketIO.emit("employee_lead_status_successfull_update", {
+      message: `Status updated to "Not Interested" for company: ${company["Company Name"]}`,
+      updatedDocument: updatedCompany,
+      companyName: company["Company Name"],
+      ename: company.ename,
+      newStatus,
+      date,
+      time,
+    })
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
     console.error("Error updating status:", error);
@@ -2229,16 +2239,8 @@ router.get("/employees-new/:ename", async (req, res) => {
         }),
       CompanyModel.find({
         ...baseQuery,
-        $or: [
-          {
-            Status: { $in: ["Matured", "Busy", "Not Picked Up"] },
-            bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] },
-          },
-          {
-            Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
-            bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
-          },
-        ],
+        Status: { $in: ["Not Interested", "Junk"] },
+        bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] },
         _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
       })
         .sort({ lastActionDate: -1 })
@@ -2262,13 +2264,14 @@ router.get("/employees-new/:ename", async (req, res) => {
         },
         {
           ...baseQuery,
-          bdmAcceptStatus: { $in: 
-            ["NotForwarded", "Pending", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined] 
+          bdmAcceptStatus: {
+            $in:
+              ["NotForwarded", "Pending", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined]
           },
           Status: { $in: ["Matured"] },
         },
       ],
-      
+
     })
       .sort({ lastActionDate: -1 })
       .skip(skip)
@@ -2278,7 +2281,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     const allCompanyIds = [
       ...maturedData.map(item => item._id),
     ];
-    console.log()
+
 
     const redesignedData = await RedesignedLeadformModel.find({ company: { $in: allCompanyIds } })
       .select("company bookingDate bookingPublishDate")
@@ -2301,8 +2304,8 @@ router.get("/employees-new/:ename", async (req, res) => {
     }));
 
     // Debug output
-console.log("Matured Data:", maturedData); // Should match the actual count (6 in this case)
-console.log("Updated Matured Data:", updatedMaturedData);
+    // console.log("Matured Data:", maturedData); // Should match the actual count (6 in this case)
+    // console.log("Updated Matured Data:", updatedMaturedData);
 
     const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData, ...forwardedData];
     // Count documents for each category, excluding already classified IDs
@@ -3136,7 +3139,7 @@ router.get("/bdmMaturedCases", async (req, res) => {
 router.post('/company/:companyName/interested-info', async (req, res) => {
   const companyName = req.params.companyName; // Extract company name from params
   const { newInterestedInfo, status, id, ename, date, time } = req.body; // Data from the request body
-
+  const socketIO = req.io;
   // console.log("Request Body:", req.body);
 
   try {
@@ -3208,14 +3211,14 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
         }
       }
 
-      console.log("Merged Existing Info with Updated Date Logic:", mergedInfo);
+      // console.log("Merged Existing Info with Updated Date Logic:", mergedInfo);
 
       // Replace the existing entry with the merged one
       existingInfoArray[existingIndex] = mergedInfo;
     } else {
       // If `ename` does not exist, add newInterestedInfo as a new object
       existingInfoArray.push(newInterestedInfo);
-      console.log("Added New Info:", newInterestedInfo);
+      // console.log("Added New Info:", newInterestedInfo);
     }
 
     // Prepare update fields
@@ -3232,7 +3235,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
       updateFields.Status = status;
     }
 
-    console.log("Update Fields to be set:", updateFields);
+    // console.log("Update Fields to be set:", updateFields);
 
     // Update the company document
     const updatedCompany = await CompanyModel.findOneAndUpdate(
@@ -3243,7 +3246,7 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
       { new: true, upsert: true } // Return updated document or create if not exists
     );
 
-    console.log("Updated Company Data:", updatedCompany);
+    // console.log("Updated Company Data:", updatedCompany);
 
     if (status === "FollowUp" || status === "Interested") {
       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
@@ -3269,6 +3272,10 @@ router.post('/company/:companyName/interested-info', async (req, res) => {
     }
 
     if (updatedCompany) {
+      socketIO.emit("employee_lead_status_successfull_update", {
+        message: `Status updated to "Not Interested" for company: ${updatedCompany["Company Name"]}`,
+        updatedDocument: updatedCompany,
+      })
       res.status(200).json({
         message: 'Interested information added/updated successfully',
         updatedCompany,
