@@ -61,6 +61,7 @@ export default function RedesignedForm({
   employeeEmail,
   setNowToFetch,
   bdmName,
+  isCompanyForwarded,
   handleCloseFormOpen,
   isEmployee
 }) {
@@ -77,10 +78,10 @@ export default function RedesignedForm({
     incoDate: companysInco ? companysInco : "",
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
-    bdmName: bdmName ? bdmName : "",
+    bdmName: !isCompanyForwarded ? employeeName : bdmName ? bdmName : "",
     bdmType: "",
     otherBdmName: "",
-    bdmEmail: "",
+    bdmEmail: !isCompanyForwarded ? employeeEmail : "",
     bookingDate: new Date(),
     bookingSource: "",
     otherBookingSource: "",
@@ -98,6 +99,8 @@ export default function RedesignedForm({
     receivedAmount: 0,
     pendingAmount: 0,
   };
+
+  // console.log("Defalut data is :", defaultLeadData);
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
@@ -189,6 +192,7 @@ export default function RedesignedForm({
         Step5Status,
         ...newLeadData
       } = data;
+      // console.log("newLeadData", newLeadData);
       setLeadData(newLeadData);
       if (Step1Status === true && Step2Status === false) {
         setCompleted({ 0: true });
@@ -405,14 +409,15 @@ export default function RedesignedForm({
       setLeadData({
         ...leadData,
         bdeEmail: foundUser ? foundUser.email : "",
-        bdmEmail: foundBDM ? foundBDM.email : "",
-        bdmName: bdmName && bdmName
+        bdmEmail: !isCompanyForwarded ? employeeEmail : foundBDM ? foundBDM.email : "",
+        bdmName: !isCompanyForwarded ? employeeName : bdmName ? bdmName : "",
         // Check if foundUser exists before accessing email
       });
-      setFetchBDE(false)
+      setFetchBDE(false);
     }
   }, [fetchBDE])
 
+  // console.log("currentLeadData", leadData);
 
 
   //  ----------------------------------------------------------- Celebration buttons hadi ----------------------------------------------------------------
@@ -563,9 +568,9 @@ export default function RedesignedForm({
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
       // setDataStatus("Matured");
-      if(isEmployee){
+      if (isEmployee) {
         handleCloseFormOpen()
-      }else{
+      } else {
         setFormOpen(false);
       }
     }
@@ -662,11 +667,10 @@ export default function RedesignedForm({
         }
       }
       if (activeStep === 1) {
-
         if (
           !leadData.bdeName ||
+          !leadData.bdeEmail ||
           !leadData.bdmName ||
-          !leadData.bdmEmail ||
           !leadData.bdmEmail ||
           !leadData.bdmType ||
           !leadData.bookingDate ||
@@ -994,8 +998,8 @@ export default function RedesignedForm({
             services: servicestoSend
           };
           console.log("tempLeadData-final going data", tempLeadData);
-          
-          const response = await axios.post(`${secretKey}/bookings/redesigned-final-leadData/${companysName}`,tempLeadData);
+
+          const response = await axios.post(`${secretKey}/bookings/redesigned-final-leadData/${companysName}`, tempLeadData);
           const response2 = await axios.post(`${secretKey}/bookings/redesigned-leadData/${companysName}/step5`);
           const response3 = await axios.put(`${secretKey}/bookings/update-matured-case-in-projection-for-first-booking/${companysName}`);
           Swal.fire({
@@ -1019,10 +1023,10 @@ export default function RedesignedForm({
         handleClick()
         const newaudio = new Audio(Dhanyavad);
         newaudio.play()
-        if(isEmployee){
+        if (isEmployee) {
           handleCloseFormOpen();
           setNowToFetch();
-        }else{
+        } else {
           setFormOpen(false);
           setDataStatus("Matured");
         }
@@ -2711,9 +2715,7 @@ export default function RedesignedForm({
                                             "bdmName"
                                           );
                                         }}
-                                        disabled={
-                                          completed[activeStep] === true
-                                        }
+                                        disabled={completed[activeStep] === true || !isCompanyForwarded}
                                       >
                                         <option value="" disabled selected>
                                           Please select BDM Name
