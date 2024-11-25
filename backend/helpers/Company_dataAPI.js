@@ -2506,6 +2506,52 @@ router.get("/employees-new/:ename", async (req, res) => {
         ]
       };
     }
+    // Define maturedData logic separately to avoid overlaps
+    const maturedQuery = {
+      $and: [
+        {
+          $or: [
+            {
+              maturedBdmName: employeeName,
+              $expr: { $ne: ["$ename", "$maturedBdmName"] }, // Ensure maturedBdmName is distinct
+            },
+            {
+              ename: employeeName,
+              Status: "Matured",
+              bdmAcceptStatus: {
+                $in: [
+                  "NotForwarded",
+                  "Pending",
+                  "Accept",
+                  "MaturedPending",
+                  "MaturedAccepted",
+                  "MaturedDone",
+                  undefined,
+                ],
+              },
+            },
+          ],
+        },
+        // Exclude search-specific matches to prevent overlap
+        search !== ""
+          ? {
+              $or: [
+                { "Company Name": { $regex: new RegExp(escapeRegex(search), "i") } },
+                { "Company Email": { $regex: new RegExp(escapeRegex(search), "i") } },
+                {
+                  $expr: {
+                    $regexMatch: {
+                      input: { $toString: "$Company Number" },
+                      regex: `^${escapeRegex(search)}`,
+                      options: "i",
+                    },
+                  },
+                },
+              ],
+            }
+          : {},
+      ],
+    };
 
     // Fetch data for each status category
     const [generalData, busyData, underdocsData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
@@ -2569,39 +2615,7 @@ router.get("/employees-new/:ename", async (req, res) => {
         .limit(limit),
 
        CompanyModel.find({
-          $or: [
-            // // Match maturedBdmName regardless of Status
-            // {
-            //   $and: [
-            //     { maturedBdmName: employeeName },
-            //     { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
-            //   ],
-            // },
-            // Default conditions for matured data
-            {
-              ...baseQuery,
-              bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined] },
-              Status: { $in: ["Matured"] }
-            }
-          ],
-          // Apply search condition only if it exists
-          // ...(search
-          //   ? {
-          //       $or: [
-          //         { 'Company Name': { $regex: new RegExp(escapeRegex(search), 'i') } },
-          //         { 'Company Email': { $regex: new RegExp(escapeRegex(search), 'i') } },
-          //         {
-          //           $expr: {
-          //             $regexMatch: {
-          //               input: { $toString: "$Company Number" }, // Convert Company Number to string
-          //               regex: `^${escapeRegex(search)}`,
-          //               options: "i"
-          //             }
-          //           }
-          //         }
-          //       ]
-          //     }
-          //   : {})
+        ...maturedQuery,
         })
           .sort({ lastActionDate: -1 })
           .skip(skip)
@@ -2656,49 +2670,7 @@ router.get("/employees-new/:ename", async (req, res) => {
         Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
       }),
       CompanyModel.countDocuments({
-        $or: [
-          // Match maturedBdmName regardless of Status
-          // {
-          //   $and: [
-          //     { maturedBdmName: employeeName },
-          //     { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
-          //   ],
-          // },
-          // Default conditions for matured data
-          {
-            ...baseQuery,
-            bdmAcceptStatus: {
-              $in: [
-                "NotForwarded",
-                "Pending",
-                "Accept",
-                "MaturedPending",
-                "MaturedAccepted",
-                "MaturedDone",
-                undefined,
-              ],
-            },
-            Status: { $in: ["Matured"] },
-          },
-        ],
-        // Apply search condition only if it exists
-        // ...(search
-        //   ? {
-        //       $or: [
-        //         { 'Company Name': { $regex: new RegExp(escapeRegex(search), "i") } },
-        //         { 'Company Email': { $regex: new RegExp(escapeRegex(search), "i") } },
-        //         {
-        //           $expr: {
-        //             $regexMatch: {
-        //               input: { $toString: "$Company Number" }, // Convert Company Number to string
-        //               regex: `^${escapeRegex(search)}`,
-        //               options: "i",
-        //             },
-        //           },
-        //         },
-        //       ],
-        //     }
-        //   : {}),
+        ...maturedQuery,
       }),
       CompanyModel.countDocuments({
         ...baseQuery,

@@ -615,7 +615,7 @@ function EmployeeMaturedLeads({
 
                             ) : (
                                 <tbody>
-                                    {Array.isArray(maturedLeads) && maturedLeads.length > 0 ? (maturedLeads?.map((company, index) => (
+                                    {Array.isArray(maturedLeads) && maturedLeads.length > 0 && (maturedLeads?.map((company, index) => (
                                         <tr key={company._id}
                                             style={{ border: "1px solid #ddd" }}
                                             onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
@@ -881,17 +881,11 @@ function EmployeeMaturedLeads({
                                                 }
 
                                             </td>
-                                        </tr>)))
-                                        :(
-                                            <tr>
-                                                <td colSpan="14" className="p-2 particular">
-                                                    <Nodata />
-                                                </td>
-                                            </tr>
-                                        )
+                                        </tr>))
+                                       
                                     
                                 
-                                }
+                                )}
                                 </tbody>
                             )}
                             {maturedLeads && maturedLeads.length === 0 && !isLoading && (
