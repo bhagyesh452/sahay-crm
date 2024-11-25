@@ -362,7 +362,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     targetDetails: targetObjects,
                     // bdmWork,
                 };
-                if (newDesignation === "Floor Manager" || newDesignation === "Business Development Manager") {
+                if (newDesignation === "Floor Manager" || newDesignation === "Business Development Manager" || newDesignation === "Business Development Executive") {
                     dataToSend.bdmWork = true;
 
                 } else {
@@ -545,7 +545,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     salary: row["Salary"],
                     gender: row["Gender"],
                     targetDetails: [], // You can add default target details here if needed
-                    bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager",
+                    bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager" || row["Designation"] === "Business Development Executive" ? true : false,
                 };
             });
             console.log("employeesDATA", employeesData)

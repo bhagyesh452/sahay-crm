@@ -3163,30 +3163,6 @@ router.post("/postData", async (req, res) => {
   res.json({ message: "Data posted successfully" });
 });
 
-router.put("/newcompanyname/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { ename } = req.body;
-    // Validate if 'ename' is provided
-    if (!ename) {
-      return res.status(400).json({ error: "Ename is required for update" });
-    }
-    // Find and update the company data
-    const updatedData = await CompanyModel.findByIdAndUpdate(
-      id,
-      { ename: ename },
-      { new: true }
-    );
-    // Check if data was found and updated
-    if (!updatedData) {
-      return res.status(404).json({ error: "Company data not found" });
-    }
-    res.json({ message: "Company data updated successfully", updatedData });
-  } catch (error) {
-    console.error("Error updating company data:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 router.get("/card-leads", async (req, res) => {
   try {
@@ -3678,9 +3654,10 @@ router.get("/bdmMaturedCases", async (req, res) => {
   try {
     // Step 1: Fetch employees who are BDM or Floor Managers
     const employees = await adminModel.find({
-      newDesignation: { $in: ["Business Development Manager", "Floor Manager"] }
-    }).select("ename number"); // Select both ename and number fields
-
+      newDesignation: { $in: ["Business Development Manager", "Floor Manager", "Business Development Executive"] },
+      bdmWork: true // Add this condition to filter only documents where bdmWork is true
+    }).select("ename number bdmWork"); // Select ename, number, and bdmWork fields
+    
     const employeeData = employees.map(emp => ({
       name: emp.ename,
       bdmNumber: emp.number

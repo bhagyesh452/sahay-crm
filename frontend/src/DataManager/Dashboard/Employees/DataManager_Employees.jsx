@@ -395,7 +395,7 @@ function Employees({ onEyeButtonClick, searchValue }) {
             // Update companyData in the second database
             await Promise.all(
               companyData.map(async (item) => {
-                await axios.put(`${secretKey}/company-data/newcompanyname/${item._id}`, {
+                await axios.put(`${secretKey}/employee/newcompanyname/${item._id}`, {
                   ename,
                 });
                 console.log(`Updated ename for ${item._id}`);

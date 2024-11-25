@@ -397,6 +397,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     setCompanyData(cdata.filter((item) => item.ename === echangename));
     // Find the selected data object
     const selectedData = employeeData.find((item) => item._id === id);
+    console.log("selectedData" , selectedData)
     setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
     setTargetCount(selectedData.targetDetails.length !== 0 ? selectedData.targetDetails.length : 1);
     setTargetObjects(
@@ -681,7 +682,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
               // Update companyData in the second database
               await Promise.all(
                 companyData.map(async (item) => {
-                  await axios.put(`${secretKey}/company-data/newcompanyname/${item._id}`, {
+                  await axios.put(`${secretKey}/employee/newcompanyname/${item._id}`, {
                     ename,
                   });
                   //console.log(`Updated ename for ${item._id}`);

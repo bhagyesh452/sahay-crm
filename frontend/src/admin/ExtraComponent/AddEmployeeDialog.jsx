@@ -342,13 +342,13 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                 //   dataToSend.designation = designation;
                 // }
 
-                if (newDesignation === "Floor Manager" || newDesignation === "Business Development Manager") {
-                    dataToSend.bdmWork = true;
-                    dataToSendUpdated.bdmWork = true;
-                } else {
-                    dataToSend.bdmWork = false;
-                    dataToSendUpdated.bdmWork = false;
-                }
+                // if (newDesignation === "Floor Manager" || newDesignation === "Business Development Manager") {
+                //     dataToSend.bdmWork = true;
+                //     dataToSendUpdated.bdmWork = true;
+                // } else {
+                //     dataToSend.bdmWork = false;
+                //     dataToSendUpdated.bdmWork = false;
+                // }
                 // console.log(isUpdateMode, "updateMode")
 
                 if (isUpdateMode) {
@@ -364,7 +364,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                     // console.log("dataTosendupdated", dataToSendUpdated)
                     closeForEdit();
 
-                    // console.log("Updated employee is :", dataToSendUpdated);
+                    console.log("Updated employee is :", dataToSendUpdated);
 
                     Swal.fire({
                         title: "Data Updated Succesfully!",
@@ -380,7 +380,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                             // Update companyData in the second database
                             await Promise.all(
                                 companyData.map(async (item) => {
-                                    await axios.put(`${secretKey}/company-data/newcompanyname/${item._id}`, {
+                                    await axios.put(`${secretKey}/employee/newcompanyname/${item._id}`, {
                                         ename,
                                     });
                                     //console.log(`Updated ename for ${item._id}`);
