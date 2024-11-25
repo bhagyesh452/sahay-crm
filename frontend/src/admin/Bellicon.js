@@ -46,7 +46,7 @@ export default function Bellicon({ data, gdata, adata, isAdmin }) {
       //   await axios.put(`http://localhost:3001/api/requestData/${id}`, {
       //     read: true,
       //   });
-      window.location.replace("/managing-director/notification");
+      window.location.replace("/md/notification");
       // Assuming that you have a 'read' property in your MongoDB model
       // Adjust the URL and data structure based on your actual backend implementation
       // }
@@ -63,7 +63,7 @@ export default function Bellicon({ data, gdata, adata, isAdmin }) {
       //   await axios.put(`http://localhost:3001/api/requestgData/${id}`, {
       //     read: true,
       //   });
-      window.location.replace("/managing-director/notification");
+      window.location.replace("/md/notification");
       // Assuming that you have a 'read' property in your MongoDB model
       // Adjust the URL and data structure based on your actual backend implementation
 

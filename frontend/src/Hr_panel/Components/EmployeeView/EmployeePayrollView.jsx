@@ -34,7 +34,7 @@ function EmployeeViewPayrollView({ editField, setEditField, employeeUserId }) {
         try {
             let response;
             if (path === `/hr-employee-profile-details/${userId}` ||
-                path === `/managing-director/employeeProfileView/${userId}` ||
+                path === `/md/employeeProfileView/${userId}` ||
                 path === `/employee-profile-details/${userId}`
             ) {
                 response = await axios.get(`${secretKey}/employee/einfo`);

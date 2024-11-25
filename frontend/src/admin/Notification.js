@@ -34,7 +34,7 @@ const navigate = useNavigate();
   
       localStorage.removeItem("token");
       // Redirect to the login page or any other desired route
-      navigate("/managing-director/login");
+      navigate("/md/login");
    
   };
   return (

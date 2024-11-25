@@ -21,6 +21,7 @@ import { FaEye } from "react-icons/fa";
 import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInterestedInformationDialog';
 import { TiArrowForward } from "react-icons/ti";
 import BdmMaturedCasesDialogBox from '../BdmMaturedCasesDialogBox';
+import axios from "axios"
 
 function EmployeeMaturedLeads({
     maturedLeads,
@@ -53,7 +54,7 @@ function EmployeeMaturedLeads({
     filteredData,
     filterMethod,
     completeGeneralData,
-    dataToFilter,
+    // dataToFilter,
     setMaturedData,
     setMaturedDataCount,
     setFilteredData,
@@ -61,6 +62,7 @@ function EmployeeMaturedLeads({
     setActiveFilterField,
     activeFilterFields,
     setActiveFilterFields,
+    cleanString,
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -112,6 +114,7 @@ function EmployeeMaturedLeads({
     const [isScrollLocked, setIsScrollLocked] = useState(false)
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [dataToFilter, setDataToFilter] = useState([]);
     //const [filteredData, setFilteredData] = useState([]);
 
     const handleFilter = (newData) => {
@@ -120,7 +123,29 @@ function EmployeeMaturedLeads({
         setMaturedDataCount(newData.length);
     };
 
-    const handleFilterClick = (field) => {
+    const handleFilterClick = async(field) => {
+        if (filteredData.length === 0) {
+            try {
+                const response = await axios.get(
+                    `${secretKey}/company-data/employees-matured/${cleanString(ename)}`, // Backend API endpoint
+                    {
+                        params: {
+                            limit: 500, // Adjust the limit as required
+                            // search: searchQuery, // Pass the search query if applicable
+                        },
+                    }
+                );
+
+                const { maturedData } = response.data;
+                console.log("interestedData", maturedData)
+                // setDataToFilter(maturedData);
+                setDataToFilter(maturedData); // Update data based on the response
+            } catch (error) {
+                console.error("Error fetching Interested data:", error);
+                // Handle error appropriately
+            }
+
+        }
         if (activeFilterField === field) {
             setShowFilterMenu(!showFilterMenu);
             setIsScrollLocked(!showFilterMenu);
@@ -158,6 +183,8 @@ function EmployeeMaturedLeads({
     const handleCloseBdmPopup = () => {
         setShowForwardToBdmPopup(false);
     };
+
+    console.log("maturedLeads", maturedLeads)
 
 
     return (
@@ -588,7 +615,7 @@ function EmployeeMaturedLeads({
 
                             ) : (
                                 <tbody>
-                                    {maturedLeads && maturedLeads.map((company, index) => (
+                                    {Array.isArray(maturedLeads) && maturedLeads.length > 0 ? (maturedLeads?.map((company, index) => (
                                         <tr key={company._id}
                                             style={{ border: "1px solid #ddd" }}
                                             onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
@@ -659,11 +686,11 @@ function EmployeeMaturedLeads({
                                             <td >
                                                 <div className="d-flex align-items-center justify-content-between">
                                                     <div className="dfault_approved-status">
-                                                        {company.Status === "Matured" ? "Matured" : "Matured"}
+                                                        {company?.Status === "Matured" ? "Matured" : "Matured"}
                                                     </div>
                                                     <div
                                                         className={
-                                                            (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                                            (company?.interestedInformation === null || company?.interestedInformation.length === 0)
                                                                 ? (company.Status === "Matured"
                                                                     ? "matured-history-btn disabled"
                                                                     : "matured-history-btn disabled")
@@ -854,8 +881,17 @@ function EmployeeMaturedLeads({
                                                 }
 
                                             </td>
-                                        </tr>
-                                    ))}
+                                        </tr>)))
+                                        :(
+                                            <tr>
+                                                <td colSpan="14" className="p-2 particular">
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        )
+                                    
+                                
+                                }
                                 </tbody>
                             )}
                             {maturedLeads && maturedLeads.length === 0 && !isLoading && (

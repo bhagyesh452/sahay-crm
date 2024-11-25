@@ -572,7 +572,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
             if (currentIndex === 0) {
                 // If it's the first page, navigate to the employees page
                 if (designation === "admin") {
-                    navigate(`/managing-director/user`);
+                    navigate(`/md/user`);
                 } else {
                     navigate(`dataanalyst/newEmployees`);
                 }
@@ -582,7 +582,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
                 // Get the previousId from the salesExecutivesIds array
                 const prevId = salesExecutivesIds[prevIndex];
                 if (designation === "admin") {
-                    navigate(`/managing-director/employees/${prevId}`);
+                    navigate(`/md/employees/${prevId}`);
                 } else {
                     navigate(`/dataanalyst/employeeLeads/${prevId}`);
 
@@ -612,7 +612,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
             // Get the nextId from the salesExecutivesIds array
             const nextId = salesExecutivesIds[nextIndex];
             if (designation === "admin") {
-                navigate(`/managing-director/employees/${nextId}`);
+                navigate(`/md/employees/${nextId}`);
             } else {
                 navigate(`/dataanalyst/employeeLeads/${nextId}`);
             }
@@ -757,13 +757,13 @@ useEffect(() => {
                                                             <button type="button"
                                                                 onClick={() => {
                                                                     if (designation === "admin") {
-                                                                        navigate(`/managing-director/employees/${userId}`);
+                                                                        navigate(`/md/employees/${userId}`);
                                                                     } else if (designation === "datamanager") {
                                                                         navigate(`/dataanalyst/employeeLeads/${userId}`);
                                                                     }
                                                                 }}
                                                                 className={
-                                                                    ((designation === "admin" && window.location.pathname === `/managing-director/employees/${userId}`) ||
+                                                                    ((designation === "admin" && window.location.pathname === `/md/employees/${userId}`) ||
                                                                         (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeLeads/${userId}`)) &&
                                                                         data.bdmWork ? "btn mybtn active" : "btn mybtn"
                                                                 }
@@ -776,14 +776,14 @@ useEffect(() => {
                                                                 <button
                                                                     type="button"
                                                                     className={
-                                                                        (designation === "admin" && window.location.pathname === `/managing-director/employeeleads/${userId}`) ||
+                                                                        (designation === "admin" && window.location.pathname === `/md/employeeleads/${userId}`) ||
                                                                             (designation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${userId}`)
                                                                             ? "btn mybtn active"
                                                                             : "btn mybtn"
                                                                     }
                                                                     onClick={() => {
                                                                         if (designation === "admin") {
-                                                                            navigate(`/managing-director/employeeleads/${userId}`);
+                                                                            navigate(`/md/employeeleads/${userId}`);
                                                                         } else if (designation === "datamanager") {
                                                                             navigate(`/dataanalyst/employeeteamleads/${userId}`);
                                                                         }
@@ -827,7 +827,7 @@ useEffect(() => {
 
                                                     <div className="btn-group mr-1" role="group" aria-label="Basic example">
                                                         <Link style={{ marginLeft: "10px" }}
-                                                            to={designation === "admin" ? `/managing-director/user` : `/dataanalyst/newEmployees`}>
+                                                            to={designation === "admin" ? `/md/user` : `/dataanalyst/newEmployees`}>
                                                             <button type="button" className="btn mybtn">
                                                                 <IoIosArrowDropleft className='mr-1' /> Back
                                                             </button>

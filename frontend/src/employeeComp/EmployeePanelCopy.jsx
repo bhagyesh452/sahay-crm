@@ -279,6 +279,22 @@ function EmployeePanelCopy({ fordesignation }) {
                 updateDocumentInState(res.updatedDocument);
             }
         });
+
+        socket.on("employee__nextfollowupdate_successfull_update", (res) => {
+            console.log("socket response:", res);
+            if (res.updatedDocument) {
+                console.log("Updating document in state:", res.updatedDocument);
+                updateDocumentInState(res.updatedDocument);
+            }
+        });
+
+        socket.on("employee__remarks_successfull_update", (res) => {
+            console.log("socket response:", res);
+            if (res.updatedDocument) {
+                console.log("Updating document in state:", res.updatedDocument);
+                updateDocumentInState(res.updatedDocument);
+            }
+        });
     
         return () => {
             socket.disconnect();
@@ -485,7 +501,7 @@ function EmployeePanelCopy({ fordesignation }) {
         }
     );
 
-    // console.log("queryData", queryData)
+    console.log("queryData", queryData?.maturedData)
     // console.log("generalData", generalData)
 
     useEffect(() => {
@@ -510,7 +526,13 @@ function EmployeePanelCopy({ fordesignation }) {
             setCompleteInterestedData(queryData?.interestedData);
             setDataToFilterInterested(queryData?.interestedData);
 
-            setMaturedData(queryData?.maturedData);
+            setMaturedData(
+                Array.isArray(queryData?.maturedData)
+                  ? queryData?.maturedData
+                  : queryData?.maturedData
+                  ? [queryData?.maturedData]
+                  : []
+              );
             setMaturedDataCount(queryData?.totalCounts.matured);
             setCompleteMaturedData(queryData?.maturedData);
             setDataToFilterMatured(queryData?.maturedData);
@@ -873,7 +895,7 @@ function EmployeePanelCopy({ fordesignation }) {
             if (currentIndex === 0) {
                 // If it's the first page, navigate to the employees page
                 if (fordesignation === "admin") {
-                    navigate(`/managing-director/user`);
+                    navigate(`/md/user`);
                 } else {
                     navigate(`dataanalyst/newEmployees`);
                 }
@@ -883,7 +905,7 @@ function EmployeePanelCopy({ fordesignation }) {
                 // Get the previousId from the salesExecutivesIds array
                 const prevId = salesExecutivesIds[prevIndex];
                 if (fordesignation === "admin") {
-                    navigate(`/managing-director/employees/${prevId}`);
+                    navigate(`/md/employees/${prevId}`);
                 } else {
                     navigate(`/dataanalyst/employeeLeads/${prevId}`);
 
@@ -915,7 +937,7 @@ function EmployeePanelCopy({ fordesignation }) {
             // Get the nextId from the salesExecutivesIds array
             const nextId = salesExecutivesIds[nextIndex];
             if (fordesignation === "admin") {
-                navigate(`/managing-director/employees/${nextId}`);
+                navigate(`/md/employees/${nextId}`);
             } else {
                 navigate(`/dataanalyst/employeeLeads/${nextId}`);
 
@@ -977,14 +999,14 @@ function EmployeePanelCopy({ fordesignation }) {
                                                         <button
                                                             onClick={() => {
                                                                 if (fordesignation === "admin") {
-                                                                    navigate(`/managing-director/employees/${id}`);
+                                                                    navigate(`/md/employees/${id}`);
                                                                 } else if (fordesignation === "datamanager") {
                                                                     navigate(`/dataanalyst/employeeLeads/${id}`);
                                                                 }
                                                             }}
                                                             type="button"
                                                             className={
-                                                                ((fordesignation === "admin" && window.location.pathname === `/managing-director/employees/${id}`) ||
+                                                                ((fordesignation === "admin" && window.location.pathname === `/md/employees/${id}`) ||
                                                                     (fordesignation === "datamanager" && window.location.pathname === `/dataanalyst/employeeLeads/${id}`)) &&
                                                                     data.bdmWork
                                                                     ? "btn mybtn active"
@@ -1000,14 +1022,14 @@ function EmployeePanelCopy({ fordesignation }) {
                                                             <button
                                                                 type="button"
                                                                 className={
-                                                                    (fordesignation === "admin" && window.location.pathname === `/managing-director/employeeleads/${id}`) ||
+                                                                    (fordesignation === "admin" && window.location.pathname === `/md/employeeleads/${id}`) ||
                                                                         (fordesignation === "datamanager" && window.location.pathname === `/dataanalyst/employeeteamleads/${id}`)
                                                                         ? "btn mybtn active"
                                                                         : "btn mybtn"
                                                                 }
                                                                 onClick={() => {
                                                                     if (fordesignation === "admin") {
-                                                                        navigate(`/managing-director/employeeleads/${id}`);
+                                                                        navigate(`/md/employeeleads/${id}`);
                                                                     } else if (fordesignation === "datamanager") {
                                                                         navigate(`/dataanalyst/employeeteamleads/${id}`);
                                                                     }
@@ -1067,7 +1089,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 <div className="btn-group mr-1" role="group" aria-label="Basic example">
                                                     <Link
 
-                                                        to={fordesignation === "admin" ? `/managing-director/user` : `/dataanalyst/newEmployees`}
+                                                        to={fordesignation === "admin" ? `/md/user` : `/dataanalyst/newEmployees`}
                                                         style={{ marginLeft: "10px" }}
                                                     >
                                                         <button type="button" className="btn mybtn"
@@ -1316,6 +1338,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 bdenumber={data.number}
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
+                                                cleanString={cleanString}
                                             />
                                         )}
                                     </div>
@@ -1359,6 +1382,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 bdenumber={data.number}
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
+                                                cleanString={cleanString}
                                             />
                                         )}
                                     </div>
@@ -1405,6 +1429,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 bdenumber={data.number}
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
+                                                cleanString={cleanString}
                                             />
                                         )}
                                     </div>
@@ -1413,7 +1438,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                         {activeTabId === "Matured" && (
                                             <EmployeeMaturedLeads
                                                 userId={userId}
-                                                maturedLeads={maturedData}
+                                                maturedLeads={maturedData || []}
                                                 dataToFilter={dataToFilterMatured}
                                                 completeGeneralData={completeMaturedData}
                                                 setMaturedData={setMaturedData}
@@ -1451,6 +1476,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 bdenumber={data.number}
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
+                                                cleanString={cleanString}
                                             />
                                         )}
                                     </div>
@@ -1495,6 +1521,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 bdenumber={data.number}
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
+                                                cleanString={cleanString}
                                             //filteredData={filteredData}
                                             //filterMethod={handleFilter}
                                             //setFilteredData={setFilteredData}
@@ -1542,6 +1569,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 bdenumber={data.number}
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
+                                                cleanString={cleanString}
                                             />
                                         )}
                                     </div>
@@ -1586,6 +1614,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 bdenumber={data.number}
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
+                                                cleanString={cleanString}
                                             />
                                         )}
                                     </div>

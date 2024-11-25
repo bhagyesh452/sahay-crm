@@ -24,7 +24,7 @@ const EmployeeNextFollowDate = ({
             const resposne = await axios.post(`${secretKey}/company-data/post-bdenextfollowupdate/${id}`, data)
 
             //console.log(resposne.data)
-           refetch();
+        //    refetch();
 
         } catch (error) {
             console.log("Error submitting Date", error)

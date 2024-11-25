@@ -5,8 +5,8 @@ function RouteManager() {
   const location = useLocation();
 
   const routeTitles = {
-   '/managing-director/login':"Admin-Login",
-    '/managing-director/dashboard': 'Admin Dashboard',
+   '/md/login':"Admin-Login",
+    '/md/dashboard': 'Admin Dashboard',
     '/hr/login': 'HR Login',
     // ... and so on for all routes
   };

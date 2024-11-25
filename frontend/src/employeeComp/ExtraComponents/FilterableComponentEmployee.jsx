@@ -36,7 +36,7 @@ const FilterableComponentEmployee = ({
     //     applyFilters(selectedFilters, filterField);
     // }, [sortOrder]);
 
-
+console.log("dataToFilter" , dataForFilter)
 
 
     useEffect(() => {

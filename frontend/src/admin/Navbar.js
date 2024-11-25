@@ -25,12 +25,12 @@ function Navbar() {
               <ul className="navbar-nav">
                 <li
                   className={
-                    location.pathname === "/managing-director/dashboard" ? "nav-item active" : "nav-item"
+                    location.pathname === "/md/dashboard" ? "nav-item active" : "nav-item"
                   }
                 >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/managing-director/dashboard"
+                    to="/md/dashboard"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -59,13 +59,13 @@ function Navbar() {
                 </li>
                 <li
                   className={
-                    location.pathname.startsWith("/managing-director/user")
+                    location.pathname.startsWith("/md/user")
                       ? "nav-item active"
                       : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/managing-director/user"
+                    to="/md/user"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -78,14 +78,14 @@ function Navbar() {
                 </li>
                 {(adminName === "Krunal Pithadia" || adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <li
                   className={
-                    location.pathname === "/managing-director/leads"
+                    location.pathname === "/md/leads"
                       ? "nav-item active"
                       : "nav-item"
                   }
                 >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/managing-director/leads"
+                    to="/md/leads"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -97,14 +97,14 @@ function Navbar() {
                 </li>}
                 <li
                   className={
-                    location.pathname === "/managing-director/bookings"
+                    location.pathname === "/md/bookings"
                       ? "nav-item active"
                       : "nav-item"
                   }
                 >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/managing-director/bookings"
+                    to="/md/bookings"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -116,14 +116,14 @@ function Navbar() {
                 </li>
                 <li
                   className={
-                    location.pathname === "/managing-director/servicesandschemes"
+                    location.pathname === "/md/servicesandschemes"
                       ? "nav-item active"
                       : "nav-item"
                   }
                 >
                   {/* <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/managing-director/servicesandschemes"
+                    to="/md/servicesandschemes"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">

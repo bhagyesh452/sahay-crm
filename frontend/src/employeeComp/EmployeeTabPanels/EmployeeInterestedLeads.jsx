@@ -27,6 +27,7 @@ import { FaFilter } from "react-icons/fa";
 import { TiArrowForward } from "react-icons/ti";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import axios from 'axios';
 
 function EmployeeInterestedLeads({
   interestedData,
@@ -60,7 +61,7 @@ function EmployeeInterestedLeads({
   filteredData,
   filterMethod,
   completeGeneralData,
-  dataToFilter,
+  // dataToFilter,
   setInterestedData,
   setInterestedDataCount,
   setFilteredData,
@@ -68,6 +69,7 @@ function EmployeeInterestedLeads({
   setActiveFilterField,
   activeFilterFields,
   setActiveFilterFields,
+  cleanString
 }) {
   const [companyId, setCompanyId] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -125,6 +127,7 @@ function EmployeeInterestedLeads({
   const [isScrollLocked, setIsScrollLocked] = useState(false)
   const fieldRefs = useRef({});
   const filterMenuRef = useRef(null); // Ref for the filter menu container
+  const[dataToFilter , setDataToFilter] = useState([]);
   //const [filteredData, setFilteredData] = useState([]);
 
   const handleFilter = (newData) => {
@@ -133,7 +136,32 @@ function EmployeeInterestedLeads({
     setInterestedDataCount(newData.length);
   };
 
-  const handleFilterClick = (field) => {
+  console.log("filteredData" , filteredData)
+
+  const handleFilterClick = async (field) => {
+    if (filteredData.length === 0) {
+      try {
+        const response = await axios.get(
+          `${secretKey}/company-data/employees-interested/${cleanString(ename)}`, // Backend API endpoint
+          {
+            params: {
+              limit: 500, // Adjust the limit as required
+              // search: searchQuery, // Pass the search query if applicable
+            },
+          }
+        );
+
+        const { interestedData } = response.data;
+        console.log("interestedData", interestedData)
+        // setDataToFilter(interestedData);
+        setDataToFilter(interestedData); // Update data based on the response
+      } catch (error) {
+        console.error("Error fetching Interested data:", error);
+        // Handle error appropriately
+      }
+     
+    }
+  
     if (activeFilterField === field) {
       setShowFilterMenu(!showFilterMenu);
       setIsScrollLocked(!showFilterMenu);
@@ -141,11 +169,12 @@ function EmployeeInterestedLeads({
       setActiveFilterField(field);
       setShowFilterMenu(true);
       setIsScrollLocked(true);
-
+  
       const rect = fieldRefs.current[field].getBoundingClientRect();
       setFilterPosition({ top: rect.bottom, left: rect.left });
     }
   };
+  
   const isActiveField = (field) => activeFilterFields.includes(field);
 
   // console.log("activeFilterFieldsInterested", activeFilterFields);

@@ -283,30 +283,30 @@ function App() {
 
           {/* ---------------------------------------admin  components--------------------------------------- */}
           <Route path="/converted-leads/:userId/" element={newtoken ? <ConveertedLeads /> : <Navigate to="/employeelogin" />}></Route>
-          <Route path="/managing-director/login" element={<LoginAdmin setToken={setToken} />} />
+          <Route path="/md/login" element={<LoginAdmin setToken={setToken} />} />
           {token ? (
             <>
               <Route element={<AdminLayout />} >
-                <Route path="/managing-director/dashboard" element={<Dashboard />} />
-                <Route path="/managing-director/employees" element={<Employees />} />
-                <Route path="/managing-director/user" element={<NewEmployee />} />
-                {/* <Route path="/managing-director/employees/:id" element={<EmployeeParticular />} /> */}
-                <Route path="/managing-director/employees/:id" element={<EmployeePanelCopy fordesignation="admin" />} />
-                {/* <Route path="/managing-director/employeeleads/:id" element={<AdminEmployeeTeamLeads />} /> */}
-                <Route path="/managing-director/employeeleads/:userId" element={<EmployeeTeamLeadsCopy designation="admin" />} />
-                <Route path="/managing-director/employees/:id/login-details" element={<LoginDetails />} />
-                <Route path="/managing-director/leads" element={<TestLeads />} />
-                <Route path="/managing-director/leads/:companyId" element={<CompanyParticular />} />
-                <Route path="/managing-director/bookings" element={<BookingList />} />
-                <Route path="/managing-director/notification" element={<ShowNotification />} />
-                <Route path="/managing-director/bookings/Addbookings" element={<RedesignedForm />} />
-                {/* <Route path="/managing-director/servicesandschemes" element={<Services />} /> */}
-                <Route path="/managing-director/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
-                <Route path="/managing-director/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />
+                <Route path="/md/dashboard" element={<Dashboard />} />
+                <Route path="/md/employees" element={<Employees />} />
+                <Route path="/md/user" element={<NewEmployee />} />
+                {/* <Route path="/md/employees/:id" element={<EmployeeParticular />} /> */}
+                <Route path="/md/employees/:id" element={<EmployeePanelCopy fordesignation="admin" />} />
+                {/* <Route path="/md/employeeleads/:id" element={<AdminEmployeeTeamLeads />} /> */}
+                <Route path="/md/employeeleads/:userId" element={<EmployeeTeamLeadsCopy designation="admin" />} />
+                <Route path="/md/employees/:id/login-details" element={<LoginDetails />} />
+                <Route path="/md/leads" element={<TestLeads />} />
+                <Route path="/md/leads/:companyId" element={<CompanyParticular />} />
+                <Route path="/md/bookings" element={<BookingList />} />
+                <Route path="/md/notification" element={<ShowNotification />} />
+                <Route path="/md/bookings/Addbookings" element={<RedesignedForm />} />
+                {/* <Route path="/md/servicesandschemes" element={<Services />} /> */}
+                <Route path="/md/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
+                <Route path="/md/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />
               </Route>
             </>
           ) : (
-            <Route path="/managing-director" element={<Navigate to="/managing-director/login" />} />
+            <Route path="/md" element={<Navigate to="/md/login" />} />
           )}
           <Route path="*" element={<NotFound />} />
 

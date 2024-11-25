@@ -1135,12 +1135,12 @@ function AdminEmployeeTeamLeads() {
 
             if (currentIndex === 0) {
                 // If it's the first page, navigate to the employees page
-                window.location.replace(`/managing-director/user`);
+                window.location.replace(`/md/user`);
                 setBackButton(false)
             } else {
                 // Get the previousId from the eData array
                 const prevId = eData[prevIndex];
-                window.location.replace(`/managing-director/employeeleads/${prevId}`);
+                window.location.replace(`/md/employeeleads/${prevId}`);
             }
 
             //setBackButton(prevIndex !== 0);
@@ -1181,7 +1181,7 @@ function AdminEmployeeTeamLeads() {
 
             // Get the nextId from the eData array
             const nextId = eData[nextIndex];
-            window.location.replace(`/managing-director/employeeleads/${nextId}`);
+            window.location.replace(`/md/employeeleads/${nextId}`);
 
             //setBackButton(nextId !== 0);
         } else {
@@ -2000,7 +2000,7 @@ function AdminEmployeeTeamLeads() {
                                     </div> */}
                                     {!selectedEmployee2 && (
                                         <Link
-                                            to={`/managing-director/employees/${id}/login-details`}
+                                            to={`/md/employees/${id}/login-details`}
                                             style={{ marginLeft: "10px" }}>
                                             <button className="btn btn-primary d-none d-sm-inline-block">
                                                 Login Details
@@ -2009,7 +2009,7 @@ function AdminEmployeeTeamLeads() {
                                     )}
                                     <div>
                                         <Link
-                                            to={`/managing-director/user`}
+                                            to={`/md/user`}
                                             style={{ marginLeft: "10px" }}>
                                             <button className="btn btn-primary d-none d-sm-inline-block">
                                                 <span>
@@ -2039,7 +2039,7 @@ function AdminEmployeeTeamLeads() {
                                 href="#tabs-home-5"
                                 onClick={() => {
                                     setCurrentTab("Leads")
-                                    window.location.pathname = `/managing-director/employees/${id}`
+                                    window.location.pathname = `/md/employees/${id}`
                                 }}
                                 className={
                                     currentTab === "Leads"
@@ -2060,7 +2060,7 @@ function AdminEmployeeTeamLeads() {
                                 href="#tabs-activity-5"
                                 onClick={() => {
                                     setCurrentTab("TeamLeads")
-                                    window.location.pathname = `/managing-director/employeeleads/${id}`
+                                    window.location.pathname = `/md/employeeleads/${id}`
                                 }}
                                 className={
                                     currentTab === "TeamLeads"

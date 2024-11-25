@@ -1328,7 +1328,7 @@ function EmployeeParticular() {
 
       // Get the nextId from the eData array
       const nextId = eData[nextIndex];
-      window.location.replace(`/managing-director/employees/${nextId}`);
+      window.location.replace(`/md/employees/${nextId}`);
       //setBackButton(nextId !== 0);
     } else {
       console.log("Current ID not found in eData array.");
@@ -1393,12 +1393,12 @@ function EmployeeParticular() {
 
       if (currentIndex === 0) {
         // If it's the first page, navigate to the employees page
-        window.location.replace(`/managing-director/user`);
+        window.location.replace(`/md/user`);
         //setBackButton(false)
       } else {
         // Get the previousId from the eData array
         const prevId = eData[prevIndex];
-        window.location.replace(`/managing-director/employees/${prevId}`);
+        window.location.replace(`/md/employees/${prevId}`);
       }
       //setBackButton(prevIndex !== 0);
     } else {
@@ -1606,7 +1606,7 @@ function EmployeeParticular() {
     };
   }
   const location = useLocation();
-  const [value, setValue] = React.useState(location.pathname === `/managing-director/employees/${id}` ? 0 : 1);
+  const [value, setValue] = React.useState(location.pathname === `/md/employees/${id}` ? 0 : 1);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -1911,7 +1911,7 @@ function EmployeeParticular() {
                   {!AddForm && <>
                    
                     {!selectedEmployee2 && (<Link
-                      to={`/managing-director/employees/${id}/login-details`}
+                      to={`/md/employees/${id}/login-details`}
                       style={{ marginLeft: "10px" }}>
                       <button className="btn btn-primary d-none d-sm-inline-block">
                         Login Details
@@ -1923,7 +1923,7 @@ function EmployeeParticular() {
                       {!AddForm ?
                         <Link
 
-                          to={`/managing-director/user`}
+                          to={`/md/user`}
                           style={{ marginLeft: "10px" }}
                         >
                           <button className="btn btn-primary d-none d-sm-inline-block">
@@ -1964,7 +1964,7 @@ function EmployeeParticular() {
                 href="#tabs-home-5"
                 onClick={() => {
                   setCurrentTab("Leads")
-                  window.location.pathname = `/managing-director/employees/${id}`
+                  window.location.pathname = `/md/employees/${id}`
                 }}
                 className={
                   currentTab === "Leads"
@@ -1987,7 +1987,7 @@ function EmployeeParticular() {
                   href="#tabs-activity-5"
                   onClick={() => {
                     setCurrentTab("TeamLeads")
-                    window.location.pathname = `/managing-director/employeeleads/${id}`
+                    window.location.pathname = `/md/employeeleads/${id}`
                   }}
                   className={
                     currentTab === "TeamLeads"

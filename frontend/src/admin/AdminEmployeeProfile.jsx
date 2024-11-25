@@ -244,7 +244,7 @@ function AdminEmployeeProfile() {
     const fetchEmployeeData = async () => {
         try {
             let response;
-            if (path === `/managing-director/employeeProfileView/${userId}`) {
+            if (path === `/md/employeeProfileView/${userId}`) {
                 setIsLoading(true);
                 response = await axios.get(`${secretKey}/employee/einfo`);
             } else {
@@ -348,7 +348,7 @@ function AdminEmployeeProfile() {
                     <div className="container-xl">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><Link to="/managing-director/user">Employee</Link></li>
+                                <li class="breadcrumb-item"><Link to="/md/user">Employee</Link></li>
                                 <li class="breadcrumb-item active" aria-current="page">Employee Profile</li>
                             </ol>
                         </nav>
@@ -388,7 +388,7 @@ function AdminEmployeeProfile() {
                                                     {(data?.designation === "Sales Executive" || data?.designation === "Sales Manager") && (<div className="employee_panel mr-1">
                                                         <Link
                                                             style={{ textDecoration: "none", color: 'inherit' }}
-                                                            to={`/managing-director/employees/${data._id}`}
+                                                            to={`/md/employees/${data._id}`}
                                                         >
                                                             Panel
                                                         </Link>

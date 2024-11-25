@@ -15,6 +15,7 @@ import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import axios from "axios";
 
 function EmployeeGeneralLeads({
     userId,
@@ -45,7 +46,7 @@ function EmployeeGeneralLeads({
     filteredData,
     //handleFilter,
     completeGeneralData,
-    dataToFilter,
+    // dataToFilter,
     setGeneralData,
     setFilteredData,
     activeFilterField,
@@ -53,7 +54,8 @@ function EmployeeGeneralLeads({
     activeFilterFields,
     setActiveFilterFields,
     setGeneralDataCount,
-    openingBackdrop
+    openingBackdrop,
+    cleanString
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -77,7 +79,8 @@ function EmployeeGeneralLeads({
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
-    const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [openBacdrop, setOpenBacdrop] = useState(false);
+    const [dataToFilter, setDataToFilter] = useState([]);
     //const [filteredData, setFilteredData] = useState([]);
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -103,7 +106,29 @@ function EmployeeGeneralLeads({
     };
 
 
-    const handleFilterClick = (field) => {
+    const handleFilterClick = async(field) => {
+        if (filteredData.length === 0) {
+            try {
+                const response = await axios.get(
+                    `${secretKey}/company-data/employees-general/${cleanString(ename)}`, // Backend API endpoint
+                    {
+                        params: {
+                            limit: 500, // Adjust the limit as required
+                            // search: searchQuery, // Pass the search query if applicable
+                        },
+                    }
+                );
+
+                const { generalData } = response.data;
+                console.log("interestedData", generalData)
+                // setDataToFilter(generalData);
+                setDataToFilter(generalData); // Update data based on the response
+            } catch (error) {
+                console.error("Error fetching Interested data:", error);
+                // Handle error appropriately
+            }
+
+        }
         if (activeFilterField === field) {
             setShowFilterMenu(!showFilterMenu);
             setIsScrollLocked(!showFilterMenu);

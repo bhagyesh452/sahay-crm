@@ -48,7 +48,7 @@ function EmployeeForwardedLeads({
     filteredData,
     filterMethod,
     completeGeneralData,
-    dataToFilter,
+    // dataToFilter,
     setForwardedData,
     setForwardedDataCount,
     setFilteredData,
@@ -56,6 +56,7 @@ function EmployeeForwardedLeads({
     setActiveFilterField,
     activeFilterFields,
     setActiveFilterFields,
+    cleanString
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -159,11 +160,6 @@ function EmployeeForwardedLeads({
         }
     };
 
-    const [selectedCompanies, setSelectedCompanies] = useState([]); // Track selected companies
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragStartIndex, setDragStartIndex] = useState(null);
-    const [startDragIndex, setStartDragIndex] = useState(null);
-    const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
 
     // ----------------filter component----------------------
     const [showFilterMenu, setShowFilterMenu] = useState(false);
@@ -175,6 +171,7 @@ function EmployeeForwardedLeads({
     const [isScrollLocked, setIsScrollLocked] = useState(false)
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [dataToFilter, setDataToFilter] = useState([]);
     // const [filteredData, setFilteredData] = useState([]);
 
     const handleFilter = (newData) => {
@@ -183,7 +180,29 @@ function EmployeeForwardedLeads({
         setForwardedDataCount(newData.length);
     };
 
-    const handleFilterClick = (field) => {
+    const handleFilterClick = async(field) => {
+        if (filteredData.length === 0) {
+            try {
+                const response = await axios.get(
+                    `${secretKey}/company-data/employees-forwarded/${cleanString(ename)}`, // Backend API endpoint
+                    {
+                        params: {
+                            limit: 500, // Adjust the limit as required
+                            // search: searchQuery, // Pass the search query if applicable
+                        },
+                    }
+                );
+
+                const { forwardedData } = response.data;
+                console.log("interestedData", forwardedData)
+                // setDataToFilter(forwardedData);
+                setDataToFilter(forwardedData); // Update data based on the response
+            } catch (error) {
+                console.error("Error fetching Interested data:", error);
+                // Handle error appropriately
+            }
+
+        }
         if (activeFilterField === field) {
             setShowFilterMenu(!showFilterMenu);
             setIsScrollLocked(!showFilterMenu);

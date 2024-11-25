@@ -630,7 +630,7 @@ function TeamLeadsMatured({
                                                 // setTimeout(() => {
                                                 //     setFormOpen(true);
                                                 // }, 1000);
-                                                navigate(newDesignation === "admin" ? `/managing-director/bookings` : `/employee-bookings/${userId}`);
+                                                navigate(newDesignation === "admin" ? `/md/bookings` : `/employee-bookings/${userId}`);
                                             }}
                                         >
                                             <IconEye
