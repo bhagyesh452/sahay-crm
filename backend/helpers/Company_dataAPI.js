@@ -2052,12 +2052,18 @@ router.post("/assign-new", async (req, res) => {
 router.post(`/post-bdenextfollowupdate/:id`, async (req, res) => {
   const companyId = req.params.id;
   const bdeNextFollowUpDate = new Date(req.body.bdeNextFollowUpDate);
+  const socketIO = req.io;
   //console.log(bdeNextFollowUpDate);
   try {
     await CompanyModel.findByIdAndUpdate(companyId, {
       bdeNextFollowUpDate: bdeNextFollowUpDate,
     });
 
+    const updatedCompany = await CompanyModel.findById(companyId).lean();
+    socketIO.emit("employee__nextfollowupdate_successfull_update", {
+      message: `Status updated to "Not Interested" for company: ${updatedCompany["Company Name"]}`,
+      updatedDocument: updatedCompany,
+    })
     res.status(200).json({ message: "Date Updated successfully" });
   } catch (error) {
     console.error("Error fetching Date:", error);
@@ -2107,8 +2113,354 @@ router.get("/employees/:ename", async (req, res) => {
   }
 });
 
+router.get("/employees-interested/:ename", async (req, res) => {
+  try {
+    const employeeName = req.params.ename;
+    const search = req.query.search ? req.query.search.toLowerCase() : ""; // Extract the search query
 
+    // Base query for employee-related data
+    let baseQuery = {
+      ename: employeeName,
+      $or: [
+        { ename: employeeName },
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] },
+      ],
+    };
 
+    // Apply searching for company name
+    if (search !== "") {
+      const escapedSearch = escapeRegex(search);
+
+      baseQuery = {
+        $and: [
+          baseQuery,
+          {
+            $or: [
+              { "Company Name": { $regex: new RegExp(escapedSearch, "i") } },
+              { "Company Email": { $regex: new RegExp(escapedSearch, "i") } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $toString: "$Company Number" },
+                    regex: `^${escapedSearch}`,
+                    options: "i",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    const interestedData = await CompanyModel.find({
+      ...baseQuery,
+      bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+      Status: { $in: ["Interested", "FollowUp"] },
+    })
+      .sort({ lastActionDate: -1 }) // Sort by last action date in descending order
+      .lean();
+
+    res.status(200).json({
+      interestedData,
+      totalCount: interestedData.length, // Include total count of fetched data
+    });
+  } catch (error) {
+    console.error("Error fetching Interested data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/employees-general/:ename", async (req, res) => {
+  try {
+    const employeeName = req.params.ename;
+    const search = req.query.search ? req.query.search.toLowerCase() : ""; // Extract the search query
+
+    // Base query for employee-related data
+    let baseQuery = {
+      ename: employeeName,
+      $or: [
+        { ename: employeeName },
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] },
+      ],
+    };
+
+    // Apply searching for company name
+    if (search !== "") {
+      const escapedSearch = escapeRegex(search);
+
+      baseQuery = {
+        $and: [
+          baseQuery,
+          {
+            $or: [
+              { "Company Name": { $regex: new RegExp(escapedSearch, "i") } },
+              { "Company Email": { $regex: new RegExp(escapedSearch, "i") } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $toString: "$Company Number" },
+                    regex: `^${escapedSearch}`,
+                    options: "i",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    const generalData = await CompanyModel.find({
+      ...baseQuery,
+      bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
+      Status: { $in: ["Untouched"] },
+    })
+      .sort({ AssignDate: -1 }) // Sort by assign date in descending order
+      .lean();
+
+    res.status(200).json({
+      generalData,
+      totalCount: generalData.length, // Include total count of fetched data
+    });
+  } catch (error) {
+    console.error("Error fetching General data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/employees-notinterested/:ename", async (req, res) => {
+  try {
+    const employeeName = req.params.ename;
+    const search = req.query.search ? req.query.search.toLowerCase() : "";
+
+    let baseQuery = {
+      ename: employeeName,
+      $or: [
+        { ename: employeeName },
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] },
+      ],
+    };
+
+    if (search !== "") {
+      const escapedSearch = escapeRegex(search);
+      baseQuery = {
+        $and: [
+          baseQuery,
+          {
+            $or: [
+              { "Company Name": { $regex: new RegExp(escapedSearch, "i") } },
+              { "Company Email": { $regex: new RegExp(escapedSearch, "i") } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $toString: "$Company Number" },
+                    regex: `^${escapedSearch}`,
+                    options: "i",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    const notInterestedData = await CompanyModel.find({
+      ...baseQuery,
+      Status: { $in: ["Not Interested", "Junk"] },
+      bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] },
+    })
+      .sort({ lastActionDate: -1 })
+      .lean();
+
+    res.status(200).json({
+      notInterestedData,
+      totalCount: notInterestedData.length,
+    });
+  } catch (error) {
+    console.error("Error fetching Not Interested data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/employees-matured/:ename", async (req, res) => {
+  try {
+    const employeeName = req.params.ename;
+    const search = req.query.search ? req.query.search.toLowerCase() : "";
+
+    let baseQuery = {
+      ename: employeeName,
+      $or: [
+        { maturedBdmName: employeeName },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] },
+      ],
+    };
+
+    if (search !== "") {
+      const escapedSearch = escapeRegex(search);
+      baseQuery = {
+        $and: [
+          baseQuery,
+          {
+            $or: [
+              { "Company Name": { $regex: new RegExp(escapedSearch, "i") } },
+              { "Company Email": { $regex: new RegExp(escapedSearch, "i") } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $toString: "$Company Number" },
+                    regex: `^${escapedSearch}`,
+                    options: "i",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    const maturedData = await CompanyModel.find({
+      ...baseQuery,
+      Status: { $in: ["Matured"] },
+      bdmAcceptStatus: {
+        $in: ["NotForwarded", "Pending", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined],
+      },
+    })
+      .sort({ lastActionDate: -1 })
+      .lean();
+
+    res.status(200).json({
+      maturedData,
+      totalCount: maturedData.length,
+    });
+  } catch (error) {
+    console.error("Error fetching Matured data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+router.get("/employees-underdocs/:ename", async (req, res) => {
+  try {
+    const employeeName = req.params.ename;
+    const search = req.query.search ? req.query.search.toLowerCase() : "";
+
+    let baseQuery = {
+      ename: employeeName,
+      $or: [
+        { ename: employeeName },
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] },
+      ],
+    };
+
+    if (search !== "") {
+      const escapedSearch = escapeRegex(search);
+      baseQuery = {
+        $and: [
+          baseQuery,
+          {
+            $or: [
+              { "Company Name": { $regex: new RegExp(escapedSearch, "i") } },
+              { "Company Email": { $regex: new RegExp(escapedSearch, "i") } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $toString: "$Company Number" },
+                    regex: `^${escapedSearch}`,
+                    options: "i",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    const underdocsData = await CompanyModel.find({
+      ...baseQuery,
+      Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] },
+      bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+    })
+      .sort({ lastActionDate: -1 })
+      .lean();
+
+    res.status(200).json({
+      underdocsData,
+      totalCount: underdocsData.length,
+    });
+  } catch (error) {
+    console.error("Error fetching UnderDocs data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+router.get("/employees-forwarded/:ename", async (req, res) => {
+  try {
+    const employeeName = req.params.ename;
+    const search = req.query.search ? req.query.search.toLowerCase() : "";
+
+    let baseQuery = {
+      ename: employeeName,
+      $or: [
+        { ename: employeeName },
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] },
+      ],
+    };
+
+    if (search !== "") {
+      const escapedSearch = escapeRegex(search);
+      baseQuery = {
+        $and: [
+          baseQuery,
+          {
+            $or: [
+              { "Company Name": { $regex: new RegExp(escapedSearch, "i") } },
+              { "Company Email": { $regex: new RegExp(escapedSearch, "i") } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $toString: "$Company Number" },
+                    regex: `^${escapedSearch}`,
+                    options: "i",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    const forwardedData = await CompanyModel.find({
+      ...baseQuery,
+      $or: [
+        {
+          Status: { $in: ["Matured", "Busy", "Not Picked Up"] },
+          bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] },
+        },
+        {
+          Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
+          bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
+        },
+      ],
+    })
+      .sort({ lastActionDate: -1 })
+      .lean();
+
+    res.status(200).json({
+      forwardedData,
+      totalCount: forwardedData.length,
+    });
+  } catch (error) {
+    console.error("Error fetching Forwarded data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 router.get("/employees-new/:ename", async (req, res) => {
   try {
@@ -2153,135 +2505,120 @@ router.get("/employees-new/:ename", async (req, res) => {
         ]
       };
     }
-    const classifiedIds = new Set(); // To track IDs already classified
+
     // Fetch data for each status category
-    const [generalData, busyData, underdocsData, interestedData, forwardedData, notInterestedData] = await Promise.all([
+    const [generalData, busyData, underdocsData, interestedData, forwardedData, maturedData, notInterestedData] = await Promise.all([
       CompanyModel.find({
         ...baseQuery,
         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
-        Status: { $in: ["Untouched"] },
+        Status: { $in: ["Untouched"] }
       })
         .sort({ AssignDate: -1 })
         .skip(skip)
-        .limit(limit)
-        .lean()
-        .then((data) => {
-          data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
-          return data;
-        }),
+        .limit(limit),
 
       CompanyModel.find({
         ...baseQuery,
         bdmAcceptStatus: "NotForwarded",
-        Status: { $in: ["Busy", "Not Picked Up"] },
-        _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+        Status: { $in: ["Busy", "Not Picked Up"] }
       })
         .sort({ lastActionDate: -1 })
         .skip(skip)
-        .limit(limit)
-        .lean()
-        .then((data) => {
-          data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
-          return data;
-        }),
+        .limit(limit),
 
       CompanyModel.find({
         ...baseQuery,
         bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
-        Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] },
-        _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+        Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
       })
         .sort({ lastActionDate: -1 })
         .skip(skip)
-        .limit(limit)
-        .lean()
-        .then((data) => {
-          data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
-          return data;
-        }),
+        .limit(limit),
 
       CompanyModel.find({
         ...baseQuery,
         Status: { $in: ["Interested", "FollowUp"] },
-        bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
-        _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+        bdmAcceptStatus: { $in: ["NotForwarded", undefined] }
       })
         .sort({ lastActionDate: -1 })
         .skip(skip)
-        .limit(limit)
-        .lean()
-        .then((data) => {
-          data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
-          return data;
-        }),
+        .limit(limit),
 
       CompanyModel.find({
         ...baseQuery,
         $or: [
+          // Condition for "Matured" status
           {
             Status: { $in: ["Matured", "Busy", "Not Picked Up"] },
-            bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] },
+            bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] }
           },
+          // Condition for "Interested" and "FollowUp" statuses
           {
             Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
-            bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
+            bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
           },
-        ],
-        _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+          {
+            Status: { $in: ["Untouched" , "Busy", "Not Interested" , "Not Picked Up"] },
+            bdmAcceptStatus: { $in: [ "Pending"] }
+          }
+        ]
       })
         .sort({ lastActionDate: -1 })
         .skip(skip)
-        .limit(limit)
-        .lean()
-        .then((data) => {
-          data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
-          return data;
-        }),
-      CompanyModel.find({
-        ...baseQuery,
-        Status: { $in: ["Not Interested", "Junk"] },
-        bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] },
-        _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
-      })
-        .sort({ lastActionDate: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean()
-        .then((data) => {
-          data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
-          return data;
-        }),
-    ]);
+        .limit(limit),
 
-    const maturedData = await CompanyModel.find({
-      _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
-      $or: [
-        {
-          $and: [
-            { maturedBdmName: employeeName },
-            { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
+       CompanyModel.find({
+          $or: [
+            // Match maturedBdmName regardless of Status
+            {
+              $and: [
+                { maturedBdmName: employeeName },
+                { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
+              ],
+            },
+            // Default conditions for matured data
+            {
+              ...baseQuery,
+              bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined] },
+              Status: { $in: ["Matured"] }
+            }
           ],
-        },
-        {
+          // Apply search condition only if it exists
+          ...(search
+            ? {
+                $or: [
+                  { 'Company Name': { $regex: new RegExp(escapeRegex(search), 'i') } },
+                  { 'Company Email': { $regex: new RegExp(escapeRegex(search), 'i') } },
+                  {
+                    $expr: {
+                      $regexMatch: {
+                        input: { $toString: "$Company Number" }, // Convert Company Number to string
+                        regex: `^${escapeRegex(search)}`,
+                        options: "i"
+                      }
+                    }
+                  }
+                ]
+              }
+            : {})
+        })
+          .sort({ lastActionDate: -1 })
+          .skip(skip)
+          .limit(limit),
+        
+        CompanyModel.find({
           ...baseQuery,
-          bdmAcceptStatus: {
-            $in:
-              ["NotForwarded", "Pending", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined]
-          },
-          Status: { $in: ["Matured"] },
-        },
-      ],
-
-    })
-      .sort({ lastActionDate: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
+          Status: { $in: ["Not Interested", "Junk"] },
+          bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] }, // Use $nin for excluding multiple values
+        })
+          .sort({ lastActionDate: -1 })
+          .skip(skip)
+          .limit(limit)
+    ]);
     // Fetch redesigned data for matching companies
     const allCompanyIds = [
       ...maturedData.map(item => item._id),
     ];
-
 
     const redesignedData = await RedesignedLeadformModel.find({ company: { $in: allCompanyIds } })
       .select("company bookingDate bookingPublishDate")
@@ -2298,138 +2635,92 @@ router.get("/employees-new/:ename", async (req, res) => {
 
     // Update matured data with booking information
     const updatedMaturedData = maturedData.map(item => ({
-      ...item, // Spread the original _doc object to include all fields
+      ...item._doc, // Spread the original _doc object to include all fields
       bookingDate: redesignedMap[item._id]?.bookingDate || null,
       bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
     }));
 
-    // Debug output
-    // console.log("Matured Data:", maturedData); // Should match the actual count (6 in this case)
-    // console.log("Updated Matured Data:", updatedMaturedData);
-
     const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData, ...forwardedData];
-    // Count documents for each category, excluding already classified IDs
-    // Separate sets for tracking classified IDs during counting
-    const countClassifiedIds = new Set(); // Start with the existing classified IDs
-
-    // Count documents for each category with independent tracking of classified IDs
-    const [
-      notInterestedCount,
-      interestedCount,
-      underdocsCount,
-      forwardedCount,
-      busyCount,
-      untouchedCount
-    ] = await Promise.all([
-      CompanyModel.find({
+    // Count documents for each category
+    const [notInterestedCount, interestedCount, underdocsCount, maturedCount, forwardedCount, busyCount, untouchedCount] = await Promise.all([
+      CompanyModel.countDocuments({
         ...baseQuery,
-        _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
         Status: { $in: ["Not Interested", "Junk"] },
-        bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] },
-      }).lean()
-        .then((data) => {
-          data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
-          return data.length; // Return count
-        }),
-
-      CompanyModel.find({
+        bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] }, // Use $nin for excluding multiple values
+      }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Interested", "FollowUp"] }, bdmAcceptStatus: { $in: ["NotForwarded", undefined] } }),
+      CompanyModel.countDocuments({
         ...baseQuery,
-        _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
-        Status: { $in: ["Interested", "FollowUp"] },
         bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
-      }).lean()
-        .then((data) => {
-          data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
-          return data.length; // Return count
-        }),
-
-      CompanyModel.find({
-        ...baseQuery,
-        _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
-        bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
-        Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] },
-      }).lean()
-        .then((data) => {
-          data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
-          return data.length; // Return count
-        }),
-
-      CompanyModel.find({
-        ...baseQuery,
-        _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
+        Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] }
+      }),
+      CompanyModel.countDocuments({
         $or: [
+          // Match maturedBdmName regardless of Status
+          {
+            $and: [
+              { maturedBdmName: employeeName },
+              { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
+            ],
+          },
+          // Default conditions for matured data
+          {
+            ...baseQuery,
+            bdmAcceptStatus: {
+              $in: [
+                "NotForwarded",
+                "Pending",
+                "Accept",
+                "MaturedPending",
+                "MaturedAccepted",
+                "MaturedDone",
+                undefined,
+              ],
+            },
+            Status: { $in: ["Matured"] },
+          },
+        ],
+        // Apply search condition only if it exists
+        ...(search
+          ? {
+              $or: [
+                { 'Company Name': { $regex: new RegExp(escapeRegex(search), "i") } },
+                { 'Company Email': { $regex: new RegExp(escapeRegex(search), "i") } },
+                {
+                  $expr: {
+                    $regexMatch: {
+                      input: { $toString: "$Company Number" }, // Convert Company Number to string
+                      regex: `^${escapeRegex(search)}`,
+                      options: "i",
+                    },
+                  },
+                },
+              ],
+            }
+          : {}),
+      }),
+      CompanyModel.countDocuments({
+        ...baseQuery,
+        $or: [
+          // Condition for "Matured" status with specific bdmAcceptStatus values
           {
             Status: { $in: ["Matured", "Busy", "Not Picked Up"] },
             bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] },
           },
+          // Condition for "Interested" and "FollowUp" statuses with specific bdmAcceptStatus values
           {
             Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
           },
-          // {
-          //   Status: { $in: ["Untouched", "Busy", "Not Interested", "Not Picked Up"] },
-          //   bdmAcceptStatus: { $in: ["Pending"] },
-          // },
+          {
+            Status: { $in: ["Untouched" , "Busy", "Not Interested" , "Not Picked Up"] },
+            bdmAcceptStatus: { $in: [ "Pending"] }
+          }
         ],
-      }).lean()
-        .then((data) => {
-          data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
-          return data.length; // Return count
-        }),
-
-      CompanyModel.find({
-        ...baseQuery,
-        _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
-        Status: { $in: ["Busy", "Not Picked Up"] },
-        bdmAcceptStatus: "NotForwarded",
-      }).lean()
-        .then((data) => {
-          data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
-          return data.length; // Return count
-        }),
-
-      CompanyModel.find({
-        ...baseQuery,
-        _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
-        Status: { $in: ["Untouched"] },
-        bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] },
-      }).lean()
-        .then((data) => {
-          data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
-          return data.length; // Return count
-        }),
+      }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Busy", "Not Picked Up"] }, bdmAcceptStatus: "NotForwarded" }),
+      CompanyModel.countDocuments({ ...baseQuery, Status: { $in: ["Untouched"] }, bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] } })
     ]);
-
-    const maturedCount = await CompanyModel.find({
-      _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
-      $or: [
-        {
-          $and: [
-            { maturedBdmName: employeeName },
-            { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
-          ],
-        },
-        {
-          ...baseQuery,
-          bdmAcceptStatus: {
-            $in: [
-              "NotForwarded",
-              "Pending",
-              "Accept",
-              "MaturedPending",
-              "MaturedAccepted",
-              "MaturedDone",
-              undefined,
-            ],
-          },
-          Status: { $in: ["Matured"] },
-        },
-      ],
-    }).lean()
-      .then((data) => {
-        data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
-        return data.length; // Return count
-      });
 
     // Total pages calculation based on the largest dataset (generalData as reference)
     const totalGeneralPages = Math.ceil(untouchedCount / limit);
@@ -2472,6 +2763,370 @@ router.get("/employees-new/:ename", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+// router.get("/employees-new/:ename", async (req, res) => {
+//   try {
+//     const employeeName = req.params.ename;
+//     const limit = parseInt(req.query.limit) || 500; // Default limit to 500
+//     const skip = parseInt(req.query.skip) || 0; // Default skip to 0
+//     const search = req.query.search ? req.query.search.toLowerCase() : ""; // Extract the search query
+
+//     // Base query for employee-related data, ensuring 'ename' is part of the query
+//     let baseQuery = {
+//       ename: employeeName, // Always filter by the provided ename
+//       $or: [
+//         { ename: employeeName },
+//         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+//         { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+//       ]
+//     };
+
+//     // Apply searching for company name
+//     if (search !== '') {
+//       const escapedSearch = escapeRegex(search);
+
+//       // Combine search conditions with existing baseQuery
+//       baseQuery = {
+//         $and: [
+//           baseQuery, // Keep the original ename condition
+//           {
+//             $or: [
+//               { 'Company Name': { $regex: new RegExp(escapedSearch, 'i') } },
+//               { 'Company Email': { $regex: new RegExp(escapedSearch, 'i') } },
+//               {
+//                 $expr: {
+//                   $regexMatch: {
+//                     input: { $toString: "$Company Number" }, // Convert Company Number to string
+//                     regex: `^${escapedSearch}`,             // Use template literals for the escaped search
+//                     options: "i"                            // Case-insensitive search
+//                   }
+//                 }
+//               }
+//             ]
+//           }
+//         ]
+//       };
+//     }
+//     const classifiedIds = new Set(); // To track IDs already classified
+//     // Fetch data for each status category
+//     const [generalData, busyData, underdocsData, interestedData, forwardedData, notInterestedData] = await Promise.all([
+//       CompanyModel.find({
+//         ...baseQuery,
+//         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept"] },
+//         Status: { $in: ["Untouched"] },
+//       })
+//         .sort({ AssignDate: -1 })
+//         .skip(skip)
+//         .limit(limit)
+//         .lean()
+//         .then((data) => {
+//           data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
+//           return data;
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         bdmAcceptStatus: "NotForwarded",
+//         Status: { $in: ["Busy", "Not Picked Up"] },
+//         _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+//       })
+//         .sort({ lastActionDate: -1 })
+//         .skip(skip)
+//         .limit(limit)
+//         .lean()
+//         .then((data) => {
+//           data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
+//           return data;
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+//         Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] },
+//         _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+//       })
+//         .sort({ lastActionDate: -1 })
+//         .skip(skip)
+//         .limit(limit)
+//         .lean()
+//         .then((data) => {
+//           data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
+//           return data;
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         Status: { $in: ["Interested", "FollowUp"] },
+//         bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+//         _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+//       })
+//         .sort({ lastActionDate: -1 })
+//         .skip(skip)
+//         .limit(limit)
+//         .lean()
+//         .then((data) => {
+//           data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
+//           return data;
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         $or: [
+//           {
+//             Status: { $in: ["Matured", "Busy", "Not Picked Up"] },
+//             bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] },
+//           },
+//           {
+//             Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
+//             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
+//           },
+//         ],
+//         _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+//       })
+//         .sort({ lastActionDate: -1 })
+//         .skip(skip)
+//         .limit(limit)
+//         .lean()
+//         .then((data) => {
+//           data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
+//           return data;
+//         }),
+//       CompanyModel.find({
+//         ...baseQuery,
+//         Status: { $in: ["Not Interested", "Junk"] },
+//         bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] },
+//         _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+//       })
+//         .sort({ lastActionDate: -1 })
+//         .skip(skip)
+//         .limit(limit)
+//         .lean()
+//         .then((data) => {
+//           data.forEach((item) => classifiedIds.add(item._id.toString())); // Track IDs
+//           return data;
+//         }),
+//     ]);
+
+//     const maturedData = await CompanyModel.find({
+//       _id: { $nin: Array.from(classifiedIds) }, // Exclude already classified
+//       $or: [
+//         {
+//           $and: [
+//             { maturedBdmName: employeeName },
+//             { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
+//           ],
+//         },
+//         {
+//           ...baseQuery,
+//           bdmAcceptStatus: {
+//             $in:
+//               ["NotForwarded", "Pending", "MaturedPending", "MaturedAccepted", "MaturedDone", undefined]
+//           },
+//           Status: { $in: ["Matured"] },
+//         },
+//       ],
+
+//     })
+//       .sort({ lastActionDate: -1 })
+//       .skip(skip)
+//       .limit(limit)
+//       .lean();
+//     // Fetch redesigned data for matching companies
+//     const allCompanyIds = [
+//       ...maturedData.map(item => item._id),
+//     ];
+
+
+//     const redesignedData = await RedesignedLeadformModel.find({ company: { $in: allCompanyIds } })
+//       .select("company bookingDate bookingPublishDate")
+//       .lean();
+
+//     // Create map for redesigned data for quick access
+//     const redesignedMap = redesignedData.reduce((acc, item) => {
+//       acc[item.company] = {
+//         bookingDate: item.bookingDate,
+//         bookingPublishDate: item.bookingPublishDate
+//       };
+//       return acc;
+//     }, {});
+
+//     // Update matured data with booking information
+//     const updatedMaturedData = maturedData.map(item => ({
+//       ...item, // Spread the original _doc object to include all fields
+//       bookingDate: redesignedMap[item._id]?.bookingDate || null,
+//       bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
+//     }));
+
+//     // Debug output
+//     // console.log("Matured Data:", maturedData); // Should match the actual count (6 in this case)
+//     // console.log("Updated Matured Data:", updatedMaturedData);
+
+//     const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData, ...forwardedData];
+//     // Count documents for each category, excluding already classified IDs
+//     // Separate sets for tracking classified IDs during counting
+//     const countClassifiedIds = new Set(); // Start with the existing classified IDs
+
+//     // Count documents for each category with independent tracking of classified IDs
+//     const [
+//       notInterestedCount,
+//       interestedCount,
+//       underdocsCount,
+//       forwardedCount,
+//       busyCount,
+//       untouchedCount
+//     ] = await Promise.all([
+//       CompanyModel.find({
+//         ...baseQuery,
+//         _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
+//         Status: { $in: ["Not Interested", "Junk"] },
+//         bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] },
+//       }).lean()
+//         .then((data) => {
+//           data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
+//           return data.length; // Return count
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
+//         Status: { $in: ["Interested", "FollowUp"] },
+//         bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+//       }).lean()
+//         .then((data) => {
+//           data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
+//           return data.length; // Return count
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
+//         bdmAcceptStatus: { $in: ["NotForwarded", undefined] },
+//         Status: { $in: ["Docs/Info Sent (W)", "Docs/Info Sent (E)", "Docs/Info Sent (W&E)"] },
+//       }).lean()
+//         .then((data) => {
+//           data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
+//           return data.length; // Return count
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
+//         $or: [
+//           {
+//             Status: { $in: ["Matured", "Busy", "Not Picked Up"] },
+//             bdmAcceptStatus: { $in: ["MaturedPending", "MaturedAccepted"] },
+//           },
+//           {
+//             Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
+//             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
+//           },
+//           // {
+//           //   Status: { $in: ["Untouched", "Busy", "Not Interested", "Not Picked Up"] },
+//           //   bdmAcceptStatus: { $in: ["Pending"] },
+//           // },
+//         ],
+//       }).lean()
+//         .then((data) => {
+//           data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
+//           return data.length; // Return count
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
+//         Status: { $in: ["Busy", "Not Picked Up"] },
+//         bdmAcceptStatus: "NotForwarded",
+//       }).lean()
+//         .then((data) => {
+//           data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
+//           return data.length; // Return count
+//         }),
+
+//       CompanyModel.find({
+//         ...baseQuery,
+//         _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
+//         Status: { $in: ["Untouched"] },
+//         bdmAcceptStatus: { $nin: ["Forwarded", "Pending", "Accept", undefined] },
+//       }).lean()
+//         .then((data) => {
+//           data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
+//           return data.length; // Return count
+//         }),
+//     ]);
+
+//     const maturedCount = await CompanyModel.find({
+//       _id: { $nin: Array.from(countClassifiedIds) }, // Exclude already classified
+//       $or: [
+//         {
+//           $and: [
+//             { maturedBdmName: employeeName },
+//             { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
+//           ],
+//         },
+//         {
+//           ...baseQuery,
+//           bdmAcceptStatus: {
+//             $in: [
+//               "NotForwarded",
+//               "Pending",
+//               "Accept",
+//               "MaturedPending",
+//               "MaturedAccepted",
+//               "MaturedDone",
+//               undefined,
+//             ],
+//           },
+//           Status: { $in: ["Matured"] },
+//         },
+//       ],
+//     }).lean()
+//       .then((data) => {
+//         data.forEach((item) => countClassifiedIds.add(item._id.toString())); // Track IDs for exclusion
+//         return data.length; // Return count
+//       });
+
+//     // Total pages calculation based on the largest dataset (generalData as reference)
+//     const totalGeneralPages = Math.ceil(untouchedCount / limit);
+//     const totalBusyPages = Math.ceil(busyCount / limit);
+//     const totalUndrocsPages = Math.ceil(underdocsCount / limit);
+//     const totalInterestedPages = Math.ceil(interestedCount / limit);
+//     const totalMaturedPages = Math.ceil(maturedCount / limit);
+//     const totalForwardedCount = Math.ceil(forwardedCount / limit);
+//     const totalNotInterestedPages = Math.ceil(notInterestedCount / limit);
+//     // Return response with data categorized separately
+//     res.status(200).json({
+//       generalData,
+//       busyData,
+//       underdocsData,
+//       interestedData,
+//       forwardedData,
+//       maturedData: updatedMaturedData, // Include updated matured data with booking information
+//       notInterestedData,
+//       totalCounts: {
+//         notInterested: notInterestedCount,
+//         interested: interestedCount,
+//         matured: maturedCount,
+//         forwarded: forwardedCount,
+//         busy: busyCount,
+//         untouched: untouchedCount,
+//         underdocs: underdocsCount
+//       },
+//       totalGeneralPages: totalGeneralPages,
+//       totalBusyPages: totalBusyPages,
+//       totalUndrocsPages: totalUndrocsPages,
+//       totalInterestedPages: totalInterestedPages,
+//       totalForwardedCount: totalForwardedCount,
+//       totalMaturedPages: totalMaturedPages,
+//       totalNotInterestedPages: totalNotInterestedPages,
+//       data: combinedData,
+//       totalPages: Math.ceil((untouchedCount + busyCount + interestedCount + maturedCount + forwardedCount + notInterestedCount) / limit), // Adjust this based on your pagination needs
+//     });
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 router.post("/postData", async (req, res) => {
   const { selectedObjects, employeeSelection } = req.body

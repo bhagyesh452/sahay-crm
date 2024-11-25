@@ -11,64 +11,14 @@ const TeamLeadsModel = require("../models/TeamLeads.js");
 const CompleteRemarksHistoryLeads = require('../models/CompleteRemarksHistoryLeads.js');
 
 
-// router.post("/update-remarks/:id", async (req, res) => {
-//   const { id } = req.params;
-//   const { Remarks } = req.body;
 
-//   try {
-//     // Update remarks and fetch updated data in a single operation
-//     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
-
-//     await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks });
-
-//     // Fetch updated data and remarks history
-//     const updatedCompany = await CompanyModel.findById(id);
-//     const remarksHistory = await RemarksHistory.find({ companyId: id });
-
-//     res.status(200).json({ updatedCompany, remarksHistory });
-//   } catch (error) {
-//     console.error("Error updating remarks:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-// router.post("/remarks-history/:companyId", async (req, res) => {
-//   const { companyId } = req.params;
-//   const { Remarks, bdeName, currentCompanyName } = req.body;
-
-//   // Get the current date and time
-//   const currentDate = new Date();
-//   const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
-//   const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
-
-//   try {
-//     // Create a new RemarksHistory instance
-//     const newRemarksHistory = new RemarksHistory({
-//       time,
-//       date,
-//       companyID: companyId,
-//       remarks: Remarks,
-//       bdeName: bdeName,
-//       companyName: currentCompanyName,
-//       //bdmName: remarksBdmName,
-//     });
-
-//     //await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
-
-//     // Save the new entry to MongoDB
-//     await newRemarksHistory.save();
-//     res.json({ success: true, message: "Remarks history added successfully" });
-//   } catch (error) {
-//     console.error("Error adding remarks history:", error);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// });
 
 
 
 router.post("/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks, bdeName, currentCompanyName, designation } = req.body;
+  const socketIO = req.io;
 
   // Get the current date and time
   const currentDate = new Date();
@@ -125,10 +75,14 @@ router.post("/update-remarks/:id", async (req, res) => {
       await newCompleteRemarksHistory.save();
     }
     // Fetch updated data and remarks history
-    const updatedCompany = await CompanyModel.findById(id);
-    const remarksHistory = await RemarksHistory.find({ companyID: id });
+    const updatedCompany = await CompanyModel.findById(id).lean();
+    const remarksHistory = await RemarksHistory.find({ companyID: id }).lean();
 
     // Send the updated company and remarks history data back to the client
+    socketIO.emit("employee__remarks_successfull_update", {
+      message: `Status updated to "Not Interested" for company: ${updatedCompany["Company Name"]}`,
+      updatedDocument: updatedCompany,
+    })
     res.status(200).json({ updatedCompany, remarksHistory });
   } catch (error) {
     console.error("Error updating remarks:", error);
@@ -138,58 +92,6 @@ router.post("/update-remarks/:id", async (req, res) => {
 
 // --------------------------------remarks-history-bdm-------------------------------------
 
-// router.post("/update-remarks-bdm/:id", async (req, res) => {
-//   const { id } = req.params;
-//   const { Remarks } = req.body;
-
-//   try {
-//     // Update remarks and fetch updated data in a single operation
-//     await CompanyModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
-
-//     await TeamLeadsModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
-
-//     // Fetch updated data and remarks history
-//     const updatedCompany = await CompanyModel.findById(id);
-//     const remarksHistory = await RemarksHistory.find({ companyId: id });
-
-//     res.status(200).json({ updatedCompany, remarksHistory });
-//   } catch (error) {
-//     console.error("Error updating remarks:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-
-// router.post("/remarks-history-bdm/:companyId", async (req, res) => {
-//   const { companyId } = req.params;
-//   const { Remarks, remarksBdmName, currentCompanyName } = req.body;
-
-//   // Get the current date and time
-//   const currentDate = new Date();
-//   const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
-//   const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
-
-//   try {
-//     // Create a new RemarksHistory instance
-//     const newRemarksHistory = new RemarksHistory({
-//       time,
-//       date,
-//       companyID: companyId,
-//       bdmRemarks: Remarks,
-//       bdmName: remarksBdmName,
-//       companyName: currentCompanyName,
-//     });
-
-//     await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
-
-//     // Save the new entry to MongoDB
-//     await newRemarksHistory.save();
-//     res.json({ success: true, message: "Remarks history added successfully" });
-//   } catch (error) {
-//     console.error("Error adding remarks history:", error);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// });
 
 router.post("/update-remarks-bdm/:id", async (req, res) => {
   const { id } = req.params;
@@ -205,18 +107,6 @@ router.post("/update-remarks-bdm/:id", async (req, res) => {
     await CompanyModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
     await TeamLeadsModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
 
-    // // // Create a new RemarksHistory instance
-    // const newRemarksHistory = new RemarksHistory({
-    //   time,
-    //   date,
-    //   companyID: id,
-    //   bdmRemarks: Remarks,
-    //   bdmName: remarksBdmName,
-    //   companyName: currentCompanyName,
-    // });
-
-    // // Save the new entry to RemarksHistory collection
-    // await newRemarksHistory.save();
     // New object to be pushed
     const newCompleteRemarks = {
       companyID: id,
@@ -514,6 +404,15 @@ router.delete("/remarks-history/:id", async (req, res) => {
     console.error("Error deleting remark:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+router.post('/webhook', (req, res) => {
+  // const eventData = req.body;
+
+  // Save to database or process the data
+  console.log('Saving data:');
+
+  res.status(200).json('Webhook received and processed');
 });
 
 module.exports = router;
