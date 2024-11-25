@@ -2131,7 +2131,6 @@ function TestLeads() {
                                                             <td>{formatDateFinal(company["UploadDate"])}</td>
                                                             {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
                                                             {(dataStatus === "Extracted") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
-                                                            {(dataStatus === "Extracted") && <td>{company.lastStatusOfExtractedEmployee ? company.lastStatusOfExtractedEmployee : "-"}</td>}
                                                             {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
                                                             {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
                                                             {(dataStatus === "Assigned") && <td>{company.bdmName ? company.bdmName : "-"}</td>}
