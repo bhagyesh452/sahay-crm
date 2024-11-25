@@ -51,7 +51,8 @@ function TeamLeadsBusy({
     handleCheckboxChange,
     handleMouseDown,
     handleMouseEnter,
-    handleMouseUp
+    handleMouseUp,
+    bdenumber
 }) {
 
     // Team Leads General Filtered States :
@@ -579,10 +580,11 @@ function TeamLeadsBusy({
                                                 handleShowCallHistory(
                                                     company["Company Name"],
                                                     company["Company Number"],
-                                                    //bdenumber,
+                                                    bdenumber,
                                                     company.bdmName,
                                                     company.bdmAcceptStatus,
-                                                    company.bdeForwardDate
+                                                    company.bdeForwardDate,
+                                                    company.ename
 
                                                 )}
                                             style={{

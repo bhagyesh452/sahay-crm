@@ -45,7 +45,8 @@ function TeamLeadsNotInterested({
     handleCheckboxChange,
     handleMouseDown,
     handleMouseEnter,
-    handleMouseUp
+    handleMouseUp,
+    bdenumber
 }) {
 
     // Team Leads Not Interested Filtered States :
@@ -535,10 +536,11 @@ function TeamLeadsNotInterested({
                                                 handleShowCallHistory(
                                                     company["Company Name"],
                                                     company["Company Number"],
-                                                    //bdenumber,
+                                                    bdenumber,
                                                     company.bdmName,
                                                     company.bdmAcceptStatus,
-                                                    company.bdeForwardDate
+                                                    company.bdeForwardDate,
+                                                    company.ename
 
                                                 )}
                                             style={{

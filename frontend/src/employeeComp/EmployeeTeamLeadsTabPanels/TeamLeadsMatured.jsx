@@ -50,7 +50,8 @@ function TeamLeadsMatured({
     handleCheckboxChange,
     handleMouseDown,
     handleMouseEnter,
-    handleMouseUp
+    handleMouseUp,
+    bdenumber
 }) {
 
     const navigate = useNavigate();
@@ -526,10 +527,11 @@ function TeamLeadsMatured({
                                                 handleShowCallHistory(
                                                     company["Company Name"],
                                                     company["Company Number"],
-                                                    //bdenumber,
+                                                    bdenumber,
                                                     company.bdmName,
                                                     company.bdmAcceptStatus,
-                                                    company.bdeForwardDate
+                                                    company.bdeForwardDate,
+                                                    company.ename
 
                                                 )
                                             }

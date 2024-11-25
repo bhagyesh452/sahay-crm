@@ -55,7 +55,8 @@ function TeamLeadsInterested({
     handleCheckboxChange,
     handleMouseDown,
     handleMouseEnter,
-    handleMouseUp
+    handleMouseUp,
+    bdenumber
 }) {
 
     const [isFilledFromTeamLeads, setIsFilledFromTeamLeads] = useState(false);
@@ -627,10 +628,11 @@ function TeamLeadsInterested({
                                                 handleShowCallHistory(
                                                     company["Company Name"],
                                                     company["Company Number"],
-                                                    //bdenumber,
+                                                    bdenumber,
                                                     company.bdmName,
                                                     company.bdmAcceptStatus,
-                                                    company.bdeForwardDate
+                                                    company.bdeForwardDate,
+                                                    company.ename
 
                                                 )
                                             }

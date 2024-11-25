@@ -69,7 +69,8 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const [showProjection, setShowProjection] = useState(false);
     const [revertBackRequestData, setRevertBackRequestData] = useState([]);
     const [openRevertBackRequestDialog, setOpenRevertBackRequestDialog] = useState(false)
-
+    const [callHistoryBdmName, setcallHistoryBdmName] = useState("");
+    const [callHistoryBdeName, setcallHistoryBdeName] = useState("");
 
     // Filter States
     const [generalDataCount, setGeneralDataCount] = useState(0);
@@ -134,9 +135,12 @@ function EmployeeTeamLeadsCopy({ designation }) {
         setShowAssignLeadsFromBdm(false);
     };
 
-    const handleShowCallHistory = (companyName, clientNumber) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate,ename) => {
         setShowCallHistory(true);
         setClientNumber(clientNumber);
+        setcallHistoryBdmName(ename)
+        setCompanyName(companyName);
+        // setcallHistoryBdeName(ename)
     };
 
     const hanleCloseCallHistory = () => {
@@ -1031,6 +1035,7 @@ useEffect(() => {
                                                     handleMouseDown={handleMouseDown}
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
+                                                    bdenumber={data.number}
                                                 />
                                             )}
                                         </div>
@@ -1077,6 +1082,7 @@ useEffect(() => {
                                                     handleMouseDown={handleMouseDown}
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
+                                                    bdenumber={data.number}
                                                 />
                                             )}
                                         </div>
@@ -1120,6 +1126,7 @@ useEffect(() => {
                                                     handleMouseDown={handleMouseDown}
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
+                                                    bdenumber={data.number}
                                                 />
                                             )}
                                         </div>
@@ -1164,6 +1171,7 @@ useEffect(() => {
                                                     handleMouseDown={handleMouseDown}
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
+                                                    bdenumber={data.number}
                                                 />
                                             )}
                                         </div>
@@ -1205,6 +1213,7 @@ useEffect(() => {
                                                     handleMouseDown={handleMouseDown}
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
+                                                    bdenumber={data.number}
                                                 />
                                             )}
                                         </div>
@@ -1220,6 +1229,9 @@ useEffect(() => {
                 <CallHistory
                     handleCloseHistory={hanleCloseCallHistory}
                     clientNumber={clientNumber}
+                    bdenumber={data.number}
+                    bdmName={callHistoryBdmName}
+                    companyName={companyName}
                 />
             ) : formOpen ? (
                 <RedesignedForm
