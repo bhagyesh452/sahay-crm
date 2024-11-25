@@ -4,6 +4,8 @@ const fs = require("fs");
 const multer = require("multer");
 const { route } = require("./EmployeeAPI");
 const EmployeeDraftModel = require("../models/EmployeeDraftModel");
+const adminModel = require("../models/Admin");
+const TeamLeadsModel = require("../models/TeamLeads");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -91,6 +93,72 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
         return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
     }
 });
+
+
+
+
+
+
+
+//comenting previous api as data is not fetching and creatind new 25-11-2024
+// router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
+//     const { empId } = req.params;
+//     try {
+//       // Try finding the employee in EmployeeDraftModel first
+//     //   let emp = await EmployeeDraftModel.findById(empId);
+  
+//       // If employee not found in EmployeeDraftModel, search in adminModel
+//       let emp;
+//       if (!emp) {
+//         emp = await adminModel.findById(empId);
+//       }
+
+  
+//       let isVisibleTeamLeads = false; // Default value for visibility
+  
+//       if (emp) {
+//         // If employee is found, check for related team leads
+//         const teamLeadsData = await TeamLeadsModel.find({
+//           bdmName: emp.ename,
+//         }).select("ename").lean();
+  
+//         // Set isVisibleTeamLeads based on the presence of team leads
+//         isVisibleTeamLeads = teamLeadsData.length > 0;
+//       }
+
+//       console.log("emp" , emp)
+  
+//       // If employee is still not found, return an error message
+//       if (!emp) {
+//         return res.status(404).json({ result: false, message: "Employee not found" });
+//       } else {
+//         // If employee is found, include isVisibleTeamLeads in the response
+//         const employeeData = {
+//           ...emp.toObject(), // Convert Mongoose document to plain object if needed
+//           isVisibleTeamLeads,
+//         };
+  
+//         // Return the employee data with the additional field
+//         return res.status(200).json({
+//           result: true,
+//           message: "Employee fetched successfully",
+//           data: employeeData,
+//         });
+//       }
+//     } catch (error) {
+//         console.log("Error fetching employee:", error);
+//       // Handle errors and return an appropriate response
+//       return res.status(500).json({
+//         result: false,
+//         message: "Error fetching employee",
+//         error: error.message,
+//       });
+//     }
+//   });
+  
+
+
+
 
 router.put("/updateEmployeeDraft/:empId", upload.fields([
     { name: "offerLetter", maxCount: 1 },

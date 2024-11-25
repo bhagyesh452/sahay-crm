@@ -2570,13 +2570,13 @@ router.get("/employees-new/:ename", async (req, res) => {
 
        CompanyModel.find({
           $or: [
-            // Match maturedBdmName regardless of Status
-            {
-              $and: [
-                { maturedBdmName: employeeName },
-                { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
-              ],
-            },
+            // // Match maturedBdmName regardless of Status
+            // {
+            //   $and: [
+            //     { maturedBdmName: employeeName },
+            //     { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
+            //   ],
+            // },
             // Default conditions for matured data
             {
               ...baseQuery,
@@ -2585,23 +2585,23 @@ router.get("/employees-new/:ename", async (req, res) => {
             }
           ],
           // Apply search condition only if it exists
-          ...(search
-            ? {
-                $or: [
-                  { 'Company Name': { $regex: new RegExp(escapeRegex(search), 'i') } },
-                  { 'Company Email': { $regex: new RegExp(escapeRegex(search), 'i') } },
-                  {
-                    $expr: {
-                      $regexMatch: {
-                        input: { $toString: "$Company Number" }, // Convert Company Number to string
-                        regex: `^${escapeRegex(search)}`,
-                        options: "i"
-                      }
-                    }
-                  }
-                ]
-              }
-            : {})
+          // ...(search
+          //   ? {
+          //       $or: [
+          //         { 'Company Name': { $regex: new RegExp(escapeRegex(search), 'i') } },
+          //         { 'Company Email': { $regex: new RegExp(escapeRegex(search), 'i') } },
+          //         {
+          //           $expr: {
+          //             $regexMatch: {
+          //               input: { $toString: "$Company Number" }, // Convert Company Number to string
+          //               regex: `^${escapeRegex(search)}`,
+          //               options: "i"
+          //             }
+          //           }
+          //         }
+          //       ]
+          //     }
+          //   : {})
         })
           .sort({ lastActionDate: -1 })
           .skip(skip)
@@ -2638,7 +2638,7 @@ router.get("/employees-new/:ename", async (req, res) => {
     const updatedMaturedData = maturedData.map(item => ({
       ...item._doc, // Spread the original _doc object to include all fields
       bookingDate: redesignedMap[item._id]?.bookingDate || null,
-      bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null
+      bookingPublishDate: redesignedMap[item._id]?.bookingPublishDate || null,
     }));
 
     const combinedData = [...generalData, ...busyData, ...underdocsData, ...interestedData, ...maturedData, ...notInterestedData, ...forwardedData];
@@ -2658,12 +2658,12 @@ router.get("/employees-new/:ename", async (req, res) => {
       CompanyModel.countDocuments({
         $or: [
           // Match maturedBdmName regardless of Status
-          {
-            $and: [
-              { maturedBdmName: employeeName },
-              { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
-            ],
-          },
+          // {
+          //   $and: [
+          //     { maturedBdmName: employeeName },
+          //     { $expr: { $ne: ["$ename", "$maturedBdmName"] } },
+          //   ],
+          // },
           // Default conditions for matured data
           {
             ...baseQuery,
@@ -2682,23 +2682,23 @@ router.get("/employees-new/:ename", async (req, res) => {
           },
         ],
         // Apply search condition only if it exists
-        ...(search
-          ? {
-              $or: [
-                { 'Company Name': { $regex: new RegExp(escapeRegex(search), "i") } },
-                { 'Company Email': { $regex: new RegExp(escapeRegex(search), "i") } },
-                {
-                  $expr: {
-                    $regexMatch: {
-                      input: { $toString: "$Company Number" }, // Convert Company Number to string
-                      regex: `^${escapeRegex(search)}`,
-                      options: "i",
-                    },
-                  },
-                },
-              ],
-            }
-          : {}),
+        // ...(search
+        //   ? {
+        //       $or: [
+        //         { 'Company Name': { $regex: new RegExp(escapeRegex(search), "i") } },
+        //         { 'Company Email': { $regex: new RegExp(escapeRegex(search), "i") } },
+        //         {
+        //           $expr: {
+        //             $regexMatch: {
+        //               input: { $toString: "$Company Number" }, // Convert Company Number to string
+        //               regex: `^${escapeRegex(search)}`,
+        //               options: "i",
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     }
+        //   : {}),
       }),
       CompanyModel.countDocuments({
         ...baseQuery,
