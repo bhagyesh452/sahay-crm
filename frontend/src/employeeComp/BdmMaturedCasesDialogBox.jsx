@@ -190,8 +190,6 @@ function BdmMaturedCasesDialogBox({
     if (!open) return null; // Prevent rendering if not open
 
 
-    console.log("forwardingPerson" , forwardingPerson)
-
     return (
         <div>
             <Dialog className='My_Mat_Dialog' open={open} fullWidth maxWidth="sm">
@@ -261,7 +259,7 @@ function BdmMaturedCasesDialogBox({
                                                 />
                                             </td>
                                             <td className='p-2'>{index + 1}</td>
-                                            <td className='p-2'>
+                                            <td className='p-2' style={{width:"180px"}}>
                                             <a
                                                     target="_blank"
                                                     className="text-decoration-none text-dark"
@@ -271,16 +269,6 @@ function BdmMaturedCasesDialogBox({
                                                     <FaWhatsapp className="text-success w-25 mb-1" />
                                                 </a>
                                             </td>
-                                            {/* <td className='p-2'>
-                                                <a
-                                                    target="_blank"
-                                                    className="text-decoration-none text-dark"
-                                                    href={`https://wa.me/91${item.bdmNumber}`}
-                                                >
-                                                    {item.bdmNumber}
-                                                    <FaWhatsapp className="text-success w-25 mb-1" />
-                                                </a>
-                                            </td> */}
                                             <td className='p-2'>{item.receivedCases}</td>
                                             <td className='p-2'>{item.maturedCases}</td>
                                             <td className='p-2'>{item.ratio} %</td>
