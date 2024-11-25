@@ -241,7 +241,10 @@ const CompanySchema = new mongoose.Schema({
   },
   maturedCaseUploaded:{
     type:Boolean,
-  }
+  },
+  bdmNextFollowUpDate: {
+    type: Date
+  },
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);

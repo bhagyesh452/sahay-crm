@@ -227,7 +227,7 @@ router.post("/update-status/:id", async (req, res) => {
     // Fetch the company and perform validations
     const company = await CompanyModel.findById(id)
       .lean()
-      .select({ "bdmAcceptStatus": 1, "Status": 1, "ename": 1, "Company Name": 1 });
+      // .select({ "bdmAcceptStatus": 1, "Status": 1, "ename": 1, "Company Name": 1 });
     if (!company) {
       return res.status(404).json({ error: "Company not found" });
     }
@@ -2063,6 +2063,7 @@ router.post(`/post-bdenextfollowupdate/:id`, async (req, res) => {
     socketIO.emit("employee__nextfollowupdate_successfull_update", {
       message: `Status updated to "Not Interested" for company: ${updatedCompany["Company Name"]}`,
       updatedDocument: updatedCompany,
+      ename : updatedCompany.ename
     })
     res.status(200).json({ message: "Date Updated successfully" });
   } catch (error) {
@@ -3655,7 +3656,8 @@ router.get("/bdmMaturedCases", async (req, res) => {
     // Step 1: Fetch employees who are BDM or Floor Managers
     const employees = await adminModel.find({
       newDesignation: { $in: ["Business Development Manager", "Floor Manager", "Business Development Executive"] },
-      bdmWork: true // Add this condition to filter only documents where bdmWork is true
+      bdmWork: true, // Condition for bdmWork to be true
+      ename: { $nin: ["DIRECT", "TEST ACCOUNT"] } // Exclude ename values "DIRECT" and "TEST ACCOUNT"
     }).select("ename number bdmWork"); // Select ename, number, and bdmWork fields
     
     const employeeData = employees.map(emp => ({

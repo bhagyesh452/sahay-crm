@@ -77,20 +77,20 @@ router.get("/fetchEmployeeDraft/", async (req, res) => {
 router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
     const { empId } = req.params;
     try {
-      const emp = await EmployeeDraftModel.findById(empId);
-  
-      // If employee is still not found, return an error message
-      if (!emp) {
-        return res.status(404).json({ result: false, message: "Employee not found" });
-      } else {
-        // If found, return the employee data
-        return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
-      }
+        const emp = await EmployeeDraftModel.findById(empId);
+        console.log("emp", emp)
+        // If employee is still not found, return an error message
+        if (!emp) {
+            return res.status(404).json({ result: false, message: "Employee not found" });
+        } else {
+            // If found, return the employee data
+            return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
+        }
     } catch (error) {
-      // Return an error if something goes wrong
-      return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
+        // Return an error if something goes wrong
+        return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
     }
-  });
+});
 
 router.put("/updateEmployeeDraft/:empId", upload.fields([
     { name: "offerLetter", maxCount: 1 },
@@ -103,28 +103,28 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
 ]), async (req, res) => {
 
     const { empId } = req.params;
-    const { 
-        firstName, 
-        middleName, 
-        lastName, 
+    const {
+        firstName,
+        middleName,
+        lastName,
         dob,
         bloodGroup,
         gender,
-        personalPhoneNo, 
-        personalEmail, 
+        personalPhoneNo,
+        personalEmail,
         employeeID,
-        designation, 
-        officialNo, 
-        officialEmail, 
-        joiningDate, 
-        branch, 
-        manager, 
-        nameAsPerBankRecord, 
-        firstMonthSalaryCondition, 
-        firstMonthSalary, 
-        personName, 
-        relationship, 
-        personPhoneNo, 
+        designation,
+        officialNo,
+        officialEmail,
+        joiningDate,
+        branch,
+        manager,
+        nameAsPerBankRecord,
+        firstMonthSalaryCondition,
+        firstMonthSalary,
+        personName,
+        relationship,
+        personPhoneNo,
         activeStep
     } = req.body;
     // console.log("Reqest file is :", req.files);
@@ -186,8 +186,8 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
             ...(personalEmail && { personal_email: personalEmail }),
 
             ...(employeeID && { employeeID: employeeID }),
-            ...(designation && {designation: newDesignation}),
-            ...(designation && {newDesignation: designation}),
+            ...(designation && { designation: newDesignation }),
+            ...(designation && { newDesignation: designation }),
             ...(officialNo && { number: officialNo }),
             ...(officialEmail && { email: officialEmail }),
             ...(joiningDate && { jdate: joiningDate }),

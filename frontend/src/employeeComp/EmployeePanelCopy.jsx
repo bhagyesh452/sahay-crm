@@ -274,7 +274,12 @@ function EmployeePanelCopy({ fordesignation }) {
     
         socket.on("employee_lead_status_successfull_update", (res) => {
             console.log("socket response:", res);
-            if (res.updatedDocument) {
+        
+            // Safely extract and compare `ename` fields
+            const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
+            const dataEname = (data.ename || "").toString().trim().toLowerCase();
+        
+            if (updatedEname === dataEname) {
                 console.log("Updating document in state:", res.updatedDocument);
                 updateDocumentInState(res.updatedDocument);
             }
@@ -282,7 +287,12 @@ function EmployeePanelCopy({ fordesignation }) {
 
         socket.on("employee__nextfollowupdate_successfull_update", (res) => {
             console.log("socket response:", res);
-            if (res.updatedDocument) {
+        
+            // Safely extract and normalize `ename` for comparison
+            const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
+            const dataEname = (data.ename || "").toString().trim().toLowerCase();
+        
+            if (updatedEname === dataEname) {
                 console.log("Updating document in state:", res.updatedDocument);
                 updateDocumentInState(res.updatedDocument);
             }
@@ -290,16 +300,23 @@ function EmployeePanelCopy({ fordesignation }) {
 
         socket.on("employee__remarks_successfull_update", (res) => {
             console.log("socket response:", res);
-            if (res.updatedDocument) {
-                console.log("Updating document in state:", res.updatedDocument);
+            console.log("Updated ename:", res.updatedDocument?.ename);
+            console.log("Data ename:", data.ename);
+        
+            const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
+            const dataEname = (data.ename || "").toString().trim().toLowerCase();
+        
+            if (updatedEname === dataEname) {
+                console.log("Match found. Updating document in state:", res.updatedDocument);
                 updateDocumentInState(res.updatedDocument);
             }
         });
+        
     
         return () => {
             socket.disconnect();
         };
-    }, [dataStatus]);
+    }, [data.ename]);
     
     
     

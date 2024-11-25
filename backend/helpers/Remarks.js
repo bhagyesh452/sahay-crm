@@ -82,6 +82,7 @@ router.post("/update-remarks/:id", async (req, res) => {
     socketIO.emit("employee__remarks_successfull_update", {
       message: `Status updated to "Not Interested" for company: ${updatedCompany["Company Name"]}`,
       updatedDocument: updatedCompany,
+      ename : updatedCompany.ename
     })
     res.status(200).json({ updatedCompany, remarksHistory });
   } catch (error) {

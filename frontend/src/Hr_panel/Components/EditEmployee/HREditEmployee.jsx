@@ -805,7 +805,7 @@ export default function HREditEmployee() {
     try {
       const res = await axios.get(`${secretKey}/employeeDraft/fetchEmployeeFromId/${empId}`);
       const data = res.data.data;
-      // console.log("Fetched details is :", res.data.data);
+      console.log("Fetched details is :", res.data.data);
       setMyInfo(data);
       setActiveStep(data.activeStep);
 
@@ -824,7 +824,7 @@ export default function HREditEmployee() {
 
   useEffect(() => {
     fetchPersonalInfo();
-  }, []);
+  }, [empId]);
 
   return (
     <div>
