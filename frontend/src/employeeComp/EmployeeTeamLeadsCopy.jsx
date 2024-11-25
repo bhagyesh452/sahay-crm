@@ -1239,7 +1239,7 @@ useEffect(() => {
                 <AddLeadForm
                     isEmployee={true}
                     employeeName={newBdeName}
-                    employeeEmail={newEmpData.find(employee => employee.ename === newBdeName)?.email}
+                    employeeEmail={employeeData.find(employee => employee.ename === newBdeName)?.email}
                     isDeletedEmployeeCompany={deletedEmployeeStatus}
                     setFormOpen={setAddFormOpen}
                     companysName={companyName}

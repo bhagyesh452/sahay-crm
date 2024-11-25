@@ -61,6 +61,7 @@ function EmployeeDataReport() {
     const [searchTerm, setSearchTerm] = useState("");
     const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
     const [mergedData, setMergedData] = useState([]);
+    const [defaultData, setDefaultData] = useState([]);
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [filteredData, setFilteredData] = useState(employeeData);
     const [filterField, setFilterField] = useState("")
@@ -169,7 +170,12 @@ function EmployeeDataReport() {
         setMergedDataForFilter(merged); // Update mergedData state
     };
 
-    console.log("mergedData", mergedData)
+    useEffect(() => {
+        // Initially set merged data as default data to get back whole data when search result is empty.
+        setDefaultData(mergedData);
+    }, []);
+
+    console.log("mergedData", mergedData);
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
 
     useEffect(() => {
@@ -263,7 +269,13 @@ function EmployeeDataReport() {
     // }
     function filterSearch(searchTerm) {
         setSearchTerm(searchTerm);
-        const filteredData = mergedData.filter((company) =>
+        if (searchTerm.trim() === "") {
+            // Reset to default data if search term is empty
+            setMergedData(defaultData);
+            return;
+        }
+    
+        const filteredData = defaultData.filter(company =>
             company.ename.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setMergedData(filteredData);
