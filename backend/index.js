@@ -467,7 +467,7 @@ app.post("/api/rmoffundinglogin", async (req, res) => {
 // -----------------calling api request---------------------
 
 app.post('/api/fetch-api-data', async (req, res) => {
-  const { emp_numbers } = ["9054604529"];
+  const { emp_numbers } = req.body;
   //console.log("empnumber", emp_numbers)
   // External API URL (without query parameters)
   

@@ -9,7 +9,7 @@ const CompanyModel = require("../models/Leads");
 const RemarksHistory = require("../models/RemarksHistory");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const CompleteRemarksHistoryLeads = require('../models/CompleteRemarksHistoryLeads.js');
-
+const axios = require('axios');
 
 
 
@@ -418,13 +418,34 @@ router.delete("/remarks-history/:id", async (req, res) => {
   }
 });
 
-router.post('/webhook', (req, res) => {
-  // const eventData = req.body;
+router.post('/webhook', async(req, res) => {
+  const { emp_numbers } = ["9054604529"];
+  //console.log("empnumber", emp_numbers)
+  // External API URL (without query parameters)
+  
+  const externalApiUrl = " https://api1.callyzer.co/v2/employee/get"; // Assuming the external API expects the data in the body, not in the URL
 
-  // Save to database or process the data
-  console.log('Saving data:');
+  try {
+    // Fetch data from the external API using axios with GET request and body
+    const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46";
+    const response = await axios({
+      method: 'GET',
+      url: externalApiUrl,
+      data: { emp_numbers }, // Send the data in the body of the GET request
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+    });
 
-  res.status(200).json('Webhook received and processed');
+    // Send the response from the external API back to the client
+    console.log(response.data)
+    res.status(200).json(response.data);
+  } catch (error) {
+    // Handle any errors
+    console.error('Error fetching data from external API:', error);
+    res.status(500).json({ error: 'Failed to fetch data from external API' });
+  }
 });
 
 module.exports = router;
