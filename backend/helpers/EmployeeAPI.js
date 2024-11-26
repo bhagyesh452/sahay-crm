@@ -637,8 +637,6 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
 
 
 
-
-
 router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   const { empId } = req.params;
   try {

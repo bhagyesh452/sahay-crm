@@ -4675,6 +4675,20 @@ div#table-default td {
   cursor: pointer;
 }
 
+.untouched-history-btn {
+  width: 32px;
+  height: 22px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 5px;
+  background: #cfcfcf;
+  border: 1px solid #9b9b9b;
+  margin-left: 8px;
+  font-size: 10px;
+  color: #6f6f6f;
+  cursor: pointer;
+}
+
 .docs_w-history-btn {
   width: 32px;
   height: 22px;

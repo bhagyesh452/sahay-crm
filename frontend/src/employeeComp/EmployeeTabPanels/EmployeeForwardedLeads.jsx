@@ -180,7 +180,7 @@ function EmployeeForwardedLeads({
         setForwardedDataCount(newData.length);
     };
 
-    const handleFilterClick = async(field) => {
+    const handleFilterClick = async (field) => {
         if (filteredData.length === 0) {
             try {
                 const response = await axios.get(
@@ -779,10 +779,24 @@ function EmployeeForwardedLeads({
                                                 <div className="d-flex align-items-center justify-content-between">
 
                                                     <div
-                                                        className={company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
-                                                            company.bdeOldStatus === "FollowUp" ? "dfault_followup-status" :
-                                                                company.bdeOldStatus === "Matured" ? "dfault_approved-status" :
-                                                                    null}>
+                                                        className={`${
+                                                            company.bdeOldStatus === "Not Picked Up"
+                                                              ? "ep_notpickedup_status"
+                                                              :company.bdeOldStatus === "Not Interested"
+                                                              ? "dfault_notinterested-status"
+                                                              : company.bdeOldStatus === "Busy"
+                                                              ? "ep_busy_status"
+                                                              : company.bdeOldStatus === "Untouched"
+                                                              ? "ep_untouched_status"
+                                                              : company.bdeOldStatus === "Interested"
+                                                              ? "dfault_interested-status"
+                                                              : company.bdeOldStatus === "FollowUp"
+                                                              ? "dfault_followup-status"
+                                                              : company.bdeOldStatus === "Matured"
+                                                              ? "dfault_approved-status"
+                                                              : "dfault_followup-status"
+                                                          }`}
+                                                                    >
                                                         {company.bdeOldStatus}
                                                     </div>
 
@@ -796,14 +810,30 @@ function EmployeeForwardedLeads({
                                                                         ? "followup-history-btn disabled"
                                                                         : company.bdeOldStatus === "Matured"
                                                                             ? "matured-history-btn disabled"
-                                                                            : "")
+                                                                            : company.bdeOldStatus === "Not Picked Up"
+                                                                                ? "notpickedup-history-btn disabled"
+                                                                                : company.bdeOldStatus === "Not Interested"
+                                                                                    ? "notinterested-history-btn disabled"
+                                                                                    : company.bdeOldStatus === "Busy"
+                                                                                        ? "busy-history-btn disabled"
+                                                                                         : company.bdeOldStatus === "Untouched"
+                                                                                            ? "untouched-history-btn disabled"
+                                                                                        : "")
                                                                 : (company.bdeOldStatus === "Interested"
                                                                     ? "intersted-history-btn"
                                                                     : company.bdeOldStatus === "FollowUp"
                                                                         ? "followup-history-btn"
                                                                         : company.bdeOldStatus === "Matured"
                                                                             ? "matured-history-btn"
-                                                                            : "")
+                                                                            : company.bdeOldStatus === "Not Picked Up"
+                                                                                ? "notpickedup-history-btn"
+                                                                                : company.bdeOldStatus === "Not Interested"
+                                                                                    ? "notinterested-history-btn"
+                                                                                    : company.bdeOldStatus === "Busy"
+                                                                                        ? "busy-history-btn"
+                                                                                        : company.bdeOldStatus === "Untouched"
+                                                                                            ? "untouched-history-btn"
+                                                                                            : "")
 
                                                         }
                                                     >
@@ -874,6 +904,7 @@ function EmployeeForwardedLeads({
                                                                         company.bdmStatus && company.bdmStatus === "Interested" ? "dfault_interested-status" :
                                                                             company.bdmStatus && company.bdmStatus === "FollowUp" ? "dfault_followup-status" :
                                                                                 company.bdmStatus && company.bdmStatus === "Busy" ? "dfault_busy-status" :
+                                                                                company.bdmStatus && company.bdmStatus === "Untouched" ? "ep_untouched_status":
                                                                                     null}>
                                                     {company.bdmStatus ? company.bdmStatus : company.Status}
                                                 </div>
@@ -1039,40 +1070,45 @@ function EmployeeForwardedLeads({
                         </div>
                     )}
                 </>
-            )}
-            {formOpen && (
-                <>
-                    <RedesignedForm
-                        // matured={true}
-                        // companysId={companyId}
-                        setDataStatus={setdataStatus}
-                        setFormOpen={setFormOpen}
-                        companysName={companyName}
-                        companysEmail={companyEmail}
-                        companyNumber={companyNumber}
-                        setNowToFetch={setNowToFetch}
-                        companysInco={companyInco}
-                        employeeName={ename}
-                        employeeEmail={email}
-                    />
-                </>
-            )}
-            {addFormOpen && (
-                <>
-                    {" "}
-                    <AddLeadForm
-                        employeeEmail={email}
-                        newBdeName={newBdeName}
-                        isDeletedEmployeeCompany={deletedEmployeeStatus}
-                        setFormOpen={setAddFormOpen}
-                        companysName={companyName}
-                        setNowToFetch={setNowToFetch}
-                        setDataStatus={setdataStatus}
-                        employeeName={ename}
-                    />
-                </>
-            )}
-        </div>
+            )
+            }
+            {
+                formOpen && (
+                    <>
+                        <RedesignedForm
+                            // matured={true}
+                            // companysId={companyId}
+                            setDataStatus={setdataStatus}
+                            setFormOpen={setFormOpen}
+                            companysName={companyName}
+                            companysEmail={companyEmail}
+                            companyNumber={companyNumber}
+                            setNowToFetch={setNowToFetch}
+                            companysInco={companyInco}
+                            employeeName={ename}
+                            employeeEmail={email}
+                        />
+                    </>
+                )
+            }
+            {
+                addFormOpen && (
+                    <>
+                        {" "}
+                        <AddLeadForm
+                            employeeEmail={email}
+                            newBdeName={newBdeName}
+                            isDeletedEmployeeCompany={deletedEmployeeStatus}
+                            setFormOpen={setAddFormOpen}
+                            companysName={companyName}
+                            setNowToFetch={setNowToFetch}
+                            setDataStatus={setdataStatus}
+                            employeeName={ename}
+                        />
+                    </>
+                )
+            }
+        </div >
     );
 }
 

@@ -383,6 +383,17 @@ router.get("/remarks-history-complete/:id", async (req, res) => {
   }
 });
 
+router.get("/complete-new-remarks-history", async (req, res) => {
+  try{
+    const remarksHistory = await CompleteRemarksHistoryLeads.find();
+    res.json(remarksHistory);
+  }catch(error){
+    console.error("Error fetching remarks history:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+ 
+})
+
 router.delete("/remarks-history/:id", async (req, res) => {
   const { id } = req.params;
   const { companyId } = req.query;

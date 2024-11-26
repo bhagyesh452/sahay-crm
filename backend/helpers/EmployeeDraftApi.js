@@ -280,10 +280,6 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
             { new: true, upsert: true },  // Return the updated document or create a new one if no match is found
         );
 
-        // if (!emp) {
-        //     return res.status(404).json({ result: false, message: "Employee not found" });
-        // }
-
         res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
     } catch (error) {
         console.log("eroor", error)
