@@ -807,7 +807,7 @@ export default function HREditEmployee() {
       const data = res.data.data;
       console.log("Fetched details is :", res.data.data);
       setMyInfo(data);
-      setActiveStep(data.activeStep);
+      setActiveStep(data.activeStep ? data.activeStep : 0);
 
       // Mark previous steps as completed
       setCompleted((prevCompleted) => {
@@ -825,6 +825,8 @@ export default function HREditEmployee() {
   useEffect(() => {
     fetchPersonalInfo();
   }, [empId]);
+
+  console.log("activestep" , activeStep)
 
   return (
     <div>
