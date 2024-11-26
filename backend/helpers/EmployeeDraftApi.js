@@ -76,85 +76,80 @@ router.get("/fetchEmployeeDraft/", async (req, res) => {
     }
 });
 
-router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
-    const { empId } = req.params;
-    try {
-        const emp = await EmployeeDraftModel.findById(empId);
-        console.log("emp", emp)
-        // If employee is still not found, return an error message
-        if (!emp) {
-            return res.status(404).json({ result: false, message: "Employee not found" });
-        } else {
-            // If found, return the employee data
-            return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
-        }
-    } catch (error) {
-        // Return an error if something goes wrong
-        return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
-    }
-});
-
-
-
-
-
-
-
-//comenting previous api as data is not fetching and creatind new 25-11-2024
 // router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
 //     const { empId } = req.params;
 //     try {
-//       // Try finding the employee in EmployeeDraftModel first
-//     //   let emp = await EmployeeDraftModel.findById(empId);
-  
-//       // If employee not found in EmployeeDraftModel, search in adminModel
-//       let emp;
-//       if (!emp) {
-//         emp = await adminModel.findById(empId);
-//       }
-
-  
-//       let isVisibleTeamLeads = false; // Default value for visibility
-  
-//       if (emp) {
-//         // If employee is found, check for related team leads
-//         const teamLeadsData = await TeamLeadsModel.find({
-//           bdmName: emp.ename,
-//         }).select("ename").lean();
-  
-//         // Set isVisibleTeamLeads based on the presence of team leads
-//         isVisibleTeamLeads = teamLeadsData.length > 0;
-//       }
-
-//       console.log("emp" , emp)
-  
-//       // If employee is still not found, return an error message
-//       if (!emp) {
-//         return res.status(404).json({ result: false, message: "Employee not found" });
-//       } else {
-//         // If employee is found, include isVisibleTeamLeads in the response
-//         const employeeData = {
-//           ...emp.toObject(), // Convert Mongoose document to plain object if needed
-//           isVisibleTeamLeads,
-//         };
-  
-//         // Return the employee data with the additional field
-//         return res.status(200).json({
-//           result: true,
-//           message: "Employee fetched successfully",
-//           data: employeeData,
-//         });
-//       }
+//         const emp = await EmployeeDraftModel.findById(empId);
+//         console.log("emp", emp)
+//         // If employee is still not found, return an error message
+//         if (!emp) {
+//             return res.status(404).json({ result: false, message: "Employee not found" });
+//         } else {
+//             // If found, return the employee data
+//             return res.status(200).json({ result: true, message: "Employee fetched successfully", data: emp });
+//         }
 //     } catch (error) {
-//         console.log("Error fetching employee:", error);
-//       // Handle errors and return an appropriate response
-//       return res.status(500).json({
-//         result: false,
-//         message: "Error fetching employee",
-//         error: error.message,
-//       });
+//         // Return an error if something goes wrong
+//         return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
 //     }
-//   });
+// });
+
+
+//comenting previous api as data is not fetching and creatind new 25-11-2024
+router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
+    const { empId } = req.params;
+    try {
+      // Try finding the employee in EmployeeDraftModel first
+      let emp = await EmployeeDraftModel.findById(empId);
+  
+      // If employee not found in EmployeeDraftModel, search in adminModel
+  
+      if (!emp) {
+        emp = await adminModel.findById(empId);
+      }
+
+  
+      let isVisibleTeamLeads = false; // Default value for visibility
+  
+      if (emp) {
+        // If employee is found, check for related team leads
+        const teamLeadsData = await TeamLeadsModel.find({
+          bdmName: emp.ename,
+        }).select("ename").lean();
+  
+        // Set isVisibleTeamLeads based on the presence of team leads
+        isVisibleTeamLeads = teamLeadsData.length > 0;
+      }
+
+      console.log("emp" , emp)
+  
+      // If employee is still not found, return an error message
+      if (!emp) {
+        return res.status(404).json({ result: false, message: "Employee not found" });
+      } else {
+        // If employee is found, include isVisibleTeamLeads in the response
+        const employeeData = {
+          ...emp.toObject(), // Convert Mongoose document to plain object if needed
+          isVisibleTeamLeads,
+        };
+  
+        // Return the employee data with the additional field
+        return res.status(200).json({
+          result: true,
+          message: "Employee fetched successfully",
+          data: employeeData,
+        });
+      }
+    } catch (error) {
+        console.log("Error fetching employee:", error);
+      // Handle errors and return an appropriate response
+      return res.status(500).json({
+        result: false,
+        message: "Error fetching employee",
+        error: error.message,
+      });
+    }
+  });
   
 
 
@@ -291,6 +286,7 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
 
         res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
     } catch (error) {
+        console.log("eroor", error)
         res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
     }
 });
