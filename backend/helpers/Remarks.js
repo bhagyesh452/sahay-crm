@@ -82,7 +82,7 @@ router.post("/update-remarks/:id", async (req, res) => {
     socketIO.emit("employee__remarks_successfull_update", {
       message: `Status updated to "Not Interested" for company: ${updatedCompany["Company Name"]}`,
       updatedDocument: updatedCompany,
-      ename : updatedCompany.ename
+      ename: updatedCompany.ename
     })
     res.status(200).json({ updatedCompany, remarksHistory });
   } catch (error) {
@@ -384,14 +384,14 @@ router.get("/remarks-history-complete/:id", async (req, res) => {
 });
 
 router.get("/complete-new-remarks-history", async (req, res) => {
-  try{
+  try {
     const remarksHistory = await CompleteRemarksHistoryLeads.find();
     res.json(remarksHistory);
-  }catch(error){
+  } catch (error) {
     console.error("Error fetching remarks history:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
- 
+
 })
 
 router.delete("/remarks-history/:id", async (req, res) => {
@@ -418,34 +418,54 @@ router.delete("/remarks-history/:id", async (req, res) => {
   }
 });
 
-router.post('/webhook', async(req, res) => {
-  const { emp_numbers } = ["9054604529"];
-  //console.log("empnumber", emp_numbers)
-  // External API URL (without query parameters)
-  
-  const externalApiUrl = " https://api1.callyzer.co/v2/employee/get"; // Assuming the external API expects the data in the body, not in the URL
+router.post('/webhook', async (req, res) => {
+  const socketIO = req.io;
+  const emp_numbers = ["8626048636"];
+
+  const today = new Date();
+  const todayStartDate = new Date(today);
+  const todayEndDate = new Date(today);
+
+  // Set timestamps
+  todayEndDate.setUTCHours(13, 0, 0, 0); // End at 1 PM UTC
+  todayStartDate.setMonth(todayStartDate.getMonth());
+  todayStartDate.setUTCHours(4, 0, 0, 0); // Start 6 months ago at 4 AM UTC
+
+  const startTimestamp = Math.floor(todayStartDate.getTime() / 1000); // seconds
+  const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);   // seconds
+
+  const externalApiUrl = "https://api1.callyzer.co/v2/call-log/history";
 
   try {
-    // Fetch data from the external API using axios with GET request and body
     const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46";
+    const body = {
+      call_from: startTimestamp,
+      call_to: endTimestamp,
+      call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+      client_numbers: emp_numbers
+    };
+
     const response = await axios({
-      method: 'GET',
+      method: 'POST',
       url: externalApiUrl,
-      data: { emp_numbers }, // Send the data in the body of the GET request
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
+      data: body // Correctly send the body using "data"
     });
-
-    // Send the response from the external API back to the client
-    console.log(response.data)
-    res.status(200).json(response.data);
+    // socketIO.emit("callLogs", {
+      
+    //   updatedDocument: response.data,
+      
+    // })
+    console.log(response.data); // Log the response data
+    res.status(200).json(response.data); // Send response back to the client
   } catch (error) {
-    // Handle any errors
-    console.error('Error fetching data from external API:', error);
+    console.error('Error fetching data from external API:', error.response?.data || error.message);
     res.status(500).json({ error: 'Failed to fetch data from external API' });
   }
 });
+
 
 module.exports = router;

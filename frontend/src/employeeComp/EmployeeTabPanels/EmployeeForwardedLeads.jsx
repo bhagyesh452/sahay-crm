@@ -896,10 +896,10 @@ function EmployeeForwardedLeads({
                                             </td>
                                             <td>
                                                 <div
-                                                    className={company.Status === "Interested" ? "dfault_interested-status" :
-                                                        company.Status === "FollowUp" ? "dfault_followup-status" :
-                                                            company.Status === "Busy" ? "dfault_busy-status" :
-                                                                company.Status === "Not Picked Up" ? "dfault_not-pickedup-status" :
+                                                    className={company.Status === "Interested" || company.bdmStatus === "Interested"? "dfault_interested-status" :
+                                                        company.Status === "FollowUp" || company.bdmStatus === "FollowUp"  ? "dfault_followup-status" :
+                                                            company.Status === "Busy" || company.bdmStatus === "Busy" ? "dfault_busy-status" :
+                                                                company.Status === "Not Picked Up" || company.bdmStatus === "Not Picked Up" ? "dfault_not-pickedup-status" :
                                                                     company.bdmStatus && company.bdmStatus === "Untouched" ? "dfault_untouched-status" :
                                                                         company.bdmStatus && company.bdmStatus === "Interested" ? "dfault_interested-status" :
                                                                             company.bdmStatus && company.bdmStatus === "FollowUp" ? "dfault_followup-status" :

@@ -79,6 +79,8 @@ function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, com
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
+    console.log(startTimestamp, endTimestamp);
+
     let clientNumberArray = [clientNumber];
 
     useEffect(() => {

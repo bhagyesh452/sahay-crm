@@ -84,6 +84,74 @@ const informationSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+// Define the schema for call logs
+const callLogSchema = new mongoose.Schema({
+  year: {
+    type: Number, // Example: 2024
+    required: true,
+  },
+  months: [
+    {
+      month: {
+        type: String, // Example: "January", "February"
+        required: true,
+      },
+      dates: [
+        {
+          date: {
+            type: String, // Example: "2024-11-26"
+            required: true,
+          },
+          details: [
+            {
+
+              call_date: {
+                type: String, // Example: "Outgoing", "Incoming", "Missed"
+              },
+              call_time: {
+                type: Number, // Duration in seconds
+              },
+              call_type: {
+                type: String, // Client's phone number
+              },
+              client_country_code: {
+                type: String, // Employee who made/received the call
+              },
+              client_name: {
+                type: String, // Time of the call, e.g., "11:14:47"
+              },
+              client_number: {
+                type: String, // Additional remarks
+              },
+              duration: {
+                type: Number, // Additional remarks
+              },
+              emp_name: {
+                type: String, // Additional remarks
+              },
+              emp_number: {
+                type: String, // Additional remarks
+              },
+              callId: {
+                type: String, // Additional remarks
+              },
+              modified_at: {
+                type: String, // Additional remarks
+              },
+              modified_at: {
+                type: String, // Additional remarks
+              },
+              syncedAt: {
+                type: String, // When this data was synced
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+});
+
 const CompanySchema = new mongoose.Schema({
   "Company Name": {
     type: String,
@@ -231,6 +299,7 @@ const CompanySchema = new mongoose.Schema({
     default: new Date()
   },
   interestedInformation: [informationSchema],
+  callLogsDetails:[callLogSchema],
   lastStatusOfExtractedEmployee: {
     type: String,
     default: ""
@@ -239,8 +308,8 @@ const CompanySchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-  maturedCaseUploaded:{
-    type:Boolean,
+  maturedCaseUploaded: {
+    type: Boolean,
   },
   bdmNextFollowUpDate: {
     type: Date
