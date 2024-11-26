@@ -992,7 +992,9 @@ function EmployeePanelCopy({ fordesignation }) {
 
     const fetchCallingWebHookData = async () => {
         try {
-            const response = await axios.post(`${secretKey}/remarks/webhook`);
+            const response = await axios.post(`${secretKey}/remarks/webhook` , {
+                providedEmpNumber : data.number
+            });
             console.log("webhookresponse", response.data.result)
             setwebhookData(response.data.result)
         } catch (error) {
@@ -1003,7 +1005,7 @@ function EmployeePanelCopy({ fordesignation }) {
     useEffect(() => {
         fetchCallingWebHookData()
 
-    }, [webhookData])
+    }, [data.ename])
 
 
 
