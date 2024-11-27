@@ -10,6 +10,7 @@ const RemarksHistory = require("../models/RemarksHistory");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const CompleteRemarksHistoryLeads = require('../models/CompleteRemarksHistoryLeads.js');
 const axios = require('axios');
+const adminModel = require('../models/Admin.js');
 
 
 
@@ -422,12 +423,12 @@ router.post('/webhook', async (req, res) => {
   const socketIO = req.io;
   const employeeData = req.body; // Array of employee data from the webhook
   console.log('Received Webhook Data:', employeeData);
+  
 
   try {
     for (const employee of employeeData) {
       console.log('Processing Employee:', employee.emp_name);
 
-      // Iterate over call_logs for the employee
       if (employee.call_logs && employee.call_logs.length > 0) {
         for (const log of employee.call_logs) {
           console.log('Processing Call Log:', log);
@@ -439,7 +440,8 @@ router.post('/webhook', async (req, res) => {
           let company = await CompanyModel.findOne({
             "Company Number": log.client_number,
           });
-
+          const employeeDetails = await adminModel.findOne({ename : company.ename})
+          console.log('Employee Details:', employeeDetails);
           if (!company) {
             console.log(`Company not found for number: ${log.client_number}`);
             continue;
@@ -447,71 +449,112 @@ router.post('/webhook', async (req, res) => {
 
           console.log(`Found Company: ${company["Company Name"]}, ID: ${company._id}`);
 
-          // Check if the employee name matches
-          if (company.ename !== employee.emp_name) {
-            console.log(`Employee name mismatch for company ${company._id}`);
-            socketIO.emit('employeeNameMismatch', {
-              message: `Employee name mismatch for ${company["Company Name"]}`,
-              expectedName: company.ename,
-              receivedName: employee.emp_name,
+          // Emit a socket message if emp_name does not match ename or bdmName
+          if (employee.emp_name !== company.ename && employee.emp_name !== company.bdmName) {
+            console.log(`Mismatch: Employee ${employee.emp_name} called ${company["Company Name"]}`);
+            socketIO.emit('unexpectedCaller', {
+              message: `Unexpected caller detected for company: ${company["Company Name"]}`,
+              companyId: company._id,
+              companyName: company["Company Name"],
+              expectedEmployee: [company.ename, company.bdmName],
+              actualEmployee: employee.emp_name,
+              callDetails: log,
+              ename : company.ename,
+              bdmName : company.bdmName
             });
           }
 
-          // Prepare to update callLogsDetails
-          let callLogsDetails = company.callLogsDetails || [];
-          let yearData = callLogsDetails.find((y) => y.year === year);
 
-          // Add new year if not present
-          if (!yearData) {
-            console.log(`Adding new year: ${year}`);
-            yearData = { year, months: [] };
-            callLogsDetails.push(yearData);
-          }
-
-          let monthData = yearData.months.find((m) => m.month === month);
-
-          // Add new month if not present
-          if (!monthData) {
-            console.log(`Adding new month: ${month}`);
-            monthData = { month, dates: [] };
-            yearData.months.push(monthData);
-          }
-
-          let dateData = monthData.dates.find((d) => d.date === log.call_date);
-
-          // Add new date if not present
-          if (!dateData) {
-            console.log(`Adding new date: ${log.call_date}`);
-            dateData = { date: log.call_date, details: [] };
-            monthData.dates.push(dateData);
-          }
-
-          // Check if the call log already exists
-          const isDuplicate = dateData.details.some((detail) => detail.callId === log.id);
-          if (!isDuplicate) {
-            console.log(`Adding new call log for date: ${log.call_date}`);
-            dateData.details.push({
-              callId: log.id,
-              call_date: log.call_date,
-              call_time: log.call_time,
-              call_type: log.call_type,
-              client_country_code: log.client_country_code,
-              client_name: log.client_name,
-              client_number: log.client_number,
-              duration: log.duration,
-              emp_name: log.emp_name,
-              emp_number: log.emp_number,
-              syncedAt: log.synced_at,
-              modifiedAt: log.modified_at,
-            });
+          // If `callLogsDetails` is missing, initialize it with full structure
+          if (!company.callLogsDetails || company.callLogsDetails.length === 0) {
+            console.log('Initializing callLogsDetails with full structure');
+            company.callLogsDetails = [
+              {
+                year: year,
+                months: [
+                  {
+                    month: month,
+                    dates: [
+                      {
+                        date: log.call_date,
+                        details: [
+                          {
+                            callId: log.id,
+                            call_date: log.call_date,
+                            call_time: log.call_time,
+                            call_type: log.call_type,
+                            client_country_code: log.client_country_code,
+                            client_name: log.client_name,
+                            client_number: log.client_number,
+                            duration: log.duration,
+                            emp_name: log.emp_name,
+                            emp_number: log.emp_number,
+                            syncedAt: log.synced_at,
+                            modifiedAt: log.modified_at,
+                            emp_name:employee.emp_name,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ];
           } else {
-            console.log(`Duplicate call log found for call ID: ${log.id}`);
+            // Find or create the year entry
+            let yearData = company.callLogsDetails.find((y) => y.year === year);
+            if (!yearData) {
+              console.log(`Adding new year: ${year}`);
+              yearData = { year, months: [] };
+              company.callLogsDetails.push(yearData);
+            }
+
+            // Find or create the month entry
+            let monthData = yearData.months.find((m) => m.month === month);
+            if (!monthData) {
+              console.log(`Adding new month: ${month}`);
+              monthData = { month, dates: [] };
+              yearData.months.push(monthData);
+            }
+
+            // Find or create the date entry
+            let dateData = monthData.dates.find((d) => d.date === log.call_date);
+            if (!dateData) {
+              console.log(`Adding new date: ${log.call_date}`);
+              dateData = { date: log.call_date, details: [] };
+              monthData.dates.push(dateData);
+            }
+
+            // Check for duplicate call logs
+            const isDuplicate = dateData.details.some((detail) => detail.callId === log.id);
+            if (!isDuplicate) {
+              console.log(`Adding new call log for date: ${log.call_date}`);
+              dateData.details.push({
+                callId: log.id,
+                call_date: log.call_date,
+                call_time: log.call_time,
+                call_type: log.call_type,
+                client_country_code: log.client_country_code,
+                client_name: log.client_name,
+                client_number: log.client_number,
+                duration: log.duration,
+                emp_name: log.emp_name,
+                emp_number: log.emp_number,
+                syncedAt: log.synced_at,
+                modifiedAt: log.modified_at,
+                emp_name:employee.emp_name
+              });
+            } else {
+              console.log(`Duplicate call log found for call ID: ${log.id}`);
+            }
           }
 
-          // Update only the callLogsDetails field in the database
+          console.log("Updated callLogsDetails", JSON.stringify(company.callLogsDetails, null, 2));
+
+          // Save only the updated `callLogsDetails`
           await CompanyModel.updateOne(
             { _id: company._id },
-            { callLogsDetails: callLogsDetails }
+            { $set: { callLogsDetails: company.callLogsDetails } }
           );
 
           console.log(`Call logs updated successfully for company ID: ${company._id}`);

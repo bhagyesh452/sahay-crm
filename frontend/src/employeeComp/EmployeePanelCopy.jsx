@@ -302,10 +302,6 @@ function EmployeePanelCopy({ fordesignation }) {
         });
 
         socket.on("employee__remarks_successfull_update", (res) => {
-            // console.log("socket response:", res);
-            // console.log("Updated ename:", res.updatedDocument?.ename);
-            // console.log("Data ename:", data.ename);
-
             const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
             const dataEname = (data.ename || "").toString().trim().toLowerCase();
 
@@ -314,13 +310,6 @@ function EmployeePanelCopy({ fordesignation }) {
                 updateDocumentInState(res.updatedDocument);
             }
         });
-
-        socket.on("callLogs" ,(res)=>{
-            console.log("callogsresponse" , res)
-                if(res.updatedDocument){
-                    setwebhookData(res.updatedDocument.result)
-                }
-        })
 
 
         return () => {
@@ -988,24 +977,6 @@ function EmployeePanelCopy({ fordesignation }) {
         setopenProjectionPopUpNew(false);
     }
 
-    
-
-    const fetchCallingWebHookData = async () => {
-        try {
-            const response = await axios.post(`${secretKey}/remarks/webhook` , {
-                providedEmpNumber : data.number
-            });
-            console.log("webhookresponse", response.data.result)
-            setwebhookData(response.data.result)
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-
-        }
-    }
-    useEffect(() => {
-        fetchCallingWebHookData()
-
-    }, [data.ename])
 
 
 
