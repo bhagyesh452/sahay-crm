@@ -452,20 +452,18 @@ router.post('/webhook', async (req, res) => {
 
           // Emit a socket message if emp_name does not match ename or bdmName
           if (employee.emp_name !== company.ename && employee.emp_name !== company.bdmName) {
+            console.log("socket working")
+            socketIO.emit('unexpectedCaller', {
+              message: `Unexpected caller detected for company: ${company["Company Name"]}`,
+              companyId: company._id,
+              companyName: company["Company Name"],
+              expectedEmployee: [company.ename, company.bdmName],
+              actualEmployee: employee.emp_name,
+              callDetails: log,
+              ename: company.ename,
+              bdmName: company.bdmName
+            });
             let GetEmployeeProfile = "no-image"
-            // if (employeeDetails) {
-            //   const EmployeeData = employeeDetails.employee_profile;
-            //   console.log("Employee Data:", EmployeeData);
-
-            //   if (EmployeeData && EmployeeData.length > 0) {
-            //     GetEmployeeProfile = EmployeeData[0].filename;
-
-            //   } else {
-            //     GetEmployeeProfile = "no-image";
-            //   }
-            // } else {
-            //   GetEmployeeProfile = "no-image";
-            // }
             console.log(`Mismatch: Employee ${employee.emp_name} called ${company["Company Name"]}`);
             const requestCreate = {
               ename: company.ename,
@@ -482,16 +480,7 @@ router.post('/webhook', async (req, res) => {
             }
             const addRequest = new NotiModel(requestCreate);
             const saveRequest = await addRequest.save();
-            socketIO.emit('unexpectedCaller', {
-              message: `Unexpected caller detected for company: ${company["Company Name"]}`,
-              companyId: company._id,
-              companyName: company["Company Name"],
-              expectedEmployee: [company.ename, company.bdmName],
-              actualEmployee: employee.emp_name,
-              callDetails: log,
-              ename: company.ename,
-              bdmName: company.bdmName
-            });
+            
           }
 
 
