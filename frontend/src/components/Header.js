@@ -527,20 +527,6 @@ useEffect(() => {
 
       </SnackbarProvider>
 
-      {/* -----------------showDialog----------------------------
-
-      <ProjectionInformationDialog
-        handleYesClick={handleYesClick}
-        handleNoClick={handleNoClick}
-        showDialog={showPopup}
-
-      />
-      <EmployeeNoPopup
-        noPopup={noPopup}
-        setNoPopup={setNoPopup}
-        message={popupMessage}
-      /> */}
-
 
     </div>
   );

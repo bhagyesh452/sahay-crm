@@ -977,14 +977,16 @@ function EmployeePanelCopy({ fordesignation }) {
         setopenProjectionPopUpNew(false);
     }
 
-
+    const disableRightClick = (event) => {
+        event.preventDefault();
+    };
 
 
 
 
 
     return (
-        <div>
+        <div {...(fordesignation !== "admin" && { onContextMenu: disableRightClick })}>
             {!showCallHistory && !formOpen && !addFormOpen ?
                 (<div className="page-wrapper" key={fetchingId}>
                     <div className="page-wrapper">

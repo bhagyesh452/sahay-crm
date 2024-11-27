@@ -11,6 +11,7 @@ const TeamLeadsModel = require("../models/TeamLeads.js");
 const CompleteRemarksHistoryLeads = require('../models/CompleteRemarksHistoryLeads.js');
 const axios = require('axios');
 const adminModel = require('../models/Admin.js');
+const NotiModel = require('../models/Notifications.js');
 
 
 
@@ -423,7 +424,7 @@ router.post('/webhook', async (req, res) => {
   const socketIO = req.io;
   const employeeData = req.body; // Array of employee data from the webhook
   console.log('Received Webhook Data:', employeeData);
-  
+
 
   try {
     for (const employee of employeeData) {
@@ -440,7 +441,7 @@ router.post('/webhook', async (req, res) => {
           let company = await CompanyModel.findOne({
             "Company Number": log.client_number,
           });
-          const employeeDetails = await adminModel.findOne({ename : company.ename})
+          const employeeDetails = await adminModel.findOne({ ename: company.ename })
           console.log('Employee Details:', employeeDetails);
           if (!company) {
             console.log(`Company not found for number: ${log.client_number}`);
@@ -451,7 +452,35 @@ router.post('/webhook', async (req, res) => {
 
           // Emit a socket message if emp_name does not match ename or bdmName
           if (employee.emp_name !== company.ename && employee.emp_name !== company.bdmName) {
+            let GetEmployeeProfile = "no-image"
+            if (employeeDetails) {
+              const EmployeeData = employeeDetails.employee_profile;
+              console.log("Employee Data:", EmployeeData);
+
+              if (EmployeeData && EmployeeData.length > 0) {
+                GetEmployeeProfile = EmployeeData[0].filename;
+
+              } else {
+                GetEmployeeProfile = "no-image";
+              }
+            } else {
+              GetEmployeeProfile = "no-image";
+            }
             console.log(`Mismatch: Employee ${employee.emp_name} called ${company["Company Name"]}`);
+            const requestCreate = {
+              ename: company.ename,
+              actualEmployeeCalling: employee.emp_name,
+              requestType: `Unexpected Caller for ${company["Company Name"]}`,
+              requestTime: new Date(),
+              designation: "SE",
+              status: "Unread",
+              employee_status:"Unread",
+              img_url: GetEmployeeProfile,
+              employeeRequestType: `Unexpected Caller`,
+              companyName: company["Company Name"]
+            }
+            const addRequest = new NotiModel(requestCreate);
+            const saveRequest = await addRequest.save();
             socketIO.emit('unexpectedCaller', {
               message: `Unexpected caller detected for company: ${company["Company Name"]}`,
               companyId: company._id,
@@ -459,8 +488,8 @@ router.post('/webhook', async (req, res) => {
               expectedEmployee: [company.ename, company.bdmName],
               actualEmployee: employee.emp_name,
               callDetails: log,
-              ename : company.ename,
-              bdmName : company.bdmName
+              ename: company.ename,
+              bdmName: company.bdmName
             });
           }
 
@@ -491,7 +520,7 @@ router.post('/webhook', async (req, res) => {
                             emp_number: log.emp_number,
                             syncedAt: log.synced_at,
                             modifiedAt: log.modified_at,
-                            emp_name:employee.emp_name,
+                            emp_name: employee.emp_name,
                           },
                         ],
                       },
@@ -542,7 +571,7 @@ router.post('/webhook', async (req, res) => {
                 emp_number: log.emp_number,
                 syncedAt: log.synced_at,
                 modifiedAt: log.modified_at,
-                emp_name:employee.emp_name
+                emp_name: employee.emp_name
               });
             } else {
               console.log(`Duplicate call log found for call ID: ${log.id}`);
