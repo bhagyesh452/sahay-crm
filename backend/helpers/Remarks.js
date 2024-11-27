@@ -441,31 +441,31 @@ router.post('/webhook', async (req, res) => {
           let company = await CompanyModel.findOne({
             "Company Number": log.client_number,
           });
-          const employeeDetails = await adminModel.findOne({ ename: company.ename })
-          console.log('Employee Details:', employeeDetails);
-          if (!company) {
-            console.log(`Company not found for number: ${log.client_number}`);
-            continue;
-          }
+          // const employeeDetails = await adminModel.findOne({ ename: company.ename })
+          // console.log('Employee Details:', employeeDetails);
+          // if (!company) {
+          //   console.log(`Company not found for number: ${log.client_number}`);
+          //   continue;
+          // }
 
           console.log(`Found Company: ${company["Company Name"]}, ID: ${company._id}`);
 
           // Emit a socket message if emp_name does not match ename or bdmName
-          if (employee.emp_name !== company.ename || employee.emp_name !== company.bdmName) {
+          if (employee.emp_name !== company.ename && employee.emp_name !== company.bdmName) {
             let GetEmployeeProfile = "no-image"
-            if (employeeDetails) {
-              const EmployeeData = employeeDetails.employee_profile;
-              console.log("Employee Data:", EmployeeData);
+            // if (employeeDetails) {
+            //   const EmployeeData = employeeDetails.employee_profile;
+            //   console.log("Employee Data:", EmployeeData);
 
-              if (EmployeeData && EmployeeData.length > 0) {
-                GetEmployeeProfile = EmployeeData[0].filename;
+            //   if (EmployeeData && EmployeeData.length > 0) {
+            //     GetEmployeeProfile = EmployeeData[0].filename;
 
-              } else {
-                GetEmployeeProfile = "no-image";
-              }
-            } else {
-              GetEmployeeProfile = "no-image";
-            }
+            //   } else {
+            //     GetEmployeeProfile = "no-image";
+            //   }
+            // } else {
+            //   GetEmployeeProfile = "no-image";
+            // }
             console.log(`Mismatch: Employee ${employee.emp_name} called ${company["Company Name"]}`);
             const requestCreate = {
               ename: company.ename,
