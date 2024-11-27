@@ -952,7 +952,7 @@ useEffect(() => {
                                                 </a>
                                             </li>
 
-                                            <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
+                                            {/* <li class="nav-item sales-nav-item data-heading" ref={busyTabRef}>
                                                 <a
                                                     href="#busy"
                                                     ref={busyTabRef} // Attach the ref to the anchor tag
@@ -971,7 +971,7 @@ useEffect(() => {
                                                         {busyDataCount || 0}
                                                     </div>
                                                 </a>
-                                            </li>
+                                            </li> */}
 
                                             <li class="nav-item sales-nav-item data-heading">
                                                 <a
@@ -1086,7 +1086,6 @@ useEffect(() => {
                                                 />
                                             )}
                                         </div>
-
                                         <div className={`tab-pane ${dataStatus === "Matured" ? "active" : ""}`} id="Matured">
                                             {activeTabId === "Matured" && (
                                                 <TeamLeadsMatured
@@ -1131,7 +1130,7 @@ useEffect(() => {
                                             )}
                                         </div>
 
-                                        <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
+                                        {/* <div className={`tab-pane ${dataStatus === "Busy" ? "active" : ""}`} id="busy">
                                             {activeTabId === "Busy" && dataStatus === "Busy" && (
                                                 <TeamLeadsBusy
                                                     secretKey={secretKey}
@@ -1174,7 +1173,7 @@ useEffect(() => {
                                                     bdenumber={data.number}
                                                 />
                                             )}
-                                        </div>
+                                        </div> */}
 
                                         <div className={`tab-pane ${dataStatus === "Not Interested" ? "active" : ""}`} id="NotInterested">
                                             {activeTabId === "Not Interested" && (

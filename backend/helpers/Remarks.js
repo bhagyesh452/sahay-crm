@@ -477,7 +477,8 @@ router.post('/webhook', async (req, res) => {
               employee_status:"Unread",
               img_url: GetEmployeeProfile,
               employeeRequestType: `Unexpected Caller`,
-              companyName: company["Company Name"]
+              companyName: company["Company Name"],
+              callingBdmName: company.bdmName
             }
             const addRequest = new NotiModel(requestCreate);
             const saveRequest = await addRequest.save();

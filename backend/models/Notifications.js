@@ -44,6 +44,10 @@ employeeRequestType:{
 },
 paymentApprovalServices:{
     type:Array,
+},
+callingBdmName : {
+    type:String,
+    default:""
 }
 
 });

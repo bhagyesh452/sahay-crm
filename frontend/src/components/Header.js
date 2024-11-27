@@ -258,7 +258,7 @@ function Header({ name, id, designation, empProfile, gender }) {
 
     socket.on("unexpectedCaller", (res) => {
       // console.log("bdm-moved-to-notinterested", res)
-      if (name === res.ename) {
+      if (name === res.ename || name === res.bdmName) {
         enqueueSnackbar(`${res.actualEmployee} connected with ${res.companyName} !`, {
           variant: 'warningSnackbar',
           persist: true

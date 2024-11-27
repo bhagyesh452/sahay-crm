@@ -154,7 +154,7 @@ function Notification_box_employee({ name }) {
 
         socket.on("unexpectedCaller", (res) => {
             console.log("unexpectedCaller", res)
-            if (name === res.ename) {
+            if (name === res.ename || name === res.bdmName) {
                 console.log("unexpectedCaller", res)
                 fetchNotification();
             }

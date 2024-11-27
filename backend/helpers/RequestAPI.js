@@ -216,7 +216,10 @@ router.get("/get-notification/:name", async (req, res) => {
     // Query to get the top 5 unread notifications sorted by requestTime
     if (name) {
       const topUnreadNotifications = await NotiModel.find({
-        ename: name,
+        $or: [
+          { ename: name }, // Match `ename` field
+          { callingBdmName: name } // Match `callingbdmname` field
+        ],
         employee_status: "Unread",
         employeeRequestType: { $ne: null, $ne: "", $exists: true }
         //srequestType: { $ne: "Lead Upload" } // Corrected this line
@@ -226,7 +229,10 @@ router.get("/get-notification/:name", async (req, res) => {
       //console.log("unred employee notification", topUnreadNotifications)
       // Query to get the count of all unread notifications for the specified ename
       const totalUnreadCount = await NotiModel.countDocuments({
-        ename: name,
+        $or: [
+          { ename: name },
+          { callingBdmName: name }
+        ],
         employee_status: "Unread",
         employeeRequestType: { $ne: null, $ne: "", $exists: true }
       });
