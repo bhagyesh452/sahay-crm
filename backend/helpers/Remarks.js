@@ -420,135 +420,169 @@ router.delete("/remarks-history/:id", async (req, res) => {
 
 router.post('/webhook', async (req, res) => {
   const socketIO = req.io;
-  const emp_numbers = ["7000879031"]; // Numbers fetched from the frontend
-  const providedEmpNumber = req.body.providedEmpNumber; // Expected employee number sent by frontend
-  console.log('Provided employee number:', providedEmpNumber);
-
-  const today = new Date();
-  const todayStartDate = new Date(today);
-  const todayEndDate = new Date(today);
-
-  // Set timestamps
-  todayEndDate.setUTCHours(13, 0, 0, 0); // End at 1 PM UTC
-  todayStartDate.setMonth(todayStartDate.getMonth());
-  todayStartDate.setUTCHours(4, 0, 0, 0); // Start at 4 AM UTC
-
-  const startTimestamp = Math.floor(todayStartDate.getTime() / 1000); // seconds
-  const endTimestamp = Math.floor(todayEndDate.getTime() / 1000); // seconds
-
-  const externalApiUrl = "https://api1.callyzer.co/v2/call-log/history";
+  const employeeData = req.body; // Array of employee data from the webhook
+  console.log('Received Webhook Data:', employeeData);
 
   try {
-    const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46";
-    const body = {
-      call_from: startTimestamp,
-      call_to: endTimestamp,
-      call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
-      client_numbers: emp_numbers,
-    };
+    for (const employee of employeeData) {
+      console.log('Processing Employee:', employee.emp_name);
 
-    console.log('Fetching call logs from external API with body:', body);
+      // Iterate over call_logs for the employee
+      if (employee.call_logs && employee.call_logs.length > 0) {
+        for (const log of employee.call_logs) {
+          console.log('Processing Call Log:', log);
 
-    const response = await axios({
-      method: 'POST',
-      url: externalApiUrl,
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      data: body, // Correctly send the body using "data"
-    });
+          const year = new Date(log.call_date).getFullYear();
+          const month = new Date(log.call_date).toLocaleString('default', { month: 'long' });
 
-    const callLogs = response.data.result; // Get call logs
-    console.log('Fetched Call Logs:', callLogs);
-
-    for (const log of callLogs) {
-      console.log('Processing log:', log);
-
-      const year = new Date(log.call_date).getFullYear();
-      const month = new Date(log.call_date).toLocaleString('default', { month: 'long' });
-
-      // Find the company associated with the log's emp_number
-      let company = await CompanyModel.findOne({
-        "Company Number": log.client_number,
-      });
-
-      if (!company) {
-        console.log(`Company not found for number: ${log.client_number}`);
-        continue;
-      }
-
-      console.log(`Updating call log details for company: ${company._id}`);
-
-      // Ensure the year exists
-      let yearData = company.callLogsDetails.find((y) => y.year === year);
-      if (!yearData) {
-        console.log(`Adding new year: ${year}`);
-        yearData = { year, months: [] };
-        company.callLogsDetails.push(yearData);
-      }
-
-      // Ensure the month exists
-      let monthData = yearData.months.find((m) => m.month === month);
-      if (!monthData) {
-        console.log(`Adding new month: ${month}`);
-        monthData = { month, dates: [] };
-        yearData.months.push(monthData);
-      }
-
-      // Ensure the date exists
-      let dateData = monthData.dates.find((d) => d.date === log.call_date);
-      if (!dateData) {
-        console.log(`Adding new date: ${log.call_date}`);
-        dateData = { date: log.call_date, details: [] };
-        monthData.dates.push(dateData);
-      }
-
-      // Check if the call log already exists
-      const isDuplicate = dateData.details.some((detail) => detail.callId === log.id);
-      if (!isDuplicate) {
-        console.log(`Adding new call log for date: ${log.call_date}`);
-        dateData.details.push({
-          callId: log.id,
-          call_date: log.call_date,
-          call_time: log.call_time,
-          call_type: log.call_type,
-          client_country_code: log.client_country_code,
-          client_name: log.client_name,
-          client_number: log.client_number,
-          duration: log.duration,
-          emp_name: log.emp_name,
-          emp_number: log.emp_number,
-          syncedAt: log.synced_at,
-          modifiedAt: log.modified_at,
-        });
-
-        // Emit socket message for unexpected emp_number
-        if (log.emp_number !== providedEmpNumber) {
-          console.log(`Unexpected call detected from ${log.emp_number}`);
-          socketIO.emit('unexpectedCall', {
-            message: `Unexpected call detected from ${log.emp_number} on ${log.call_date}`,
-            date: log.call_date,
-            emp_number: log.emp_number,
+          // Find the company associated with the call's client_number
+          let company = await CompanyModel.findOne({
+            "Company Number": log.client_number,
           });
+
+          if (!company) {
+            console.log(`Company not found for number: ${log.client_number}`);
+            continue;
+          }
+
+          console.log(`Found Company: ${company["Company Name"]}, ID: ${company._id}`);
+
+          // Check if the employee name matches
+          if (company.ename !== employee.emp_name) {
+            console.log(`Employee name mismatch for company ${company._id}`);
+            socketIO.emit('employeeNameMismatch', {
+              message: `Employee name mismatch for ${company["Company Name"]}`,
+              expectedName: company.ename,
+              receivedName: employee.emp_name,
+            });
+          }
+
+          // Prepare to update callLogsDetails
+          let callLogsDetails = company.callLogsDetails || [];
+          let yearData = callLogsDetails.find((y) => y.year === year);
+
+          // Add new year if not present
+          if (!yearData) {
+            console.log(`Adding new year: ${year}`);
+            yearData = { year, months: [] };
+            callLogsDetails.push(yearData);
+          }
+
+          let monthData = yearData.months.find((m) => m.month === month);
+
+          // Add new month if not present
+          if (!monthData) {
+            console.log(`Adding new month: ${month}`);
+            monthData = { month, dates: [] };
+            yearData.months.push(monthData);
+          }
+
+          let dateData = monthData.dates.find((d) => d.date === log.call_date);
+
+          // Add new date if not present
+          if (!dateData) {
+            console.log(`Adding new date: ${log.call_date}`);
+            dateData = { date: log.call_date, details: [] };
+            monthData.dates.push(dateData);
+          }
+
+          // Check if the call log already exists
+          const isDuplicate = dateData.details.some((detail) => detail.callId === log.id);
+          if (!isDuplicate) {
+            console.log(`Adding new call log for date: ${log.call_date}`);
+            dateData.details.push({
+              callId: log.id,
+              call_date: log.call_date,
+              call_time: log.call_time,
+              call_type: log.call_type,
+              client_country_code: log.client_country_code,
+              client_name: log.client_name,
+              client_number: log.client_number,
+              duration: log.duration,
+              emp_name: log.emp_name,
+              emp_number: log.emp_number,
+              syncedAt: log.synced_at,
+              modifiedAt: log.modified_at,
+            });
+          } else {
+            console.log(`Duplicate call log found for call ID: ${log.id}`);
+          }
+
+          // Update only the callLogsDetails field in the database
+          await CompanyModel.updateOne(
+            { _id: company._id },
+            { callLogsDetails: callLogsDetails }
+          );
+
+          console.log(`Call logs updated successfully for company ID: ${company._id}`);
         }
       } else {
-        console.log(`Duplicate log entry detected for call ID: ${log.id}`);
+        console.log(`No call logs for employee: ${employee.emp_name}`);
       }
-
-      // Save the updated company document after processing each log
-      console.log(`Saving updated company document for ID: ${company._id}`);
-      await company.save();
-      console.log(`Company document updated successfully for ID: ${company._id}`);
     }
 
     res.status(200).json({ message: 'Call logs saved successfully' });
   } catch (error) {
-    console.error('Error fetching data from external API:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Failed to fetch data from external API' });
+    console.error('Error processing webhook:', error.message);
+    res.status(500).json({ error: 'Failed to process webhook' });
   }
 });
 
+
+
+// router.post('/webhook', async (req, res) => {
+//   const socketIO = req.io;
+//   const emp_numbers = ["7000879031"];
+
+//   const today = new Date();
+//   const todayStartDate = new Date(today);
+//   const todayEndDate = new Date(today);
+
+//   // Set timestamps
+//   todayEndDate.setUTCHours(13, 0, 0, 0); // End at 1 PM UTC
+//   todayStartDate.setMonth(todayStartDate.getMonth());
+//   todayStartDate.setUTCHours(4, 0, 0, 0); // Start 6 months ago at 4 AM UTC
+
+//   const startTimestamp = Math.floor(todayStartDate.getTime() / 1000); // seconds
+//   const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);   // seconds
+
+//   const externalApiUrl = "https://api1.callyzer.co/v2/call-log/history";
+
+//   try {
+//     // Fetch data from the external API using axios with GET request and body
+//     const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46";
+//     const body = {
+//       call_from: startTimestamp,
+//       call_to: endTimestamp,
+//       call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+//       client_numbers: emp_numbers
+//     };
+
+//     const response = await axios({
+//       method: 'POST',
+//       url: externalApiUrl,
+//       data: { emp_numbers }, // Send the data in the body of the GET request
+//       headers: {
+//         'Authorization': `Bearer ${apiKey}`,
+//         'Content-Type': 'application/json'
+//       },
+//       data: body // Correctly send the body using "data"
+//     });
+
+//     console.log(response.data); // Log the response data
+//      socketIO.emit("callLogs", {
+
+//       updatedDocument: response.data,
+
+//     })
+//     res.status(200).json(response.data); // Send response back to the client
+//   } catch (error) {
+//     // Handle any errors
+//     console.error('Error fetching data from external API:', error);
+//     console.error('Error fetching data from external API:', error.response?.data || error.message);
+//     res.status(500).json({ error: 'Failed to fetch data from external API' });
+//   }
+// });
 
 
 
