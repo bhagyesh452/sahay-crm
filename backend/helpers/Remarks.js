@@ -451,7 +451,7 @@ router.post('/webhook', async (req, res) => {
           console.log(`Found Company: ${company["Company Name"]}, ID: ${company._id}`);
 
           // Emit a socket message if emp_name does not match ename or bdmName
-          if (employee.emp_name !== company.ename && employee.emp_name !== company.bdmName) {
+          if (employee.emp_name !== company.ename || employee.emp_name !== company.bdmName) {
             let GetEmployeeProfile = "no-image"
             if (employeeDetails) {
               const EmployeeData = employeeDetails.employee_profile;
