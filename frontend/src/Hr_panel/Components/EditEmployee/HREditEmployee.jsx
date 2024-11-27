@@ -7,8 +7,6 @@ import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Header from "../Header/Header";
-import Navbar from "../Navbar/Navbar";
 import Swal from "sweetalert2";
 import ClipLoader from 'react-spinners/ClipLoader';
 import { FaCopy } from "react-icons/fa";
@@ -17,10 +15,10 @@ const steps = ['Personal Information', 'Employment Information',
   'Payroll Information', 'Emergency Contact', ' Employee Documents', 'Preview'];
 
 export default function HREditEmployee() {
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [myInfo, setMyInfo] = useState([]);
 
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
   const { empId } = useParams();
+  const navigate = useNavigate();
 
   const [activeStep, setActiveStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,19 +48,20 @@ export default function HREditEmployee() {
   const [isEmergencyInfoEditable, setIsEmergencyInfoEditable] = useState(false);
   const [isEmployeeDocsInfoEditable, setIsEmployeeDocsInfoEditable] = useState(false);
 
-  const navigate = useNavigate();
+  const openDocument = (filename) => {
+    const url = `${secretKey}/employee/fetchEmployeeDocuments/${empId}/${filename}`;
+    window.open(url, "_blank"); // Open document in a new tab
+  };
+
+  const calculateSalary = (salary, condition) => {
+    if (!salary || !condition) return "";
+    const percentage = parseFloat(condition) / 100;
+    return (parseFloat(salary) * percentage);
+  };
 
   const formatSalary = (amount) => {
     return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
   };
-
-  // const formatDate = (isoDateString) => {
-  //   const date = new Date(isoDateString);
-  //   const day = String(date.getDate()).padStart(2, '0');
-  //   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-  //   const year = date.getFullYear();
-  //   return `${day}-${month}-${year}`;
-  // };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -80,7 +79,6 @@ export default function HREditEmployee() {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
-
 
   const isValidEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -140,7 +138,6 @@ export default function HREditEmployee() {
     if (!currentAddress) newErrors.currentAddress = "Current Address is required";
     if (!permanentAddress) newErrors.permanentAddress = "Permanent Address is required";
     if (!bloodGroup) newErrors.bloodGroup = "Blood Group is Required!";
-
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -348,18 +345,22 @@ export default function HREditEmployee() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const openDocument = (filename) => {
-    const url = `${secretKey}/employee/fetchEmployeeDocuments/${empId}/${filename}`;
-    window.open(url, "_blank"); // Open document in a new tab
-  };
-
   const fetchEmployee = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${secretKey}/employeeDraft/fetchEmployeeFromId/${empId}`);
+      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
       const data = res.data.data;
-      console.log("Fetched employee is :", res.data.data);
+      // console.log("Fetched employee is :", res.data.data);
       // setEmployee(res.data.data);
+
+      setOfferLetterDocument(data.offerLetter ? data.offerLetter : []);
+      // console.log("Offer letter is :", data.offerLetter);
+      setAadharCardDocument(data.aadharCard ? data.aadharCard : []);
+      setPanCardDocument(data.panCard ? data.panCard : []);
+      setEducationCertificateDocument(data.educationCertificate ? data.educationCertificate : []);
+      setRelievingCertificateDocument(data.relievingCertificate ? data.relievingCertificate : []);
+      setSalarySlipDocument(data.salarySlip ? data.salarySlip : []);
+      setProfilePhotoDocument(data.profilePhoto ? data.profilePhoto : []);
 
       // Update personalInfo state with fetched data
       setPersonalInfo({
@@ -373,9 +374,9 @@ export default function HREditEmployee() {
         currentAddress: data.currentAddress || "",
         permanentAddress: data.permanentAddress || "",
         bloodGroup: data.bloodGroup || ""
-
       });
 
+      // Update employeementInfo state with fetched data
       setEmployeementInfo({
         employeeID: data.employeeID,
         department: data.department || "",
@@ -388,6 +389,7 @@ export default function HREditEmployee() {
         officialEmail: data.email || ""
       });
 
+      // Update payrollInfo state with fetched data
       setPayrollInfo({
         accountNo: data.accountNo || "",
         nameAsPerBankRecord: data.nameAsPerBankRecord || "",
@@ -401,12 +403,14 @@ export default function HREditEmployee() {
         uanNumber: data.uanNumber || ""
       });
 
+      // Update emergencyInfo state with fetched data
       setEmergencyInfo({
         personName: data.personal_contact_person || "",
         relationship: data.personal_contact_person_relationship || "",
         personPhoneNo: data.personal_contact_person_number || ""
       });
 
+      // Update empDocumentInfo state with fetched data
       setEmpDocumentInfo({
         aadharCard: aadharCardDocument.length > 0 ? aadharCardDocument : null,
         panCard: panCardDocument.length > 0 ? panCardDocument : null,
@@ -416,14 +420,6 @@ export default function HREditEmployee() {
         profilePhoto: profilePhotoDocument.length > 0 ? profilePhotoDocument : null
       });
 
-      setOfferLetterDocument(data.offerLetter ? data.offerLetter : []);
-      // console.log("Offer letter is :", data.offerLetter);
-      setAadharCardDocument(data.aadharCard ? data.aadharCard : []);
-      setPanCardDocument(data.panCard ? data.panCard : []);
-      setEducationCertificateDocument(data.educationCertificate ? data.educationCertificate : []);
-      setRelievingCertificateDocument(data.relievingCertificate ? data.relievingCertificate : []);
-      setSalarySlipDocument(data.salarySlip ? data.salarySlip : []);
-      setProfilePhotoDocument(data.profilePhoto ? data.profilePhoto : []);
     } catch (error) {
       console.log("Error fetching employee", error);
     } finally {
@@ -436,23 +432,37 @@ export default function HREditEmployee() {
   }, [activeStep]);
 
   useEffect(() => {
-    setCompleted((prevCompleted) => {
-      const updatedCompleted = { ...prevCompleted };
-      for (let i = 0; i < activeStep; i++) {
-        updatedCompleted[i] = true;
-      }
-      return updatedCompleted;
-    });
+    if (activeStep === 0 && !isPersonalInfoEditable && personalInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    } else if (activeStep === 1 && !isEmployeementInfoEditable && employeementInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    } else if (activeStep === 2 && !isPayrollInfoEditable && payrollInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    } else if (activeStep === 3 && !isEmergencyInfoEditable && emergencyInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    } else if (activeStep === 4 && !isEmployeeDocsInfoEditable && empDocumentInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    }
   }, [activeStep]);
-
-  const calculateSalary = (salary, condition) => {
-    if (!salary || !condition) return "";
-    const percentage = parseFloat(condition) / 100;
-    return (parseFloat(salary) * percentage);
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target; // name is the name attribute of the input field and value is the current value of the input field.
+
     setPersonalInfo((prevState) => ({
       ...prevState,
       [name]: name === "personalPhoneNo" ? value.replace(/\s+/g, '') : value, // Remove spaces for phone number
@@ -472,7 +482,6 @@ export default function HREditEmployee() {
 
     setPayrollInfo((prevState) => {
       const updatedState = { ...prevState, [name]: value };
-
       if (name === "salary" || name === "firstMonthSalaryCondition") {
         updatedState.firstMonthSalary = calculateSalary(
           name === "salary" ? value : prevState.salary,
@@ -547,10 +556,12 @@ export default function HREditEmployee() {
       ...prevState,
       [docType]: null, // Set the specific docType to null
     }));
+
     setEmpDocumentInfo((prevState) => ({
       ...prevState,
       [docType]: null,
     }));
+
     if (docType === "aadharCard") {
       setAadharCardDocument([])
     } else if (docType === "panCard") {
@@ -565,7 +576,6 @@ export default function HREditEmployee() {
       setProfilePhotoDocument([])
     } else if (docType === "offerLetter") {
       setOfferLetterDocument([])
-
     }
     // Clear the input field
     document.getElementById(docType).value = "";
@@ -635,10 +645,15 @@ export default function HREditEmployee() {
     setActiveStep(step);
   };
 
-  const saveDraft = async () => {
+  const handleReset = () => {
+    setActiveStep(0);
+    setCompleted({});
+  };
+
+  const handleSave = async () => {
     if (activeStep === 0) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...personalInfo, activeStep });
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, personalInfo);
         // console.log("Employee updated successfully at step-0 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -651,7 +666,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 1) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...employeementInfo, activeStep });
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, employeementInfo);
         // console.log("Employee updated successfully at step-1 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -664,7 +679,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 2) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...payrollInfo, activeStep }, {
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, payrollInfo, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -681,7 +696,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 3) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...emergencyInfo, activeStep });
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, emergencyInfo);
         // console.log("Emergency info updated successfully at step-3 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -694,7 +709,7 @@ export default function HREditEmployee() {
       }
     } else if (activeStep === 4) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { ...empDocumentInfo, activeStep }, {
+        const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, empDocumentInfo, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -712,126 +727,25 @@ export default function HREditEmployee() {
     }
   };
 
-  // const handleComplete = () => {
-  //   if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
-  //     Swal.fire({
-  //       icon: "success",
-  //       title: "Form Submitted",
-  //       text: "Employee updated successfully!",
-  //     });
-  //     navigate("/hr/employees");
-  //   } else {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Error",
-  //       text: "There was an error updating the form. Please try again later.",
-  //     });
-  //   }
-  // };
-
-  const handleComplete = async () => {
-    // console.log("personalInfo before sending :", personalInfo);
-    // console.log("employeementInfo before sending :", employeementInfo);
-    // console.log("payrollInfo before sending :", payrollInfo);
-    // console.log("emergencyInfo before sending :", emergencyInfo);
-    // console.log("empDocumentInfo before sending :", empDocumentInfo);
-
-    const payload = {
-      firstName: personalInfo.firstName,
-      middleName: personalInfo.middleName,
-      lastName: personalInfo.lastName,
-      dob: personalInfo.dob,
-      bloodGroup: personalInfo.bloodGroup,
-      gender: personalInfo.gender,
-      personalPhoneNo: personalInfo.personalPhoneNo,
-      personalEmail: personalInfo.personalEmail,
-
-      employeeID: employeementInfo.employeeID,
-      officialNo: employeementInfo.officialNo,
-      officialEmail: employeementInfo.officialEmail,
-      joiningDate: employeementInfo.joiningDate,
-      branch: employeementInfo.branch,
-      department: employeementInfo.department,
-      designation: employeementInfo.designation,
-      employeementType: employeementInfo.employeementType,
-      manager: employeementInfo.manager,
-
-      nameAsPerBankRecord: payrollInfo.nameAsPerBankRecord,
-      accountNo: payrollInfo.accountNo,
-      ifscCode: payrollInfo.ifscCode,
-      salary: payrollInfo.salary,
-      firstMonthSalaryCondition: payrollInfo.firstMonthSalaryCondition,
-      firstMonthSalary: payrollInfo.firstMonthSalary,
-      offerLetter: offerLetterDocument,
-      panNumber: payrollInfo.panNumber,
-      aadharNumber: payrollInfo.aadharNumber,
-      uanNumber: payrollInfo.uanNumber,
-
-      personName: emergencyInfo.personName,
-      relationship: emergencyInfo.relationship,      
-      personPhoneNo: emergencyInfo.personPhoneNo,
-
-      aadharCard: aadharCardDocument,
-      panCard: panCardDocument,
-      educationCertificate: educationCertificateDocument,
-      relievingCertificate: relievingCertificateDocument,
-      salarySlip: salarySlipDocument,
-      profilePhoto: profilePhotoDocument
-    };
-
-    try {
-      // Update the employee into main database
-      const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, payload, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+  const handleComplete = () => {
+    if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
+      Swal.fire({
+        icon: "success",
+        title: "Form Submitted",
+        text: "Employee updated successfully!",
       });
-
-      console.log("Updated employee is :", res.data);
-      Swal.fire("success", "Employee updated successfully!", "success");
       navigate("/hr/employees");
-    } catch (error) {
-      console.log("Error updating employee:", error);
-      Swal.fire("error", "Error updating employee", "error");
-    }
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-    setCompleted({});
-  };
-
-  const fetchPersonalInfo = async () => {
-    try {
-      const res = await axios.get(`${secretKey}/employeeDraft/fetchEmployeeFromId/${empId}`);
-      const data = res.data.data;
-      console.log("Fetched details is :", res.data.data);
-      setMyInfo(data);
-      setActiveStep(data.activeStep ? data.activeStep : 0);
-
-      // Mark previous steps as completed
-      setCompleted((prevCompleted) => {
-        const updatedCompleted = { ...prevCompleted };
-        for (let i = 0; i < data.activeStep; i++) {
-          updatedCompleted[i] = true;
-        }
-        return updatedCompleted;
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "There was an error updating the form. Please try again later.",
       });
-    } catch (error) {
-      console.log("Error fetching employee details :", error);
     }
   };
-
-  useEffect(() => {
-    fetchPersonalInfo();
-  }, [empId]);
-
-  console.log("activestep" , activeStep)
 
   return (
     <div>
-      {/* <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
-      <Navbar /> */}
       <div className="container mt-2">
         <div className="card">
           <div className="card-body p-3">
@@ -866,213 +780,221 @@ export default function HREditEmployee() {
 
                       {activeStep === 0 && (
                         <>
-                          {isLoading ? <div className="step-1">
-                            <div className="LoaderTDSatyle w-100">
-                              <ClipLoader
-                                color="lightgrey"
-                                loading={true}
-                                size={30}
-                                aria-label="Loading Spinner"
-                                data-testid="loader"
-                              />
-                            </div>
-                          </div> : <div className="step-1">
-                            <h2 className="text-center">
-                              Step:1 - Employee's Personal Information
-                            </h2>
-                            <div className="steprForm-inner">
-                              <form>
-                                <div className="row">
-                                  <div className="col-sm-5">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label htmlFor="fullName">Full Name<span style={{ color: "red" }}> * </span></label>
-                                      <div className="row">
-                                        <div className="col">
-                                          <input
-                                            type="tefalsext"
-                                            name="firstName"
-                                            className="form-control mt-1"
-                                            placeholder="First name"
-                                            value={personalInfo.firstName.trim()}
-                                            onChange={handleInputChange}
-                                            disabled={!isPersonalInfoEditable}
-                                          />
-                                          {errors.firstName && <p style={{ color: "red" }}>{errors.firstName}</p>}
-                                        </div>
-                                        <div className="col">
-                                          <input
-                                            type="text"
-                                            name="middleName"
-                                            className="form-control mt-1"
-                                            placeholder="Middle name"
-                                            value={personalInfo.middleName?.trim()}
-                                            onChange={handleInputChange}
-                                            disabled={!isPersonalInfoEditable}
-                                          />
-                                          {errors.middleName && <p style={{ color: "red" }}>{errors.middleName}</p>}
-                                        </div>
-                                        <div className="col">
-                                          <input
-                                            type="text"
-                                            name="lastName"
-                                            className="form-control mt-1"
-                                            placeholder="Last name"
-                                            value={personalInfo.lastName.trim()}
-                                            onChange={handleInputChange}
-                                            disabled={!isPersonalInfoEditable}
-                                          />
-                                          {errors.lastName && <p style={{ color: "red" }}>{errors.lastName}</p>}
+                          {
+                            isLoading ? <div className="step-1">
+                              <div className="LoaderTDSatyle w-100">
+                                <ClipLoader
+                                  color="lightgrey"
+                                  loading={true}
+                                  size={30}
+                                  aria-label="Loading Spinner"
+                                  data-testid="loader"
+                                />
+                              </div>
+                            </div> : <div className="step-1">
+                              <h2 className="text-center">
+                                Step:1 - Employee's Personal Information
+                              </h2>
+                              <div className="steprForm-inner">
+                                <form>
+                                  <div className="row">
+                                    <div className="col-sm-5">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="fullName">Full Name<span style={{ color: "red" }}> * </span></label>
+                                        <div className="row">
+                                          <div className="col">
+                                            <input
+                                              type="tefalsext"
+                                              name="firstName"
+                                              className="form-control mt-1"
+                                              placeholder="First name"
+                                              value={personalInfo.firstName.trim()}
+                                              onChange={handleInputChange}
+                                              disabled={!isPersonalInfoEditable}
+                                            />
+                                            {errors.firstName && <p style={{ color: "red" }}>{errors.firstName}</p>}
+                                          </div>
+
+                                          <div className="col">
+                                            <input
+                                              type="text"
+                                              name="middleName"
+                                              className="form-control mt-1"
+                                              placeholder="Middle name"
+                                              value={personalInfo.middleName?.trim()}
+                                              onChange={handleInputChange}
+                                              disabled={!isPersonalInfoEditable}
+                                            />
+                                            {errors.middleName && <p style={{ color: "red" }}>{errors.middleName}</p>}
+                                          </div>
+
+                                          <div className="col">
+                                            <input
+                                              type="text"
+                                              name="lastName"
+                                              className="form-control mt-1"
+                                              placeholder="Last name"
+                                              value={personalInfo.lastName.trim()}
+                                              onChange={handleInputChange}
+                                              disabled={!isPersonalInfoEditable}
+                                            />
+                                            {errors.lastName && <p style={{ color: "red" }}>{errors.lastName}</p>}
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                  <div className="col-sm-2">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label htmlFor="dob">Date of Birth<span style={{ color: "red" }}> * </span></label>
-                                      <input
-                                        type="date"
-                                        name="dob"
-                                        className="form-control mt-1"
-                                        value={personalInfo.dob}
-                                        onChange={handleInputChange}
-                                        disabled={!isPersonalInfoEditable}
-                                      />
-                                      {errors.dob && <p style={{ color: "red" }}>{errors.dob}</p>}
+
+                                    <div className="col-sm-2">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="dob">Date of Birth<span style={{ color: "red" }}> * </span></label>
+                                        <input
+                                          type="date"
+                                          name="dob"
+                                          className="form-control mt-1"
+                                          value={personalInfo.dob}
+                                          onChange={handleInputChange}
+                                          disabled={!isPersonalInfoEditable}
+                                        />
+                                        {errors.dob && <p style={{ color: "red" }}>{errors.dob}</p>}
+                                      </div>
+                                    </div>
+
+                                    <div className="col-sm-2">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="geneder">Select Gender<span style={{ color: "red" }}> * </span></label>
+                                        <select
+                                          className="form-select mt-1"
+                                          name="gender"
+                                          id="Gender"
+                                          value={personalInfo.gender}
+                                          onChange={handleInputChange}
+                                          disabled={!isPersonalInfoEditable}
+                                        >
+                                          <option value="Select Gender" selected> Select Gender</option>
+                                          <option value="Male">Male</option>
+                                          <option value="Female">Female</option>
+                                        </select>
+                                        {errors.gender && <p style={{ color: "red" }}>{errors.gender}</p>}
+                                      </div>
+                                    </div>
+
+                                    <div className="col-sm-3">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="phoneno">Phone No<span style={{ color: "red" }}> * </span></label>
+                                        <input
+                                          type="tel"
+                                          name="personalPhoneNo"
+                                          className="form-control mt-1"
+                                          id="phoneNo"
+                                          placeholder="Phone No"
+                                          value={personalInfo.personalPhoneNo}
+                                          onChange={handleInputChange}
+                                          disabled={!isPersonalInfoEditable}
+                                        />
+                                        {errors.personalPhoneNo && <p style={{ color: "red" }}>{errors.personalPhoneNo}</p>}
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="col-sm-2">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label htmlFor="geneder">Select Gender<span style={{ color: "red" }}> * </span></label>
-                                      <select
-                                        className="form-select mt-1"
-                                        name="gender"
-                                        id="Gender"
-                                        value={personalInfo.gender}
-                                        onChange={handleInputChange}
-                                        disabled={!isPersonalInfoEditable}
-                                      >
-                                        <option value="Select Gender" selected> Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                      </select>
-                                      {errors.gender && <p style={{ color: "red" }}>{errors.gender}</p>}
+
+                                  <div className="row">
+                                    <div className="col-sm-3">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="email">Email Address<span style={{ color: "red" }}> * </span></label>
+                                        <input
+                                          type="email"
+                                          name="personalEmail"
+                                          className="form-control mt-1"
+                                          id="email"
+                                          placeholder="Email address"
+                                          value={personalInfo.personalEmail}
+                                          onChange={handleInputChange}
+                                          disabled={!isPersonalInfoEditable}
+                                        />
+                                        {errors.personalEmail && <p style={{ color: "red" }}>{errors.personalEmail}</p>}
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label htmlFor="phoneno">Phone No<span style={{ color: "red" }}> * </span></label>
-                                      <input
-                                        type="tel"
-                                        name="personalPhoneNo"
-                                        className="form-control mt-1"
-                                        id="phoneNo"
-                                        placeholder="Phone No"
-                                        value={personalInfo.personalPhoneNo}
-                                        onChange={handleInputChange}
-                                        disabled={!isPersonalInfoEditable}
-                                      />
-                                      {errors.personalPhoneNo && <p style={{ color: "red" }}>{errors.personalPhoneNo}</p>}
+
+                                    <div className="col-sm-3">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="bloodGroup">Blood Group<span style={{ color: "red" }}> * </span></label>
+                                        <select
+                                          className="form-select mt-1"
+                                          name="bloodGroup"
+                                          id="bloodGroup"
+                                          value={personalInfo.bloodGroup}
+                                          onChange={handleInputChange}
+                                          disabled={!isPersonalInfoEditable}
+                                        >
+                                          <option value="Select Gender" selected> Select Blood Group</option>
+                                          <option value="A Positive (A+)">A Positive (A+)</option>
+                                          <option value="A Negative (A-)">A Negative (A-)</option>
+                                          <option value="B Positive (B+)">B Positive (B+)</option>
+                                          <option value="B Negative (B-)">B Negative (B-)</option>
+                                          <option value="AB Positive (AB+)">AB Positive (AB+)</option>
+                                          <option value="AB Negative (AB-)">AB Negative (AB-)</option>
+                                          <option value="O Positive (O+)">O Positive (O+)</option>
+                                          <option value="O Negative (O-)">O Negative (O-)</option>
+                                        </select>
+                                        {errors.bloodGroup && <p style={{ color: "red" }}>{errors.bloodGroup}</p>}
+                                      </div>
                                     </div>
-                                  </div>
-                                </div>
-                                <div className="row">
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label htmlFor="email">Email Address<span style={{ color: "red" }}> * </span></label>
-                                      <input
-                                        type="email"
-                                        name="personalEmail"
-                                        className="form-control mt-1"
-                                        id="email"
-                                        placeholder="Email address"
-                                        value={personalInfo.personalEmail}
-                                        onChange={handleInputChange}
-                                        disabled={!isPersonalInfoEditable}
-                                      />
-                                      {errors.personalEmail && <p style={{ color: "red" }}>{errors.personalEmail}</p>}
+
+                                    <div className="col-sm-3">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
+                                        <div>
+                                          <textarea
+                                            rows={1}
+                                            name="currentAddress"
+                                            className="form-control mt-1"
+                                            id="currentAddress"
+                                            placeholder="Current address"
+                                            value={personalInfo.currentAddress}
+                                            onChange={handleInputChange}
+                                            disabled={!isPersonalInfoEditable}
+                                          ></textarea>
+                                          {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label htmlFor="bloodGroup">Blood Group<span style={{ color: "red" }}> * </span></label>
-                                      <select
-                                        className="form-select mt-1"
-                                        name="bloodGroup"
-                                        id="bloodGroup"
-                                        value={personalInfo.bloodGroup}
-                                        onChange={handleInputChange}
-                                        disabled={!isPersonalInfoEditable}
-                                      >
-                                        <option value="Select Gender" selected> Select Blood Group</option>
-                                        <option value="A Positive (A+)">A Positive (A+)</option>
-                                        <option value="A Negative (A-)">A Negative (A-)</option>
-                                        <option value="B Positive (B+)">B Positive (B+)</option>
-                                        <option value="B Negative (B-)">B Negative (B-)</option>
-                                        <option value="AB Positive (AB+)">AB Positive (AB+)</option>
-                                        <option value="AB Negative (AB-)">AB Negative (AB-)</option>
-                                        <option value="O Positive (O+)">O Positive (O+)</option>
-                                        <option value="O Negative (O-)">O Negative (O-)</option>
-                                      </select>
-                                      {errors.bloodGroup && <p style={{ color: "red" }}>{errors.bloodGroup}</p>}
-                                    </div>
-                                  </div>
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label htmlFor="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
-                                      <div>
+
+                                    <div className="col-sm-3">
+                                      <div className="form-group mt-1 mb-2">
+                                        <div className="d-flex align-items-center justify-content-between">
+                                          <label htmlFor="permanentAddress">
+                                            Permanent Address<span style={{ color: "red" }}> *</span>
+                                          </label>
+                                          <div>
+                                            <button className="action-btn action-btn-primary m-0" title="Is permanent address same as current?"
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                setPersonalInfo(prevState => ({
+                                                  ...prevState,
+                                                  permanentAddress: prevState.currentAddress
+                                                }));
+                                              }}
+                                            >
+                                              <FaCopy />
+                                            </button>
+                                          </div>
+                                        </div>
                                         <textarea
                                           rows={1}
-                                          name="currentAddress"
+                                          name="permanentAddress"
                                           className="form-control mt-1"
-                                          id="currentAddress"
-                                          placeholder="Current address"
-                                          value={personalInfo.currentAddress}
+                                          id="permanentAddress"
+                                          placeholder="Permanent address"
+                                          value={personalInfo.permanentAddress}
                                           onChange={handleInputChange}
                                           disabled={!isPersonalInfoEditable}
                                         ></textarea>
-                                        {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
+                                        {errors.permanentAddress && <p style={{ color: "red" }}>{errors.permanentAddress}</p>}
                                       </div>
                                     </div>
                                   </div>
-
-
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-1 mb-2">
-                                      <div className="d-flex align-items-center justify-content-between">
-                                        <label htmlFor="permanentAddress">
-                                          Permanent Address<span style={{ color: "red" }}> *</span>
-                                        </label>
-                                        <div>
-                                          <button className="action-btn action-btn-primary m-0" title="Is permanent address same as current?"
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              setPersonalInfo(prevState => ({
-                                                ...prevState,
-                                                permanentAddress: prevState.currentAddress
-                                              }));
-                                            }}
-                                          >
-                                            <FaCopy />
-                                          </button>
-                                        </div>
-                                      </div>
-                                      <textarea
-                                        rows={1}
-                                        name="permanentAddress"
-                                        className="form-control mt-1"
-                                        id="permanentAddress"
-                                        placeholder="Permanent address"
-                                        value={personalInfo.permanentAddress}
-                                        onChange={handleInputChange}
-                                        disabled={!isPersonalInfoEditable}
-                                      ></textarea>
-                                      {errors.permanentAddress && <p style={{ color: "red" }}>{errors.permanentAddress}</p>}
-                                    </div>
-                                  </div>
-                                </div>
-                              </form>
+                                </form>
+                              </div>
                             </div>
-                          </div>
                           }
                         </>
                       )}
@@ -1099,6 +1021,7 @@ export default function HREditEmployee() {
                                     />
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="Department">Department<span style={{ color: "red" }}> * </span></label>
@@ -1121,6 +1044,7 @@ export default function HREditEmployee() {
                                     {errors.department && <p style={{ color: "red" }}>{errors.department}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="Designation">Designation/Job Title<span style={{ color: "red" }}> * </span></label>
@@ -1138,6 +1062,7 @@ export default function HREditEmployee() {
                                     {errors.designation && <p style={{ color: "red" }}>{errors.designation}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="DateofJoinin">Date of Joining<span style={{ color: "red" }}> * </span></label>
@@ -1154,6 +1079,7 @@ export default function HREditEmployee() {
                                     {errors.joiningDate && <p style={{ color: "red" }}>{errors.joiningDate}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="Location">Branch/Location<span style={{ color: "red" }}> * </span></label>
@@ -1172,6 +1098,7 @@ export default function HREditEmployee() {
                                     {errors.branch && <p style={{ color: "red" }}>{errors.branch}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="Employmenttype">Employment Type<span style={{ color: "red" }}> * </span></label>
@@ -1193,6 +1120,7 @@ export default function HREditEmployee() {
                                     {errors.employeementType && <p style={{ color: "red" }}>{errors.employeementType}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="Reporting">Reporting Manager
@@ -1214,6 +1142,7 @@ export default function HREditEmployee() {
                                     {errors.manager && <p style={{ color: "red" }}>{errors.manager}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="Officialno">Official Mobile Number<span style={{ color: "red" }}> * </span></label>
@@ -1230,6 +1159,7 @@ export default function HREditEmployee() {
                                     {errors.officialNo && <p style={{ color: "red" }}>{errors.officialNo}</p>}
                                   </div>
                                 </div>
+                                
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="Officialemail">Official Email ID<span style={{ color: "red" }}> * </span></label>
@@ -1276,6 +1206,7 @@ export default function HREditEmployee() {
                                         />
                                         {errors.accountNo && <p style={{ color: "red" }}>{errors.accountNo}</p>}
                                       </div>
+                                      
                                       <div className="col">
                                         <input
                                           type="text"
@@ -1288,6 +1219,7 @@ export default function HREditEmployee() {
                                         />
                                         {errors.nameAsPerBankRecord && <p style={{ color: "red" }}>{errors.nameAsPerBankRecord}</p>}
                                       </div>
+
                                       <div className="col">
                                         <input
                                           type="text"
@@ -1303,6 +1235,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="col-sm-3">
                                   <div className="form-group mt-2 mb-2">
                                     <label>Salary Details<span style={{ color: "red" }}> * </span></label>
@@ -1318,6 +1251,7 @@ export default function HREditEmployee() {
                                     {errors.salary && <p style={{ color: "red" }}>{errors.salary}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-3">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="Company">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
@@ -1341,6 +1275,7 @@ export default function HREditEmployee() {
                                     {errors.firstMonthSalary && <p style={{ color: "red" }}>{errors.firstMonthSalary}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-3">
                                   <div className="form-group mt-2 mb-2">
                                     <label>1<sup>st</sup> Month's Salary Calculation</label>
@@ -1355,6 +1290,7 @@ export default function HREditEmployee() {
                                     />
                                   </div>
                                 </div>
+                                
                                 <div className="col-sm-3">
                                   <div class="form-group mt-2">
                                     <label htmlFor="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
@@ -1378,6 +1314,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>}
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="PANNumber">PAN Number<span style={{ color: "red" }}> * </span></label>
@@ -1394,6 +1331,7 @@ export default function HREditEmployee() {
                                     {errors.panNumber && <p style={{ color: "red" }}>{errors.panNumber}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="AdharNumber">Adhar Number<span style={{ color: "red" }}> * </span></label>
@@ -1410,6 +1348,7 @@ export default function HREditEmployee() {
                                     {errors.aadharNumber && <p style={{ color: "red" }}>{errors.aadharNumber}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="UANNumber">UAN  Number
@@ -1458,6 +1397,7 @@ export default function HREditEmployee() {
                                     {errors.personName && <p style={{ color: "red" }}>{errors.personName}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="relationship">Relationship<span style={{ color: "red" }}> * </span></label>
@@ -1477,6 +1417,7 @@ export default function HREditEmployee() {
                                     {errors.relationship && <p style={{ color: "red" }}>{errors.relationship}</p>}
                                   </div>
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
                                     <label htmlFor="personPhoneNo">Emergency Contact Number<span style={{ color: "red" }}> * </span></label>
@@ -1538,6 +1479,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>}
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div class="form-group">
                                     <label htmlFor="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
@@ -1568,6 +1510,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>}
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div class="form-group">
                                     <label htmlFor="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
@@ -1598,6 +1541,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>}
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
                                     <label htmlFor="relievingCertificate">
@@ -1631,6 +1575,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>}
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
                                     <label htmlFor="salarySlip">
@@ -1663,6 +1608,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>}
                                 </div>
+
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
                                     <label htmlFor="profilePhoto">Profile Photo</label>
@@ -1714,6 +1660,7 @@ export default function HREditEmployee() {
                                   </h3>
                                 </div>
                               </div>
+
                               <div className="servicesFormCard mt-3">
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
@@ -1730,6 +1677,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1742,6 +1690,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1754,6 +1703,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1766,6 +1716,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1778,6 +1729,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1790,6 +1742,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+                                
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1822,6 +1775,7 @@ export default function HREditEmployee() {
                                   <h3 className="m-0">Employeement Information</h3>
                                 </div>
                               </div>
+
                               <div className="servicesFormCard mt-3">
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
@@ -1835,6 +1789,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1847,6 +1802,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1859,6 +1815,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1871,6 +1828,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1883,6 +1841,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1895,6 +1854,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1907,6 +1867,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1919,6 +1880,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1943,6 +1905,7 @@ export default function HREditEmployee() {
                                   </h3>
                                 </div>
                               </div>
+
                               <div className="servicesFormCard mt-3">
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
@@ -1956,6 +1919,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1968,6 +1932,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1980,6 +1945,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -1992,6 +1958,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2007,6 +1974,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2019,6 +1987,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2031,6 +2000,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2043,6 +2013,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2055,6 +2026,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2079,6 +2051,7 @@ export default function HREditEmployee() {
                                   </h3>
                                 </div>
                               </div>
+
                               <div className="servicesFormCard mt-3">
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
@@ -2092,6 +2065,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2104,6 +2078,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2128,6 +2103,7 @@ export default function HREditEmployee() {
                                   </h3>
                                 </div>
                               </div>
+
                               <div className="servicesFormCard mt-3">
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
@@ -2141,6 +2117,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2153,6 +2130,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name cursor-pointer">
@@ -2165,6 +2143,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2177,6 +2156,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name cursor-pointer">
@@ -2189,6 +2169,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
@@ -2238,12 +2219,12 @@ export default function HREditEmployee() {
                         {!isLastStep() && (
                           <Button
                             onClick={() => {
-                              saveDraft();
+                              handleSave();
                             }}
                             variant="contained"
                             sx={{ mr: 1, background: "#ffba00 " }}
                           >
-                            Save Draft
+                            Save
                           </Button>
                         )}
 

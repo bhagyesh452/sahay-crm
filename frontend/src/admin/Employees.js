@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Header from "./Header";
 import Navbar from "./Navbar";
@@ -44,7 +44,10 @@ import { FaWhatsapp } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
 import AddEmployeeDialog from "./ExtraComponent/AddEmployeeDialog";
+import EmployeeFilter from "./ExtraComponent/EmployeeFilter.jsx";
 import { useQuery } from "@tanstack/react-query";
 
 function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup, searchValue, employeeData, isLoading, refetchActive, refetchDeleted }) {
@@ -87,6 +90,30 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const [empId, setEmpId] = useState("");
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
+
+  // Filter tabs for employees
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [isScrollLocked, setIsScrollLocked] = useState(false)
+  const [error, setError] = useState('');
+  const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+  const fieldRefs = useRef({});
+  const filterMenuRef = useRef(null); // Ref for the filter menu container
+
+  const isActiveField = (field) => filteredData.includes(field);
+
+  const handleFilterClick = (field) => {
+    if (filteredData === field) {
+      setShowFilterMenu(!showFilterMenu);
+      setIsScrollLocked(!showFilterMenu);
+    } else {
+      setFilteredData(field);
+      setShowFilterMenu(true);
+      setIsScrollLocked(true);
+      const rect = fieldRefs.current[field].getBoundingClientRect();
+      setFilterPosition({ top: rect.bottom, left: rect.left });
+    }
+  };
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -325,7 +352,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
           const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
 
-          
+
 
 
           // Refresh the data after successful deletion
@@ -397,7 +424,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     setCompanyData(cdata.filter((item) => item.ename === echangename));
     // Find the selected data object
     const selectedData = employeeData.find((item) => item._id === id);
-    console.log("selectedData" , selectedData)
+    console.log("selectedData", selectedData)
     setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
     setTargetCount(selectedData.targetDetails.length !== 0 ? selectedData.targetDetails.length : 1);
     setTargetObjects(
@@ -1018,8 +1045,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     }
   };
 
-
-
   return (
 
     <div>
@@ -1028,12 +1053,228 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
           <thead>
             <tr className="tr-sticky">
               <th>Sr. No</th>
-              <th>Name</th>
-              <th>Phone No</th>
-              <th>Email</th>
-              <th>Designation</th>
-              <th>Branch</th>
-              <th>Joining Date</th>
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['ename'] = el}>
+                    Name
+                  </div>
+
+                  {/* <div className='RM_filter_icon'>
+                    {isActiveField('ename') ? (
+                      <FaFilter onClick={() => handleFilterClick("ename")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("ename")} />
+                    )}
+                  </div> */}
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && filteredData === 'ename' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                      // noofItems={setnoOfAvailableData}
+                      // allFilterFields={setActiveFilterFieldsInterested}
+                      // filteredData={filteredDataInterested}
+                      // data={interestedData}
+                      // filterField={activeFilterFieldInterested}
+                      // onFilter={handleFilter}
+                      // completeData={completeInterestedData}
+                      // showingMenu={setShowFilterMenu}
+                      // dataForFilter={dataToFilterInterested}
+                      // refetch={refetchTeamLeads}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['number'] = el}>
+                    Phone No
+                  </div>
+
+                  {/* <div className='RM_filter_icon'>
+                    {isActiveField('number') ? (
+                      <FaFilter onClick={() => handleFilterClick("number")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("number")} />
+                    )}
+                  </div> */}
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && filteredData === 'number' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                      // noofItems={setnoOfAvailableData}
+                      // allFilterFields={setActiveFilterFieldsInterested}
+                      // filteredData={filteredDataInterested}
+                      // data={interestedData}
+                      // filterField={activeFilterFieldInterested}
+                      // onFilter={handleFilter}
+                      // completeData={completeInterestedData}
+                      // showingMenu={setShowFilterMenu}
+                      // dataForFilter={dataToFilterInterested}
+                      // refetch={refetchTeamLeads}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['email'] = el}>
+                    Email
+                  </div>
+
+                  {/* <div className='RM_filter_icon'>
+                    {isActiveField('email') ? (
+                      <FaFilter onClick={() => handleFilterClick("email")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("email")} />
+                    )}
+                  </div> */}
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && filteredData === 'email' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                      // noofItems={setnoOfAvailableData}
+                      // allFilterFields={setActiveFilterFieldsInterested}
+                      // filteredData={filteredDataInterested}
+                      // data={interestedData}
+                      // filterField={activeFilterFieldInterested}
+                      // onFilter={handleFilter}
+                      // completeData={completeInterestedData}
+                      // showingMenu={setShowFilterMenu}
+                      // dataForFilter={dataToFilterInterested}
+                      // refetch={refetchTeamLeads}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['newDesignation'] = el}>
+                    Designation
+                  </div>
+
+                  {/* <div className='RM_filter_icon'>
+                    {isActiveField('newDesignation') ? (
+                      <FaFilter onClick={() => handleFilterClick("newDesignation")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("newDesignation")} />
+                    )}
+                  </div> */}
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && filteredData === 'newDesignation' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                      // noofItems={setnoOfAvailableData}
+                      // allFilterFields={setActiveFilterFieldsInterested}
+                      // filteredData={filteredDataInterested}
+                      // data={interestedData}
+                      // filterField={activeFilterFieldInterested}
+                      // onFilter={handleFilter}
+                      // completeData={completeInterestedData}
+                      // showingMenu={setShowFilterMenu}
+                      // dataForFilter={dataToFilterInterested}
+                      // refetch={refetchTeamLeads}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['branchOffice'] = el}>
+                    Branch
+                  </div>
+
+                  {/* <div className='RM_filter_icon'>
+                    {isActiveField('branchOffice') ? (
+                      <FaFilter onClick={() => handleFilterClick("branchOffice")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("branchOffice")} />
+                    )}
+                  </div> */}
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && filteredData === 'branchOffice' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                      // noofItems={setnoOfAvailableData}
+                      // allFilterFields={setActiveFilterFieldsInterested}
+                      // filteredData={filteredDataInterested}
+                      // data={interestedData}
+                      // filterField={activeFilterFieldInterested}
+                      // onFilter={handleFilter}
+                      // completeData={completeInterestedData}
+                      // showingMenu={setShowFilterMenu}
+                      // dataForFilter={dataToFilterInterested}
+                      // refetch={refetchTeamLeads}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['jdate'] = el}>
+                    Joining Date
+                  </div>
+
+                  {/* <div className='RM_filter_icon'>
+                    {isActiveField('jdate') ? (
+                      <FaFilter onClick={() => handleFilterClick("jdate")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("jdate")} />
+                    )}
+                  </div> */}
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && filteredData === 'jdate' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                      // noofItems={setnoOfAvailableData}
+                      // allFilterFields={setActiveFilterFieldsInterested}
+                      // filteredData={filteredDataInterested}
+                      // data={interestedData}
+                      // filterField={activeFilterFieldInterested}
+                      // onFilter={handleFilter}
+                      // completeData={completeInterestedData}
+                      // showingMenu={setShowFilterMenu}
+                      // dataForFilter={dataToFilterInterested}
+                      // refetch={refetchTeamLeads}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
               {/* <th>Probation Status</th> */}
               {
                 (adminName === "Nimesh" ||
@@ -1041,8 +1282,80 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                   adminName === "shivangi" ||
                   adminName === "Karan") && (
                   <>
-                    <th>Added Date</th>
-                    <th>Status</th>
+                    <th>
+                      <div className='d-flex align-items-center justify-content-center position-relative'>
+                        <div ref={el => fieldRefs.current['AddedOn'] = el}>
+                          Added Date
+                        </div>
+
+                        {/* <div className='RM_filter_icon'>
+                          {isActiveField('AddedOn') ? (
+                            <FaFilter onClick={() => handleFilterClick("AddedOn")} />
+                          ) : (
+                            <BsFilter onClick={() => handleFilterClick("AddedOn")} />
+                          )}
+                        </div> */}
+
+                        {/* ---------------------filter component--------------------------- */}
+                        {showFilterMenu && filteredData === 'AddedOn' && (
+                          <div
+                            ref={filterMenuRef}
+                            className="filter-menu"
+                            style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                          >
+                            <EmployeeFilter
+                            // noofItems={setnoOfAvailableData}
+                            // allFilterFields={setActiveFilterFieldsInterested}
+                            // filteredData={filteredDataInterested}
+                            // data={interestedData}
+                            // filterField={activeFilterFieldInterested}
+                            // onFilter={handleFilter}
+                            // completeData={completeInterestedData}
+                            // showingMenu={setShowFilterMenu}
+                            // dataForFilter={dataToFilterInterested}
+                            // refetch={refetchTeamLeads}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </th>
+                    <th>
+                      <div className='d-flex align-items-center justify-content-center position-relative'>
+                        <div ref={el => fieldRefs.current['Active'] = el}>
+                          Status
+                        </div>
+
+                        {/* <div className='RM_filter_icon'>
+                          {isActiveField('Active') ? (
+                            <FaFilter onClick={() => handleFilterClick("Active")} />
+                          ) : (
+                            <BsFilter onClick={() => handleFilterClick("Active")} />
+                          )}
+                        </div> */}
+
+                        {/* ---------------------filter component--------------------------- */}
+                        {showFilterMenu && filteredData === 'Active' && (
+                          <div
+                            ref={filterMenuRef}
+                            className="filter-menu"
+                            style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                          >
+                            <EmployeeFilter
+                            // noofItems={setnoOfAvailableData}
+                            // allFilterFields={setActiveFilterFieldsInterested}
+                            // filteredData={filteredDataInterested}
+                            // data={interestedData}
+                            // filterField={activeFilterFieldInterested}
+                            // onFilter={handleFilter}
+                            // completeData={completeInterestedData}
+                            // showingMenu={setShowFilterMenu}
+                            // dataForFilter={dataToFilterInterested}
+                            // refetch={refetchTeamLeads}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </th>
                     <th>BDM Work</th>
                     <th>Action</th>
                   </>
