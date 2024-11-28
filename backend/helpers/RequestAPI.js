@@ -69,7 +69,6 @@ router.post("/requestCompanyData", async (req, res) => {
           // Handle the error for this specific entry, but continue with the next one
         }
       }
-
       const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
       let GetEmployeeProfile = "no-image"
       if (GetEmployeeData) {
@@ -217,7 +216,10 @@ router.get("/get-notification/:name", async (req, res) => {
     // Query to get the top 5 unread notifications sorted by requestTime
     if (name) {
       const topUnreadNotifications = await NotiModel.find({
-        ename: name,
+        $or: [
+          { ename: name }, // Match `ename` field
+          { callingBdmName: name } // Match `callingbdmname` field
+        ],
         employee_status: "Unread",
         employeeRequestType: { $ne: null, $ne: "", $exists: true }
         //srequestType: { $ne: "Lead Upload" } // Corrected this line
@@ -227,7 +229,10 @@ router.get("/get-notification/:name", async (req, res) => {
       //console.log("unred employee notification", topUnreadNotifications)
       // Query to get the count of all unread notifications for the specified ename
       const totalUnreadCount = await NotiModel.countDocuments({
-        ename: name,
+        $or: [
+          { ename: name },
+          { callingBdmName: name }
+        ],
         employee_status: "Unread",
         employeeRequestType: { $ne: null, $ne: "", $exists: true }
       });
@@ -998,7 +1003,7 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
   ]),
   async (req, res) => {
 
-    
+
     try {
       const { companyName, bookingIndex } = req.params;
       const socketIO = req.io;
@@ -1009,12 +1014,12 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
 
       const newOtherDocs = req.files?.["otherDocs"] || [];
       // console.log("Other docs are :", newOtherDocs);
-      
+
       const newPaymentReceipt = req.files?.["paymentReceipt"] || [];
       // console.log("Payment receipt is :", newPaymentReceipt);
 
       const requestDate = new Date();
-      
+
       const createdData = await EditableDraftModel.create({
         "Company Name": companyName,
         bookingIndex,

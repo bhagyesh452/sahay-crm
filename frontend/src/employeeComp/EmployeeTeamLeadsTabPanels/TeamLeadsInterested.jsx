@@ -646,9 +646,11 @@ function TeamLeadsInterested({
                                     </td>
                                     <td>
                                         <div className="d-flex justify-content-center">
-                                            <div className={`${
+                                            <div 
+                                            className={`${
                                                 company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
-                                                company.bdeOldStatus === "Matured" ? "dfault_approved-status" 
+                                                company.bdeOldStatus === "Matured" ? "dfault_approved-status" :
+                                                company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "ep_busy_status"
                                                 : "dfault_followup-status"}`}>
                                                 {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                             </div>
@@ -661,12 +663,14 @@ function TeamLeadsInterested({
                                                         : company.bdeOldStatus === "FollowUp"
                                                             ? "followup-history-btn disabled"
                                                             : company.bdeOldStatus === "Matured" ? "matured-history-btn disabled"
+                                                            :company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "busy-history-btn disabled"
                                                             : "")
                                                     : (company.bdeOldStatus === "Interested"
                                                         ? "intersted-history-btn"
                                                         : company.bdeOldStatus === "FollowUp"
                                                             ? "followup-history-btn"
                                                             : company.bdeOldStatus === "Matured" ? "matured-history-btn"
+                                                            :company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "busy-history-btn"
                                                             : "")
                                             }
                                             >

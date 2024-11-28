@@ -3,6 +3,8 @@ import { CiBellOn } from "react-icons/ci";
 import axios from 'axios'
 import io from 'socket.io-client';
 import dummyImg from "../static/EmployeeImg/office-man.png";
+import MaleEmployee from "../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import { useNavigate, useParams } from 'react-router-dom';
 import No_noti_image from "../assets/media/no_noti_image.jpg"
 
@@ -71,11 +73,12 @@ function Notification_box_employee({ name }) {
             return `${days} d ago`;
         }
     }
-   // console.log("name", name)
+    // console.log("name", name)
     // --------------------------------------  Fetch functions --------------------------------------------
     const fetchNotification = async () => {
         try {
             const response = await axios.get(`${secretKey}/requests/get-notification/${name}`);
+            console.log("response", response.data)
             setTotal_notifications(response.data.topUnreadNotifications);
             setTotal_notiCount(response.data.totalUnreadCount);
 
@@ -149,6 +152,14 @@ function Notification_box_employee({ name }) {
             fetchNotification();
         })
 
+        socket.on("unexpectedCaller", (res) => {
+            console.log("unexpectedCaller", res)
+            if (name === res.ename || name === res.bdmName) {
+                console.log("unexpectedCaller", res)
+                fetchNotification();
+            }
+        });
+
         // Clean up the socket connection when the component unmounts
         return () => {
             socket.disconnect();
@@ -203,15 +214,17 @@ function Notification_box_employee({ name }) {
                                     )
                                     } className={obj.status === "Unread" ? 'noti-item unread bdr-btm-eee' : 'noti-item bdr-btm-eee'} >
                                     <div className='noti-User-profile'>
-                                        <img src={obj.img_url !== "no-image" ? `${secretKey}/employee/employeeImg/${obj.ename}/${encodeURIComponent(
-                                            obj.img_url
-                                        )}` : dummyImg} alt="noImg" />
+                                        <img src={obj.img_url !== "no-image" ? MaleEmployee : MaleEmployee} alt="noImg" />
                                         <div className='noti-designation'>{obj.designation}</div>
                                     </div>
                                     <div className='noti-data'>
                                         <p className="m-0 My_Text_Wrap" title={obj.employeeRequestType}>
                                             {obj.employeeRequestType === "Leads Are Assigned" ? (
                                                 <b>New Leads Are Assigned</b>
+                                            ) : obj.employeeRequestType === "Unexpected Caller" ? (
+                                                <>
+                                                    <b>{`${obj.actualEmployeeCalling} connected with ${obj.companyName} !`}</b>
+                                                </>
                                             ) : (
                                                 <>
                                                     <b>Your request of</b> <b>{obj.employeeRequestType}</b>

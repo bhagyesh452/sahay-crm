@@ -183,7 +183,8 @@ const CompanySchema = new mongoose.Schema({
     type: Date
   },
   UploadDate: {
-    type: Date
+    type: Date,
+    default: new Date()
   },
   Status: {
     type: String,

@@ -7,6 +7,10 @@ ename:{
     type:String,
     required:true
 },
+actualEmployeeCalling:{
+    type:String,
+    default:""
+},
 requestType:{
     type:String,
     required:true
@@ -17,15 +21,17 @@ requestTime:{
 },
 designation:{
     type:String,
-    required:true
+    required:true,
+    default:""
 },
 status:{
     type:String,
-    required:true
+    required:true,
+    default:""
 },
 employee_status:{
     type:String,
-    required:true
+    default:""
 },
 img_url:{
     type:String,
@@ -38,6 +44,10 @@ employeeRequestType:{
 },
 paymentApprovalServices:{
     type:Array,
+},
+callingBdmName : {
+    type:String,
+    default:""
 }
 
 });

@@ -20,7 +20,7 @@ import MaleEmployee from "../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import ProjectionInformationDialog from "../employeeComp/ExtraComponents/ProjectionInformationDialog";
 import { useNavigate } from 'react-router-dom';
-import EmployeeNoPopup from "../employeeComp/ExtraComponents/EmployeeNoPopup";
+import WarningSnackbar from "./WarningSnackbar";
 // import "./styles/header.css"
 
 
@@ -256,18 +256,20 @@ function Header({ name, id, designation, empProfile, gender }) {
       }
     });
 
-    // socket.on("todays-projection-submmited", (res) => {
-    //   console.log("res", res)
-    //   if (name === res.name) {
-    //     // Set count to 3 and dismissed to true, ensuring no further popups
-    //     const newStoredData = JSON.parse(localStorage.getItem(userId))
+    socket.on("unexpectedCaller", (res) => {
+      console.log("unexpectedCaller", res)
+      if (name === res.ename || name === res.bdmName) {
+        console.log("socket working")
+        enqueueSnackbar(`${res.actualEmployee} connected with ${res.companyName} !`, {
+          variant: 'warningSnackbar',
+          persist: true
+        });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    });
 
-    //     // console.log("kyaidharchala", newStoredData)
-    //     // Update component state
-    //     setPopupCount(newStoredData.count || 0);
-    //     setLastPopupTime(new Date(newStoredData.lastShown) || null);
-    //   }
-    // });
+
 
     // Clean up the socket connection when the component unmounts
     return () => {
@@ -520,24 +522,11 @@ useEffect(() => {
       {/* ----------------------snackbar code---------------------------------  */}
 
       <SnackbarProvider Components={{
-        reportComplete: ReportComplete
+        reportComplete: ReportComplete,
+        warningSnackbar: WarningSnackbar
       }} maxSnack={3}>
 
       </SnackbarProvider>
-
-      {/* -----------------showDialog----------------------------
-
-      <ProjectionInformationDialog
-        handleYesClick={handleYesClick}
-        handleNoClick={handleNoClick}
-        showDialog={showPopup}
-
-      />
-      <EmployeeNoPopup
-        noPopup={noPopup}
-        setNoPopup={setNoPopup}
-        message={popupMessage}
-      /> */}
 
 
     </div>
