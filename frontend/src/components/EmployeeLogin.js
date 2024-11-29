@@ -46,58 +46,6 @@ function EmployeeLogin({ setnewToken }) {
     fetchData();
   }, []);
 
-  // async function getLocationInfo(latitude, longitude) {
-  //   try {
-  //     const response = await fetch(
-  //       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! Status: ${response.status}`);
-  //     }
-
-  //     const data = await response.json();
-
-  //     if (data.error) {
-  //       throw new Error(`Nominatim API error: ${data.error}`);
-  //     }
-
-  //     const { address } = data;
-  //     setAddress(`${address.suburb} ,${address.state_district}`);
-
-  //     // Log the location information
-  //   } catch (error) {
-  //     console.error("Error fetching location:", error.message);
-  //   }
-  // }
-
-  // const [locationAccess, setLocationAccess] = useState(false);
-  // useEffect(() => {
-  //   let watchId;
-  //   const successCallback = (position) => {
-  //     const userLatitude = position.coords.latitude;
-  //     const userLongitude = position.coords.longitude;
-  //     setLocationAccess(true);
-  //     getLocationInfo(userLatitude, userLongitude);
-  //   };
-
-  //   const errorCallback = (error) => {
-  //     console.error("Geolocation error:", error.message);
-  //     if (error.code === error.PERMISSION_DENIED) {
-  //       setLocationAccess(false);
-  //     }
-  //     // Handle other error cases if needed
-  //   };
-
-  //   navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-
-  //   // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
-
-  //   // Cleanup function to clear the watch if the component unmounts
-  //   return () => {
-  //     navigator.geolocation.clearWatch(watchId);
-  //   };
-  // }, []);
 
   useEffect(() => {
     document.title = `Employee-Sahay-CRM`;
@@ -177,28 +125,7 @@ function EmployeeLogin({ setnewToken }) {
       }
     }
   };
-  // const logout = () => {
-  //   localStorage.removeItem("newtoken");
-  //   console.log("Token removed after 1 minute");
-  //   window.location.replace("/");
-  // };
-  // useEffect(() => {
-  //   // Check if user is logged in
-  //   const token = localStorage.getItem("newtoken");
-  //   if (token) {
-  //     // Set timeout to log out user after 1 minute
-  //     const timer = setTimeout(logout, 60000); // 60000 milliseconds = 1 minute
 
-  //     // Clear timeout if the component unmounts
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, []); // Empty dependency array ensures this runs once when the component mounts
-
-
-
-
-  //console.log(email)
-  //console.log(password)
 
 
   return (

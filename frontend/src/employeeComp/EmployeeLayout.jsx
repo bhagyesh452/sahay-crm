@@ -21,22 +21,6 @@ function EmployeeLayout() {
         }
     };
 
-    // const fetchTeamLeadsData = async () => {
-    //     try {
-    //         const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${data.ename}`);
-    //         setTeamData(response.data);
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // };
-    
-    // useEffect(() => {
-    //     if (data.ename) {
-    //         fetchTeamLeadsData();
-    //     }
-    // }, [data.ename]);
-    
-    // console.log("teamData" , teamData)
     
 
     // Fetch data once and pass it to Header and EmpNav
