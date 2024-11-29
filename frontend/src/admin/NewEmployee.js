@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Header from "./Header";
-import Navbar from "./Navbar";
 import "../dist/css/tabler.min.css?1684106062";
 import "../dist/css/tabler-flags.min.css?1684106062";
 import "../dist/css/tabler-payments.min.css?1684106062";
@@ -33,11 +31,27 @@ import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3";
 import io from "socket.io-client";
 
-
 function NewEmployee() {
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const adminName = localStorage.getItem("adminName");
+
     const [employee, setEmployee] = useState([]);
+    const [employeeDataCount, setEmployeeDataCount] = useState(0);
+    const [completeEmployeeData, setCompleteEmployeeData] = useState([]);
+    const [dataToFilterEmployee, setDataToFilterEmployee] = useState([]);
+    const [filteredDataEmployee, setFilteredDataEmployee] = useState([]);
+    const [activeFilterFieldsEmployee, setActiveFilterFieldsEmployee] = useState([]);
+    const [activeFilterFieldEmployee, setActiveFilterFieldEmployee] = useState(null);
+
     const [deletedEmployee, setDeletedEmployee] = useState([]);
+    const [deletedEmployeeDataCount, setDeletedEmployeeDataCount] = useState(0);
+    const [completeDeletedEmployeeData, setCompleteDeletedEmployeeData] = useState([]);
+    const [dataToFilterDeletedEmployee, setDataToFilterDeletedEmployee] = useState([]);
+    const [filteredDataDeletedEmployee, setFilteredDataDeletedEmployee] = useState([]);
+    const [activeFilterFieldsDeletedEmployee, setActiveFilterFieldsDeletedEmployee] = useState([]);
+    const [activeFilterFieldDeletedEmployee, setActiveFilterFieldDeletedEmployee] = useState(null);
+
     const [addEmployeePopup, setAddEmployeePopup] = useState(false);
     const [addBulkTarget, setAddBulkTarget] = useState(false);
     const [searchValue, setSearchValue] = useState("");
@@ -46,7 +60,6 @@ function NewEmployee() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false);
     // const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
     // const [deletedEmployeeSearchResult, setDeletedEmployeeSearchResult] = useState([]);
-    const adminName = localStorage.getItem("adminName")
 
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
@@ -65,7 +78,6 @@ function NewEmployee() {
             //   const audioplayer = new Audio(notification_audio);
             //   audioplayer.play();
               refetchDeleted();
-           
           });
 
           // Clean up the socket connection when the component unmounts
@@ -112,11 +124,20 @@ function NewEmployee() {
                         (obj) => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"
                     );
                     setEmployee(filteredByDesignation);
+                    setEmployeeDataCount(filteredByDesignation.length);
+                    setCompleteEmployeeData(filteredByDesignation);
+                    setDataToFilterEmployee(filteredByDesignation);
                 } else {
                     setEmployee(filteredEmployees);
+                    setEmployeeDataCount(filteredEmployees.length);
+                    setCompleteEmployeeData(filteredEmployees);
+                    setDataToFilterEmployee(filteredEmployees);
                 }
             } else {
                 setEmployee(allEmployees); // Show all employees if no search value
+                setEmployeeDataCount(allEmployees.length);
+                setCompleteEmployeeData(allEmployees);
+                setDataToFilterEmployee(allEmployees);
             }
         }
     }, [activeData?.data, searchValue]);
@@ -128,7 +149,8 @@ function NewEmployee() {
         staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
         refetchInterval: 60 * 1000,  // Refetch every 1 minute
     });
-    console.log("deletedData", deletedData?.data)
+    // console.log("deletedData", deletedData?.data);
+
     // Deleted employees filtering and setting
     useEffect(() => {
         if (deletedData?.data) {
@@ -152,8 +174,14 @@ function NewEmployee() {
                     );
                 });
                 setDeletedEmployee(filteredDeletedEmployees); // Set filtered deleted employees
+                setDeletedEmployeeDataCount(filteredDeletedEmployees.length);
+                setCompleteDeletedEmployeeData(filteredDeletedEmployees);
+                setDataToFilterDeletedEmployee(filteredDeletedEmployees);
             } else {
                 setDeletedEmployee(allDeletedEmployees); // Show all deleted employees if no search value
+                setDeletedEmployeeDataCount(allDeletedEmployees.length);
+                setCompleteDeletedEmployeeData(allDeletedEmployees);
+                setDataToFilterDeletedEmployee(allDeletedEmployees);
             }
         }
     }, [deletedData?.data, searchValue]);
@@ -289,7 +317,7 @@ function NewEmployee() {
                                             </div>
                                             <div className="rm_tsn_bdge">
                                                 {/* {(searchValue.length !== "" ? employeeSearchResult : employee).length || 0} */}
-                                                {employee?.length || 0}
+                                                {employeeDataCount || 0}
                                             </div>
                                         </div>
                                     </a>
@@ -302,7 +330,7 @@ function NewEmployee() {
                                             </div>
                                             <div className="rm_tsn_bdge">
                                                 {/* {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0} */}
-                                                {deletedEmployee.length || 0}
+                                                {deletedEmployeeDataCount || 0}
                                             </div>
                                         </div>
                                     </a>
@@ -331,6 +359,16 @@ function NewEmployee() {
                                     closeAddEmployeePopup={closeAddEmployeePopup}
                                     searchValue={searchValue}
                                     employeeData={employee}
+                                    setEmployeeData={setEmployee}
+                                    setEmployeeDataCount={setEmployeeDataCount}
+                                    dataToFilterEmployee={dataToFilterEmployee}
+                                    completeEmployeeData={completeEmployeeData}
+                                    filteredDataEmployee={filteredDataEmployee}
+                                    setFilteredDataEmployee={setFilteredDataEmployee}
+                                    activeFilterFieldEmployee={activeFilterFieldEmployee}
+                                    setActiveFilterFieldEmployee={setActiveFilterFieldEmployee}
+                                    activeFilterFieldsEmployee={activeFilterFieldsEmployee}
+                                    setActiveFilterFieldsEmployee={setActiveFilterFieldsEmployee}
                                     isLoading={isLoadingActive}
                                     isError={isErrorActive}
                                     refetchActive={refetchActive}
@@ -341,6 +379,16 @@ function NewEmployee() {
                                 <DeletedEmployeePanel
                                     searchValue={searchValue}
                                     deletedEmployee={deletedEmployee}
+                                    setDeletedEmployee={setDeletedEmployee}
+                                    setDeletedEmployeeDataCount={setDeletedEmployeeDataCount}
+                                    dataToFilterDeletedEmployee={dataToFilterDeletedEmployee}
+                                    completeDeletedEmployeeData={completeDeletedEmployeeData}
+                                    filteredDataDeletedEmployee={filteredDataDeletedEmployee}
+                                    setFilteredDataDeletedEmployee={setFilteredDataDeletedEmployee}
+                                    activeFilterFieldDeletedEmployee={activeFilterFieldDeletedEmployee}
+                                    setActiveFilterFieldDeletedEmployee={setActiveFilterFieldDeletedEmployee}
+                                    activeFilterFieldsDeletedEmployee={activeFilterFieldsDeletedEmployee}
+                                    setActiveFilterFieldsDeletedEmployee={setActiveFilterFieldsDeletedEmployee}
                                     isLoading={isLoadingDeleted}
                                     isError={isErrorDeleted}
                                     refetchActive={refetchActive}

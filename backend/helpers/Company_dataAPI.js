@@ -1,7 +1,8 @@
 var express = require('express');
-var router = express.Router()
-const dotenv = require('dotenv')
+var router = express.Router();
+const dotenv = require('dotenv');
 dotenv.config();
+const cron = require('node-cron');
 const CompanyModel = require("../models/Leads");
 const RemarksHistory = require("../models/RemarksHistory");
 const RecentUpdatesModel = require("../models/RecentUpdates");
@@ -228,7 +229,7 @@ router.post("/update-status/:id", async (req, res) => {
     // Fetch the company and perform validations
     const company = await CompanyModel.findById(id)
       .lean()
-      // .select({ "bdmAcceptStatus": 1, "Status": 1, "ename": 1, "Company Name": 1 });
+    // .select({ "bdmAcceptStatus": 1, "Status": 1, "ename": 1, "Company Name": 1 });
     if (!company) {
       return res.status(404).json({ error: "Company not found" });
     }
@@ -2065,7 +2066,7 @@ router.post(`/post-bdenextfollowupdate/:id`, async (req, res) => {
     socketIO.emit("employee__nextfollowupdate_successfull_update", {
       message: `Status updated to "Not Interested" for company: ${updatedCompany["Company Name"]}`,
       updatedDocument: updatedCompany,
-      ename : updatedCompany.ename
+      ename: updatedCompany.ename
     })
     res.status(200).json({ message: "Date Updated successfully" });
   } catch (error) {
@@ -2537,20 +2538,20 @@ router.get("/employees-new/:ename", async (req, res) => {
         // Exclude search-specific matches to prevent overlap
         search !== ""
           ? {
-              $or: [
-                { "Company Name": { $regex: new RegExp(escapeRegex(search), "i") } },
-                { "Company Email": { $regex: new RegExp(escapeRegex(search), "i") } },
-                {
-                  $expr: {
-                    $regexMatch: {
-                      input: { $toString: "$Company Number" },
-                      regex: `^${escapeRegex(search)}`,
-                      options: "i",
-                    },
+            $or: [
+              { "Company Name": { $regex: new RegExp(escapeRegex(search), "i") } },
+              { "Company Email": { $regex: new RegExp(escapeRegex(search), "i") } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $toString: "$Company Number" },
+                    regex: `^${escapeRegex(search)}`,
+                    options: "i",
                   },
                 },
-              ],
-            }
+              },
+            ],
+          }
           : {},
       ],
     };
@@ -2607,8 +2608,8 @@ router.get("/employees-new/:ename", async (req, res) => {
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] }
           },
           {
-            Status: { $in: ["Untouched" , "Busy", "Not Interested" , "Not Picked Up"] },
-            bdmAcceptStatus: { $in: [ "Pending"] }
+            Status: { $in: ["Untouched", "Busy", "Not Interested", "Not Picked Up"] },
+            bdmAcceptStatus: { $in: ["Pending"] }
           }
         ]
       })
@@ -2616,21 +2617,21 @@ router.get("/employees-new/:ename", async (req, res) => {
         .skip(skip)
         .limit(limit),
 
-       CompanyModel.find({
+      CompanyModel.find({
         ...maturedQuery,
-        })
-          .sort({ lastActionDate: -1 })
-          .skip(skip)
-          .limit(limit),
-        
-        CompanyModel.find({
-          ...baseQuery,
-          Status: { $in: ["Not Interested", "Junk"] },
-          bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] }, // Use $nin for excluding multiple values
-        })
-          .sort({ lastActionDate: -1 })
-          .skip(skip)
-          .limit(limit)
+      })
+        .sort({ lastActionDate: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      CompanyModel.find({
+        ...baseQuery,
+        Status: { $in: ["Not Interested", "Junk"] },
+        bdmAcceptStatus: { $nin: ["Pending", "MaturedPending"] }, // Use $nin for excluding multiple values
+      })
+        .sort({ lastActionDate: -1 })
+        .skip(skip)
+        .limit(limit)
     ]);
     // Fetch redesigned data for matching companies
     const allCompanyIds = [
@@ -2688,8 +2689,8 @@ router.get("/employees-new/:ename", async (req, res) => {
             bdmAcceptStatus: { $in: ["Forwarded", "Pending", "Accept"] },
           },
           {
-            Status: { $in: ["Untouched" , "Busy", "Not Interested" , "Not Picked Up"] },
-            bdmAcceptStatus: { $in: [ "Pending"] }
+            Status: { $in: ["Untouched", "Busy", "Not Interested", "Not Picked Up"] },
+            bdmAcceptStatus: { $in: ["Pending"] }
           }
         ],
       }),
@@ -3633,7 +3634,7 @@ router.get("/bdmMaturedCases", async (req, res) => {
       bdmWork: true, // Condition for bdmWork to be true
       ename: { $nin: ["DIRECT", "TEST ACCOUNT"] } // Exclude ename values "DIRECT" and "TEST ACCOUNT"
     }).select("ename number bdmWork"); // Select ename, number, and bdmWork fields
-    
+
     const employeeData = employees.map(emp => ({
       name: emp.ename,
       bdmNumber: emp.number
@@ -4165,8 +4166,6 @@ router.post('/addDailyProjection/:ename', async (req, res) => {
   }
 });
 
-
-
 router.post('/updateDailyProjection/:ename', async (req, res) => {
   const { ename } = req.params;
   let {
@@ -4343,8 +4342,6 @@ router.post('/setProjectionCountToZero', async (req, res) => {
   }
 });
 
-
-
 // Fetch all the projections :
 router.get('/getProjection', async (req, res) => {
   try {
@@ -4355,6 +4352,7 @@ router.get('/getProjection', async (req, res) => {
   }
 });
 
+// Fetch projection for particular employee for current day :
 router.get('/getCurrentDayProjection/:employeeName', async (req, res) => {
   const { employeeName } = req.params;
   const { companyName, date } = req.query;
@@ -4494,7 +4492,6 @@ router.get('/checkEmployeeProjectionForDate/:employeeName', async (req, res) => 
   }
 });
 
-
 // Fetching all projections for current day :
 router.get('/getCurrentDayProjection', async (req, res) => {
   const { companyName, date } = req.query;
@@ -4521,7 +4518,6 @@ router.get('/getCurrentDayProjection', async (req, res) => {
     res.status(500).json({ result: false, message: "Error fetching projection", error: error.message });
   }
 });
-
 
 // Endpoint to fetch today's projections for all employees
 router.get('/getDailyEmployeeProjections', async (req, res) => {
@@ -4570,14 +4566,7 @@ router.get('/getDailyEmployeeProjections', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-// Update projection and add to history : previous get projection deleted on 20-11-2024
-
+// Fetch projection for particular employee :
 router.get('/getProjection/:employeeName', async (req, res) => {
   const { employeeName } = req.params;
   const { companyName } = req.query;
@@ -4719,7 +4708,7 @@ router.get('/getProjection/:employeeName', async (req, res) => {
   }
 });
 
-
+// Update projection and add to history :
 router.put('/updateProjection/:companyName', async (req, res) => {
   const { companyName } = req.params;
   const {
@@ -4795,6 +4784,55 @@ router.put('/updateProjection/:companyName', async (req, res) => {
     res.status(404).json({ result: false, message: "Projection not found" });
   } catch (error) {
     res.status(500).json({ result: false, message: "Error updating projection", error: error.message });
+  }
+});
+
+// Fetch those leads whose status in Not Interested and Junk
+const fetchLeads = async () => {
+  try {
+    const notInterestedLeads = await CompanyModel.find({
+      Status: { $in: ["Not Interested", "Junk"] } // Proper usage of $in
+    });
+    return notInterestedLeads;
+  } catch (error) {
+    console.log('Error fetching leads:', error);
+    // throw error; // Re-throw the error to handle it where this function is called
+  }
+};
+
+// Schedule the Task to Run Automatically at 12 PM
+// cron.schedule('0 10 * * *', async () => {
+cron.schedule('45 23 * * *', async () => { // (11:45 PM)
+  console.log('Running scheduled task at 11:45 PM');
+  const currentDate = new Date();
+
+  // Fetching leads for automatic update
+  try {
+    const leads = await fetchLeads();
+
+    if (leads.length === 0) {
+      console.log('No leads found with status "Not Interested" or "Junk".');
+      return;
+    }
+
+    for (let lead of leads) {
+      await CompanyModel.findOneAndUpdate(
+        { "Company Name": lead["Company Name"] },
+        {
+          $set: {
+            Status: 'Untouched',
+            ename: 'Extracted',
+            bdmAcceptStatus: 'NotForwarded',
+            lastAssignedEmployee: lead.ename,
+            extractedDate: currentDate,
+          },
+        },
+        // { upsert: true }
+      );
+    }
+    console.log('Leads updated successfully by cron job!');
+  } catch (error) {
+    console.error('Error updating leads in cron job:', error);
   }
 });
 

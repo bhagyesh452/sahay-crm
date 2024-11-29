@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Header from "./Header";
 import Navbar from "./Navbar";
@@ -26,17 +26,66 @@ import { FaWhatsapp } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
+import EmployeeFilter from "./ExtraComponent/EmployeeFilter.jsx";
 
-function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetchActive, refetchDeleted }) {
+function DeletedEmployeePanel({ searchValue, deletedEmployee, setDeletedEmployee, setDeletedEmployeeDataCount, dataToFilterDeletedEmployee, completeDeletedEmployeeData, filteredDataDeletedEmployee, setFilteredDataDeletedEmployee, activeFilterFieldDeletedEmployee, setActiveFilterFieldDeletedEmployee, activeFilterFieldsDeletedEmployee, setActiveFilterFieldsDeletedEmployee, isLoading, refetchActive, refetchDeleted }) {
 
   // console.log("Search value from deleted employee is :", searchValue);
 
-  const [filteredData, setFilteredData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const adminName = localStorage.getItem("adminName");
+
+  const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
   // const [searchResult, setSearchResult] = useState([]);
+
+  // Filter states for deleted employees
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+  const fieldRefs = useRef({});
+  const filterMenuRef = useRef(null); // Ref for the filter menu container
+
+  const isActiveField = (field) => activeFilterFieldsDeletedEmployee.includes(field);
+
+  const handleFilter = (newData) => {
+    // console.log("newData", newData);
+    setFilteredDataDeletedEmployee(newData);
+    setDeletedEmployee(newData);
+    setDeletedEmployeeDataCount(newData.length);
+  };
+
+  const handleFilterClick = (field) => {
+    if (activeFilterFieldDeletedEmployee === field) {
+      setShowFilterMenu(!showFilterMenu);
+      setIsScrollLocked(!showFilterMenu);
+    } else {
+      setActiveFilterFieldDeletedEmployee(field);
+      setShowFilterMenu(true);
+      setIsScrollLocked(true);
+      const rect = fieldRefs.current[field].getBoundingClientRect();
+      setFilterPosition({ top: rect.bottom, left: rect.left });
+    }
+  };
+
+  // Close filter menu when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+        setShowFilterMenu(false); // Close the filter menu
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -70,7 +119,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
 
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = new Date(inputDate).toLocaleDateString("en-US",options);
+    const formattedDate = new Date(inputDate).toLocaleDateString("en-US", options);
     return formattedDate;
   }
 
@@ -90,8 +139,6 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
     );
     setFilteredData(filtered);
   };
-
-  const adminName = localStorage.getItem("adminName");
 
   // ----------------------------------------- material ui bdm work switch---------------------------------------
   const AntSwitch = styled(Switch)(({ theme }) => ({
@@ -222,7 +269,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
           const response = await axios.patch(`${secretKey}/employee/permanentDelete/${itemId}`, {
             deletingPerson: adminName // Sending the deleting person in the request body
           });
-          Swal.fire('Deleted!','success');
+          Swal.fire('Deleted!', 'success');
           // fetchData();
           refetchActive();
           refetchDeleted();
@@ -247,20 +294,303 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
           <thead>
             <tr className="tr-sticky">
               <th>Sr. No</th>
-              <th>Name</th>
-              <th>Phone No</th>
-              <th>Email</th>
-              <th>Designation</th>
-              <th>Branch</th>
-              <th>Joining Date</th>
+
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['ename'] = el}>
+                    Name
+                  </div>
+
+                  <div className='RM_filter_icon'>
+                    {isActiveField('ename') ? (
+                      <FaFilter onClick={() => handleFilterClick("ename")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("ename")} />
+                    )}
+                  </div>
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && activeFilterFieldDeletedEmployee === 'ename' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                        noofItems={setnoOfAvailableData}
+                        allFilterFields={setActiveFilterFieldsDeletedEmployee}
+                        filteredData={filteredDataDeletedEmployee}
+                        filterField={activeFilterFieldDeletedEmployee}
+                        onFilter={handleFilter}
+                        completeData={completeDeletedEmployeeData}
+                        showingMenu={setShowFilterMenu}
+                        dataForFilter={dataToFilterDeletedEmployee}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['number'] = el}>
+                    Phone No
+                  </div>
+
+                  <div className='RM_filter_icon'>
+                    {isActiveField('number') ? (
+                      <FaFilter onClick={() => handleFilterClick("number")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("number")} />
+                    )}
+                  </div>
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && activeFilterFieldDeletedEmployee === 'number' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                        noofItems={setnoOfAvailableData}
+                        allFilterFields={setActiveFilterFieldsDeletedEmployee}
+                        filteredData={filteredDataDeletedEmployee}
+                        filterField={activeFilterFieldDeletedEmployee}
+                        onFilter={handleFilter}
+                        completeData={completeDeletedEmployeeData}
+                        showingMenu={setShowFilterMenu}
+                        dataForFilter={dataToFilterDeletedEmployee}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['email'] = el}>
+                    Email
+                  </div>
+
+                  <div className='RM_filter_icon'>
+                    {isActiveField('email') ? (
+                      <FaFilter onClick={() => handleFilterClick("email")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("email")} />
+                    )}
+                  </div>
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && activeFilterFieldDeletedEmployee === 'email' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                        noofItems={setnoOfAvailableData}
+                        allFilterFields={setActiveFilterFieldsDeletedEmployee}
+                        filteredData={filteredDataDeletedEmployee}
+                        filterField={activeFilterFieldDeletedEmployee}
+                        onFilter={handleFilter}
+                        completeData={completeDeletedEmployeeData}
+                        showingMenu={setShowFilterMenu}
+                        dataForFilter={dataToFilterDeletedEmployee}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['newDesignation'] = el}>
+                    Designation
+                  </div>
+
+                  <div className='RM_filter_icon'>
+                    {isActiveField('newDesignation') ? (
+                      <FaFilter onClick={() => handleFilterClick("newDesignation")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("newDesignation")} />
+                    )}
+                  </div>
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && activeFilterFieldDeletedEmployee === 'newDesignation' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                        noofItems={setnoOfAvailableData}
+                        allFilterFields={setActiveFilterFieldsDeletedEmployee}
+                        filteredData={filteredDataDeletedEmployee}
+                        filterField={activeFilterFieldDeletedEmployee}
+                        onFilter={handleFilter}
+                        completeData={completeDeletedEmployeeData}
+                        showingMenu={setShowFilterMenu}
+                        dataForFilter={dataToFilterDeletedEmployee}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['branchOffice'] = el}>
+                    Branch
+                  </div>
+
+                  <div className='RM_filter_icon'>
+                    {isActiveField('branchOffice') ? (
+                      <FaFilter onClick={() => handleFilterClick("branchOffice")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("branchOffice")} />
+                    )}
+                  </div>
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && activeFilterFieldDeletedEmployee === 'branchOffice' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                        noofItems={setnoOfAvailableData}
+                        allFilterFields={setActiveFilterFieldsDeletedEmployee}
+                        filteredData={filteredDataDeletedEmployee}
+                        filterField={activeFilterFieldDeletedEmployee}
+                        onFilter={handleFilter}
+                        completeData={completeDeletedEmployeeData}
+                        showingMenu={setShowFilterMenu}
+                        dataForFilter={dataToFilterDeletedEmployee}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+
+              <th>
+                <div className='d-flex align-items-center justify-content-center position-relative'>
+                  <div ref={el => fieldRefs.current['jdate'] = el}>
+                    Joining Date
+                  </div>
+
+                  <div className='RM_filter_icon'>
+                    {isActiveField('jdate') ? (
+                      <FaFilter onClick={() => handleFilterClick("jdate")} />
+                    ) : (
+                      <BsFilter onClick={() => handleFilterClick("jdate")} />
+                    )}
+                  </div>
+
+                  {/* ---------------------filter component--------------------------- */}
+                  {showFilterMenu && activeFilterFieldDeletedEmployee === 'jdate' && (
+                    <div
+                      ref={filterMenuRef}
+                      className="filter-menu"
+                      style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                    >
+                      <EmployeeFilter
+                        noofItems={setnoOfAvailableData}
+                        allFilterFields={setActiveFilterFieldsDeletedEmployee}
+                        filteredData={filteredDataDeletedEmployee}
+                        filterField={activeFilterFieldDeletedEmployee}
+                        onFilter={handleFilter}
+                        completeData={completeDeletedEmployeeData}
+                        showingMenu={setShowFilterMenu}
+                        dataForFilter={dataToFilterDeletedEmployee}
+                      />
+                    </div>
+                  )}
+                </div>
+              </th>
+
               {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
                 &&
                 <>
                   {/* <th>Probation Status</th> */}
-                  <th>Added Date</th>
-                  <th>Delete Date</th>
+                  <th>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['AddedOn'] = el}>
+                        Added Date
+                      </div>
+
+                      <div className='RM_filter_icon'>
+                        {isActiveField('AddedOn') ? (
+                          <FaFilter onClick={() => handleFilterClick("AddedOn")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("AddedOn")} />
+                        )}
+                      </div>
+
+                      {/* ---------------------filter component--------------------------- */}
+                      {showFilterMenu && activeFilterFieldDeletedEmployee === 'AddedOn' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <EmployeeFilter
+                            noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFieldsDeletedEmployee}
+                            filteredData={filteredDataDeletedEmployee}
+                            filterField={activeFilterFieldDeletedEmployee}
+                            onFilter={handleFilter}
+                            completeData={completeDeletedEmployeeData}
+                            showingMenu={setShowFilterMenu}
+                            dataForFilter={dataToFilterDeletedEmployee}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </th>
+
+                  <th>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['deletedDate'] = el}>
+                        Deleted Date
+                      </div>
+
+                      <div className='RM_filter_icon'>
+                        {isActiveField('deletedDate') ? (
+                          <FaFilter onClick={() => handleFilterClick("deletedDate")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("deletedDate")} />
+                        )}
+                      </div>
+
+                      {/* ---------------------filter component--------------------------- */}
+                      {showFilterMenu && activeFilterFieldDeletedEmployee === 'deletedDate' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <EmployeeFilter
+                            noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFieldsDeletedEmployee}
+                            filteredData={filteredDataDeletedEmployee}
+                            filterField={activeFilterFieldDeletedEmployee}
+                            onFilter={handleFilter}
+                            completeData={completeDeletedEmployeeData}
+                            showingMenu={setShowFilterMenu}
+                            dataForFilter={dataToFilterDeletedEmployee}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </th>
+
                   {/* <th>BDM Work</th> */}
+
                   <th>Action</th>
+
                   <th>Revoke Employee</th>
                 </>
               }
