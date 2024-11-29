@@ -272,9 +272,14 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo?.designation && {
         bdmWork:
           employeementInfo.designation === "Business Development Manager" ||
-            employeementInfo.designation === "Floor Manager" ||
-            oldDesignation === "Business Development Manager" ||
-            oldDesignation === "Floor Manager" ? true : false
+          employeementInfo.designation === "Business Development Executive" ||
+          employeementInfo.designation === "Floor Manager" ||
+          employeementInfo.designation === "Sales Executive" ||
+          oldDesignation === "Business Development Manager" ||
+          oldDesignation === "Sales Executive" ||
+          oldDesignation === "Floor Manager"
+            ? true
+            : false,
       }),
       ...(employeementInfo?.joiningDate && { jdate: employeementInfo.joiningDate }),
       ...(employeementInfo?.branch && { branchOffice: employeementInfo.branch }),
@@ -846,8 +851,11 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(designation && {
         bdmWork:
           designation === "Business Development Manager" ||
+          designation === "Business Development Executive" ||
             designation === "Floor Manager" ||
+            designation === "Sales Executive" ||
             oldDesignation === "Business Development Manager" ||
+            oldDesignation === "Sales Executive" ||
             oldDesignation === "Floor Manager" ? true : false
       }),
 
@@ -1012,8 +1020,11 @@ router.put("/savedeletedemployee", upload.fields([
         ...({ designation: newDesignation }),
         ...(data?.newDesignation && {
           bdmWork: data.newDesignation === "Business Development Manager" ||
+          data.designation === "Business Development Executive" ||
             data.newDesignation === "Floor Manager" ||
+          data.designation === "Sales Executive" ||
             oldDesignation === "Business Development Manager" ||
+          oldDesignation === "Sales Executive" ||
             oldDesignation === "Floor Manager" ? true : false
         }),
         ...(data?.joiningDate && { jdate: data.joiningDate }),
@@ -1384,6 +1395,7 @@ router.put(
           ...(data.newDesignation && {
             bdmWork:
               data.newDesignation === "Business Development Manager" ||
+              data.newDesignation === "Business Executive" ||
               data.newDesignation === "Floor Manager",
           }),
           ...(data.joiningDate && { jdate: data.joiningDate }),

@@ -352,7 +352,7 @@ app.post("/api/sendOtp", async (req, res) => {
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>',
       to: email,
       subject: "Your OTP for Employee Login",
-      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+      text: `Your OTP is ${otp}. It is valid for 1 minute.`,
     });
 
     res.status(200).json({
@@ -461,7 +461,7 @@ app.post("/api/bdmlogin", async (req, res) => {
       expiresIn: "10h",
     });
     //console.log(bdmToken)
-    res.status(200).json({ bdmToken });
+    res.status(200).json({ bdmToken : bdmToken , userId:user._id });
     //socketIO.emit("Employee-login");
   }
 });

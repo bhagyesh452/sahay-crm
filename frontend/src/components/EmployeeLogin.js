@@ -23,8 +23,7 @@ function EmployeeLogin({ setnewToken }) {
   const [showPassword, setShowPassword] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState(null);
-  const [showCaptcha, setShowCaptcha] = useState(false);
+ 
   const [isLoading, setIsLoading] = useState(false);
   const [captchaText, setCaptchaText] = useState("");
   const [userInput, setUserInput] = useState("");
@@ -138,7 +137,7 @@ function EmployeeLogin({ setnewToken }) {
         otp,
       });
       setIsOtpVerified(true);
-      setShowCaptcha(true);
+     
     } catch (error) {
       setErrorMessage(error.response.data.message || "Invalid OTP.");
     } finally {
@@ -157,11 +156,7 @@ function EmployeeLogin({ setnewToken }) {
       if (userInput !== captchaText) {
         setErrorMessage("Incorrect CAPTCHA, please try again.");
       } else {
-        // // // Proceed with login
-        // if (!userId) {
-        //   setErrorMessage("User ID not found. Please try again.");
-        //   return;
-        // }
+       
         // Log login details (you can keep your existing logic)
         const date = getCurrentDate();
         const time = getCurrentTime();
