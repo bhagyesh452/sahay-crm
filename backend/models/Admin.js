@@ -176,6 +176,8 @@ const yourSchema = new mongoose.Schema({
     type: [String], // Array of strings for old phone numbers
     default: [] // Initialize with an empty array
   },
+  otp: { type: Number, default: null }, // Store the OTP
+  otpExpiry: { type: Date, default: null }, // Store the expiry time
 });
 
 

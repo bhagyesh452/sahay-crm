@@ -84,12 +84,24 @@ const htmlDocx = require('html-docx-js');
 const RMServicesAPI = require("./helpers/RMServicesApi.js")
 const CustomerAPI = require("./helpers/CustomerApi.js")
 const RecruiterAPI = require("./helpers/recruitmentAPI.js")
-// const DailyEmployeeProjection = require('../models/DailyEmployeeProjection.js');
-const { MongoClient } = require('mongodb');
-// const { Cashfree } = require('cashfree-pg');
+const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
+const mime = require('mime-types');
 
-// const http = require('http');
-// const socketIo = require('socket.io');
+// Create OAuth2 client
+const oAuth2Client = new google.auth.OAuth2({
+  clientId: process.env.GOOGLE_CLIENT_ID, // Replace with your OAuth2 client ID
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Replace with your OAuth2 client secret
+  redirectUri: 'https://developers.google.com/oauthplayground' // Replace with your authorized redirect URI
+});
+
+
+// Set your OAuth2 refresh token
+oAuth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN // Replace with your OAuth2 refresh token
+});
+
+
 require("dotenv").config();
 
 const app = express();
@@ -105,7 +117,7 @@ app.use("/api/admin-leads", (req, res, next) => {
   req.io = socketIO;
   next();
 }, AdminLeadsAPI);
-app.use("/api/remarks",(req , res , next)=>{
+app.use("/api/remarks", (req, res, next) => {
   req.io = socketIO;
   next()
 }, RemarksAPI);
@@ -126,7 +138,7 @@ app.use('/api/bdm-data', (req, res, next) => {
   req.io = socketIO;
   next();
 }, bdmAPI)
-app.use('/api/employee',(req , res , next) => {
+app.use('/api/employee', (req, res, next) => {
   req.io = socketIO;
   next();
 }, EmployeeAPI)
@@ -266,7 +278,7 @@ app.post("/api/employeelogin", async (req, res) => {
 
   try {
     // Use .select() to limit fields retrieved from the database
-    const user = await adminModel.findOne({ email, password }).select('email password designation').lean();
+    const user = await adminModel.findOne({ email, password }).select('email password designation _id').lean();
 
     if (!user) {
       // If user is not found
@@ -278,7 +290,7 @@ app.post("/api/employeelogin", async (req, res) => {
       const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
         expiresIn: "3h",
       });
-      res.status(200).json({ newtoken });
+      res.status(200).json({ userId:user._id , newtoken : newtoken });
       // socketIO.emit("Employee-login");
     }
   } catch (error) {
@@ -286,6 +298,118 @@ app.post("/api/employeelogin", async (req, res) => {
   }
 });
 
+// Verify email and password before sending OTP
+app.post("/api/verifyCredentials", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await adminModel.findOne({ email, password }).lean().select('email password ');
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    } else {
+      res.status(200).json({ message: "Credentials verified" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
+
+const otpStore = new Map(); // Key: email, Value: { otp, expiry }
+
+app.post("/api/sendOtp", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await adminModel.findOne({ email }).lean();
+    if (!user) {
+      return res.status(404).json({ message: "Email not registered" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+    const otpExpiry = Date.now() + 1 * 60 * 1000; // 10-minute expiry
+
+    otpStore.set(email, { otp, otpExpiry });
+
+    console.log("otpStore" , otpStore)
+
+    // Send OTP via email
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        type: 'OAuth2',
+        user: 'alerts@startupsahay.com', // Replace with your Gmail email ID
+        clientId: process.env.GOOGLE_CLIENT_ID, // Replace with your OAuth2 client ID
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Replace with your OAuth2 client secret
+        refreshToken: process.env.GOOGLE_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
+        accessToken: process.env.GOOGLE_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
+      }
+    });
+
+    await transporter.sendMail({
+      from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>',
+      to: email,
+      subject: "Your OTP for Employee Login",
+      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+    });
+
+    res.status(200).json({
+      message: "OTP sent successfully",
+      otpExpiry, // Return expiry timestamp
+    });
+  } catch (error) {
+    console.log("error" , error)
+    res.status(500).json({ message: "Error sending OTP", error: error.message });
+  }
+});
+
+app.post('/api/verifyOtp', (req, res) => {
+  const { email, otp } = req.body;
+console.log("otpstore" , otpStore)
+  if (!otpStore.has(email)) {
+    return res.status(404).json({ message: "OTP not found" });
+  }
+
+  const storedOtp = otpStore.get(email);
+
+  console.log("storedotp" , storedOtp)
+
+  if (storedOtp.otp !== parseInt(otp) || storedOtp.expiry < Date.now()) {
+    return res.status(400).json({ message: "Invalid or expired OTP" });
+  }
+
+  otpStore.delete(email); // Clear OTP after successful verification
+  res.status(200).json({ message: "OTP verified successfully" });
+});
+
+app.post("/api/verifyCaptcha", async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      null,
+      {
+        params: {
+          secret: secretKey,
+          response: token,
+        },
+      }
+    );
+
+    if (!response.data.success) {
+      return res.status(400).json({ message: "Invalid CAPTCHA" });
+    }
+
+    res.status(200).json({ message: "CAPTCHA verified successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error verifying CAPTCHA", error: error.message });
+  }
+});
 
 
 
@@ -470,7 +594,7 @@ app.post('/api/fetch-api-data', async (req, res) => {
   const { emp_numbers } = req.body;
   //console.log("empnumber", emp_numbers)
   // External API URL (without query parameters)
-  
+
   const externalApiUrl = " https://api1.callyzer.co/v2/employee/get"; // Assuming the external API expects the data in the body, not in the URL
 
   try {
@@ -495,16 +619,6 @@ app.post('/api/fetch-api-data', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch data from external API' });
   }
 });
-
-
-// app.get('/api/webhook', (req, res) => {
-//   // const eventData = req.body;
-
-//   // Save to database or process the data
-//   console.log('Saving data:');
-
-//   res.status(200).send('Webhook received and processed');
-// });
 
 
 app.put("/api/online-status/:id/disconnect", async (req, res) => {

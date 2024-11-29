@@ -2106,6 +2106,8 @@ router.get("/einfo", async (req, res) => {
   }
 });
 
+
+
 // -----------------update employee from admin side------------------
 // router.put("/einfo/:id", async (req, res) => {
 //   const id = req.params.id;
