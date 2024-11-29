@@ -34,8 +34,10 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, setDeletedEmployee
 
   // console.log("Search value from deleted employee is :", searchValue);
 
-  const [filteredData, setFilteredData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const adminName = localStorage.getItem("adminName");
+
+  const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +46,6 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, setDeletedEmployee
   // Filter states for deleted employees
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
-  const [error, setError] = useState('');
   const [noOfAvailableData, setnoOfAvailableData] = useState(0);
   const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
   const fieldRefs = useRef({});
@@ -138,8 +139,6 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, setDeletedEmployee
     );
     setFilteredData(filtered);
   };
-
-  const adminName = localStorage.getItem("adminName");
 
   // ----------------------------------------- material ui bdm work switch---------------------------------------
   const AntSwitch = styled(Switch)(({ theme }) => ({

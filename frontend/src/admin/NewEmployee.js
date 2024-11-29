@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Header from "./Header";
-import Navbar from "./Navbar";
 import "../dist/css/tabler.min.css?1684106062";
 import "../dist/css/tabler-flags.min.css?1684106062";
 import "../dist/css/tabler-payments.min.css?1684106062";
@@ -33,8 +31,8 @@ import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import notification_audio from "../assets/media/notification_tone.mp3";
 import io from "socket.io-client";
 
-
 function NewEmployee() {
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const adminName = localStorage.getItem("adminName");
 
@@ -181,7 +179,7 @@ function NewEmployee() {
                 setDataToFilterDeletedEmployee(filteredDeletedEmployees);
             } else {
                 setDeletedEmployee(allDeletedEmployees); // Show all deleted employees if no search value
-                setDeletedEmployeeDataCount(allDeletedEmployees.length); // Show all deleted employees if no search value
+                setDeletedEmployeeDataCount(allDeletedEmployees.length);
                 setCompleteDeletedEmployeeData(allDeletedEmployees);
                 setDataToFilterDeletedEmployee(allDeletedEmployees);
             }
@@ -319,8 +317,7 @@ function NewEmployee() {
                                             </div>
                                             <div className="rm_tsn_bdge">
                                                 {/* {(searchValue.length !== "" ? employeeSearchResult : employee).length || 0} */}
-                                                {/* {employee?.length || 0} */}
-                                                {employeeDataCount}
+                                                {employeeDataCount || 0}
                                             </div>
                                         </div>
                                     </a>
@@ -333,8 +330,7 @@ function NewEmployee() {
                                             </div>
                                             <div className="rm_tsn_bdge">
                                                 {/* {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0} */}
-                                                {/* {deletedEmployee.length || 0} */}
-                                                {deletedEmployeeDataCount}
+                                                {deletedEmployeeDataCount || 0}
                                             </div>
                                         </div>
                                     </a>

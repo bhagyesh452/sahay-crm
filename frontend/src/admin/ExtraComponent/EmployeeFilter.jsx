@@ -25,7 +25,7 @@ function EmployeeFilter({ noofItems, allFilterFields, filteredData, filterField,
         }
     };
 
-    console.log("data to filter :", dataForFilter);
+    // console.log("data to filter :", dataForFilter);
 
     useEffect(() => {
         if (filteredData && filteredData.length !== 0) {
@@ -278,8 +278,10 @@ function EmployeeFilter({ noofItems, allFilterFields, filteredData, filterField,
                         filterField === "number" ||
                         filterField === "email" ||
                         filterField === "newDesignation" ||
+                        filterField === "department" ||
                         filterField === "branchOffice" ||
                         filterField === "jdate" ||
+                        filterField === "salary" ||
                         filterField === "AddedOn" ||
                         filterField === "deletedDate" ||
                         filterField === "Active" ? "Ascending" : "Sort A TO Z"}
@@ -294,8 +296,10 @@ function EmployeeFilter({ noofItems, allFilterFields, filteredData, filterField,
                         filterField === "number" ||
                         filterField === "email" ||
                         filterField === "newDesignation" ||
+                        filterField === "department" ||
                         filterField === "branchOffice" ||
                         filterField === "jdate" ||
+                        filterField === "salary" ||
                         filterField === "AddedOn" ||
                         filterField === "deletedDate" ||
                         filterField === "Active" ? "Descending" : "Sort Z TO A"}

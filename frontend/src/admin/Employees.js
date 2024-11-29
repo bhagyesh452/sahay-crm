@@ -94,7 +94,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   // Filter states for employees
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
-  const [error, setError] = useState('');
   const [noOfAvailableData, setnoOfAvailableData] = useState(0);
   const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
   const fieldRefs = useRef({});
