@@ -13,6 +13,8 @@ import { IconButton } from "@mui/material";
 import { FaEye } from "react-icons/fa";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
+import Tooltip from "@mui/material/Tooltip";
+
 
 function TeamLeadsGeneral({
   secretKey,
@@ -49,7 +51,8 @@ function TeamLeadsGeneral({
   handleMouseDown,
   handleMouseEnter,
   handleMouseUp,
-  bdenumber
+  bdenumber,
+  calculateAgeFromDate
 }) {
   // Team Leads General Filtered States :
   const [showFilterMenu, setShowFilterMenu] = useState(false);
@@ -181,21 +184,21 @@ function TeamLeadsGeneral({
             <tr className="tr-sticky">
               {(newDesignation === "admin" ||
                 newDesignation === "datamanager") && (
-                <th className="AEP-sticky-left-1">
-                  <label className="table-check">
-                    <input
-                      type="checkbox"
-                      checked={
-                        selectedRows &&
-                        generalData &&
-                        selectedRows.length === generalData.length
-                      }
-                      onChange={(e) => handleCheckboxChange("all", e)}
-                    />
-                    <span class="table_checkmark"></span>
-                  </label>
-                </th>
-              )}
+                  <th className="AEP-sticky-left-1">
+                    <label className="table-check">
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedRows &&
+                          generalData &&
+                          selectedRows.length === generalData.length
+                        }
+                        onChange={(e) => handleCheckboxChange("all", e)}
+                      />
+                      <span class="table_checkmark"></span>
+                    </label>
+                  </th>
+                )}
               <th
                 className={
                   newDesignation === "admin" || newDesignation === "datamanager"
@@ -369,7 +372,7 @@ function TeamLeadsGeneral({
                   {/* ---------------------filter component--------------------------- */}
                   {showFilterMenu &&
                     activeFilterFieldGeneral ===
-                      "Company Incorporation Date  " && (
+                    "Company Incorporation Date  " && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -556,23 +559,23 @@ function TeamLeadsGeneral({
                 >
                   {(newDesignation === "admin" ||
                     newDesignation === "datamanager") && (
-                    <td className="AEP-sticky-left-1">
-                      <label className="table-check">
-                        <input
-                          type="checkbox"
-                          checked={
-                            selectedRows && selectedRows.includes(company._id)
-                          }
-                          onChange={(e) => handleCheckboxChange(company._id, e)}
-                        />
-                        <span class="table_checkmark"></span>
-                      </label>
-                    </td>
-                  )}
+                      <td className="AEP-sticky-left-1">
+                        <label className="table-check">
+                          <input
+                            type="checkbox"
+                            checked={
+                              selectedRows && selectedRows.includes(company._id)
+                            }
+                            onChange={(e) => handleCheckboxChange(company._id, e)}
+                          />
+                          <span class="table_checkmark"></span>
+                        </label>
+                      </td>
+                    )}
                   <td
                     className={
                       newDesignation === "admin" ||
-                      newDesignation === "datamanager"
+                        newDesignation === "datamanager"
                         ? "AEP-sticky-left-2"
                         : "rm-sticky-left-1 "
                     }
@@ -582,7 +585,7 @@ function TeamLeadsGeneral({
                   <td
                     className={
                       newDesignation === "admin" ||
-                      newDesignation === "datamanager"
+                        newDesignation === "datamanager"
                         ? "AEP-sticky-left-3"
                         : "rm-sticky-left-2 "
                     }
@@ -593,23 +596,22 @@ function TeamLeadsGeneral({
                   <td>
                     <div className="d-flex justify-content-center">
                       <div
-                        className={`${
-                          company.Status === "Not Picked Up"
-                            ? "ep_notpickedup_status"
-                            :company.Status === "Not Interested"
+                        className={`${company.Status === "Not Picked Up"
+                          ? "ep_notpickedup_status"
+                          : company.Status === "Not Interested"
                             ? "dfault_notinterested-status"
                             : company.Status === "Busy"
-                            ? "ep_busy_status"
-                            : company.Status === "Untouched"
-                            ? "ep_untouched_status"
-                            : company.Status === "Interested"
-                            ? "dfault_interested-status"
-                            : company.Status === "FollowUp"
-                            ? "dfault_followup-status"
-                            : company.Status === "Matured"
-                            ? "dfault_approved-status"
-                            : "dfault_followup-status"
-                        }`}
+                              ? "ep_busy_status"
+                              : company.Status === "Untouched"
+                                ? "ep_untouched_status"
+                                : company.Status === "Interested"
+                                  ? "dfault_interested-status"
+                                  : company.Status === "FollowUp"
+                                    ? "dfault_followup-status"
+                                    : company.Status === "Matured"
+                                      ? "dfault_approved-status"
+                                      : "dfault_followup-status"
+                          }`}
                       >
                         {company.Status}
                       </div>
@@ -618,33 +620,37 @@ function TeamLeadsGeneral({
                       <div
                         className={
                           company.interestedInformation === null ||
-                          company.interestedInformation.length === 0
+                            company.interestedInformation.length === 0
                             ? company.Status === "Interested"
                               ? "intersted-history-btn disabled"
                               : company.Status === "FollowUp"
-                              ? "followup-history-btn disabled"
-                              : company.Status === "Matured"
-                              ? "matured-history-btn disabled"
-                              : company.Status === "Busy"
-                              ? "busy-history-btn disabled"
-                              : company.Status === "Not Picked Up"
-                              ? "notpickedup-history-btn disabled"
-                              : company.Status === "Not Interested"
-                              ? "notinterested-history-btn disabled"
-                              : ""
+                                ? "followup-history-btn disabled"
+                                : company.Status === "Matured"
+                                  ? "matured-history-btn disabled"
+                                  : company.Status === "Busy"
+                                    ? "busy-history-btn disabled"
+                                    : company.Status === "Not Picked Up"
+                                      ? "notpickedup-history-btn disabled"
+                                      : company.Status === "Not Interested"
+                                        ? "notinterested-history-btn disabled"
+                                        : company.Status === "Untouched"
+                                          ? "untouched-history-btn disabled"
+                                          : ""
                             : company.Status === "Interested"
-                            ? "intersted-history-btn"
-                            : company.Status === "FollowUp"
-                            ? "followup-history-btn"
-                            : company.Status === "Matured"
-                            ? "matured-history-btn"
-                            : company.Status === "Busy"
-                            ? "busy-history-btn"
-                             : company.Status === "Not Interested"
-                              ? "notinterested-history-btn"
-                            : company.Status === "Not Picked Up"
-                              ? "notpickedup-history-btn"
-                            : ""
+                              ? "intersted-history-btn"
+                              : company.Status === "FollowUp"
+                                ? "followup-history-btn"
+                                : company.Status === "Matured"
+                                  ? "matured-history-btn"
+                                  : company.Status === "Busy"
+                                    ? "busy-history-btn"
+                                    : company.Status === "Not Interested"
+                                      ? "notinterested-history-btn"
+                                      : company.Status === "Not Picked Up"
+                                        ? "notpickedup-history-btn"
+                                        : company.Status === "Untouched"
+                                          ? "untouched-history-btn"
+                                          : ""
                         }
                       >
                         <FaEye
@@ -704,7 +710,14 @@ function TeamLeadsGeneral({
                     </div>
                   </td>
                   <td>
-                    {formatDateNew(company["Company Incorporation Date  "])}
+                    <Tooltip
+                      title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                      arrow
+                    >
+                      <span>
+                        {formatDateNew(company["Company Incorporation Date  "])}
+                      </span>
+                    </Tooltip>
                   </td>
                   <td>{company["City"]}</td>
                   <td>{company["State"]}</td>

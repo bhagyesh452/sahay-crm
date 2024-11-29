@@ -21,6 +21,8 @@ import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
 import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInterestedInformationDialog';
 import { FaEye } from "react-icons/fa";
+import Tooltip from "@mui/material/Tooltip";
+
 function EmployeeForwardedLeads({
     forwardedLeads,
     isLoading,
@@ -56,7 +58,9 @@ function EmployeeForwardedLeads({
     setActiveFilterField,
     activeFilterFields,
     setActiveFilterFields,
-    cleanString
+    cleanString,
+    calculateAgeFromDate
+
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -779,24 +783,23 @@ function EmployeeForwardedLeads({
                                                 <div className="d-flex align-items-center justify-content-between">
 
                                                     <div
-                                                        className={`${
-                                                            company.bdeOldStatus === "Not Picked Up"
-                                                              ? "ep_notpickedup_status"
-                                                              :company.bdeOldStatus === "Not Interested"
-                                                              ? "dfault_notinterested-status"
-                                                              : company.bdeOldStatus === "Busy"
-                                                              ? "ep_busy_status"
-                                                              : company.bdeOldStatus === "Untouched"
-                                                              ? "ep_untouched_status"
-                                                              : company.bdeOldStatus === "Interested"
-                                                              ? "dfault_interested-status"
-                                                              : company.bdeOldStatus === "FollowUp"
-                                                              ? "dfault_followup-status"
-                                                              : company.bdeOldStatus === "Matured"
-                                                              ? "dfault_approved-status"
-                                                              : "dfault_followup-status"
-                                                          }`}
-                                                                    >
+                                                        className={`${company.bdeOldStatus === "Not Picked Up"
+                                                                ? "ep_notpickedup_status"
+                                                                : company.bdeOldStatus === "Not Interested"
+                                                                    ? "dfault_notinterested-status"
+                                                                    : company.bdeOldStatus === "Busy"
+                                                                        ? "ep_busy_status"
+                                                                        : company.bdeOldStatus === "Untouched"
+                                                                            ? "ep_untouched_status"
+                                                                            : company.bdeOldStatus === "Interested"
+                                                                                ? "dfault_interested-status"
+                                                                                : company.bdeOldStatus === "FollowUp"
+                                                                                    ? "dfault_followup-status"
+                                                                                    : company.bdeOldStatus === "Matured"
+                                                                                        ? "dfault_approved-status"
+                                                                                        : "dfault_followup-status"
+                                                            }`}
+                                                    >
                                                         {company.bdeOldStatus}
                                                     </div>
 
@@ -816,9 +819,9 @@ function EmployeeForwardedLeads({
                                                                                     ? "notinterested-history-btn disabled"
                                                                                     : company.bdeOldStatus === "Busy"
                                                                                         ? "busy-history-btn disabled"
-                                                                                         : company.bdeOldStatus === "Untouched"
+                                                                                        : company.bdeOldStatus === "Untouched"
                                                                                             ? "untouched-history-btn disabled"
-                                                                                        : "")
+                                                                                            : "")
                                                                 : (company.bdeOldStatus === "Interested"
                                                                     ? "intersted-history-btn"
                                                                     : company.bdeOldStatus === "FollowUp"
@@ -896,16 +899,16 @@ function EmployeeForwardedLeads({
                                             </td>
                                             <td>
                                                 <div
-                                                    className={company.Status === "Interested" || company.bdmStatus === "Interested"? "dfault_interested-status" :
-                                                        company.Status === "FollowUp" || company.bdmStatus === "FollowUp"  ? "dfault_followup-status" :
+                                                    className={company.Status === "Interested" || company.bdmStatus === "Interested" ? "dfault_interested-status" :
+                                                        company.Status === "FollowUp" || company.bdmStatus === "FollowUp" ? "dfault_followup-status" :
                                                             company.Status === "Busy" || company.bdmStatus === "Busy" ? "dfault_busy-status" :
                                                                 company.Status === "Not Picked Up" || company.bdmStatus === "Not Picked Up" ? "dfault_not-pickedup-status" :
                                                                     company.bdmStatus && company.bdmStatus === "Untouched" ? "dfault_untouched-status" :
                                                                         company.bdmStatus && company.bdmStatus === "Interested" ? "dfault_interested-status" :
                                                                             company.bdmStatus && company.bdmStatus === "FollowUp" ? "dfault_followup-status" :
                                                                                 company.bdmStatus && company.bdmStatus === "Busy" ? "dfault_busy-status" :
-                                                                                company.bdmStatus && company.bdmStatus === "Untouched" ? "ep_untouched_status":
-                                                                                    null}>
+                                                                                    company.bdmStatus && company.bdmStatus === "Untouched" ? "ep_untouched_status" :
+                                                                                        null}>
                                                     {company.bdmStatus ? company.bdmStatus : company.Status}
                                                 </div>
                                             </td>
@@ -947,9 +950,14 @@ function EmployeeForwardedLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                {formatDateNew(
-                                                    company["Company Incorporation Date  "]
-                                                )}
+                                                <Tooltip
+                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                    arrow
+                                                >
+                                                    <span>
+                                                        {formatDateNew(company["Company Incorporation Date  "])}
+                                                    </span>
+                                                </Tooltip>
                                             </td>
                                             <td>{company["City"]}</td>
                                             <td>{company["State"]}</td>

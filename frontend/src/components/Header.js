@@ -269,6 +269,18 @@ function Header({ name, id, designation, empProfile, gender }) {
       }
     });
 
+    socket.on("notification to bde and bdm for status updated", (res) => {
+      console.log("notification to bde and bdm for status updated", res)
+      if (name === res.bdmName || name === res.bdeName) {
+        enqueueSnackbar(`DIPP certificate for ${res.companyName} is approved`, {
+          variant: 'reportComplete',
+          persist: true
+        });
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }
+    });
+
 
 
     // Clean up the socket connection when the component unmounts

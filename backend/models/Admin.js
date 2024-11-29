@@ -171,7 +171,11 @@ const yourSchema = new mongoose.Schema({
   isForcefullyBdmWorkMadeFalse:{
     type: Boolean,
     default:false
-  }
+  },
+  oldNumbersAssignedByCompany: {
+    type: [String], // Array of strings for old phone numbers
+    default: [] // Initialize with an empty array
+  },
 });
 
 

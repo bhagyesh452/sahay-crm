@@ -22,6 +22,7 @@ const { previousDay } = require("date-fns");
 require('dotenv').config();
 const { sendMailEmployees } = require("./sendMailEmployees");
 const TeamLeadsModel = require("../models/TeamLeads.js");
+const mongoose = require('mongoose');
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -137,7 +138,7 @@ router.post("/post-bdmwork-revoke/:eid", async (req, res) => {
   const { bdmWork } = req.body;
 
   try {
-    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork , isForcefullyBdmWorkMadeFalse : true });
+    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork, isForcefullyBdmWorkMadeFalse: true });
 
     res.status(200).json({ message: "Status Updated Successfully" });
   } catch (error) {
@@ -420,7 +421,7 @@ router.post('/addemployee/hrside', async (req, res) => {
     });
 
     console.log("newemployee", newEmployee);
-  // console.log("newemployee" , newEmployee);
+    // console.log("newemployee" , newEmployee);
 
     // Step 5: Save the new employee to the database
     const result = await newEmployee.save();
@@ -610,7 +611,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
 //   try {
 //     // Try finding the employee in adminModel firstnpm
 //     let emp = await adminModel.findById(empId);
-    
+
 //     // If employee not found in adminModel, search in deletedEmployeeModels
 //     if (!emp) {
 //       emp = await deletedEmployeeModel.findById(empId);
@@ -620,7 +621,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
 //         bdmName: emp.ename,
 //       }).select("ename").lean();
 //     }
-   
+
 
 //     // If employee is still not found, return an error message
 //     if (!emp) {
@@ -658,7 +659,7 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
       }).select("ename").lean();
 
       // Check the length of teamLeadsData and set isVisibleTeamLeads accordingly
-      isVisibleTeamLeads = teamLeadsData.length > 0; 
+      isVisibleTeamLeads = teamLeadsData.length > 0;
     }
 
     // If employee is still not found, return an error message
@@ -795,6 +796,10 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       return res.status(404).json({ result: false, message: "Employee not found" });
     }
 
+    // Find the current employee data by ID
+    const currentData = await adminModel.findOne({ _id: empId }).select("number oldNumbersAssignedByCompany ");
+    console.log("Current Data is :", currentData);
+
     let newDesignation = designation;
 
     if ((designation || oldDesignation) === "Business Development Executive" || (designation || oldDesignation) === "Business Development Manager") {
@@ -810,6 +815,8 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
     } else {
       newDesignation = designation || oldDesignation;
     }
+
+
 
     const updateFields = {
       ...req.body,
@@ -866,6 +873,29 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(salarySlipDetails.length > 0 && { salarySlip: salarySlipDetails }),
       ...(profilePhotoDetails.length > 0 && { profilePhoto: profilePhotoDetails })
     };
+
+    // Check if the officialNo (new number) is different from the current number
+    if (officialNo && officialNo !== currentData.number) {
+      // Initialize the array if it doesn't exist
+      const oldNumbersArray = currentData.oldNumbersAssignedByCompany || [];
+      console.log("oldNumbersArray",oldNumbersArray)
+
+      // Check if the current number is already in the array to avoid duplicates
+      if (
+        currentData.number && // Ensure the current number exists
+        !oldNumbersArray.includes(currentData.number) // Prevent duplicates
+      ) {
+        oldNumbersArray.push(currentData.number); // Add the current number to the array
+      }
+
+      // Add the updated oldNumbersAssignedByCompany array to updateFields
+      updateFields.oldNumbersAssignedByCompany = oldNumbersArray;
+
+      // Update the number field
+      updateFields.number = officialNo;
+    }
+
+    console.log("updateFields", updateFields);
 
     const emp = await adminModel.findOneAndUpdate(
       { _id: empId },
@@ -1120,726 +1150,334 @@ router.get("/deletedemployeeinfo", async (req, res) => {
 //   }
 // });
 
-router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) => {
-  const { id: itemId } = req.params; // Correct destructuring
-  // console.log(itemId);
-  try {
-    const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
 
-    if (!data) {
-      return res.status(404).json({ error: "Data not found" });
-    } else {
-      return res
-        .status(200)
-        .json({ message: "Data deleted successfully", data });
-    }
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-}
-);
 
-// router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
-//   const { dataToRevertBack } = req.body;
 
-//   if (!dataToRevertBack || dataToRevertBack || Back.length === 0) {
-//     return res.status(400).json({ error: "No employee data to save" });
-//   }
+// commenting on 28-11-2024 to merge under one api to reevert back--------------------
 
+// router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) => {
+//   const { id: itemId } = req.params; // Correct destructuring
+//   // console.log(itemId);
 //   try {
-//     const newLeads = await Promise.all(
-//       dataToRevertBack.map(async (data) => {
-//         const newData = {
-//           ...data,
-//           _id: data._id,
-//         };
-//         return await adminModel.create(newData);
-//       })
-//     );
+//     const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
 
-//     res.status(200).json(newLeads);
-//   } catch (error) {
-//     if (error.code === 11000) {
-//       // Duplicate key error
-//       console.error("Duplicate key error:", error.message);
-//       return res.status(409).json({
-//         error: "Duplicate key error. Document with this ID already exists.",
-//       });
+//     if (!data) {
+//       return res.status(404).json({ error: "Data not found" });
+//     } else {
+//       return res
+//         .status(200)
+//         .json({ message: "Data deleted successfully", data });
 //     }
-//     console.error("Error reverting back employee:", error.message);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
 //     return res.status(500).json({ error: "Internal Server Error" });
 //   }
+// }
+// );
+
+
+// router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
+//   { name: "offerLetter", maxCount: 1 },
+//   { name: "aadharCard", maxCount: 1 },
+//   { name: "panCard", maxCount: 1 },
+//   { name: "educationCertificate", maxCount: 1 },
+//   { name: "relievingCertificate", maxCount: 1 },
+//   { name: "salarySlip", maxCount: 1 },
+//   { name: "profilePhoto", maxCount: 1 },
+// ]), async (req, res) => {
+//   try {
+//     const { dataToRevertBack, oldDesignation } = req.body;
+
+//     if (!dataToRevertBack || !Array.isArray(dataToRevertBack) || dataToRevertBack.length === 0) {
+//       return res.status(400).json({ error: "No employee data to save" });
+//     }
+
+//     // console.log("Deleted data is :", dataToDelete);
+//     // console.log("Reverted employee is :", dataToRevertBack);
+
+//     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
+//       fieldname: file.fieldname,
+//       originalname: file.originalname,
+//       encoding: file.encoding,
+//       mimetype: file.mimetype,
+//       destination: file.destination,
+//       filename: file.filename,
+//       path: file.path,
+//       size: file.size
+//     })) : [];
+
+//     const employees = await Promise.all(dataToRevertBack.map(async (data) => {
+//       let newDesignation = data.newDesignation;
+
+//       if (data.newDesignation === "Business Development Executive" || data.newDesignation === "Business Development Manager") {
+//         newDesignation = "Sales Executive";
+//       } else if (data.newDesignation === "Floor Manager") {
+//         newDesignation = "Sales Manager";
+//       } else if (data.newDesignation === "Data Analyst") {
+//         newDesignation = "Data Manager";
+//       } else if (data.newDesignation === "Admin Head") {
+//         newDesignation = "RM-Certification";
+//       } else if (data.newDesignation === "HR Manager") {
+//         newDesignation = "HR";
+//       } else {
+//         newDesignation = data.newDesignation;
+//       }
+
+//       const emp = {
+//         ...data,
+
+//         // Personal Info
+//         ...(data.firstName || data.middleName || data.lastName) && {
+//           ename: `${data.firstName || ""} ${data.lastName || ""}`,
+//           empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
+//         },
+//         ...(data.dob && !isNaN(Date.parse(data.dob)) && { dob: new Date(data.dob) }),
+//         ...(data.bloodGroup && { bloodGroup: data.bloodGroup }),
+//         ...(data.gender && { gender: data.gender }),
+//         ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo }),
+//         ...(data?.personalEmail && { personal_email: data.personalEmail }),
+//         ...(data?.currentAddress && { currentAddress: data.currentAddress }),
+//         ...(data?.permanentAddress && { permanentAddress: data.permanentAddress }),
+
+//         // Employment Info
+//         ...(data?.department && { department: data.department }),
+//         ...(data?.newDesignation && { newDesignation: data.newDesignation }),
+//         ...({ designation: newDesignation }),
+//         ...(data?.newDesignation && {
+//           bdmWork: data.newDesignation === "Business Development Manager" ||
+//             data.newDesignation === "Floor Manager" ||
+//             oldDesignation === "Business Development Manager" ||
+//             oldDesignation === "Floor Manager" ? true : false
+//         }),
+//         ...(data?.joiningDate && { jdate: data.joiningDate }),
+//         ...(data?.branch && { branchOffice: data.branch }),
+//         ...(data?.employeementType && { employeementType: data.employeementType }),
+//         ...(data?.manager && { reportingManager: data.manager }),
+//         ...(data?.officialNo && { number: data.officialNo }),
+//         ...(data?.officialEmail && { email: data.officialEmail }),
+
+//         // Payroll Info
+//         ...(data?.accountNo && { accountNo: data.accountNo }),
+//         ...(data?.nameAsPerBankRecord && { nameAsPerBankRecord: data.nameAsPerBankRecord }),
+//         ...(data?.ifscCode && { ifscCode: data.ifscCode }),
+//         ...(data?.salary && { salary: data.salary }),
+//         ...(data?.firstMonthSalaryCondition && { firstMonthSalaryCondition: data.firstMonthSalaryCondition }),
+//         ...(data?.firstMonthSalary && { firstMonthSalary: data.firstMonthSalary }),
+//         ...(data?.panNumber && { panNumber: data.panNumber }),
+//         ...(data?.aadharNumber && { aadharNumber: data.aadharNumber }),
+//         ...(data?.uanNumber && { uanNumber: data.uanNumber }),
+
+//         // Emergency Info
+//         ...(data?.personName && { personal_contact_person: data.personName }),
+//         ...(data?.relationship && { personal_contact_person_relationship: data.relationship }),
+//         ...(data?.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
+
+//         // Document Info
+//         ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || [] }),
+//         ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || [] }),
+//         ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || [] }),
+//         ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || [] }),
+//         ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || [] }),
+//         ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || [] }),
+//         ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || [] })
+//       };
+
+//       if (data.empId) {
+//         emp._id = data.empId;
+//       }
+
+//       return adminModel.create(emp);
+//     }));
+
+//     res.json(employees);
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
 // });
 
-router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
-  { name: "offerLetter", maxCount: 1 },
-  { name: "aadharCard", maxCount: 1 },
-  { name: "panCard", maxCount: 1 },
-  { name: "educationCertificate", maxCount: 1 },
-  { name: "relievingCertificate", maxCount: 1 },
-  { name: "salarySlip", maxCount: 1 },
-  { name: "profilePhoto", maxCount: 1 },
-]), async (req, res) => {
-  try {
-    const { dataToRevertBack, oldDesignation } = req.body;
+router.put(
+  "/revertbackdeletedemployeeintomaindatabase",
+  upload.fields([
+    { name: "offerLetter", maxCount: 1 },
+    { name: "aadharCard", maxCount: 1 },
+    { name: "panCard", maxCount: 1 },
+    { name: "educationCertificate", maxCount: 1 },
+    { name: "relievingCertificate", maxCount: 1 },
+    { name: "salarySlip", maxCount: 1 },
+    { name: "profilePhoto", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const { dataToRevertBack, itemId } = req.body;
 
-    if (!dataToRevertBack || !Array.isArray(dataToRevertBack) || dataToRevertBack.length === 0) {
-      return res.status(400).json({ error: "No employee data to save" });
+      if (
+        !dataToRevertBack ||
+        !Array.isArray(dataToRevertBack) ||
+        dataToRevertBack.length === 0 ||
+        !itemId
+      ) {
+        return res.status(400).json({ error: "Invalid data to revert back" });
+      }
+
+      const getFileDetails = (fileArray) =>
+        fileArray
+          ? fileArray.map((file) => ({
+              fieldname: file.fieldname,
+              originalname: file.originalname,
+              encoding: file.encoding,
+              mimetype: file.mimetype,
+              destination: file.destination,
+              filename: file.filename,
+              path: file.path,
+              size: file.size,
+            }))
+          : [];
+
+      // Step 1: Create the new employee(s)
+      const employees = [];
+      for (const data of dataToRevertBack) {
+        let newDesignation = data.newDesignation;
+
+        if (
+          newDesignation === "Business Development Executive" ||
+          newDesignation === "Business Development Manager"
+        ) {
+          newDesignation = "Sales Executive";
+        } else if (newDesignation === "Floor Manager") {
+          newDesignation = "Sales Manager";
+        } else if (newDesignation === "Data Analyst") {
+          newDesignation = "Data Manager";
+        } else if (newDesignation === "Admin Head") {
+          newDesignation = "RM-Certification";
+        } else if (newDesignation === "HR Manager") {
+          newDesignation = "HR";
+        }
+
+        const empData = {
+          ...data,
+          // Personal Info
+          ...(data.firstName || data.middleName || data.lastName) && {
+            ename: `${data.firstName || ""} ${data.lastName || ""}`,
+            empFullName: `${data.firstName || ""} ${data.middleName || ""} ${
+              data.lastName || ""
+            }`,
+          },
+          ...(data.dob && !isNaN(Date.parse(data.dob)) && {
+            dob: new Date(data.dob),
+          }),
+          ...(data.bloodGroup && { bloodGroup: data.bloodGroup }),
+          ...(data.gender && { gender: data.gender }),
+          ...(data.personalPhoneNo && {
+            personal_number: data.personalPhoneNo,
+          }),
+          ...(data.personalEmail && { personal_email: data.personalEmail }),
+          ...(data.currentAddress && { currentAddress: data.currentAddress }),
+          ...(data.permanentAddress && {
+            permanentAddress: data.permanentAddress,
+          }),
+
+          // Employment Info
+          ...(data.department && { department: data.department }),
+          ...(data.newDesignation && { newDesignation: data.newDesignation }),
+          designation: newDesignation,
+          ...(data.newDesignation && {
+            bdmWork:
+              data.newDesignation === "Business Development Manager" ||
+              data.newDesignation === "Floor Manager",
+          }),
+          ...(data.joiningDate && { jdate: data.joiningDate }),
+          ...(data.branch && { branchOffice: data.branch }),
+          ...(data.employeementType && {
+            employeementType: data.employeementType,
+          }),
+          ...(data.manager && { reportingManager: data.manager }),
+          ...(data.officialNo && { number: data.officialNo }),
+          ...(data.officialEmail && { email: data.officialEmail }),
+
+          // Payroll Info
+          ...(data.accountNo && { accountNo: data.accountNo }),
+          ...(data.nameAsPerBankRecord && {
+            nameAsPerBankRecord: data.nameAsPerBankRecord,
+          }),
+          ...(data.ifscCode && { ifscCode: data.ifscCode }),
+          ...(data.salary && { salary: data.salary }),
+          ...(data.firstMonthSalaryCondition && {
+            firstMonthSalaryCondition: data.firstMonthSalaryCondition,
+          }),
+          ...(data.firstMonthSalary && {
+            firstMonthSalary: data.firstMonthSalary,
+          }),
+          ...(data.panNumber && { panNumber: data.panNumber }),
+          ...(data.aadharNumber && { aadharNumber: data.aadharNumber }),
+          ...(data.uanNumber && { uanNumber: data.uanNumber }),
+
+          // Emergency Info
+          ...(data.personName && {
+            personal_contact_person: data.personName,
+          }),
+          ...(data.relationship && {
+            personal_contact_person_relationship: data.relationship,
+          }),
+          ...(data.personPhoneNo && {
+            personal_contact_person_number: data.personPhoneNo,
+          }),
+
+          // Document Info
+          ...(req.files?.offerLetter && {
+            offerLetter: getFileDetails(req.files.offerLetter),
+          }),
+          ...(req.files?.aadharCard && {
+            aadharCard: getFileDetails(req.files.aadharCard),
+          }),
+          ...(req.files?.panCard && {
+            panCard: getFileDetails(req.files.panCard),
+          }),
+          ...(req.files?.educationCertificate && {
+            educationCertificate: getFileDetails(
+              req.files.educationCertificate
+            ),
+          }),
+          ...(req.files?.relievingCertificate && {
+            relievingCertificate: getFileDetails(
+              req.files.relievingCertificate
+            ),
+          }),
+          ...(req.files?.salarySlip && {
+            salarySlip: getFileDetails(req.files.salarySlip),
+          }),
+          ...(req.files?.profilePhoto && {
+            profilePhoto: getFileDetails(req.files.profilePhoto),
+          }),
+        };
+
+        const createdEmployee = await adminModel.create(empData);
+        employees.push(createdEmployee);
+      }
+
+      // Step 2: Delete the old employee if creation succeeds
+      const deletedEmployee = await deletedEmployeeModel.findByIdAndDelete(
+        itemId
+      );
+
+      if (!deletedEmployee) {
+        throw new Error("Failed to delete the old employee.");
+      }
+
+      res.status(200).json({
+        message: "Employee reverted back successfully",
+        data: employees,
+      });
+    } catch (error) {
+      console.error("Error reverting employee back:", error);
+      res.status(500).json({ error: "Failed to revert back the employee" });
     }
-
-    // console.log("Deleted data is :", dataToDelete);
-    // console.log("Reverted employee is :", dataToRevertBack);
-
-    const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
-      fieldname: file.fieldname,
-      originalname: file.originalname,
-      encoding: file.encoding,
-      mimetype: file.mimetype,
-      destination: file.destination,
-      filename: file.filename,
-      path: file.path,
-      size: file.size
-    })) : [];
-
-    const employees = await Promise.all(dataToRevertBack.map(async (data) => {
-      let newDesignation = data.newDesignation;
-
-      if (data.newDesignation === "Business Development Executive" || data.newDesignation === "Business Development Manager") {
-        newDesignation = "Sales Executive";
-      } else if (data.newDesignation === "Floor Manager") {
-        newDesignation = "Sales Manager";
-      } else if (data.newDesignation === "Data Analyst") {
-        newDesignation = "Data Manager";
-      } else if (data.newDesignation === "Admin Head") {
-        newDesignation = "RM-Certification";
-      } else if (data.newDesignation === "HR Manager") {
-        newDesignation = "HR";
-      } else {
-        newDesignation = data.newDesignation;
-      }
-
-      const emp = {
-        ...data,
-
-        // Personal Info
-        ...(data.firstName || data.middleName || data.lastName) && {
-          ename: `${data.firstName || ""} ${data.lastName || ""}`,
-          empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
-        },
-        ...(data.dob && { dob: data.dob }),
-        ...(data.bloodGroup && { dob: data.bloodGroup }),
-        ...(data.gender && { gender: data.gender }),
-        ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo }),
-        ...(data?.personalEmail && { personal_email: data.personalEmail }),
-        ...(data?.currentAddress && { currentAddress: data.currentAddress }),
-        ...(data?.permanentAddress && { permanentAddress: data.permanentAddress }),
-
-        // Employment Info
-        ...(data?.department && { department: data.department }),
-        ...(data?.newDesignation && { newDesignation: data.newDesignation }),
-        ...({ designation: newDesignation }),
-        ...(data?.newDesignation && {
-          bdmWork: data.newDesignation === "Business Development Manager" ||
-            data.newDesignation === "Floor Manager" ||
-            oldDesignation === "Business Development Manager" ||
-            oldDesignation === "Floor Manager" ? true : false
-        }),
-        ...(data?.joiningDate && { jdate: data.joiningDate }),
-        ...(data?.branch && { branchOffice: data.branch }),
-        ...(data?.employeementType && { employeementType: data.employeementType }),
-        ...(data?.manager && { reportingManager: data.manager }),
-        ...(data?.officialNo && { number: data.officialNo }),
-        ...(data?.officialEmail && { email: data.officialEmail }),
-
-        // Payroll Info
-        ...(data?.accountNo && { accountNo: data.accountNo }),
-        ...(data?.nameAsPerBankRecord && { nameAsPerBankRecord: data.nameAsPerBankRecord }),
-        ...(data?.ifscCode && { ifscCode: data.ifscCode }),
-        ...(data?.salary && { salary: data.salary }),
-        ...(data?.firstMonthSalaryCondition && { firstMonthSalaryCondition: data.firstMonthSalaryCondition }),
-        ...(data?.firstMonthSalary && { firstMonthSalary: data.firstMonthSalary }),
-        ...(data?.panNumber && { panNumber: data.panNumber }),
-        ...(data?.aadharNumber && { aadharNumber: data.aadharNumber }),
-        ...(data?.uanNumber && { uanNumber: data.uanNumber }),
-
-        // Emergency Info
-        ...(data?.personName && { personal_contact_person: data.personName }),
-        ...(data?.relationship && { personal_contact_person_relationship: data.relationship }),
-        ...(data?.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
-
-        // Document Info
-        ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || [] }),
-        ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || [] }),
-        ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || [] }),
-        ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || [] }),
-        ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || [] }),
-        ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || [] }),
-        ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || [] })
-      };
-
-      if (data.empId) {
-        emp._id = data.empId;
-      }
-
-      return adminModel.create(emp);
-    }));
-
-    res.json(employees);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
-});
+);
+
+module.exports = router;
 
 
-// router.get('/achieved-details/:ename', async (req, res) => {
-//   const { ename } = req.params;
-
-//   try {
-//     const employeeData = await adminModel.findOne({ ename });
-//     if (!employeeData) {
-//       return res.status(404).json({ error: 'Admin not found' });
-//     }
-
-//     const redesignedData = await RedesignedLeadformModel.find();
-//     if (!redesignedData) {
-//       return res.status(404).json({ error: 'No redesigned data found' });
-//     }
-
-//     const calculateAchievedRevenue = (data, ename, filterBy = 'This Month') => {
-//       let achievedAmount = 0;
-//       let expanse = 0;
-//       let caCommision = 0;
-//       const today = new Date();
-
-//       const isDateInRange = (date, filterBy) => {
-//         const bookingDate = new Date(date);
-//         switch (filterBy) {
-//           case 'Today':
-//             return bookingDate.toLocaleDateString() === today.toLocaleDateString();
-//           case 'Last Month':
-//             return bookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1);
-//           case 'This Month':
-//             return bookingDate.getMonth() === today.getMonth();
-//           default:
-//             return false;
-//         }
-//       };
-
-//       const processBooking = (booking, ename) => {
-//         if ((booking.bdeName === ename || booking.bdmName === ename) && isDateInRange(booking.bookingDate, filterBy)) {
-//           if (booking.bdeName === booking.bdmName) {
-//             achievedAmount += Math.round(booking.generatedReceivedAmount);
-//             expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
-//             if (booking.caCase === "Yes") caCommision += parseInt(booking.caCommission);
-//           } else if (booking.bdmType === "Close-by") {
-//             achievedAmount += Math.round(booking.generatedReceivedAmount) / 2;
-//             expanse += booking.services.reduce((sum, serv) => sum + ((serv.expanse || 0) / 2), 0);
-//             if (booking.caCase === "Yes") caCommision += parseInt(booking.caCommission) / 2;
-//           } else if (booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//             achievedAmount += Math.round(booking.generatedReceivedAmount);
-//             expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
-//             if (booking.caCase === "Yes") caCommision += parseInt(booking.caCommission);
-//           }
-//         }
-//       };
-
-//       data.forEach(mainBooking => {
-//         processBooking(mainBooking, ename);
-//         mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
-//       });
-
-//       return achievedAmount - expanse - caCommision;
-//     };
-
-//     const currentYear = new Date().getFullYear();
-//     const currentMonth = new Date().getMonth();
-
-//     const achievedObject = employeeData.achievedObject.filter(obj => !(obj.year === currentYear && obj.month === currentMonth));
-
-//     const newAchievedObject = {
-//       year: currentYear,
-//       month: currentMonth,
-//       achievedAmount: calculateAchievedRevenue(redesignedData, ename)
-//     };
-
-//     achievedObject.push(newAchievedObject);
-
-//     const updateResult = await adminModel.updateOne({ ename }, {
-//       $set: { achievedObject }
-//     });
-
-//     res.json({ updateResult });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// router.get('/achieved-details/:ename', async (req, res) => {
-//   const { ename } = req.params;
-
-//   try {
-//     const employeeData = await adminModel.findOne({ ename });
-//     if (!employeeData) {
-//       return res.status(404).json({ error: 'Admin not found' });
-//     }
-
-//     const redesignedData = await RedesignedLeadformModel.find();
-//     if (!redesignedData) {
-//       return res.status(404).json({ error: 'No redesigned data found' });
-//     }
-
-//     const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
-//       let achievedAmount = 0;
-//       let expanse = 0;
-//       let caCommission = 0;
-//       let remainingAmount = 0;
-//       let remainingExpense = 0;
-//       const today = new Date();
-
-//       const isDateInRange = (date, filterBy) => {
-//         const bookingDate = new Date(date);
-//         switch (filterBy) {
-//           case 'Today':
-//             return bookingDate.toLocaleDateString() === today.toLocaleDateString();
-//           case 'Last Month':
-//             const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
-//             return bookingDate.getMonth() === lastMonth && bookingDate.getFullYear() === today.getFullYear();
-//           case 'This Month':
-//             return bookingDate.getMonth() === today.getMonth() && bookingDate.getFullYear() === today.getFullYear();
-//           default:
-//             return false;
-//         }
-//       };
-
-//       const processBooking = (booking, ename) => {
-//         if ((booking.bdeName === ename || booking.bdmName === ename) && isDateInRange(booking.bookingDate, filterBy)) {
-//           if (booking.bdeName === booking.bdmName) {
-//             achievedAmount += Math.round(booking.generatedReceivedAmount);
-//             expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
-//             if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
-//           } else if (booking.bdmType === "Close-by") {
-//             achievedAmount += Math.round(booking.generatedReceivedAmount) / 2;
-//             expanse += booking.services.reduce((sum, serv) => sum + ((serv.expanse || 0) / 2), 0);
-//             if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission) / 2;
-//           } else if (booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//             achievedAmount += Math.round(booking.generatedReceivedAmount);
-//             expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
-//             if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
-//           }
-//         }
-
-//         if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
-//           let remainingExpanseCondition = false;
-//           switch (filterBy) {
-//             case 'Today':
-//               remainingExpanseCondition = booking.remainingPayments.some(item => new Date(item.paymentDate).toLocaleDateString() === today.toLocaleDateString());
-//               break;
-//             case 'Last Month':
-//               remainingExpanseCondition = booking.remainingPayments.some(item => {
-//                 const paymentDate = new Date(item.paymentDate);
-//                 const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
-//                 return paymentDate.getMonth() === lastMonth && paymentDate.getFullYear() === today.getFullYear();
-//               });
-//               break;
-//             case 'This Month':
-//               remainingExpanseCondition = booking.remainingPayments.some(item => {
-//                 const paymentDate = new Date(item.paymentDate);
-//                 return paymentDate.getMonth() === today.getMonth() && paymentDate.getFullYear() === today.getFullYear();
-//               });
-//               break;
-//             default:
-//               break;
-//           }
-
-//           if (remainingExpanseCondition && filterBy === "Last Month") {
-//             const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-//             const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-//             booking.services.forEach(serv => {
-//               if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-//                 if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
-//                   remainingExpense += serv.expanse / 2;
-//                 } else if (booking.bdeName === booking.bdmName) {
-//                   remainingExpense += serv.expanse;
-//                 } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//                   remainingExpense += serv.expanse;
-//                 }
-//               }
-//             });
-//           }
-
-//           booking.remainingPayments.forEach(remainingObj => {
-//             let condition = false;
-//             switch (filterBy) {
-//               case 'Today':
-//                 condition = new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString();
-//                 break;
-//               case 'Last Month':
-//                 condition = new Date(remainingObj.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1);
-//                 break;
-//               case 'This Month':
-//                 condition = new Date(remainingObj.paymentDate).getMonth() === today.getMonth();
-//                 break;
-//               default:
-//                 break;
-//             }
-
-//             if (condition) {
-//               const findService = booking.services.find(service => service.serviceName === remainingObj.serviceName);
-//               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-//               if (booking.bdeName === booking.bdmName) {
-//                 remainingAmount += Math.round(tempAmount);
-//               } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
-//                 remainingAmount += Math.round(tempAmount) / 2;
-//               } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//                 remainingAmount += Math.round(tempAmount);
-//               }
-//             }
-//           });
-//         }
-//       };
-
-//       data.forEach(mainBooking => {
-//         processBooking(mainBooking, ename);
-//         mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
-//       });
-
-//       return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
-//     };
-
-//     const currentYear = new Date().getFullYear();
-//     const currentMonth = new Date().getMonth() + 1;  // Month is zero-indexed
-
-//     const achievedAmount = calculateAchievedRevenue(redesignedData, ename);
-
-//     const updateResult = await adminModel.updateOne(
-//       {
-//         ename,
-//         'targetDetails.year': currentYear,
-//         'targetDetails.month': currentMonth
-//       },
-//       {
-//         $set: {
-//           'targetDetails.$[elem].achievedAmount': achievedAmount
-//         }
-//       },
-//       {
-//         arrayFilters: [{ 'elem.year': currentYear, 'elem.month': currentMonth }]
-//       }
-//     );
-//     console.log("achievedamont" , achievedAmount)
-//     console.log(updateResult)
-
-//     res.json({ updateResult });
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-
-// Function to calculate achieved revenue
-
-
-// const calculateAchievedRevenue = (data, ename, filterBy = 'Last Month') => {
-//   let achievedAmount = 0;
-//   let expanse = 0;
-//   let caCommission = 0;
-//   let remainingAmount = 0;
-//   let remainingExpense = 0;
-//   const today = new Date();
-
-//   const isDateInRange = (date, filterBy) => {
-//     const bookingDate = new Date(date);
-//     switch (filterBy) {
-//       case 'Today':
-//         return bookingDate.toLocaleDateString() === today.toLocaleDateString();
-//       case 'Last Month':
-//         const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
-//         return bookingDate.getMonth() === lastMonth && bookingDate.getFullYear() === today.getFullYear();
-//       case 'This Month':
-//         return bookingDate.getMonth() === today.getMonth() && bookingDate.getFullYear() === today.getFullYear();
-//       default:
-//         return false;
-//     }
-//   };
-
-//   const processBooking = (booking, ename) => {
-//     if ((booking.bdeName === ename || booking.bdmName === ename) && isDateInRange(booking.bookingDate, filterBy)) {
-//       if (booking.bdeName === booking.bdmName) {
-//         achievedAmount += Math.round(booking.generatedReceivedAmount);
-//         expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
-//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
-//       } else if (booking.bdmType === "Close-by") {
-//         achievedAmount += Math.round(booking.generatedReceivedAmount) / 2;
-//         expanse += booking.services.reduce((sum, serv) => sum + ((serv.expanse || 0) / 2), 0);
-//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission) / 2;
-//       } else if (booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//         achievedAmount += Math.round(booking.generatedReceivedAmount);
-//         expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
-//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
-//       }
-//     }else if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
-//       let remainingExpanseCondition = false;
-//       switch (filterBy) {
-//         case 'Today':
-//           remainingExpanseCondition = booking.remainingPayments.some(item => new Date(item.paymentDate).toLocaleDateString() === today.toLocaleDateString());
-//           break;
-//         case 'Last Month':
-//           remainingExpanseCondition = booking.remainingPayments.some(item => {
-//             const paymentDate = new Date(item.paymentDate);
-//             const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
-//             return paymentDate.getMonth() === lastMonth && paymentDate.getFullYear() === today.getFullYear();
-//           });
-//           break;
-//         case 'This Month':
-//           remainingExpanseCondition = booking.remainingPayments.some(item => {
-//             const paymentDate = new Date(item.paymentDate);
-//             return paymentDate.getMonth() === today.getMonth() && paymentDate.getFullYear() === today.getFullYear();
-//           });
-//           break;
-//         default:
-//           break;
-//       }
-
-//       if (remainingExpanseCondition && filterBy === "Last Month") {
-//         const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-//         const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-//         booking.services.forEach(serv => {
-//           if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-//             if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
-//               remainingExpense += serv.expanse / 2;
-//             } else if (booking.bdeName === booking.bdmName) {
-//               remainingExpense += serv.expanse;
-//             } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//               remainingExpense += serv.expanse;
-//             }
-//           }
-//         });
-//       }
-
-//       booking.remainingPayments.forEach(remainingObj => {
-//         let condition = false;
-//         switch (filterBy) {
-//           case 'Today':
-//             condition = new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString();
-//             break;
-//           case 'Last Month':
-//             condition = new Date(remainingObj.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1);
-//             break;
-//           case 'This Month':
-//             condition = new Date(remainingObj.paymentDate).getMonth() === today.getMonth();
-//             break;
-//           default:
-//             break;
-//         }
-
-//         if (condition) {
-//           const findService = booking.services.find(service => service.serviceName === remainingObj.serviceName);
-//           const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-//           if (booking.bdeName === booking.bdmName) {
-//             remainingAmount += Math.round(tempAmount);
-//           } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
-//             remainingAmount += Math.round(tempAmount) / 2;
-//           } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//             remainingAmount += Math.round(tempAmount);
-//           }
-//         }
-//       });
-//     }
-//   };
-
-//   data.forEach(mainBooking => {
-//     processBooking(mainBooking, ename);
-//     mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
-//   });
-//   console.log(achievedAmount,expanse,remainingAmount,)
-//   console.log("function me achieved" ,achievedAmount + remainingAmount - expanse - remainingExpense - caCommission)
-
-//   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
-// };
-
-// router.get('/achieved-details/:ename', async (req, res) => {
-//   const { ename } = req.params;
-
-//   try {
-//     const employeeData = await adminModel.findOne({ ename });
-//     if (!employeeData) {
-//       return res.status(404).json({ error: 'Admin not found' });
-//     }
-
-//     const redesignedData = await RedesignedLeadformModel.find();
-//     if (!redesignedData) {
-//       return res.status(404).json({ error: 'No redesigned data found' });
-//     }
-
-//     const achievedAmount = calculateAchievedRevenue(redesignedData, ename);
-
-//     console.log("achievedAmount" , achievedAmount)
-
-//     const today = new Date();
-//     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-//     const lastMonth = monthNames[today.getMonth() === 0 ? 11 : today.getMonth() - 1];
-
-//     const targetDetailsUpdated = employeeData.targetDetails.map((targetDetail) => {
-//       if (targetDetail.month === lastMonth) {
-//         targetDetail.achievedAmount = achievedAmount;
-//         targetDetail.ratio = Math.round((parseFloat(achievedAmount) / parseFloat(targetDetail.amount)) * 100);
-//         const roundedRatio = Math.round(targetDetail.ratio);
-//         if (roundedRatio === 0) {
-//           targetDetail.result = "Poor";
-//         } else if (roundedRatio > 0 && roundedRatio <= 40) {
-//           targetDetail.result = "Poor";
-//         } else if (roundedRatio >= 41 && roundedRatio <= 60) {
-//           targetDetail.result = "Below Average";
-//         } else if (roundedRatio >= 61 && roundedRatio <= 74) {
-//           targetDetail.result = "Average";
-//         } else if (roundedRatio >= 75 && roundedRatio <= 99) {
-//           targetDetail.result = "Good";
-//         } else if (roundedRatio >= 100 && roundedRatio <= 149) {
-//           targetDetail.result = "Excellent";
-//         } else if (roundedRatio >= 150 && roundedRatio <= 199) {
-//           targetDetail.result = "Extraordinary";
-//         } else if (roundedRatio >= 200 && roundedRatio <= 249) {
-//           targetDetail.result = "Outstanding";
-//         } else if (roundedRatio >= 250) {
-//           targetDetail.result = "Exceptional";
-//         }
-//       }
-//       return targetDetail;
-//     });
-
-//     // Update the employee data
-//     const updateResult = await adminModel.findOneAndUpdate(
-//       { ename },
-//       { targetDetails: targetDetailsUpdated },
-//       { new: true }
-//     );
-
-//     res.json({ updateResult });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-// const calculateAchievedRevenue = (data, ename, filterBy) => {
-//   let achievedAmount = 0;
-//   let expanse = 0;
-//   let caCommission = 0;
-//   let remainingAmount = 0;
-//   let remainingExpense = 0;
-//   const today = new Date();
-
-//   const isDateInRange = (date, filterBy) => {
-//     const bookingDate = new Date(date);
-//     switch (filterBy) {
-//       case 'Today':
-//         return bookingDate.toLocaleDateString() === today.toLocaleDateString();
-//       case 'Last Month':
-//         const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
-//         return bookingDate.getMonth() === lastMonth && bookingDate.getFullYear() === today.getFullYear();
-//       case 'This Month':
-//         return bookingDate.getMonth() === today.getMonth() && bookingDate.getFullYear() === today.getFullYear();
-//       default:
-//         return false;
-//     }
-//   };
-
-//   const processBooking = (booking, ename) => {
-//     if ((booking.bdeName === ename || booking.bdmName === ename) && isDateInRange(booking.bookingDate, filterBy)) {
-//       if (booking.bdeName === booking.bdmName) {
-//         achievedAmount += Math.round(booking.generatedReceivedAmount);
-//         expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
-//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
-//       } else if (booking.bdmType === "Close-by") {
-//         achievedAmount += Math.round(booking.generatedReceivedAmount) / 2;
-//         expanse += booking.services.reduce((sum, serv) => sum + ((serv.expanse || 0) / 2), 0);
-//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission) / 2;
-//       } else if (booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//         achievedAmount += Math.round(booking.generatedReceivedAmount);
-//         expanse += booking.services.reduce((sum, serv) => sum + (serv.expanse || 0), 0);
-//         if (booking.caCase === "Yes") caCommission += parseInt(booking.caCommission);
-//       }
-//     } else if (booking.remainingPayments.length !== 0 && (booking.bdeName === ename || booking.bdmName === ename)) {
-//       let remainingExpanseCondition = false;
-//       switch (filterBy) {
-//         case 'Today':
-//           remainingExpanseCondition = booking.remainingPayments.some(item => new Date(item.paymentDate).toLocaleDateString() === today.toLocaleDateString());
-//           break;
-//         case 'Last Month':
-//           remainingExpanseCondition = booking.remainingPayments.some(item => {
-//             const paymentDate = new Date(item.paymentDate);
-//             const lastMonth = today.getMonth() === 0 ? 11 : today.getMonth() - 1;
-//             return paymentDate.getMonth() === lastMonth && paymentDate.getFullYear() === today.getFullYear();
-//           });
-//           break;
-//         case 'This Month':
-//           remainingExpanseCondition = booking.remainingPayments.some(item => {
-//             const paymentDate = new Date(item.paymentDate);
-//             return paymentDate.getMonth() === today.getMonth() && paymentDate.getFullYear() === today.getFullYear();
-//           });
-//           break;
-//         default:
-//           break;
-//       }
-
-//       if (remainingExpanseCondition && filterBy === "Last Month") {
-//         const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-//         const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-//         booking.services.forEach(serv => {
-//           if (serv.expanseDate && new Date(serv.expanseDate) >= startDate && new Date(serv.expanseDate) <= endDate) {
-//             if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
-//               remainingExpense += serv.expanse / 2;
-//             } else if (booking.bdeName === booking.bdmName) {
-//               remainingExpense += serv.expanse;
-//             } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//               remainingExpense += serv.expanse;
-//             }
-//           }
-//         });
-//       }
-
-//       booking.remainingPayments.forEach(remainingObj => {
-//         let condition = false;
-//         switch (filterBy) {
-//           case 'Today':
-//             condition = new Date(remainingObj.paymentDate).toLocaleDateString() === today.toLocaleDateString();
-//             break;
-//           case 'Last Month':
-//             condition = new Date(remainingObj.paymentDate).getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1);
-//             break;
-//           case 'This Month':
-//             condition = new Date(remainingObj.paymentDate).getMonth() === today.getMonth();
-//             break;
-//           default:
-//             break;
-//         }
-
-//         if (condition) {
-//           const findService = booking.services.find(service => service.serviceName === remainingObj.serviceName);
-//           const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
-//           if (booking.bdeName === booking.bdmName) {
-//             remainingAmount += Math.round(tempAmount);
-//           } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
-//             remainingAmount += Math.round(tempAmount) / 2;
-//           } else if (booking.bdeName !== booking.bdmName && booking.bdmType === "Supported-by" && booking.bdeName === ename) {
-//             remainingAmount += Math.round(tempAmount);
-//           }
-//         }
-//       });
-//     }
-//   };
-
-//   data.forEach(mainBooking => {
-//     processBooking(mainBooking, ename);
-//     mainBooking.moreBookings.forEach(moreObject => processBooking(moreObject, ename));
-//   });
-
-//   console.log("achieved", achievedAmount + remainingAmount - expanse - remainingExpense - caCommission);
-
-//   return achievedAmount + remainingAmount - expanse - remainingExpense - caCommission;
-// };
 
 const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
   //console.log("yahan chla achieved full function")
@@ -2433,15 +2071,15 @@ router.get("/einfo", async (req, res) => {
     const updatePromises = employees.map(async (employee) => {
       // Check if the employee designation is allowed and the conditions are met
       if (
-        allowedDesignations.includes(employee.designation) && 
-        employee.bdmWork !== true && 
+        allowedDesignations.includes(employee.designation) &&
+        employee.bdmWork !== true &&
         employee.isForcefullyBdmWorkMadeFalse !== true
       ) {
         // Update `bdmWork` to true if the conditions are satisfied
         employee.bdmWork = true; // Update the in-memory object
         await adminModel.updateOne(
           { _id: employee._id },
-          { $set: { bdmWork: true  } }
+          { $set: { bdmWork: true } }
         ); // Save the change to the database
       }
 
@@ -2468,50 +2106,121 @@ router.get("/einfo", async (req, res) => {
   }
 });
 
+// -----------------update employee from admin side------------------
+// router.put("/einfo/:id", async (req, res) => {
+//   const id = req.params.id;
+//   const dataToSendUpdated = req.body;
 
+//   // Calculate ratio and result for each target detail
+//   dataToSendUpdated.targetDetails.forEach(target => {
+//     const amount = parseFloat(target.amount);
+//     const achievedAmount = parseFloat(target.achievedAmount);
+//     target.ratio = (achievedAmount / amount) * 100;
 
+//     // Determine the result based on the ratio
+//     const roundedRatio = Math.round(target.ratio);
+//     if (roundedRatio === 0) {
+//       target.result = "Poor";
+//     } else if (roundedRatio > 0 && roundedRatio <= 40) {
+//       target.result = "Poor";
+//     } else if (roundedRatio >= 41 && roundedRatio <= 60) {
+//       target.result = "Below Average";
+//     } else if (roundedRatio >= 61 && roundedRatio <= 74) {
+//       target.result = "Average";
+//     } else if (roundedRatio >= 75 && roundedRatio <= 99) {
+//       target.result = "Good";
+//     } else if (roundedRatio >= 100 && roundedRatio <= 149) {
+//       target.result = "Excellent";
+//     } else if (roundedRatio >= 150 && roundedRatio <= 199) {
+//       target.result = "Extraordinary";
+//     } else if (roundedRatio >= 200 && roundedRatio <= 249) {
+//       target.result = "Outstanding";
+//     } else if (roundedRatio >= 250) {
+//       target.result = "Exceptional";
+//     }
+//   });
+
+//   try {
+//     const updatedData = await adminModel.findByIdAndUpdate(id, dataToSendUpdated, {
+//       new: true,
+//     });
+
+//     if (!updatedData) {
+//       return res.status(404).json({ error: "Data not found" });
+//     }
+
+//     res.json({ message: "Data updated successfully", updatedData });
+//   } catch (error) {
+//     console.error("Error updating data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 router.put("/einfo/:id", async (req, res) => {
   const id = req.params.id;
   const dataToSendUpdated = req.body;
 
-  // Calculate ratio and result for each target detail
-  dataToSendUpdated.targetDetails.forEach(target => {
-    const amount = parseFloat(target.amount);
-    const achievedAmount = parseFloat(target.achievedAmount);
-    target.ratio = (achievedAmount / amount) * 100;
-
-    // Determine the result based on the ratio
-    const roundedRatio = Math.round(target.ratio);
-    if (roundedRatio === 0) {
-      target.result = "Poor";
-    } else if (roundedRatio > 0 && roundedRatio <= 40) {
-      target.result = "Poor";
-    } else if (roundedRatio >= 41 && roundedRatio <= 60) {
-      target.result = "Below Average";
-    } else if (roundedRatio >= 61 && roundedRatio <= 74) {
-      target.result = "Average";
-    } else if (roundedRatio >= 75 && roundedRatio <= 99) {
-      target.result = "Good";
-    } else if (roundedRatio >= 100 && roundedRatio <= 149) {
-      target.result = "Excellent";
-    } else if (roundedRatio >= 150 && roundedRatio <= 199) {
-      target.result = "Extraordinary";
-    } else if (roundedRatio >= 200 && roundedRatio <= 249) {
-      target.result = "Outstanding";
-    } else if (roundedRatio >= 250) {
-      target.result = "Exceptional";
-    }
-  });
-
   try {
-    const updatedData = await adminModel.findByIdAndUpdate(id, dataToSendUpdated, {
-      new: true,
-    });
+    // Find the current employee data by ID
+    const currentData = await adminModel.findById(id);
 
-    if (!updatedData) {
+    if (!currentData) {
       return res.status(404).json({ error: "Data not found" });
     }
+
+    /// Check if the phone number is being updated
+    if (currentData.number !== dataToSendUpdated.number) {
+      // Initialize the array if it doesn't exist
+      if (!currentData.oldNumbersAssignedByCompany) {
+        currentData.oldNumbersAssignedByCompany = [];
+      }
+
+      // Check if the old number is already stored; if not, add it
+      if (
+        currentData.number && // Ensure current number exists
+        !currentData.oldNumbersAssignedByCompany.includes(currentData.number) // Prevent duplicates
+      ) {
+        currentData.oldNumbersAssignedByCompany.push(currentData.number);
+      }
+
+      // Assign the updated number
+      currentData.number = dataToSendUpdated.number;
+    }
+
+    // Update targetDetails ratios and results
+    dataToSendUpdated.targetDetails.forEach(target => {
+      const amount = parseFloat(target.amount);
+      const achievedAmount = parseFloat(target.achievedAmount);
+      target.ratio = (achievedAmount / amount) * 100;
+
+      // Determine the result based on the ratio
+      const roundedRatio = Math.round(target.ratio);
+      if (roundedRatio === 0) {
+        target.result = "Poor";
+      } else if (roundedRatio > 0 && roundedRatio <= 40) {
+        target.result = "Poor";
+      } else if (roundedRatio >= 41 && roundedRatio <= 60) {
+        target.result = "Below Average";
+      } else if (roundedRatio >= 61 && roundedRatio <= 74) {
+        target.result = "Average";
+      } else if (roundedRatio >= 75 && roundedRatio <= 99) {
+        target.result = "Good";
+      } else if (roundedRatio >= 100 && roundedRatio <= 149) {
+        target.result = "Excellent";
+      } else if (roundedRatio >= 150 && roundedRatio <= 199) {
+        target.result = "Extraordinary";
+      } else if (roundedRatio >= 200 && roundedRatio <= 249) {
+        target.result = "Outstanding";
+      } else if (roundedRatio >= 250) {
+        target.result = "Exceptional";
+      }
+    });
+
+    // Update other fields of the employee
+    Object.assign(currentData, dataToSendUpdated);
+
+    // Save the updated data
+    const updatedData = await currentData.save();
 
     res.json({ message: "Data updated successfully", updatedData });
   } catch (error) {
@@ -2519,6 +2228,7 @@ router.put("/einfo/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 router.post('/addbulktargetemployees', async (req, res) => {
   try {

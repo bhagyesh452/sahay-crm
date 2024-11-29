@@ -23,6 +23,7 @@ const RedesignedLeadModel = require('../models/RedesignedLeadform.js');
 const ForwardedLeadsModel = require('../models/FollowUp.js');
 const DailyEmployeeProjection = require('../models/DailyEmployeeProjection.js');
 const mongoose = require('mongoose');
+const deletedEmployeeModel = require('../models/DeletedEmployee.js');
 
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
 
@@ -833,20 +834,21 @@ router.post("/leads", async (req, res) => {
   }
 });
 
-router.delete("/newcompanynamedelete/:id", async (req, res) => {
-  const id = req.params.id;
+router.delete("/newcompanynamedelete/:ename", async (req, res) => {
+  const ename = req.params.ename;
+  console.log("id", ename);
 
   try {
-    // Find the employee's data by id
-    const employeeData = await adminModel.findById(id);
-    //console.log("employee", employeeData)
-    if (!employeeData) {
-      return res.status(404).json({ error: "Employee not found" });
-    }
+    // // Find the employee's data by id
+    // const employeeData = await deletedEmployeeModel.findOne({_id : id});
+    // console.log("employee", employeeData)
+    // if (!employeeData) {
+    //   return res.status(404).json({ error: "Employee not found" });
+    // }
 
     // Update companies where the employee's name matches
     await CompanyModel.updateMany(
-      { ename: employeeData.ename },
+      { ename: ename },
       {
         $set: {
           ename: "Not Alloted",
@@ -867,10 +869,10 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
       }
     );
     // Delete documents from TeamLeadsModel where the employee's name matches
-    await TeamLeadsModel.deleteMany({ bdeName: employeeData.ename });
+    await TeamLeadsModel.deleteMany({ bdeName: ename });
 
     // Delete the corresponding document from CompanyModel collection
-    await CompanyModel.findByIdAndDelete(id);
+    //await CompanyModel.findByIdAndDelete(id);
 
     res.json({ message: "Employee data deleted successfully" });
   } catch (error) {

@@ -119,10 +119,10 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
           const servicesLink = 'https://www.startupsahay.com/all-services.html'; // Your validation link
           const reviewLink = 'https://www.google.com/maps/place/START-UP+SAHAY+PRIVATE+LIMITED/@23.045476,72.5077064,17z/data=!3m1!4b1!4m6!3m5!1s0x395e852283f27bc3:0x2e4b16825e436926!8m2!3d23.045476!4d72.5077064!16s%2Fg%2F11q3xws689?entry=ttu&g_ep=EgoyMDI0MTExOC4wIKXMDSoASAFQAw%3D%3D'; // Your validation link
           const number = bdmNumber ? bdmNumber : bdeNumber
-           // Handle duplicate BDE and BDM names
-           const contactDetails = bdeName === bdmName
-           ? `<li>${bdeName} - ${bdeNumber} (Your point of contact for initiating the service)</li>`
-           : `<li>${bdeName} - ${bdeNumber} (Your point of contact for initiating the service)</li>
+          // Handle duplicate BDE and BDM names
+          const contactDetails = bdeName === bdmName
+            ? `<li>${bdeName} - ${bdeNumber} (Your point of contact for initiating the service)</li>`
+            : `<li>${bdeName} - ${bdeNumber} (Your point of contact for initiating the service)</li>
               <li>${bdmName} - ${bdmNumber} (Your point of contact for further support)</li>`;
           const subject = `Congratulations on Your Start-Up India Certification! 🎉`;
           const text = `Dear ${companyName},\n\nPlease find attached the certificate generated for your company.\n\nBest regards,\nStart-Up Sahay Private Limited`
@@ -1482,6 +1482,15 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
 
       if (subCategoryStatus === "Approved") {
         console.log("hello wworld");
+        // Emit socket message for BDE
+        socketIO.emit("notification to bde and bdm for status updated", {
+          message: `DIPP certificate for ${companyName} is approved.`,
+          bdeName: company.bdeName,
+          companyName: companyName,
+          serviceName: serviceName,
+          status: subCategoryStatus,
+          bdmName: company.bdmName
+        });
         const bdeNumber = findBde ? findBde.number : "8347526407";
         const bdmNumber = findBdm ? findBdm.number : ""
         runTestScript(companyName, socketIO, company["Company Email"], company.bdeName, company.bdmName, bdeNumber, bdmNumber, company);
@@ -3468,7 +3477,7 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
       bdmName: bdmName,
       remarks: changeRemarks,
       serviceName: serviceName,
-      addedOn:new Date()
+      addedOn: new Date()
     };
 
     console.log(designation, newCompleteRemarks)
@@ -3486,12 +3495,12 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
       const saveEntry = await CompleteRemarksHistoryLeads.findOneAndUpdate({
         companyID: findCompany._id
       },
-      {
-        $push: {
-          serviceWiseRemarks: [newCompleteRemarks]
+        {
+          $push: {
+            serviceWiseRemarks: [newCompleteRemarks]
 
-        }
-      })
+          }
+        })
     } else {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
@@ -3559,7 +3568,7 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
       bdmName: bdmName,
       remarks: changeRemarks,
       serviceName: serviceName,
-      addedOn:new Date()
+      addedOn: new Date()
     };
 
     // console.log(designation, newCompleteRemarks)
@@ -3577,12 +3586,12 @@ router.post("/post-remarks-for-adminExecutive", async (req, res) => {
       const saveEntry = await CompleteRemarksHistoryLeads.findOneAndUpdate({
         companyID: findCompany._id
       },
-      {
-        $push: {
-          serviceWiseRemarks: [newCompleteRemarks]
+        {
+          $push: {
+            serviceWiseRemarks: [newCompleteRemarks]
 
-        }
-      })
+          }
+        })
     } else {
       // If the company doesn't exist, create a new entry with the new object
       const newCompleteRemarksHistory = new CompleteRemarksHistoryLeads({
