@@ -1,31 +1,38 @@
 import React, { useEffect, useState } from "react";
-import L from "leaflet";
+import { useNavigate } from 'react-router-dom';
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Swal from "sweetalert2";
 import socketIO from "socket.io-client";
 import logo from "../../static/mainLogo.png"
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import ReCAPTCHA from "react-google-recaptcha";
 
 
-function DataManagerLogin({ setManagerToken}) {
-  
+function DataManagerLogin({ setManagerToken }) {
+
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [data, setData] = useState([]);
+  const [otp, setOtp] = useState("");
+  const [showOtpTextBox, setShowOtpTextBox] = useState(false);
+  const [otpValidTill, setOtpValidTill] = useState(0); // Timer state in seconds
+  const [captchaToken, setCaptchaToken] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [userId, setUserId] = useState(null);
   const [address1, setAddress] = useState("");
   const [designation, setDesignation] = useState("")
   const [showPassword, setShowPassword] = useState(false);
-  const [ename , setEname] = useState("")
-
-
+  const [ename, setEname] = useState("")
 
   useEffect(() => {
     document.title = `Dataanalyst-Sahay-CRM`;
   }, []);
-  
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
@@ -50,74 +57,71 @@ function DataManagerLogin({ setManagerToken}) {
     }
   };
   //console.log(userId)
-console.log(designation , userId , data)
-  
-useEffect(() => {
+  console.log(designation, userId, data)
+
+  useEffect(() => {
     fetchData();
   }, []);
-  
-//   async function getLocationInfo(latitude, longitude) {
-//     try {
-//       const response = await fetch(
-//         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-//       );
 
-//       if (!response.ok) {
-//         throw new Error(`HTTP error! Status: ${response.status}`);
-//       }
+  //   async function getLocationInfo(latitude, longitude) {
+  //     try {
+  //       const response = await fetch(
+  //         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+  //       );
 
-//       const data = await response.json();
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! Status: ${response.status}`);
+  //       }
 
-//       if (data.error) {
-//         throw new Error(`Nominatim API error: ${data.error}`);
-//       }
+  //       const data = await response.json();
 
-//       const { address } = data;
-//       //console.log(address)
-//       setAddress(`${address.suburb} ,${address.state_district}`);
+  //       if (data.error) {
+  //         throw new Error(`Nominatim API error: ${data.error}`);
+  //       }
 
-//       // Log the location information
-//     } catch (error) {
-//       console.error("Error fetching location:", error.message);
-//     }
-//   }
+  //       const { address } = data;
+  //       //console.log(address)
+  //       setAddress(`${address.suburb} ,${address.state_district}`);
 
-//   const [locationAccess, setLocationAccess] = useState(false);
-  
-//   useEffect(() => {
-//     let watchId;
-//     const successCallback = (position) => {
-//       const userLatitude = position.coords.latitude;
-//       const userLongitude = position.coords.longitude;
-//       setLocationAccess(true);
-//       getLocationInfo(userLatitude, userLongitude);
-//     };
+  //       // Log the location information
+  //     } catch (error) {
+  //       console.error("Error fetching location:", error.message);
+  //     }
+  //   }
 
-//     const errorCallback = (error) => {
-//       console.error("Geolocation error:", error.message);
-//       if (error.code === error.PERMISSION_DENIED) {
-//         setLocationAccess(false);
-//       }
-//       // Handle other error cases if needed
-//     };
+  //   const [locationAccess, setLocationAccess] = useState(false);
 
-//     navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+  //   useEffect(() => {
+  //     let watchId;
+  //     const successCallback = (position) => {
+  //       const userLatitude = position.coords.latitude;
+  //       const userLongitude = position.coords.longitude;
+  //       setLocationAccess(true);
+  //       getLocationInfo(userLatitude, userLongitude);
+  //     };
 
-//     // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
+  //     const errorCallback = (error) => {
+  //       console.error("Geolocation error:", error.message);
+  //       if (error.code === error.PERMISSION_DENIED) {
+  //         setLocationAccess(false);
+  //       }
+  //       // Handle other error cases if needed
+  //     };
 
-//     // Cleanup function to clear the watch if the component unmounts
-//     return () => {
-//       navigator.geolocation.clearWatch(watchId);
-//     };
-//   }, []);
+  //     navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+
+  //     // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
+
+  //     // Cleanup function to clear the watch if the component unmounts
+  //     return () => {
+  //       navigator.geolocation.clearWatch(watchId);
+  //     };
+  //   }, []);
 
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
     findUserId();
   }, [email, password]);
-
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -138,45 +142,164 @@ useEffect(() => {
 
   //console.log(email , password , designation , ename)
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   // const date = getCurrentDate();
+  //   // const time = getCurrentTime();
+  //   // const address = address1 !== "" ? address1 : "No Location Found";
+  //   //const ename = email;
+
+
+  //   try {
+  //     const response = await axios.post(`${secretKey}/datamanagerlogin`, {
+  //       email,
+  //       password,
+  //       designation,
+  //     });
+
+  //     const { newtoken } = response.data;
+  //     setManagerToken(newtoken);
+  //     localStorage.setItem("dataManagerName", ename)
+  //     localStorage.setItem("managerToken", newtoken);
+  //     localStorage.setItem("dataManagerUserId", userId);
+  //     window.location.replace(`/dataanalyst/dashboard/${userId}`);
+  //   } catch (error) {
+  //     console.error("Login failed:", error);
+  //     if (error.response.status === 401) {
+  //       if (error.response.data.message === "Invalid email or password") {
+  //         setErrorMessage("Invalid credentials");
+  //       } else if (error.response.data.message === "Designation is incorrect") {
+  //         setErrorMessage("Only Authorized for Data Manager!");
+  //       } else {
+  //         setErrorMessage("Unknown error occurred");
+  //       }
+  //     } else {
+  //       setErrorMessage("Unknown error occurred");
+  //     }
+  //   }
+  // };
+
+  const onChange = (value) => {
+    setCaptchaToken(value); // Save the reCAPTCHA token
+  };
+
+  const startOtpTimer = () => {
+    const expiryTime = 60; // 1 minute in seconds
+    setOtpValidTill(expiryTime);
+
+    const timerInterval = setInterval(() => {
+      setOtpValidTill((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  };
+
+  const validateEmail = (email) => {
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+
+    if (email.length === 0) {
+      Swal.fire("Error!", "Please enter your email!", "error");
+      setShowOtpTextBox(false);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Swal.fire("Error!", "Please enter a valid email!", "error");
+      setShowOtpTextBox(false);
+      return;
+    }
+
+    if (!password) {
+      Swal.fire("Error!", "Please enter your password!", "error");
+      setShowOtpTextBox(false);
+      return;
+    }
+
+    try {
+      // Show loading feedback immediately
+      Swal.fire({
+        title: "Sending OTP...",
+        text: "Please wait while we send the OTP to your email.",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const response = await axios.post(`${secretKey}/datamanagerlogin`, { email, password });
+      if (response.status === 200) {
+        setErrorMessage("");
+        Swal.fire("Success!", "OTP has been sent to your email!", "success");
+        setShowOtpTextBox(true);
+        startOtpTimer();
+        localStorage.setItem("dataManagerName", ename)
+        localStorage.setItem("dataManagerUserId", userId);
+      }
+    } catch (error) {
+      Swal.close();
+      if (error.response && error.response.status === 401) {
+        setErrorMessage("Invalid email or password.");
+      } else {
+        setErrorMessage("Something went wrong. Please try again later.");
+      }
+      setShowOtpTextBox(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const date = getCurrentDate();
-    // const time = getCurrentTime();
-    // const address = address1 !== "" ? address1 : "No Location Found";
-    //const ename = email;
-   
-  
+
+    if (otp.length === 0) {
+      Swal.fire("Error!", "Please enter OTP!", "error");
+      return;
+    }
+
+    if (!captchaToken) {
+      Swal.fire("Error!", "Please complete the CAPTCHA verification!", "error");
+      return;
+    }
+
     try {
-      const response = await axios.post(`${secretKey}/datamanagerlogin`, {
-        email,
-        password,
-        designation,
-      });
-  
-      const { newtoken } = response.data;
-      setManagerToken(newtoken);
-      localStorage.setItem("dataManagerName" , ename )
-      localStorage.setItem("managerToken", newtoken);
-      localStorage.setItem("dataManagerUserId", userId);
-      window.location.replace(`/dataanalyst/dashboard/${userId}`);
+      const response = await axios.post(`${secretKey}/verify-otp`, { email, otp, captchaToken });
+
+      if (response.status === 200) {
+        const { token } = response.data;
+        setManagerToken(token);
+        localStorage.setItem("dataManagerToken", token);
+        navigate(`/dataanalyst/dashboard/${userId}`);
+        setErrorMessage('');
+      }
     } catch (error) {
-      console.error("Login failed:", error);
-      if (error.response.status === 401) {
-        if (error.response.data.message === "Invalid email or password") {
-          setErrorMessage("Invalid credentials");
-        } else if (error.response.data.message === "Designation is incorrect") {
-          setErrorMessage("Only Authorized for Data Manager!");
-        } else {
-          setErrorMessage("Unknown error occurred");
-        }
+      if (error.response && error.response.status === 400) {
+        Swal.fire("Error!", "Invalid OTP. Please try again!", "error");
+      } else if (error.response && error.response.status === 406) {
+        Swal.fire("Error!", "OTP Has Expired!", "error");
+        setShowOtpTextBox(false);
+      } else if (error.response && error.response.status === 403) {
+        Swal.fire("Error!", "CAPTCHA validation failed!", "error");
       } else {
-        setErrorMessage("Unknown error occurred");
+        Swal.fire("Error!", "Error verifying OTP. Please try again!", "error");
       }
     }
   };
-  
-  //console.log(email)
-  //console.log(password)
+
+  //console.log(email);
+  //console.log(password);
 
 
   return (
@@ -189,7 +312,7 @@ useEffect(() => {
                 <div className="card card-md h-100">
                   <div className="card-body d-flex align-items-center justify-content-center">
                     <div className="logo">
-                        <img src={logo}></img>
+                      <img src={logo}></img>
                     </div>
                   </div>
                 </div>
@@ -199,75 +322,105 @@ useEffect(() => {
                   <div className="card-body">
                     <h2 className="h2 text-center mb-4">Data Analyst Login</h2>
                     <form action="#" method="get" autocomplete="off" novalidate>
-                      <div className="mb-3">
-                        <label className="form-label">Username</label>
-                        <input
-                          onChange={(e) => {
-                            setEmail(e.target.value);
-                          }}
-                          type="email"
-                          className="form-control"
-                          placeholder="Email or Phone Number"
-                          autocomplete="off"
-                        />
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">
-                          Password
-                          {/* <span className="form-label-description">
-                            <a href="./forgot-password.html">I forgot password</a>
-                          </span> */}
-                        </label>
-                        <div className="input-group input-group-flat">
+                      {!showOtpTextBox ? <>
+                        <div className="mb-3">
+                          <label className="form-label">Username</label>
                           <input
                             onChange={(e) => {
-                              setPassword(e.target.value);
+                              setEmail(e.target.value);
                             }}
-                            type={showPassword ? "text" : "password"}
+                            type="email"
                             className="form-control"
-                            placeholder="Your password"
-                            autoComplete="off"
+                            placeholder="Email or Phone Number"
+                            autocomplete="off"
                           />
-                          <span className="input-group-text">
-                            <a
-                              href="#"
-                              className="link-secondary"
-                              title="Show password"
-                              data-bs-toggle="tooltip"
-                              onClick={() => setShowPassword(!showPassword)}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="icon"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-                                <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
-                              </svg>
-                            </a>
-                          </span>
                         </div>
-                      </div>
-                      <div style={{ textAlign: "center", color: "red" }}>
-                        <span>{errorMessage}</span>
-                      </div>
+
+                        <div className="mb-2">
+                          <label className="form-label">
+                            Password
+                            {/* <span className="form-label-description">
+                            <a href="./forgot-password.html">I forgot password</a>
+                          </span> */}
+                          </label>
+                          <div className="input-group input-group-flat">
+                            <input
+                              onChange={(e) => {
+                                setPassword(e.target.value);
+                              }}
+                              type={showPassword ? "text" : "password"}
+                              className="form-control"
+                              placeholder="Your password"
+                              autoComplete="off"
+                            />
+                            <span className="input-group-text">
+                              <a
+                                href="#"
+                                className="link-secondary"
+                                title="Show password"
+                                data-bs-toggle="tooltip"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="icon"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth="2"
+                                  stroke="currentColor"
+                                  fill="none"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                  <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                  <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                                </svg>
+                              </a>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div style={{ textAlign: "center", color: "red" }}>
+                          <span>{errorMessage}</span>
+                        </div>
+                      </> : <>
+                        <input
+                          onChange={(e) => setOtp(e.target.value)}
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter your OTP here"
+                          autoComplete="off"
+                        />
+
+                        <p className="text-black-50 mt-1">
+                          {otpValidTill > 0
+                            ? `OTP Expires in: ${formatTime(otpValidTill)} Seconds`
+                            : "OTP has expired"}
+                        </p>
+
+                        <ReCAPTCHA
+                          sitekey="6Lc5fY0qAAAAALcr3-Ef72GaHRhpUKEyQG_WxFSJ"
+                          onChange={onChange}
+                        />
+                      </>
+                      }
 
                       <div className="form-footer">
-                        <button
+                        {!showOtpTextBox ? <button
                           type="submit"
-                          onClick={handleSubmit}
+                          onClick={(e) => handleSendOtp(e)}
+                          className="btn btn-primary w-100"
+                        >
+                          Send OTP
+                        </button> : <button
+                          type="submit"
+                          onClick={(e) => handleSubmit(e)}
                           className="btn btn-primary w-100"
                         >
                           Submit
-                        </button>
+                        </button>}
                       </div>
                     </form>
                   </div>

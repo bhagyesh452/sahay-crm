@@ -58,7 +58,7 @@ import BusinessCardView from "../Hr_panel/Components/EmployeeView/BusinessCardVi
 import { MdOutlineBloodtype } from "react-icons/md";
 import ClipLoader from "react-spinners/ClipLoader.js";
 import EmployeeDocumentsView from "../Hr_panel/Components/EmployeeView/EmployeeDocumentsView.jsx";
-
+import { jwtDecode } from "jwt-decode";
 
 function EmployeeProfile() {
 
@@ -320,6 +320,49 @@ function EmployeeProfile() {
       console.log("Error updating employee details :", error);
       Swal.fire("Error", "Error updating employee details", "error");
     }
+  };
+
+  // Auto logout functionality :
+  useEffect(() => {
+    // Function to check token expiry and initiate logout if expired
+    const checkTokenExpiry = () => {
+      const token = localStorage.getItem("newtoken");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const currentTime = Date.now() / 1000; // Get current time in seconds
+          if (decoded.exp < currentTime) {
+            handleLogout();
+          } else {
+            // Token not expired, continue session
+            const timeToExpire = decoded.exp - currentTime;
+            console.log(`Token expires in ${timeToExpire} seconds`);
+          }
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          // console.log("Logout called");
+          handleLogout(); // Handle invalid token or decoding errors
+        }
+      }
+    };
+
+    // Initial check on component mount
+    checkTokenExpiry();
+
+    // Periodically check token expiry (e.g., every minute)
+    const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, []);
+
+  const handleLogout = () => {
+    // Clear local storage and redirect to login page
+    localStorage.removeItem("newtoken");
+    localStorage.removeItem("userId");
+    // localStorage.removeItem("designation");
+    // localStorage.removeItem("loginTime");
+    // localStorage.removeItem("loginDate");
+    window.location.replace("/"); // Redirect to login page
   };
 
   return (

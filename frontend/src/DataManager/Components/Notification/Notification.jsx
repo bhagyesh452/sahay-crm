@@ -32,14 +32,16 @@ export default function Notification() {
   const handleLogout = () => {
     const currentPage = window.location.pathname;
     // Clear the token from local storage based on the current page
-      localStorage.removeItem("managerToken");
-      window.location.href = '/dataanalyst/login';
+    localStorage.removeItem("dataManagerName");
+    localStorage.removeItem("dataManagerUserId");
+    localStorage.removeItem("dataManagerToken");
+    navigate("/dataanalyst/login");
   };
 
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-       
+
         <Tooltip title="Account settings">
           <IconButton
             onClick={handleClick}
@@ -49,11 +51,11 @@ export default function Notification() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <MoreVertIcon/>
+            <MoreVertIcon />
           </IconButton>
         </Tooltip>
       </Box>
-      
+
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -90,9 +92,9 @@ export default function Notification() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <MenuItem onClick={() => {
-                    navigate(`/dataanalyst-profile-details`);
-                    handleClose();
-                }}>
+          navigate(`/dataanalyst-profile-details`);
+          handleClose();
+        }}>
           <Avatar /> Profile
         </MenuItem>
 
@@ -109,7 +111,7 @@ export default function Notification() {
           Settings
         </MenuItem>
 
-        <MenuItem  onClick={handleLogout}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

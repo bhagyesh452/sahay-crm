@@ -248,6 +248,24 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // ***************************************   Login Section  **********************************************
+let otpStorage = {};
+
+async function createTransporter() {
+  return nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      type: "OAuth2",
+      user: "alerts@startupsahay.com",
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+      accessToken: process.env.GOOGLE_ACCESS_TOKEN,
+    },
+  });
+}
+
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
 
@@ -290,7 +308,7 @@ app.post("/api/employeelogin", async (req, res) => {
       const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
         expiresIn: "3h",
       });
-      res.status(200).json({ userId:user._id , newtoken : newtoken });
+      res.status(200).json({ userId: user._id, newtoken: newtoken });
       // socketIO.emit("Employee-login");
     }
   } catch (error) {
@@ -331,7 +349,7 @@ app.post("/api/sendOtp", async (req, res) => {
 
     otpStore.set(email, { otp, otpExpiry });
 
-    console.log("otpStore" , otpStore)
+    console.log("otpStore", otpStore)
 
     // Send OTP via email
     const transporter = nodemailer.createTransport({
@@ -360,21 +378,21 @@ app.post("/api/sendOtp", async (req, res) => {
       otpExpiry, // Return expiry timestamp
     });
   } catch (error) {
-    console.log("error" , error)
+    console.log("error", error)
     res.status(500).json({ message: "Error sending OTP", error: error.message });
   }
 });
 
 app.post('/api/verifyOtp', (req, res) => {
   const { email, otp } = req.body;
-console.log("otpstore" , otpStore)
+  console.log("otpstore", otpStore)
   if (!otpStore.has(email)) {
     return res.status(404).json({ message: "OTP not found" });
   }
 
   const storedOtp = otpStore.get(email);
 
-  console.log("storedotp" , storedOtp)
+  console.log("storedotp", storedOtp)
 
   if (storedOtp.otp !== parseInt(otp) || storedOtp.expiry < Date.now()) {
     return res.status(400).json({ message: "Invalid or expired OTP" });
@@ -413,34 +431,117 @@ app.post("/api/verifyCaptcha", async (req, res) => {
 
 
 
+// app.post("/api/datamanagerlogin", async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Replace this with your actual Employee authentication logic
+//   const user = await adminModel.findOne({
+//     email: email,
+//     password: password,
+//     //designation: "Sales Executive",
+//   });
+//   //console.log(user)
+
+//   if (!user) {
+//     //console.log("not user condition")
+//     return res.status(401).json({ message: "Invalid email or password" });
+//   } else if (user.designation !== "Data Manager") {
+//     // If designation is incorrect
+
+//     return res.status(401).json({ message: "Designation is incorrect" });
+//   } else {
+//     //console.log("user condition")
+//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+//       expiresIn: "10h",
+//     });
+//     //console.log(newtoken)
+//     res.status(200).json({ newtoken });
+//     // socketIO.emit("Employee-login");
+//   }
+// });
+
 app.post("/api/datamanagerlogin", async (req, res) => {
   const { email, password } = req.body;
 
-  // Replace this with your actual Employee authentication logic
-  const user = await adminModel.findOne({
-    email: email,
-    password: password,
-    //designation: "Sales Executive",
-  });
-  //console.log(user)
-
+  // Replace with your DB logic
+  const user = await adminModel.findOne({ email, password });
   if (!user) {
-    //console.log("not user condition")
     return res.status(401).json({ message: "Invalid email or password" });
-  } else if (user.designation !== "Data Manager") {
-    // If designation is incorrect
+  }
 
+  if (user.designation !== "Data Manager") {
     return res.status(401).json({ message: "Designation is incorrect" });
-  } else {
-    //console.log("user condition")
-    const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-      expiresIn: "10h",
-    });
-    //console.log(newtoken)
-    res.status(200).json({ newtoken });
-    // socketIO.emit("Employee-login");
+  }
+
+  // Generate OTP and set expiration
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expirationTime = Date.now() + 60 * 1000; // 1 minute
+
+  otpStorage[email] = { otp, expiresAt: expirationTime };
+
+  let transporter;
+  try {
+    transporter = await createTransporter();
+  } catch (error) {
+    return res.status(500).send('Error creating transporter');
+  }
+
+  const mailOptions = {
+    from: "alerts@startupsahay.com",
+    to: email,
+    subject: "Your OTP Code",
+    text: `Your OTP code is ${otp}. It is valid for 1 minute.`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).send("OTP sent");
+  } catch (error) {
+    res.status(500).send("Error sending OTP");
   }
 });
+
+// Verify OTP endpoint
+app.post("/api/verify-otp", async (req, res) => {
+  const { email, otp, captchaToken } = req.body;
+
+  // Step 1: Validate the CAPTCHA Token
+  const captchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
+  const captchaVerifyUrl = `https://www.google.com/recaptcha/api/siteverify`;
+
+  const captchaResponse = await axios.post(captchaVerifyUrl, null, {
+    params: {
+      secret: captchaSecretKey,
+      response: captchaToken,
+    },
+  });
+
+  if (!captchaResponse.data.success) {
+    return res.status(403).send("CAPTCHA validation failed");
+  }
+
+  // Step 2: Validate OTP
+  const otpData = otpStorage[email];
+  if (!otpData) {
+    return res.status(400).send("OTP not found");
+  }
+
+  const { otp: storedOtp, expiresAt } = otpData;
+
+  if (Date.now() > expiresAt) {
+    delete otpStorage[email];
+    return res.status(406).send("OTP has expired");
+  }
+
+  if (storedOtp === otp) {
+    delete otpStorage[email];
+    const token = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
+    res.status(200).json({ message: "OTP verified", token });
+  } else {
+    res.status(400).send("Invalid OTP");
+  }
+});
+
 app.post("/api/bdmlogin", async (req, res) => {
   const { email, password } = req.body;
   //console.log(email,password)
