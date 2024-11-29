@@ -428,11 +428,11 @@ router.post('/webhook', async (req, res) => {
 
   try {
     for (const employee of employeeData) {
-      // console.log('Processing Employee:', employee.emp_name);
+      console.log('Processing Employee:', employee.emp_name);
 
       if (employee.call_logs && employee.call_logs.length > 0) {
         for (const log of employee.call_logs) {
-          // console.log('Processing Call Log:', log);
+          console.log('Processing Call Log:', log);
 
           const year = new Date(log.call_date).getFullYear();
           const month = new Date(log.call_date).toLocaleString('default', { month: 'long' });
@@ -447,6 +447,7 @@ router.post('/webhook', async (req, res) => {
           //   console.log(Company not found for number: ${log.client_number});
           //   continue;
           // }
+          console.log(`"company" , ${company}`);
 
           console.log(`Found Company: ${company["Company Name"]}, ID: ${company._id}`);
 

@@ -207,7 +207,7 @@ function App() {
           <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />}></Route>
           <Route path="/floormanager/bookings/:userId" element={<BdmBookings />}></Route>
           <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} /> */}
-          <Route element={<FloorManagerLayout />}>
+          <Route element={bdmToken ? <FloorManagerLayout /> : <Navigate to = "/floormanager/login"/>}>
             <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
             <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
@@ -226,7 +226,7 @@ function App() {
           <Route path="/adminhead-profile-details/:userId" element={<AdminHeadProfile />} />
           <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken} />} />
           <Route path='/rmoffunding/dashboard-rmoffunding/:userId' element={<RMofFundingDashboard />} /> */}
-          <Route element={<AdminHeadLayout />}>
+          <Route element={rmofcertificationToken ? <AdminHeadLayout /> : <Navigate to="/adminhead/login"/>}>
             <Route path='/adminhead/dashboard/:userId' element={<RmCertificationDashboard />} />
             <Route path='/adminhead/bookings/:userId' element={<RmofCertificationBookings />} />
             <Route path='/adminhead/mybookings/:userId' element={<RmofCertificationMyBookings />} />
@@ -243,14 +243,14 @@ function App() {
           <Route path='/adminexecutive/received-booking-box/:userId' element={<AdminExecutiveRecievedBox />} />
           <Route path='/adminexecutive/mybookings/:userId' element={<AdminExecutiveMyBookings />} />
           <Route path="/adminexecutive-profile-details/:userId" element={<AdminExecutiveProfile />} /> */}
-          <Route element={<AdminExecutiveLayout />}>
+          <Route element={adminExecutiveToken ? <AdminExecutiveLayout /> : <Navigate to="/adminexecutive/login" />}>
             <Route path='/adminexecutive/dashboard/:userId' element={<AdminExecutiveDashboard />} />
             <Route path='/adminexecutive/received-booking-box/:userId' element={<AdminExecutiveRecievedBox />} />
             <Route path='/adminexecutive/mybookings/:userId' element={<AdminExecutiveMyBookings />} />
             <Route path="/adminexecutive-profile-details/:userId" element={<AdminExecutiveProfile />} />
           </Route>
 
-          {/* -----------------------------------------data analyst components--------------------------------------- */}
+          {/* -------------------adminHead----------------------data analyst components--------------------------------------- */}
           <Route path="/dataanalyst/login" element={<DataManagerLogin setManagerToken={setManagerToken} />} />
           {/* <Route path='/dataanalyst/dashboard/:userId/' element={<DatamanagerDashboard />} />
           <Route path="/dataanalyst/manageleads" element={<ManageLeads />} ></Route>
@@ -264,7 +264,7 @@ function App() {
           <Route path="/dataanalyst/notification" element={<NotificationDM />}></Route>
           <Route path="/employeereportdatamanager/:ename/:status" element={<EmployeeStatusInfo />} />
           <Route path="/datamanager/datamanagerside-employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} /> */}
-          <Route element={<DataAnalystLayout />}>
+          <Route element={managerToken ? <DataAnalystLayout /> : <Navigate to="/dataanalyst/login" />}>
             <Route path='/dataanalyst/dashboard/:userId/' element={<DatamanagerDashboard />} />
             <Route path="/dataanalyst/manageleads" element={<ManageLeads />} />
             <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager />} />
@@ -284,9 +284,9 @@ function App() {
           {/* ---------------------------------------admin  components--------------------------------------- */}
           <Route path="/converted-leads/:userId/" element={newtoken ? <ConveertedLeads /> : <Navigate to="/employeelogin" />}></Route>
           <Route path="/md/login" element={<LoginAdmin setToken={setToken} />} />
-          {token ? (
-            <>
-              <Route element={<AdminLayout />} >
+       
+        
+              <Route element={token? <AdminLayout /> : <Navigate to="/md/login" />} >
                 <Route path="/md/dashboard" element={<Dashboard />} />
                 <Route path="/md/employees" element={<Employees />} />
                 <Route path="/md/user" element={<NewEmployee />} />
@@ -304,15 +304,13 @@ function App() {
                 <Route path="/md/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
                 <Route path="/md/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />
               </Route>
-            </>
-          ) : (
-            <Route path="/md" element={<Navigate to="/md/login" />} />
-          )}
-          <Route path="*" element={<NotFound />} />
+       
+          
+          {/* <Route path="*" element={<NotFound />} /> */}
 
           {/**********************************************  HR-Panel-Portal   *******************************************************/}
           <Route path="/hr/login" element={<HrLogin setHrToken={setHrToken} />} />
-          <Route element={<HrLayout />}>
+          <Route element={hrToken ? <HrLayout /> : <Navigate to="/hr/login" />}>
             <Route path="/hr/dashboard" element={<HrDashboard />} />
             {/* <Route path="/hr/employees/" element={<NewEmployees />} /> */}
             <Route path="/hr/employees" element={<HrEmployees />} />
@@ -330,7 +328,7 @@ function App() {
           <Route path="/recruiter/appynowform" element={<ApplicationForm />} />
           {/* <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
           <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} /> */}
-          <Route element={<RecruiterLayout />}>
+          <Route element={recruiterToken ? <RecruiterLayout /> : <Navigate to="/recruiter/login"/>}>
             <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
             <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} />
             <Route path="/recruiter-profile-details/:userId" element={<FloorManagerProfile />} />

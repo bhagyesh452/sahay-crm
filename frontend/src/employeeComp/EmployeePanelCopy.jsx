@@ -366,7 +366,7 @@ function EmployeePanelCopy({ fordesignation }) {
                     }
                 } catch (error) {
                     console.error("Error decoding token:", error);
-                    // console.log("Logout called");
+                    console.log("Logout called");
                     handleLogout(); // Handle invalid token or decoding errors
                 }
             }
@@ -385,9 +385,6 @@ function EmployeePanelCopy({ fordesignation }) {
         // Clear local storage and redirect to login page
         localStorage.removeItem("newtoken");
         localStorage.removeItem("userId");
-        // localStorage.removeItem("designation");
-        // localStorage.removeItem("loginTime");
-        // localStorage.removeItem("loginDate");
         window.location.replace("/"); // Redirect to login page
     };
 
