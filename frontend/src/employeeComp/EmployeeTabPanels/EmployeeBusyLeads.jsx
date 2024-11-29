@@ -16,6 +16,7 @@ import { FaFilter } from "react-icons/fa";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from "axios";
+import Tooltip from "@mui/material/Tooltip";
 
 
 function EmployeeBusyLeads({
@@ -56,7 +57,9 @@ function EmployeeBusyLeads({
     bdenumber,
     openCompanyProfile,
     closeCompanyProfile,
-    cleanString
+    cleanString,
+    calculateAgeFromDate
+
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -650,9 +653,14 @@ function EmployeeBusyLeads({
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    {formatDateNew(
-                                                        company["Company Incorporation Date  "]
-                                                    )}
+                                                    <Tooltip
+                                                        title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                        arrow
+                                                    >
+                                                        <span>
+                                                            {formatDateNew(company["Company Incorporation Date  "])}
+                                                        </span>
+                                                    </Tooltip>
                                                 </td>
                                                 <td>{company["City"]}</td>
                                                 <td>{company["State"]}</td>

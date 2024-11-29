@@ -981,6 +981,29 @@ function EmployeePanelCopy({ fordesignation }) {
         event.preventDefault();
     };
 
+    // -------------------------function to caluculate age from inco date----------------------
+
+    const calculateAgeFromDate = (dateString) => {
+        const incorporationDate = new Date(dateString);
+        const currentDate = new Date();
+
+        let years = currentDate.getFullYear() - incorporationDate.getFullYear();
+        let months = currentDate.getMonth() - incorporationDate.getMonth();
+        let days = currentDate.getDate() - incorporationDate.getDate();
+
+        if (days < 0) {
+            months -= 1;
+            days += new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+        }
+
+        if (months < 0) {
+            years -= 1;
+            months += 12;
+        }
+
+        return `${years > 0 ? `${years} year${years > 1 ? "s" : ""} ` : ""}${months > 0 ? `${months} month${months > 1 ? "s" : ""} ` : ""
+            }${days > 0 ? `${days} day${days > 1 ? "s" : ""}` : ""}`.trim();
+    };
 
 
 
@@ -1357,6 +1380,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
+                                                calculateAgeFromDate={calculateAgeFromDate}
                                             />
                                         )}
                                     </div>
@@ -1401,6 +1425,8 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
+                                                calculateAgeFromDate={calculateAgeFromDate}
+
                                             />
                                         )}
                                     </div>
@@ -1448,6 +1474,8 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
+                                                calculateAgeFromDate={calculateAgeFromDate}
+
                                             />
                                         )}
                                     </div>
@@ -1495,6 +1523,8 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
+                                                calculateAgeFromDate={calculateAgeFromDate}
+
                                             />
                                         )}
                                     </div>
@@ -1540,6 +1570,8 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
+                                                calculateAgeFromDate={calculateAgeFromDate}
+
                                             //filteredData={filteredData}
                                             //filterMethod={handleFilter}
                                             //setFilteredData={setFilteredData}
@@ -1588,6 +1620,8 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
+                                                calculateAgeFromDate={calculateAgeFromDate}
+
                                             />
                                         )}
                                     </div>
@@ -1633,6 +1667,8 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 openCompanyProfile={handleOpenCompanyProfile}
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
+                                                calculateAgeFromDate={calculateAgeFromDate}
+
                                             />
                                         )}
                                     </div>

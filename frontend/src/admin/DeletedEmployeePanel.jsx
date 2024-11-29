@@ -137,36 +137,74 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
   }));
 
   //--------------function to revertback employee to main database---------------------
+  // const handleRevertBackEmployee = async (itemId, name, dataToRevertBack) => {
+  //   Swal.fire({
+  //     title: `Are you sure you want to restore back ${name}?`,
+  //     text: "This action will move the employee back.",
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33',
+  //     confirmButtonText: 'Yes, revert back!',
+  //     cancelButtonText: 'Cancel'
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         const response = await axios.delete(`${secretKey}/employee/deleteemployeedromdeletedemployeedetails/${itemId}`);
+
+  //         const response2 = await axios.put(`${secretKey}/employee/revertbackdeletedemployeeintomaindatabase`, {
+  //           dataToRevertBack
+  //         });
+
+  //         Swal.fire('Reverted!',`Employee ${name} has been reverted back.`,'success');
+  //         // fetchData();
+  //         refetchActive();
+  //         refetchDeleted();
+  //       } catch (error) {
+  //         Swal.fire('Error!','There was an error reverting the employee back.','error');
+  //         console.error('Error reverting employee', error);
+  //       }
+  //     }
+  //   });
+  // }
+
   const handleRevertBackEmployee = async (itemId, name, dataToRevertBack) => {
     Swal.fire({
       title: `Are you sure you want to restore back ${name}?`,
       text: "This action will move the employee back.",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, revert back!',
-      cancelButtonText: 'Cancel'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, revert back!",
+      cancelButtonText: "Cancel",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`${secretKey}/employee/deleteemployeedromdeletedemployeedetails/${itemId}`);
-
-          const response2 = await axios.put(`${secretKey}/employee/revertbackdeletedemployeeintomaindatabase`, {
-            dataToRevertBack
-          });
-
-          Swal.fire('Reverted!',`Employee ${name} has been reverted back.`,'success');
-          // fetchData();
+          const response = await axios.put(
+            `${secretKey}/employee/revertbackdeletedemployeeintomaindatabase`,
+            { dataToRevertBack, itemId }
+          );
+  
+          Swal.fire(
+            "Reverted!",
+            `Employee ${name} has been reverted back.`,
+            "success"
+          );
           refetchActive();
           refetchDeleted();
         } catch (error) {
-          Swal.fire('Error!','There was an error reverting the employee back.','error');
-          console.error('Error reverting employee', error);
+          Swal.fire(
+            "Error!",
+            "There was an error reverting the employee back.",
+            "error"
+          );
+          console.error("Error reverting employee", error);
         }
       }
     });
-  }
+  };
+  
 
   //------------------function to delete employee -------------------------
   const handlePermanentDeleteEmployee = async (itemId) => {

@@ -11,6 +11,8 @@ import { GoArrowRight } from "react-icons/go";
 import { FaEye } from "react-icons/fa";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
+import Tooltip from "@mui/material/Tooltip";
+
 
 function TeamLeadsNotInterested({
     secretKey,
@@ -46,7 +48,8 @@ function TeamLeadsNotInterested({
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
-    bdenumber
+    bdenumber,
+    calculateAgeFromDate
 }) {
 
     // Team Leads Not Interested Filtered States :
@@ -532,7 +535,7 @@ function TeamLeadsNotInterested({
                                     </td>
                                     <td>
                                         <LuHistory
-                                            onClick={() => 
+                                            onClick={() =>
                                                 handleShowCallHistory(
                                                     company["Company Name"],
                                                     company["Company Number"],
@@ -553,10 +556,10 @@ function TeamLeadsNotInterested({
                                     </td>
                                     <td>
                                         <div className="d-flex justify-content-center">
-                                            <div className={`${company.bdeOldStatus === "Interested" ? 
-                                                "dfault_interested-status" 
+                                            <div className={`${company.bdeOldStatus === "Interested" ?
+                                                "dfault_interested-status"
                                                 : company.bdeOldStatus === "Matured" ? "dfault_approved-status"
-                                                : "dfault_followup-status"}`}>
+                                                    : "dfault_followup-status"}`}>
                                                 {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                             </div>
 
@@ -566,14 +569,14 @@ function TeamLeadsNotInterested({
                                                         ? "intersted-history-btn disabled"
                                                         : company.bdeOldStatus === "FollowUp"
                                                             ? "followup-history-btn disabled"
-                                                             : company.bdeOldStatus === "Matured" ? "matured-history-btn disabled"
-                                                            : "")
+                                                            : company.bdeOldStatus === "Matured" ? "matured-history-btn disabled"
+                                                                : "")
                                                     : (company.bdeOldStatus === "Interested"
                                                         ? "intersted-history-btn"
                                                         : company.bdeOldStatus === "FollowUp"
                                                             ? "followup-history-btn"
-                                                             : company.bdeOldStatus === "Matured" ? "matured-history-btn"
-                                                            : "")
+                                                            : company.bdeOldStatus === "Matured" ? "matured-history-btn"
+                                                                : "")
                                             }>
                                                 <FaEye
                                                     key={company._id}
@@ -645,7 +648,16 @@ function TeamLeadsNotInterested({
                                             />
                                         </div>
                                     </td>
-                                    <td>{formatDateNew(company["Company Incorporation Date  "])}</td>
+                                    <td>
+                                        <Tooltip
+                                            title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                            arrow
+                                        >
+                                            <span>
+                                                {formatDateNew(company["Company Incorporation Date  "])}
+                                            </span>
+                                        </Tooltip>
+                                    </td>
                                     <td>{company["City"]}</td>
                                     <td>{company["State"]}</td>
                                     <td>{company["Company Email"]}</td>

@@ -21,7 +21,9 @@ import { FaEye } from "react-icons/fa";
 import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInterestedInformationDialog';
 import { TiArrowForward } from "react-icons/ti";
 import BdmMaturedCasesDialogBox from '../BdmMaturedCasesDialogBox';
-import axios from "axios"
+import axios from "axios";
+import Tooltip from "@mui/material/Tooltip";
+
 
 function EmployeeMaturedLeads({
     maturedLeads,
@@ -63,6 +65,8 @@ function EmployeeMaturedLeads({
     activeFilterFields,
     setActiveFilterFields,
     cleanString,
+    calculateAgeFromDate
+
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -774,10 +778,15 @@ function EmployeeMaturedLeads({
                                                 </div>
                                             </td>
                                             <td>
-                                                {formatDateNew(
-                                                    company["Company Incorporation Date  "]
-                                                )}
-                                            </td>
+                                                    <Tooltip
+                                                        title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                        arrow
+                                                    >
+                                                        <span>
+                                                            {formatDateNew(company["Company Incorporation Date  "])}
+                                                        </span>
+                                                    </Tooltip>
+                                                </td>
                                             <td>{company["City"]}</td>
                                             <td>{company["State"]}</td>
                                             <td>{company["Company Email"]}</td>

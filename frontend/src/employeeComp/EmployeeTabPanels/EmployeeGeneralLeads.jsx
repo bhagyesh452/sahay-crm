@@ -16,6 +16,7 @@ import { FaFilter } from "react-icons/fa";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from "axios";
+import Tooltip from "@mui/material/Tooltip";
 
 function EmployeeGeneralLeads({
     userId,
@@ -55,7 +56,9 @@ function EmployeeGeneralLeads({
     setActiveFilterFields,
     setGeneralDataCount,
     openingBackdrop,
-    cleanString
+    cleanString,
+    calculateAgeFromDate
+
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -106,7 +109,7 @@ function EmployeeGeneralLeads({
     };
 
 
-    const handleFilterClick = async(field) => {
+    const handleFilterClick = async (field) => {
         if (filteredData.length === 0) {
             try {
                 const response = await axios.get(
@@ -159,6 +162,7 @@ function EmployeeGeneralLeads({
             };
         }
     }, []);
+
 
     // console.log("activeFilterFieldsGeneral", activeFilterFields)
     // console.log("generalData" , generalData)
@@ -646,9 +650,14 @@ function EmployeeGeneralLeads({
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    {formatDateNew(
-                                                        company["Company Incorporation Date  "]
-                                                    )}
+                                                    <Tooltip
+                                                        title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                        arrow
+                                                    >
+                                                        <span>
+                                                            {formatDateNew(company["Company Incorporation Date  "])}
+                                                        </span>
+                                                    </Tooltip>
                                                 </td>
                                                 <td>{company["City"]}</td>
                                                 <td>{company["State"]}</td>

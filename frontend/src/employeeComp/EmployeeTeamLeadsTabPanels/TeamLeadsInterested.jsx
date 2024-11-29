@@ -16,6 +16,8 @@ import { FaEye } from "react-icons/fa";
 import { RiEditCircleFill } from "react-icons/ri";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
+import Tooltip from "@mui/material/Tooltip";
+
 
 function TeamLeadsInterested({
     secretKey,
@@ -56,7 +58,8 @@ function TeamLeadsInterested({
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
-    bdenumber
+    bdenumber,
+    calculateAgeFromDate
 }) {
 
     const [isFilledFromTeamLeads, setIsFilledFromTeamLeads] = useState(false);
@@ -624,7 +627,7 @@ function TeamLeadsInterested({
                                     </td>
                                     <td>
                                         <LuHistory
-                                            onClick={() => 
+                                            onClick={() =>
                                                 handleShowCallHistory(
                                                     company["Company Name"],
                                                     company["Company Number"],
@@ -646,33 +649,32 @@ function TeamLeadsInterested({
                                     </td>
                                     <td>
                                         <div className="d-flex justify-content-center">
-                                            <div 
-                                            className={`${
-                                                company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
-                                                company.bdeOldStatus === "Matured" ? "dfault_approved-status" :
-                                                company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "ep_busy_status"
-                                                : "dfault_followup-status"}`}>
+                                            <div
+                                                className={`${company.bdeOldStatus === "Interested" ? "dfault_interested-status" :
+                                                        company.bdeOldStatus === "Matured" ? "dfault_approved-status" :
+                                                            company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "ep_busy_status"
+                                                                : "dfault_followup-status"}`}>
                                                 {company.bdeOldStatus ? company.bdeOldStatus : company.Status}
                                             </div>
 
-                                            <div 
-                                            className={
-                                                (company.interestedInformation === null || company.interestedInformation.length === 0)
-                                                    ? (company.bdeOldStatus === "Interested"
-                                                        ? "intersted-history-btn disabled"
-                                                        : company.bdeOldStatus === "FollowUp"
-                                                            ? "followup-history-btn disabled"
-                                                            : company.bdeOldStatus === "Matured" ? "matured-history-btn disabled"
-                                                            :company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "busy-history-btn disabled"
-                                                            : "")
-                                                    : (company.bdeOldStatus === "Interested"
-                                                        ? "intersted-history-btn"
-                                                        : company.bdeOldStatus === "FollowUp"
-                                                            ? "followup-history-btn"
-                                                            : company.bdeOldStatus === "Matured" ? "matured-history-btn"
-                                                            :company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "busy-history-btn"
-                                                            : "")
-                                            }
+                                            <div
+                                                className={
+                                                    (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                                        ? (company.bdeOldStatus === "Interested"
+                                                            ? "intersted-history-btn disabled"
+                                                            : company.bdeOldStatus === "FollowUp"
+                                                                ? "followup-history-btn disabled"
+                                                                : company.bdeOldStatus === "Matured" ? "matured-history-btn disabled"
+                                                                    : company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "busy-history-btn disabled"
+                                                                        : "")
+                                                        : (company.bdeOldStatus === "Interested"
+                                                            ? "intersted-history-btn"
+                                                            : company.bdeOldStatus === "FollowUp"
+                                                                ? "followup-history-btn"
+                                                                : company.bdeOldStatus === "Matured" ? "matured-history-btn"
+                                                                    : company.bdeOldStatus === "Busy" || company.Status === "Busy" ? "busy-history-btn"
+                                                                        : "")
+                                                }
                                             >
                                                 <FaEye
                                                     key={company._id}
@@ -764,7 +766,16 @@ function TeamLeadsInterested({
                                             />
                                         </div>
                                     </td>
-                                    <td>{formatDateNew(company["Company Incorporation Date  "])}</td>
+                                    <td>
+                                        <Tooltip
+                                            title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                            arrow
+                                        >
+                                            <span>
+                                                {formatDateNew(company["Company Incorporation Date  "])}
+                                            </span>
+                                        </Tooltip>
+                                    </td>
                                     <td>{company["City"]}</td>
                                     <td>{company["State"]}</td>
                                     <td>{company["Company Email"]}</td>

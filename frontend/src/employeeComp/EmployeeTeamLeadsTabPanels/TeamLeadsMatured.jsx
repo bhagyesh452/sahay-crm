@@ -14,6 +14,8 @@ import { GoArrowRight } from "react-icons/go";
 import { FaEye } from "react-icons/fa";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
+import Tooltip from "@mui/material/Tooltip";
+
 
 function TeamLeadsMatured({
     secretKey,
@@ -51,7 +53,8 @@ function TeamLeadsMatured({
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,
-    bdenumber
+    bdenumber,
+    calculateAgeFromDate
 }) {
 
     const navigate = useNavigate();
@@ -523,7 +526,7 @@ function TeamLeadsMatured({
                                     </td>
                                     <td>
                                         <LuHistory
-                                            onClick={() => 
+                                            onClick={() =>
                                                 handleShowCallHistory(
                                                     company["Company Name"],
                                                     company["Company Number"],
@@ -620,7 +623,16 @@ function TeamLeadsMatured({
                                             />
                                         </div>
                                     </td>
-                                    <td>{formatDateNew(company["Company Incorporation Date  "])}</td>
+                                    <td>
+                                        <Tooltip
+                                            title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                            arrow
+                                        >
+                                            <span>
+                                                {formatDateNew(company["Company Incorporation Date  "])}
+                                            </span>
+                                        </Tooltip>
+                                    </td>
                                     <td>{company["City"]}</td>
                                     <td>{company["State"]}</td>
                                     <td>{company["Company Email"]}</td>

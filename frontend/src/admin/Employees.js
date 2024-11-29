@@ -290,7 +290,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
   const [dataToDelete, setDataToDelete] = useState([]);
 
-  const handledeletefromcompany = async (filteredCompanyData) => {
+  const handledeletefromcompany = async (filteredCompanyData , ename) => {
     if (filteredCompanyData && filteredCompanyData.length !== 0) {
       // console.log("Filtered company data is :", filteredCompanyData);
       try {
@@ -301,7 +301,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
             if (item.Status === "Matured") {
               await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
             } else {
-              await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
+              await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${ename}`);
             }
           })
         );
@@ -347,16 +347,16 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
             dataToDelete,
           });
 
-
+          //deletes_from_main_employee_model--------------------------
           const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
-
+          //updates_bookingdata_for_deleted_employee----------------------
           const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
 
 
 
 
           // Refresh the data after successful deletion
-          handledeletefromcompany(filteredCompanyData);
+          handledeletefromcompany(filteredCompanyData , nametochange);
           //fetchData();
           refetchActive();
           refetchDeleted();
@@ -384,11 +384,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       }
     });
   };
-
-  // const handleCancelDelete = () => {
-  //   // Cancel the delete operation and close the modal
-  //   setIsModalOpen(false);
-  // };
 
   const [bdmWork, setBdmWork] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -486,19 +481,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     }
   };
 
-
-  // useEffect(() => {
-  //   // Fetch data from the Node.js server
-  //   if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-  //     setFilteredData(data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-  //   } else {
-  //     setFilteredData(data);
-  //   }
-  //   // Call the fetchData function
-  //   // fetchData();
-  //   // fetchCData();
-  // }, [searchValue]);
-
   function formatDateWP(dateString) {
     const date = new Date(dateString);
     const today = new Date();
@@ -540,15 +522,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     return `${day}/${month}/${year}`;
   }
 
-  // const fetchCData = async () => {
-  //   try {
-  //     const response = await axios.get(`${secretKey}/company-data/leads`);
-  //     setCData(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error.message);
-  //   }
-  // };
-
   const { data: leadData } = useQuery({
     queryKey: ["companyData"],
     queryFn: () => axios.get(`${secretKey}/company-data/leads`),
@@ -562,230 +535,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     }
   }, [leadData?.data]);
 
-  // console.log("Company data is :", cdata);
-
-  const handleInputChange = (field, value) => {
-    switch (field) {
-      case "firstName":
-        setFirstName(value);
-        break;
-      case "middleName":
-        setMiddleName(value);
-        break;
-      case "lastName":
-        setLastName(value);
-        break;
-      case "email":
-        setEmail(value);
-        break;
-      case "password":
-        setPassword(value);
-        break;
-      case "department":
-        setDepartment(value);
-        break;
-      case "newDesignation":
-        setNewDesignation(value);
-        break;
-      case "branchOffice":
-        setBranchOffice(value);
-        break;
-      case "reportingManager":
-        setReportingManager(value);
-        break;
-      case "number":
-        setNumber(value);
-        break;
-      case "jdate":
-        setJdate(value);
-        break;
-      default:
-        break;
-    }
-    setErrors((prevErrors) => {
-      const { [field]: removedError, ...restErrors } = prevErrors;
-      return restErrors;
-    });
-  };
-
-  const handleSubmit = async (e) => {
-
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-    } else {
-      // Submit form data
-      setErrors({});
-      // Add your form submission logic here
-      // const referenceId = uuidv4();
-      const AddedOn = new Date().toLocaleDateString();
-      let designation;
-      if (newDesignation === "Business Development Executive" || newDesignation === "Business Development Manager") {
-        designation = "Sales Executive";
-      } else if (newDesignation === "Floor Manager") {
-        designation = "Sales Manager";
-      } else if (newDesignation === "Data Analyst") {
-        designation = "Data Manager";
-      } else if (newDesignation === "Admin Head") {
-        designation = "RM-Certification";
-      } else if (newDesignation === "HR Manager") {
-        designation = "HR";
-      } else {
-        designation = newDesignation;
-      }
-
-      try {
-        let dataToSend = {
-          email: email,
-          number: number,
-          ename: `${firstName} ${lastName}`,
-          empFullName: `${firstName} ${middleName} ${lastName}`,
-          department: department,
-          oldDesignation: designation,
-          newDesignation: newDesignation,
-          branchOffice: branchOffice,
-          reportingManager: reportingManager,
-          password: password,
-          jdate: jdate,
-          AddedOn: AddedOn,
-          targetDetails: targetObjects,
-          // bdmWork,
-        };
-
-        let dataToSendUpdated = {
-          email: email,
-          number: number,
-          ename: `${firstName} ${lastName}`,
-          empFullName: `${firstName} ${middleName} ${lastName}`,
-          department: department,
-          designation: designation,
-          newDesignation: newDesignation,
-          branchOffice: branchOffice,
-          reportingManager: reportingManager,
-          password: password,
-          jdate: jdate,
-          AddedOn: AddedOn,
-          targetDetails: targetObjects,
-          // bdmWork,
-        };
-
-        // Set designation based on otherDesignation
-        // if (otherdesignation !== "") {
-        //   dataToSend.designation = otherdesignation;
-        // } else {
-        //   dataToSend.designation = designation;
-        // }
-
-        if (newDesignation === "Floor Manager" || newDesignation === "Business Development Manager") {
-          dataToSend.bdmWork = true;
-          dataToSendUpdated.bdmWork = true;
-        } else {
-          dataToSend.bdmWork = false;
-          dataToSendUpdated.bdmWork = false;
-        }
-        // console.log(isUpdateMode, "updateMode")
-
-        if (isUpdateMode) {
-          if (dataToSend.ename === "") {
-            Swal.fire("Invalid Details", "Please Enter Details Properly", "warning");
-            return true;
-          }
-          const response = await axios.put(
-            `${secretKey}/employee/einfo/${selectedDataId}`,
-            dataToSendUpdated
-          );
-          // console.log("Updated employee is :", dataToSendUpdated);
-
-          Swal.fire({
-            title: "Data Updated Succesfully!",
-            text: "You have successfully updated the name!",
-            icon: "success",
-          });
-
-          if (companyData && companyData.length !== 0) {
-            // Assuming ename is part of dataToSend
-            const { ename } = dataToSend;
-            try {
-              // Update companyData in the second database
-              await Promise.all(
-                companyData.map(async (item) => {
-                  await axios.put(`${secretKey}/employee/newcompanyname/${item._id}`, {
-                    ename,
-                  });
-                  //console.log(`Updated ename for ${item._id}`);
-                })
-              );
-            } catch (error) {
-              console.error("Error updating enames:", error.message);
-              // Handle the error as needed
-            }
-          }
-        } else {
-          const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
-          // Adds data in performance report:
-
-
-          closeAddEmployeePopup();
-          Swal.fire({
-            title: "Data Added!",
-            text: "You have successfully added the data!",
-            icon: "success",
-          });
-        }
-        //console.log("datatosend", dataToSend);
-
-        setFirstName("");
-        setMiddleName("");
-        setLastName("");
-        setEname("");
-        setEmail("");
-        setNumber(0);
-        setPassword("");
-        setDepartment("");
-        setNewDesignation("");
-        setBranchOffice("");
-        setReportingManager("");
-        setotherDesignation("");
-        setJdate(null);
-        setIsUpdateMode(false);
-        setTargetCount(1);
-        setTargetObjects([defaultObject])
-        // fetchData();
-        closepopup();
-        //console.log("Data sent successfully");
-      } catch {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-        console.error("Internal server error");
-      }
-    }
-  };
-
-  const resetForm = () => {
-    setEmail("");
-    setFirstName("");
-    setMiddleName("");
-    setLastName("");
-    setEname("");
-    setNumber("");
-    setPassword("");
-    setBdmWork("");
-    setDepartment("");
-    setNewDesignation("");
-    setBranchOffice("");
-    setReportingManager("");
-    setJdate("");
-    setTargetCount(1);
-    setTargetObjects([{ year: "", month: "", amount: 0, achievedAmount: 0, ratio: 0, result: "N/A" }]);
-    setShowPassword(false);
-    setNowFetched(false);
-    setIsDepartmentSelected(false);
-    setotherDesignation("");
-  };
-
   const functionopenpopup = () => {
     openchange(true);
   };
@@ -795,14 +544,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     setOpenEditPopup(false);
   };
 
-  function formatDate(inputDate) {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = new Date(inputDate).toLocaleDateString(
-      "en-US",
-      options
-    );
-    return formattedDate;
-  }
+ 
   //console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
 
   const sortDataByName = () => {
@@ -902,19 +644,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       }
     }
   };
-
-  // const [teamData, setTeamData] = useState([]);
-
-  // const fetchTeamData = async () => {
-  //   const response = await axios.get(`${secretKey}/teams/teaminfo`);
-
-  //   //console.log(response.data);
-  //   setTeamData(response.data);
-  // };
-
-  // useEffect(() => {
-  //   fetchTeamData();
-  // }, []);
 
   function formatDateFinal(timestamp) {
     const date = new Date(timestamp);

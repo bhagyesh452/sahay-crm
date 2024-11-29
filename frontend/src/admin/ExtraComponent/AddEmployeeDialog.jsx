@@ -9,12 +9,6 @@ import axios from 'axios';
 
 function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeForEdit, refetch }) {
 
-    if (!openForAdd) {
-        // console.log("Emp id from dialog box :", empId);
-    }
-    // console.log("Open add employee popup :", openForAdd);
-    // console.log("Open edit employee popup :", openForEdit);
-
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const [bdmWork, setBdmWork] = useState(false);

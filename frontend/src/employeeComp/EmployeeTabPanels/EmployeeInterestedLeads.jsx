@@ -28,6 +28,7 @@ import { TiArrowForward } from "react-icons/ti";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
+import Tooltip from "@mui/material/Tooltip";
 
 function EmployeeInterestedLeads({
   interestedData,
@@ -69,7 +70,9 @@ function EmployeeInterestedLeads({
   setActiveFilterField,
   activeFilterFields,
   setActiveFilterFields,
-  cleanString
+  cleanString,
+  calculateAgeFromDate
+
 }) {
   const [companyId, setCompanyId] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -127,7 +130,7 @@ function EmployeeInterestedLeads({
   const [isScrollLocked, setIsScrollLocked] = useState(false)
   const fieldRefs = useRef({});
   const filterMenuRef = useRef(null); // Ref for the filter menu container
-  const[dataToFilter , setDataToFilter] = useState([]);
+  const [dataToFilter, setDataToFilter] = useState([]);
   //const [filteredData, setFilteredData] = useState([]);
 
   const handleFilter = (newData) => {
@@ -136,7 +139,7 @@ function EmployeeInterestedLeads({
     setInterestedDataCount(newData.length);
   };
 
-  console.log("filteredData" , filteredData)
+  console.log("filteredData", filteredData)
 
   const handleFilterClick = async (field) => {
     if (filteredData.length === 0) {
@@ -159,9 +162,9 @@ function EmployeeInterestedLeads({
         console.error("Error fetching Interested data:", error);
         // Handle error appropriately
       }
-     
+
     }
-  
+
     if (activeFilterField === field) {
       setShowFilterMenu(!showFilterMenu);
       setIsScrollLocked(!showFilterMenu);
@@ -169,12 +172,12 @@ function EmployeeInterestedLeads({
       setActiveFilterField(field);
       setShowFilterMenu(true);
       setIsScrollLocked(true);
-  
+
       const rect = fieldRefs.current[field].getBoundingClientRect();
       setFilterPosition({ top: rect.bottom, left: rect.left });
     }
   };
-  
+
   const isActiveField = (field) => activeFilterFields.includes(field);
 
   // console.log("activeFilterFieldsInterested", activeFilterFields);
@@ -830,7 +833,14 @@ function EmployeeInterestedLeads({
                       />
                     </td>
                     <td>
-                      {formatDateNew(company["Company Incorporation Date  "])}
+                      <Tooltip
+                        title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                        arrow
+                      >
+                        <span>
+                          {formatDateNew(company["Company Incorporation Date  "])}
+                        </span>
+                      </Tooltip>
                     </td>
                     <td>{company["City"]}</td>
                     <td>{company["State"]}</td>

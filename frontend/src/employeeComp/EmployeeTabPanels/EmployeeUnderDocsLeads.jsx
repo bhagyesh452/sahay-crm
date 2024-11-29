@@ -19,6 +19,7 @@ import EmployeeInterestedInformationDialog from '../ExtraComponents/EmployeeInte
 import { FaEye } from "react-icons/fa";
 import EmployeeNextFollowDate from '../ExtraComponents/EmployeeNextFollowUpDate';
 import axios from "axios";
+import Tooltip from "@mui/material/Tooltip";
 
 
 function EmployeeUnderDocsLeads({
@@ -59,7 +60,9 @@ function EmployeeUnderDocsLeads({
     setActiveFilterFields,
     setUnderDocsDataCount,
     isCallHistoryEmpty,
-    cleanString
+    cleanString,
+    calculateAgeFromDate
+
 }) {
 
     const [companyName, setCompanyName] = useState("");
@@ -746,9 +749,14 @@ function EmployeeUnderDocsLeads({
                                                     />
                                                 </td>
                                                 <td>
-                                                    {formatDateNew(
-                                                        company["Company Incorporation Date  "]
-                                                    )}
+                                                    <Tooltip
+                                                        title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                        arrow
+                                                    >
+                                                        <span>
+                                                            {formatDateNew(company["Company Incorporation Date  "])}
+                                                        </span>
+                                                    </Tooltip>
                                                 </td>
                                                 <td>{company["City"]}</td>
                                                 <td>{company["State"]}</td>
