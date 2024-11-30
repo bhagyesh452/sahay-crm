@@ -53,6 +53,7 @@ import AdminRemarksDialog from './ExtraComponent/AdminRemarksDialog';
 import { LuHistory } from "react-icons/lu";
 import CallHistory from '../employeeComp/CallHistory';
 import { set } from 'lodash';
+import Tooltip from "@mui/material/Tooltip";
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -1128,7 +1129,7 @@ function TestLeads() {
             });
         } else {
             // If no rows are selected, show an alert
-            Swal.fire("Warning","Please select some rows first before deleting the leads!","warning");
+            Swal.fire("Warning", "Please select some rows first before deleting the leads!", "warning");
             setShowDeleteLeadsDialog(false);
         }
     };
@@ -1633,6 +1634,28 @@ function TestLeads() {
         setShowCallHistory(false);
     };
 
+    const calculateAgeFromDate = (dateString) => {
+        const incorporationDate = new Date(dateString);
+        const currentDate = new Date();
+
+        let years = currentDate.getFullYear() - incorporationDate.getFullYear();
+        let months = currentDate.getMonth() - incorporationDate.getMonth();
+        let days = currentDate.getDate() - incorporationDate.getDate();
+
+        if (days < 0) {
+            months -= 1;
+            days += new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+        }
+
+        if (months < 0) {
+            years -= 1;
+            months += 12;
+        }
+
+        return `${years > 0 ? `${years} year${years > 1 ? "s" : ""} ` : ""}${months > 0 ? `${months} month${months > 1 ? "s" : ""} ` : ""
+            }${days > 0 ? `${days} day${days > 1 ? "s" : ""}` : ""}`.trim();
+    };
+
 
 
 
@@ -1677,7 +1700,7 @@ function TestLeads() {
                                                 <LiaPagerSolid className="mr-1" />
                                                 Update Leads
                                             </button>
-                                        </div> 
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center">
@@ -1999,7 +2022,16 @@ function TestLeads() {
                                                                     color="grey"
                                                                 />
                                                             </td>)}
-                                                            <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                             <td>
+                                                                <Tooltip
+                                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                                    arrow
+                                                                >
+                                                                    <span>
+                                                                        {formatDateFinal(company["Company Incorporation Date  "])}
+                                                                    </span>
+                                                                </Tooltip>
+                                                            </td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
@@ -2110,7 +2142,16 @@ function TestLeads() {
                                                                     color="grey"
                                                                 />
                                                             </td>)}
-                                                            <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                            <td>
+                                                                <Tooltip
+                                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                                    arrow
+                                                                >
+                                                                    <span>
+                                                                        {formatDateFinal(company["Company Incorporation Date  "])}
+                                                                    </span>
+                                                                </Tooltip>
+                                                            </td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
@@ -2220,7 +2261,16 @@ function TestLeads() {
                                                                     color="grey"
                                                                 />
                                                             </td>)}
-                                                            <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                            <td>
+                                                                <Tooltip
+                                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                                    arrow
+                                                                >
+                                                                    <span>
+                                                                        {formatDateFinal(company["Company Incorporation Date  "])}
+                                                                    </span>
+                                                                </Tooltip>
+                                                            </td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
@@ -2330,7 +2380,16 @@ function TestLeads() {
                                                                     color="grey"
                                                                 />
                                                             </td>)}
-                                                            <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                            <td>
+                                                                <Tooltip
+                                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                                    arrow
+                                                                >
+                                                                    <span>
+                                                                        {formatDateFinal(company["Company Incorporation Date  "])}
+                                                                    </span>
+                                                                </Tooltip>
+                                                            </td>
                                                             <td>{company["City"]}</td>
                                                             <td>{company["State"]}</td>
                                                             <td>{company["Company Email"]}</td>
