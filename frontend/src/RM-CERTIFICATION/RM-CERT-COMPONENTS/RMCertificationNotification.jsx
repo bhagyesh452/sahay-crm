@@ -57,6 +57,8 @@ export default function RMCertificationNotification({ name, designation }) {
     const currentPage = window.location.pathname;
     // Clear the token from local storage based on the current page
     localStorage.removeItem("rmofcertificationToken");
+    localStorage.removeItem("RMOfCertificationName");
+    localStorage.removeItem("rmCertificationUserId");
     navigate("/adminhead/login");
   };
 

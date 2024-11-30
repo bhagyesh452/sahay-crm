@@ -12,6 +12,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 function DataManagerLogin({ setManagerToken }) {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const captchaKey = process.env.REACT_APP_CAPTCHA_KEY;
   const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
   const navigate = useNavigate();
 
@@ -22,12 +23,13 @@ function DataManagerLogin({ setManagerToken }) {
   const [showOtpTextBox, setShowOtpTextBox] = useState(false);
   const [otpValidTill, setOtpValidTill] = useState(0); // Timer state in seconds
   const [captchaToken, setCaptchaToken] = useState("");
+  const [showCaptcha, setShowCaptcha] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [userId, setUserId] = useState(null);
   const [address1, setAddress] = useState("");
-  const [designation, setDesignation] = useState("")
+  const [designation, setDesignation] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [ename, setEname] = useState("")
+  const [ename, setEname] = useState("");
 
   useEffect(() => {
     document.title = `Dataanalyst-Sahay-CRM`;
@@ -184,7 +186,7 @@ function DataManagerLogin({ setManagerToken }) {
   };
 
   const startOtpTimer = () => {
-    const expiryTime = 60; // 1 minute in seconds
+    const expiryTime = 90; // 1:30 minute in seconds
     setOtpValidTill(expiryTime);
 
     const timerInterval = setInterval(() => {
@@ -278,11 +280,19 @@ function DataManagerLogin({ setManagerToken }) {
       const response = await axios.post(`${secretKey}/verify-otp`, { email, otp, captchaToken });
 
       if (response.status === 200) {
-        const { token } = response.data;
-        setManagerToken(token);
-        localStorage.setItem("dataManagerToken", token);
-        navigate(`/dataanalyst/dashboard/${userId}`);
-        setErrorMessage('');
+        const { token, captchaRequired } = response.data;
+
+        if (captchaRequired) {
+          setShowCaptcha(true); // Show CAPTCHA
+        } else {
+          // Successfully verified
+          setManagerToken(token);
+          localStorage.setItem("dataManagerToken", token);
+          navigate(`/dataanalyst/dashboard/${userId}`);
+          setShowOtpTextBox(false);
+          setShowCaptcha(false);
+          setErrorMessage('');
+        }
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -317,95 +327,96 @@ function DataManagerLogin({ setManagerToken }) {
                   </div>
                 </div>
               </div>
+
               <div className="col-sm-6 p-0">
                 <div className="card card-md login-box">
                   <div className="card-body">
                     <h2 className="h2 text-center mb-4">Data Analyst Login</h2>
                     <form action="#" method="get" autocomplete="off" novalidate>
-                      {!showOtpTextBox ? <>
-                        <div className="mb-3">
-                          <label className="form-label">Username</label>
-                          <input
-                            onChange={(e) => {
-                              setEmail(e.target.value);
-                            }}
-                            type="email"
-                            className="form-control"
-                            placeholder="Email or Phone Number"
-                            autocomplete="off"
-                          />
-                        </div>
 
-                        <div className="mb-2">
-                          <label className="form-label">
-                            Password
-                            {/* <span className="form-label-description">
+                      {!showOtpTextBox ? (
+                        <>
+                          <div className="mb-3">
+                            <label className="form-label">Username</label>
+                            <input
+                              onChange={(e) => setEmail(e.target.value)}
+                              type="email"
+                              className="form-control"
+                              placeholder="Email or Phone Number"
+                              autocomplete="off"
+                            />
+                          </div>
+
+                          <div className="mb-2">
+                            <label className="form-label">
+                              Password
+                              {/* <span className="form-label-description">
                             <a href="./forgot-password.html">I forgot password</a>
                           </span> */}
-                          </label>
-                          <div className="input-group input-group-flat">
-                            <input
-                              onChange={(e) => {
-                                setPassword(e.target.value);
-                              }}
-                              type={showPassword ? "text" : "password"}
-                              className="form-control"
-                              placeholder="Your password"
-                              autoComplete="off"
-                            />
-                            <span className="input-group-text">
-                              <a
-                                href="#"
-                                className="link-secondary"
-                                title="Show password"
-                                data-bs-toggle="tooltip"
-                                onClick={() => setShowPassword(!showPassword)}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="icon"
-                                  width="24"
-                                  height="24"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth="2"
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
+                            </label>
+                            <div className="input-group input-group-flat">
+                              <input
+                                onChange={(e) => setPassword(e.target.value)}
+                                type={showPassword ? "text" : "password"}
+                                className="form-control"
+                                placeholder="Your password"
+                                autoComplete="off"
+                              />
+                              <span className="input-group-text">
+                                <a
+                                  href="#"
+                                  className="link-secondary"
+                                  title="Show password"
+                                  data-bs-toggle="tooltip"
+                                  onClick={() => setShowPassword(!showPassword)}
                                 >
-                                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                  <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-                                  <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
-                                </svg>
-                              </a>
-                            </span>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="icon"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth="2"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                    <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                                  </svg>
+                                </a>
+                              </span>
+                            </div>
                           </div>
-                        </div>
 
-                        <div style={{ textAlign: "center", color: "red" }}>
-                          <span>{errorMessage}</span>
-                        </div>
-                      </> : <>
-                        <input
-                          onChange={(e) => setOtp(e.target.value)}
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter your OTP here"
-                          autoComplete="off"
-                        />
+                          <div style={{ textAlign: "center", color: "red" }}>
+                            <span>{errorMessage}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            onChange={(e) => setOtp(e.target.value)}
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter your OTP here"
+                            autoComplete="off"
+                          />
 
-                        <p className="text-black-50 mt-1">
-                          {otpValidTill > 0
-                            ? `OTP Expires in: ${formatTime(otpValidTill)} Seconds`
-                            : "OTP has expired"}
-                        </p>
+                          <p className="text-black-50 mt-1">
+                            {otpValidTill > 0
+                              ? `OTP Expires in: ${formatTime(otpValidTill)} Seconds`
+                              : "OTP has expired"}
+                          </p>
 
-                        <ReCAPTCHA
-                          sitekey="6Lc5fY0qAAAAALcr3-Ef72GaHRhpUKEyQG_WxFSJ"
-                          onChange={onChange}
-                        />
-                      </>
-                      }
+                          {showCaptcha && <ReCAPTCHA
+                            sitekey={captchaKey}
+                            onChange={onChange}
+                          />}
+                        </>
+                      )}
 
                       <div className="form-footer">
                         {!showOtpTextBox ? <button
@@ -422,6 +433,7 @@ function DataManagerLogin({ setManagerToken }) {
                           Submit
                         </button>}
                       </div>
+
                     </form>
                   </div>
                 </div>

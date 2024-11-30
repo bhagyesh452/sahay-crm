@@ -56,7 +56,9 @@ export default function AdminExecutiveNotification({ name, designation }) {
   const handleLogout = () => {
     const currentPage = window.location.pathname;
     // Clear the token from local storage based on the current page
-    localStorage.removeItem("rmofcertificationToken");
+    localStorage.removeItem("AdminExecutiveName");
+    localStorage.removeItem("adminExecutiveUserId");
+    localStorage.removeItem("adminExecutiveToken");
     navigate("/adminexecutive/login");
   };
 
