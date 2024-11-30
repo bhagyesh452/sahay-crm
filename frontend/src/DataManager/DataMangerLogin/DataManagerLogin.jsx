@@ -246,6 +246,7 @@ function DataManagerLogin({ setManagerToken }) {
       } else if (error.response && error.response.status === 406) {
         Swal.fire("Error!", "OTP Has Expired!", "error");
         setShowOtpTextBox(false);
+        setShowCaptcha(false);
       } else if (error.response && error.response.status === 403) {
         Swal.fire("Error!", "CAPTCHA validation failed!", "error");
       } else {
