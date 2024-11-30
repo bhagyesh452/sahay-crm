@@ -5,17 +5,7 @@ import Nodata from '../components/Nodata';
 import { IconChevronRight, IconChevronLeft } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
 
-function CallHistory({ 
-    handleCloseHistory, 
-    clientNumber, 
-    bdenumber, 
-    bdmName, 
-    companyName, 
-    fordesignation, 
-    note, 
-    bdeForwardDate ,
-    setIsDataAvailable
-}) {
+function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, companyName, fordesignation, note, bdeForwardDate }) {
     console.log(bdenumber, bdmName, fordesignation);
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -125,7 +115,6 @@ function CallHistory({
 
                 // Process the POST response
                 const data = await response.json();
-                setIsDataAvailable(data.result.length > 0);
                 console.log("data.result is :", data.result);
                 console.log("Calling history is :", bdenumber, bdmName, data.result.filter((data) => data.emp_number === bdenumber && bdmName === data.emp_name));
                 if (bdenumber) {
@@ -137,7 +126,6 @@ function CallHistory({
                 // console.log("Calling history is :", data);
             } catch (err) {
                 console.log(err);
-                setIsDataAvailable(false); // No data available
             } finally {
                 setIsLoading(false);
             }

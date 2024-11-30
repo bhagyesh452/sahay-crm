@@ -496,7 +496,7 @@ function EmployeePanelCopy({ fordesignation }) {
         {
             queryKey: ['newData', cleanString(data.ename), currentPage, searchQuery, fetchingId], // Add searchQuery to the queryKey
             queryFn: async () => {
-                
+
                 // Normalize searchText by replacing non-breaking spaces with regular spaces
                 const normalizedSearchText = searchQuery.replace(/\u00A0/g, " ");
 
@@ -597,7 +597,6 @@ function EmployeePanelCopy({ fordesignation }) {
     const maturedTabRef = useRef(null); // Ref for the Matured tab
     const forwardedTabRef = useRef(null); // Ref for the Forwarded tab
     const notInterestedTabRef = useRef(null); // Ref for the Not Interested tab
-    const [isDataAvailable, setIsDataAvailable] = useState(false); // Track data availability
     const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
@@ -1007,11 +1006,6 @@ function EmployeePanelCopy({ fordesignation }) {
             }${days > 0 ? `${days} day${days > 1 ? "s" : ""}` : ""}`.trim();
     };
 
-    console.log("isDataAvailable", isDataAvailable);
-
-
-
-
     return (
         <div {...(fordesignation !== "admin" && { onContextMenu: disableRightClick })}>
             {!showCallHistory && !formOpen && !addFormOpen ?
@@ -1385,7 +1379,6 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
                                                 calculateAgeFromDate={calculateAgeFromDate}
-                                                isDataAvailable={isDataAvailable}
                                             />
                                         )}
                                     </div>
@@ -1683,7 +1676,6 @@ function EmployeePanelCopy({ fordesignation }) {
                     </div>
                 </div>) : showCallHistory ?
                     (<CallHistory
-                        setIsDataAvailable={setIsDataAvailable}
                         handleCloseHistory={hanleCloseCallHistory}
                         clientNumber={clientNumber}
                         bdenumber={data.number}

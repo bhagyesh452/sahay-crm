@@ -502,81 +502,76 @@ app.post("/api/verifyCaptcha", async (req, res) => {
 
 
 
-// app.post("/api/datamanagerlogin", async (req, res) => {
-//   const { email, password } = req.body;
-
-//   // Replace this with your actual Employee authentication logic
-//   const user = await adminModel.findOne({
-//     email: email,
-//     password: password,
-//     //designation: "Sales Executive",
-//   });
-//   //console.log(user)
-
-//   if (!user) {
-//     //console.log("not user condition")
-//     return res.status(401).json({ message: "Invalid email or password" });
-//   } else if (user.designation !== "Data Manager") {
-//     // If designation is incorrect
-
-//     return res.status(401).json({ message: "Designation is incorrect" });
-//   } else {
-//     //console.log("user condition")
-//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-//       expiresIn: "10h",
-//     });
-//     //console.log(newtoken)
-//     res.status(200).json({ newtoken });
-//     // socketIO.emit("Employee-login");
-//   }
-// });
-
 app.post("/api/datamanagerlogin", async (req, res) => {
   const { email, password } = req.body;
 
-  // Replace with your DB logic
-  const user = await adminModel.findOne({ email, password });
+  // Replace this with your actual Employee authentication logic
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+    //designation: "Sales Executive",
+  });
+  //console.log(user)
+
   if (!user) {
+    //console.log("not user condition")
     return res.status(401).json({ message: "Invalid email or password" });
-  }
+  } else if (user.designation !== "Data Manager") {
+    // If designation is incorrect
 
-  if (user.designation !== "Data Manager") {
     return res.status(401).json({ message: "Designation is incorrect" });
-  }
-
-  // Generate OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  otpStorage[email] = { otp }; // Temporary storage without expiration
-  console.log("Otp is :", otpStorage);
-
-  let transporter;
-  try {
-    transporter = await createTransporter();
-  } catch (error) {
-    return res.status(500).send('Error creating transporter');
-  }
-
-  const mailOptions = {
-    from: "alerts@startupsahay.com",
-    to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
-  };
-
-  try {
-    // Send OTP mail
-    await transporter.sendMail(mailOptions);
-
-    // Start OTP expiration timer only after the email is sent
-    const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
-    otpStorage[email].expiresAt = expirationTime;
-    console.log("OTP with expiration time set:", otpStorage);
-
-    res.status(200).send("OTP sent");
-  } catch (error) {
-    res.status(500).send("Error sending OTP");
+  } else {
+    //console.log("user condition")
+    const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(newtoken)
+    res.status(200).json({ newtoken : newtoken , dataManagerUserId : user._id });
+    // socketIO.emit("Employee-login");
   }
 });
+
+// app.post("/api/datamanagerlogin", async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Replace with your DB logic
+//   const user = await adminModel.findOne({ email, password });
+//   if (!user) {
+//     return res.status(401).json({ message: "Invalid email or password" });
+//   }
+
+//   if (user.designation !== "Data Manager") {
+//     return res.status(401).json({ message: "Designation is incorrect" });
+//   }
+
+//   // Generate OTP and set expiration
+//   const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//   const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
+
+//   otpStorage[email] = { otp, expiresAt: expirationTime };
+//   console.log("Otp is :", otpStorage);
+
+//   let transporter;
+//   try {
+//     transporter = await createTransporter();
+//   } catch (error) {
+//     return res.status(500).send('Error creating transporter');
+//   }
+
+//   const mailOptions = {
+//     from: "alerts@startupsahay.com",
+//     to: email,
+//     subject: "Your OTP Code",
+//     text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
+//   };
+
+//   try {
+//     await transporter.sendMail(mailOptions);
+//     res.status(200).send("OTP sent");
+//   } catch (error) {
+//     res.status(500).send("Error sending OTP");
+//   }
+// });
 
 // Verify OTP endpoint
 app.post("/api/verify-otp", async (req, res) => {
@@ -670,77 +665,89 @@ app.post("/api/processingLogin", async (req, res) => {
   }
 });
 
-// app.post("/api/rmofcertificationlogin", async (req, res) => {
-//   const { email, password } = req.body;
-
-//   const user = await adminModel.findOne({
-//     email: email,
-//     password: password,
-//   });
-//   //console.log(user)
-//   if (!user) {
-//     // If user is not found
-//     return res.status(401).json({ message: "Invalid email or password" });
-//   } else if (user.designation !== "RM-Certification") {
-//     // If designation is incorrect
-//     return res.status(401).json({ message: "Designation is incorrect" });
-//   } else {
-//     // If credentials are correct
-//     const rmofcertificationToken = jwt.sign({ employeeId: user._id }, secretKey, {
-//       expiresIn: "10h",
-//     });
-//     //console.log(bdmToken)
-//     res.status(200).json({ rmofcertificationToken });
-//     //socketIO.emit("Employee-login");
-//   }
-// })
-
 app.post("/api/rmofcertificationlogin", async (req, res) => {
   const { email, password } = req.body;
 
-  // Replace with your DB logic
-  const user = await adminModel.findOne({ email, password });
-  if (!user) {
-    return res.status(401).json({ message: "Invalid email or password" });
-  }
-
-  if (user.designation !== "RM-Certification") {
-    return res.status(401).json({ message: "Designation is incorrect" });
-  }
-
-  // Generate OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  otpStorage[email] = { otp }; // Temporary storage without expiration
-  console.log("Otp is :", otpStorage);
-
-  let transporter;
   try {
-    transporter = await createTransporter();
+    // Find the user in the database
+    const user = await adminModel.findOne({
+      email: email,
+      password: password,
+    });
+
+    if (!user) {
+      // If user is not found
+      return res.status(401).json({ message: "Invalid email or password" });
+    } else if (user.designation !== "RM-Certification") {
+      // If designation is incorrect
+      return res.status(401).json({ message: "Designation is incorrect" });
+    } else {
+      // If credentials are correct
+      const rmofcertificationToken = jwt.sign(
+        { employeeId: user._id },
+        secretKey,
+        { expiresIn: "10h" }
+      );
+
+      // Return the token and user details
+      res.status(200).json({
+        rmofcertificationToken: rmofcertificationToken,
+        rmCertificationUserId: user._id,
+        ename: user.ename,
+      });
+
+      // Emit socket event for login (if needed)
+      // socketIO.emit("Employee-login");
+    }
   } catch (error) {
-    return res.status(500).send('Error creating transporter');
-  }
-
-  const mailOptions = {
-    from: "alerts@startupsahay.com",
-    to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
-  };
-
-  try {
-    // Send OTP mail
-    await transporter.sendMail(mailOptions);
-
-    // Start OTP expiration timer only after the email is sent
-    const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
-    otpStorage[email].expiresAt = expirationTime;
-    console.log("OTP with expiration time set:", otpStorage);
-
-    res.status(200).send("OTP sent");
-  } catch (error) {
-    res.status(500).send("Error sending OTP");
+    // Handle errors
+    console.error("Error in /api/rmofcertificationlogin:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
+
+
+// app.post("/api/rmofcertificationlogin", async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Replace with your DB logic
+//   const user = await adminModel.findOne({ email, password });
+//   if (!user) {
+//     return res.status(401).json({ message: "Invalid email or password" });
+//   }
+
+//   if (user.designation !== "RM-Certification") {
+//     return res.status(401).json({ message: "Designation is incorrect" });
+//   }
+
+//   // Generate OTP and set expiration
+//   const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//   const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
+
+//   otpStorage[email] = { otp, expiresAt: expirationTime };
+//   console.log("Otp is :", otpStorage);
+
+//   let transporter;
+//   try {
+//     transporter = await createTransporter();
+//   } catch (error) {
+//     return res.status(500).send('Error creating transporter');
+//   }
+
+//   const mailOptions = {
+//     from: "alerts@startupsahay.com",
+//     to: email,
+//     subject: "Your OTP Code",
+//     text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
+//   };
+
+//   try {
+//     await transporter.sendMail(mailOptions);
+//     res.status(200).send("OTP sent");
+//   } catch (error) {
+//     res.status(500).send("Error sending OTP");
+//   }
+// });
 
 app.post("/api/recruiterlogin", async (req, res) => {
   const { email, password } = req.body;
@@ -767,79 +774,84 @@ app.post("/api/recruiterlogin", async (req, res) => {
   }
 })
 
-// app.post("/api/adminexecutivelogin", async (req, res) => {
-//   const { email, password } = req.body;
-
-//   const user = await adminModel.findOne({
-//     email: email,
-//     password: password,
-//   });
-
-
-//   //console.log(user)
-//   if (!user) {
-//     // If user is not found
-//     return res.status(401).json({ message: "Invalid email or password" });
-//   } else if (user.designation !== "Admin Executive") {
-//     // If designation is incorrect
-//     return res.status(401).json({ message: "Designation is incorrect" });
-//   } else {
-//     // If credentials are correct
-//     const adminExecutiveToken = jwt.sign({ employeeId: user._id }, secretKey, {
-//       expiresIn: "10h",
-//     });
-//     //console.log(bdmToken)
-//     res.status(200).json({ adminExecutiveToken });
-//     //socketIO.emit("Employee-login");
-//   }
-// })
-
 app.post("/api/adminexecutivelogin", async (req, res) => {
   const { email, password } = req.body;
 
-  // Replace with your DB logic
-  const user = await adminModel.findOne({ email, password });
-  if (!user) {
-    return res.status(401).json({ message: "Invalid email or password" });
-  }
-
-  if (user.designation !== "Admin Executive") {
-    return res.status(401).json({ message: "Designation is incorrect" });
-  }
-
-  // Generate OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  otpStorage[email] = { otp }; // Temporary storage without expiration
-  console.log("Otp is :", otpStorage);
-
-  let transporter;
   try {
-    transporter = await createTransporter();
+    // Find user in the database
+    const user = await adminModel.findOne({
+      email: email,
+      password: password,
+    });
+
+    if (!user) {
+      // If user is not found
+      return res.status(401).json({ message: "Invalid email or password" });
+    } else if (user.designation !== "Admin Executive") {
+      // If designation is incorrect
+      return res.status(401).json({ message: "Designation is incorrect" });
+    } else {
+      // If credentials are correct
+      const adminExecutiveToken = jwt.sign(
+        { employeeId: user._id },
+        secretKey,
+        { expiresIn: "10h" }
+      );
+
+      // Send success response
+      res
+        .status(200)
+        .json({ adminExecutiveToken: adminExecutiveToken, adminExecutiveUserId: user._id });
+    }
   } catch (error) {
-    return res.status(500).send('Error creating transporter');
-  }
-
-  const mailOptions = {
-    from: "alerts@startupsahay.com",
-    to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
-  };
-
-  try {
-    // Send OTP mail
-    await transporter.sendMail(mailOptions);
-
-    // Start OTP expiration timer only after the email is sent
-    const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
-    otpStorage[email].expiresAt = expirationTime;
-    console.log("OTP with expiration time set:", otpStorage);
-
-    res.status(200).send("OTP sent");
-  } catch (error) {
-    res.status(500).send("Error sending OTP");
+    // Handle errors
+    console.error("Error in /api/adminexecutivelogin:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
+
+
+// app.post("/api/adminexecutivelogin", async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Replace with your DB logic
+//   const user = await adminModel.findOne({ email, password });
+//   if (!user) {
+//     return res.status(401).json({ message: "Invalid email or password" });
+//   }
+
+//   if (user.designation !== "Admin Executive") {
+//     return res.status(401).json({ message: "Designation is incorrect" });
+//   }
+
+//   // Generate OTP and set expiration
+//   const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//   const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
+
+//   otpStorage[email] = { otp, expiresAt: expirationTime };
+//   console.log("Otp is :", otpStorage);
+
+//   let transporter;
+//   try {
+//     transporter = await createTransporter();
+//   } catch (error) {
+//     return res.status(500).send('Error creating transporter');
+//   }
+
+//   const mailOptions = {
+//     from: "alerts@startupsahay.com",
+//     to: email,
+//     subject: "Your OTP Code",
+//     text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
+//   };
+
+//   try {
+//     await transporter.sendMail(mailOptions);
+//     res.status(200).send("OTP sent");
+//   } catch (error) {
+//     res.status(500).send("Error sending OTP");
+//   }
+// });
 
 app.post("/api/rmoffundinglogin", async (req, res) => {
   const { email, password } = req.body;
@@ -1274,86 +1286,81 @@ app.get('/api/generate-pdf-client', async (req, res) => {
 
 /**************************************HR Login Portal API********************************************************************/
 
-// app.post("/api/hrlogin", async (req, res) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     // Fetch user with required fields
-//     const user = await adminModel
-//       .findOne({ email: email, password: password })
-//       .select("email password designation ename")
-//       .lean();
-
-//     // Check if user exists
-//     if (!user) {
-//       return res.status(401).json({ message: "Invalid email or password" });
-//     }
-
-//     // Check if the designation is "HR"
-//     if (user.designation !== "HR") {
-//       return res.status(401).json({ message: "Designation is incorrect" });
-//     }
-
-//     // Generate JWT token
-//     const hrToken = jwt.sign({ employeeId: user._id }, secretKey, {
-//       expiresIn: "10h",
-//     });
-
-//     // Send success response
-//     res.status(200).json({ hrToken, userId: user._id, ename: user.ename });
-//   } catch (error) {
-//     console.error("Error in HR Login:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// });
-
-
 app.post("/api/hrlogin", async (req, res) => {
   const { email, password } = req.body;
 
-  // Replace with your DB logic
-  const user = await adminModel.findOne({ email, password });
-  if (!user) {
-    return res.status(401).json({ message: "Invalid email or password" });
-  }
-
-  if (user.designation !== "HR") {
-    return res.status(401).json({ message: "Designation is incorrect" });
-  }
-
-  // Generate OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  otpStorage[email] = { otp }; // Temporary storage without expiration
-  console.log("Otp is :", otpStorage);
-
-  let transporter;
   try {
-    transporter = await createTransporter();
+    // Fetch user with required fields
+    const user = await adminModel
+      .findOne({ email: email, password: password })
+      .select("email password designation ename")
+      .lean();
+
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Check if the designation is "HR"
+    if (user.designation !== "HR") {
+      return res.status(401).json({ message: "Designation is incorrect" });
+    }
+
+    // Generate JWT token
+    const hrToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+
+    // Send success response
+    res.status(200).json({ hrToken, userId: user._id, ename: user.ename });
   } catch (error) {
-    return res.status(500).send('Error creating transporter');
-  }
-
-  const mailOptions = {
-    from: "alerts@startupsahay.com",
-    to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
-  };
-
-  try {
-    // Send OTP mail
-    await transporter.sendMail(mailOptions);
-
-    // Start OTP expiration timer only after the email is sent
-    const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
-    otpStorage[email].expiresAt = expirationTime;
-    console.log("OTP with expiration time set:", otpStorage);
-
-    res.status(200).send("OTP sent");
-  } catch (error) {
-    res.status(500).send("Error sending OTP");
+    console.error("Error in HR Login:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+// app.post("/api/hrlogin", async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Replace with your DB logic
+//   const user = await adminModel.findOne({ email, password });
+//   if (!user) {
+//     return res.status(401).json({ message: "Invalid email or password" });
+//   }
+
+//   if (user.designation !== "HR") {
+//     return res.status(401).json({ message: "Designation is incorrect" });
+//   }
+
+//   // Generate OTP and set expiration
+//   const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//   const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
+
+//   otpStorage[email] = { otp, expiresAt: expirationTime };
+//   console.log("Otp is :", otpStorage);
+
+//   let transporter;
+//   try {
+//     transporter = await createTransporter();
+//   } catch (error) {
+//     return res.status(500).send('Error creating transporter');
+//   }
+
+//   const mailOptions = {
+//     from: "alerts@startupsahay.com",
+//     to: email,
+//     subject: "Your OTP Code",
+//     text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
+//   };
+
+//   try {
+//     await transporter.sendMail(mailOptions);
+//     res.status(200).send("OTP sent");
+//   } catch (error) {
+//     res.status(500).send("Error sending OTP");
+//   }
+// });
 
 
 /**************************************Employee Edit API - HR********************************************************************/

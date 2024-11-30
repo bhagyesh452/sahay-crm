@@ -57,8 +57,7 @@ function EmployeeGeneralLeads({
     setGeneralDataCount,
     openingBackdrop,
     cleanString,
-    calculateAgeFromDate,
-    isDataAvailable
+    calculateAgeFromDate
 
 }) {
 
@@ -165,8 +164,82 @@ function EmployeeGeneralLeads({
     }, []);
 
 
+
+
+    // ----------------call history data-----------------------------
+    const [callHistoryMap, setCallHistoryMap] = useState()
+
+    // Date Setup for API
+  const today = new Date();
+  const todayStartDate = new Date(today);
+  const todayEndDate = new Date(today);
+
+  // Set end timestamp to current date at 13:00 (1 PM) UTC
+  todayEndDate.setUTCHours(13, 0, 0, 0);
+
+  // Set start timestamp to 6 months before the current date at 04:00 (4 AM) UTC
+  todayStartDate.setMonth(todayStartDate.getMonth() - 12);
+  todayStartDate.setUTCHours(4, 0, 0, 0);
+
+  // Convert to Unix timestamps (seconds since epoch)
+  const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
+  const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
+
+  useEffect(() => {
+    // Fetch call history data on component mount
+    const fetchCallHistoryData = async () => {
+      try {
+        // setIsLoading(true);
+
+        // Get all company numbers from generalData
+        const companyNumbers = generalData.map(
+          (company) => company["Company Number"]
+        );
+
+        const url = "https://api1.callyzer.co/v2/call-log/history";
+        const apiKey = process.env.REACT_APP_API_KEY;
+
+        const body = {
+          call_from: startTimestamp,
+          call_to: endTimestamp,
+          call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+          client_numbers: companyNumbers,
+        };
+
+        // API request
+        const response = await axios.post(url, body, {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        // Process response data
+        const callHistoryAvailability = {};
+        response.data.result.forEach((call) => {
+          const number = call.client_number;
+          if (callHistoryAvailability[number]) {
+            callHistoryAvailability[number] = true; // Call history exists
+          } else {
+            callHistoryAvailability[number] = false; // No call history
+          }
+        });
+
+        setCallHistoryMap(callHistoryAvailability); // Update state with call history data
+      } catch (error) {
+        console.error("Error fetching call history data:", error);
+      } finally {
+        // setIsLoading(false);
+      }
+    };
+
+    if (generalData.length) {
+      fetchCallHistoryData();
+    }
+  }, [generalData, startTimestamp, endTimestamp]);
+
     // console.log("activeFilterFieldsGeneral", activeFilterFields)
-    // console.log("generalData" , generalData)
+    console.log("generalData" , generalData)
     // console.log("openBackdrop", openBacdrop)
 
     return (
@@ -582,9 +655,8 @@ function EmployeeGeneralLeads({
                                                             cursor: "pointer",
                                                             width: "15px",
                                                             height: "15px",
-                                                          }}
-                                                          color="darkgrey"
-                                                          disabled={!isDataAvailable} // Disable the button if data is not available
+                                                        }}
+                                                        color="grey"
                                                     />
                                                 </td>
                                                 <td>
