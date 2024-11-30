@@ -593,7 +593,6 @@ function EmployeePanelCopy({ fordesignation }) {
     const maturedTabRef = useRef(null); // Ref for the Matured tab
     const forwardedTabRef = useRef(null); // Ref for the Forwarded tab
     const notInterestedTabRef = useRef(null); // Ref for the Not Interested tab
-    const [isDataAvailable, setIsDataAvailable] = useState(false); // Track data availability
     const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
@@ -1003,8 +1002,6 @@ function EmployeePanelCopy({ fordesignation }) {
             }${days > 0 ? `${days} day${days > 1 ? "s" : ""}` : ""}`.trim();
     };
 
-    console.log("isDataAvailable" , isDataAvailable);
-
 
 
 
@@ -1381,7 +1378,6 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
                                                 calculateAgeFromDate={calculateAgeFromDate}
-                                                isDataAvailable={isDataAvailable}
                                             />
                                         )}
                                     </div>
@@ -1679,7 +1675,6 @@ function EmployeePanelCopy({ fordesignation }) {
                     </div>
                 </div>) : showCallHistory ?
                     (<CallHistory
-                        setIsDataAvailable={setIsDataAvailable}
                         handleCloseHistory={hanleCloseCallHistory}
                         clientNumber={clientNumber}
                         bdenumber={data.number}
