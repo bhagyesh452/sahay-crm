@@ -860,7 +860,7 @@ function ManageLeads() {
         fetchData(1, latestSortCount);
         setEmployeeSelection("Not Alloted");
     }
-    console.log("selectedRows", selectedRows)
+    // console.log("selectedRows", selectedRows)
     const handleconfirmAssign = async () => {
         let selectedObjects = [];
 
@@ -1465,7 +1465,7 @@ function ManageLeads() {
     const [callHistoryBdmAcceptStatus, setCallHistoryBdmAcceptStatus] = useState("");
     const [callHistoryBdmForwardedDate, setCallHistoryBdmForwardedDate] = useState(null);
 
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate , bdeName) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
         setCompanyName(companyName);
@@ -1561,8 +1561,10 @@ function ManageLeads() {
                                     <input
                                         value={searchText}
                                         onChange={(e) => {
-                                            setSearchText(e.target.value);
-                                            handleFilterSearch(e.target.value)
+                                            // Normalize searchText by replacing non-breaking spaces with regular spaces
+                                            const normalizedSearchText = e.target.value.replace(/\u00A0/g, " ");
+                                            setSearchText(normalizedSearchText);
+                                            handleFilterSearch(normalizedSearchText);
                                             //setCurrentPage(0);
                                         }}
                                         className="form-control search-cantrol mybtn"
@@ -1857,15 +1859,15 @@ function ManageLeads() {
                                                             />
                                                         </td>)}
                                                         <td>
-                                                                <Tooltip
-                                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
-                                                                    arrow
-                                                                >
-                                                                    <span>
-                                                                        {formatDateFinal(company["Company Incorporation Date  "])}
-                                                                    </span>
-                                                                </Tooltip>
-                                                            </td>
+                                                            <Tooltip
+                                                                title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                                arrow
+                                                            >
+                                                                <span>
+                                                                    {formatDateFinal(company["Company Incorporation Date  "])}
+                                                                </span>
+                                                            </Tooltip>
+                                                        </td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
@@ -1984,15 +1986,15 @@ function ManageLeads() {
                                                             />
                                                         </td>)}
                                                         <td>
-                                                                <Tooltip
-                                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
-                                                                    arrow
-                                                                >
-                                                                    <span>
-                                                                        {formatDateFinal(company["Company Incorporation Date  "])}
-                                                                    </span>
-                                                                </Tooltip>
-                                                            </td>
+                                                            <Tooltip
+                                                                title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                                arrow
+                                                            >
+                                                                <span>
+                                                                    {formatDateFinal(company["Company Incorporation Date  "])}
+                                                                </span>
+                                                            </Tooltip>
+                                                        </td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
@@ -2110,15 +2112,15 @@ function ManageLeads() {
                                                             />
                                                         </td>)}
                                                         <td>
-                                                                <Tooltip
-                                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
-                                                                    arrow
-                                                                >
-                                                                    <span>
-                                                                        {formatDateFinal(company["Company Incorporation Date  "])}
-                                                                    </span>
-                                                                </Tooltip>
-                                                            </td>
+                                                            <Tooltip
+                                                                title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                                arrow
+                                                            >
+                                                                <span>
+                                                                    {formatDateFinal(company["Company Incorporation Date  "])}
+                                                                </span>
+                                                            </Tooltip>
+                                                        </td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
@@ -2236,15 +2238,15 @@ function ManageLeads() {
                                                             />
                                                         </td>)}
                                                         <td>
-                                                                <Tooltip
-                                                                    title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
-                                                                    arrow
-                                                                >
-                                                                    <span>
-                                                                        {formatDateFinal(company["Company Incorporation Date  "])}
-                                                                    </span>
-                                                                </Tooltip>
-                                                            </td>
+                                                            <Tooltip
+                                                                title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                                                                arrow
+                                                            >
+                                                                <span>
+                                                                    {formatDateFinal(company["Company Incorporation Date  "])}
+                                                                </span>
+                                                            </Tooltip>
+                                                        </td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
@@ -2419,7 +2421,7 @@ function ManageLeads() {
                     bdeForwardDate={callHistoryBdmForwardedDate}
                     note={
                         (callHistoryBdmAcceptStatus === "Accept" || callHistoryBdmAcceptStatus === "Pending" || callHistoryBdmAcceptStatus === "MaturedPending" || callHistoryBdmAcceptStatus === "Forwarded" || callHistoryBdmAcceptStatus === "MaturedAccepted") ?
-                        `${callHistoryBdeName} has forwarded this lead to ${callHistoryBdmName} on ${formatBdeForwardDate(callHistoryBdmForwardedDate)}` : "This Lead is Not Forwarded Yet"}
+                            `${callHistoryBdeName} has forwarded this lead to ${callHistoryBdmName} on ${formatBdeForwardDate(callHistoryBdmForwardedDate)}` : "This Lead is Not Forwarded Yet"}
                 />)
             }
             {/* -------------------- dialog to add leads---------------------------- */}
