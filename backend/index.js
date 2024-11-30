@@ -322,9 +322,9 @@ app.post("/api/verifyCredentials/admin", async (req, res) => {
 
   try {
     const user = await onlyAdminModel
-  .findOne({ admin_email: email, admin_password: password })
-  .lean()
-  .select('admin_email admin_password');
+      .findOne({ admin_email: email, admin_password: password })
+      .lean()
+      .select('admin_email admin_password');
 
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
@@ -341,9 +341,9 @@ app.post("/api/sendOtp/admin", async (req, res) => {
 
   try {
     const user = await onlyAdminModel
-  .findOne({ admin_email: email })
-  .lean()
-  .select('admin_email admin_password');
+      .findOne({ admin_email: email })
+      .lean()
+      .select('admin_email admin_password');
     if (!user) {
       return res.status(404).json({ message: "Email not registered" });
     }
@@ -544,11 +544,9 @@ app.post("/api/datamanagerlogin", async (req, res) => {
     return res.status(401).json({ message: "Designation is incorrect" });
   }
 
-  // Generate OTP and set expiration
+  // Generate OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
-
-  otpStorage[email] = { otp, expiresAt: expirationTime };
+  otpStorage[email] = { otp }; // Temporary storage without expiration
   console.log("Otp is :", otpStorage);
 
   let transporter;
@@ -566,7 +564,14 @@ app.post("/api/datamanagerlogin", async (req, res) => {
   };
 
   try {
+    // Send OTP mail
     await transporter.sendMail(mailOptions);
+
+    // Start OTP expiration timer only after the email is sent
+    const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
+    otpStorage[email].expiresAt = expirationTime;
+    console.log("OTP with expiration time set:", otpStorage);
+
     res.status(200).send("OTP sent");
   } catch (error) {
     res.status(500).send("Error sending OTP");
@@ -580,43 +585,43 @@ app.post("/api/verify-otp", async (req, res) => {
   // Step 1: Validate OTP first
   const otpData = otpStorage[email];
   if (!otpData) {
-      return res.status(400).send("OTP not found");
+    return res.status(400).send("OTP not found");
   }
 
   const { otp: storedOtp, expiresAt } = otpData;
 
   if (Date.now() > expiresAt) {
-      delete otpStorage[email];
-      return res.status(406).send("OTP has expired");
+    delete otpStorage[email];
+    return res.status(406).send("OTP has expired");
   }
 
   if (storedOtp === otp) {
-      // OTP is correct; require CAPTCHA for additional security
-      if (!captchaToken) {
-          return res.status(200).json({ captchaRequired: true });
-      }
+    // OTP is correct; require CAPTCHA for additional security
+    if (!captchaToken) {
+      return res.status(200).json({ captchaRequired: true });
+    }
 
-      // Step 2: Validate CAPTCHA Token if provided
-      const captchaSecretKey = process.env.REACT_APP_GOOGLERECAPTCHA_KEY;
-      const captchaVerifyUrl = `https://www.google.com/recaptcha/api/siteverify`;
+    // Step 2: Validate CAPTCHA Token if provided
+    const captchaSecretKey = process.env.REACT_APP_GOOGLERECAPTCHA_KEY;
+    const captchaVerifyUrl = `https://www.google.com/recaptcha/api/siteverify`;
 
-      const captchaResponse = await axios.post(captchaVerifyUrl, null, {
-          params: {
-              secret: captchaSecretKey,
-              response: captchaToken,
-          },
-      });
+    const captchaResponse = await axios.post(captchaVerifyUrl, null, {
+      params: {
+        secret: captchaSecretKey,
+        response: captchaToken,
+      },
+    });
 
-      if (!captchaResponse.data.success) {
-          return res.status(403).send("CAPTCHA validation failed");
-      }
+    if (!captchaResponse.data.success) {
+      return res.status(403).send("CAPTCHA validation failed");
+    }
 
-      // Both OTP and CAPTCHA are validated
-      delete otpStorage[email];
-      const token = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
-      return res.status(200).json({ message: "OTP verified", token, captchaRequired: false });
+    // Both OTP and CAPTCHA are validated
+    delete otpStorage[email];
+    const token = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
+    return res.status(200).json({ message: "OTP verified", token, captchaRequired: false });
   } else {
-      return res.status(400).send("Invalid OTP");
+    return res.status(400).send("Invalid OTP");
   }
 });
 
@@ -640,7 +645,7 @@ app.post("/api/bdmlogin", async (req, res) => {
       expiresIn: "10h",
     });
     //console.log(bdmToken)
-    res.status(200).json({ bdmToken : bdmToken , userId:user._id });
+    res.status(200).json({ bdmToken: bdmToken, userId: user._id });
     //socketIO.emit("Employee-login");
   }
 });
@@ -703,11 +708,9 @@ app.post("/api/rmofcertificationlogin", async (req, res) => {
     return res.status(401).json({ message: "Designation is incorrect" });
   }
 
-  // Generate OTP and set expiration
+  // Generate OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
-
-  otpStorage[email] = { otp, expiresAt: expirationTime };
+  otpStorage[email] = { otp }; // Temporary storage without expiration
   console.log("Otp is :", otpStorage);
 
   let transporter;
@@ -725,7 +728,14 @@ app.post("/api/rmofcertificationlogin", async (req, res) => {
   };
 
   try {
+    // Send OTP mail
     await transporter.sendMail(mailOptions);
+
+    // Start OTP expiration timer only after the email is sent
+    const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
+    otpStorage[email].expiresAt = expirationTime;
+    console.log("OTP with expiration time set:", otpStorage);
+
     res.status(200).send("OTP sent");
   } catch (error) {
     res.status(500).send("Error sending OTP");
@@ -752,7 +762,7 @@ app.post("/api/recruiterlogin", async (req, res) => {
       expiresIn: "10h",
     });
     //console.log(bdmToken)
-    res.status(200).json({ recruiterToken : recruiterToken ,recruiterUserId: user._id });
+    res.status(200).json({ recruiterToken: recruiterToken, recruiterUserId: user._id });
     //socketIO.emit("Employee-login");
   }
 })
@@ -797,11 +807,9 @@ app.post("/api/adminexecutivelogin", async (req, res) => {
     return res.status(401).json({ message: "Designation is incorrect" });
   }
 
-  // Generate OTP and set expiration
+  // Generate OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
-
-  otpStorage[email] = { otp, expiresAt: expirationTime };
+  otpStorage[email] = { otp }; // Temporary storage without expiration
   console.log("Otp is :", otpStorage);
 
   let transporter;
@@ -819,7 +827,14 @@ app.post("/api/adminexecutivelogin", async (req, res) => {
   };
 
   try {
+    // Send OTP mail
     await transporter.sendMail(mailOptions);
+
+    // Start OTP expiration timer only after the email is sent
+    const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
+    otpStorage[email].expiresAt = expirationTime;
+    console.log("OTP with expiration time set:", otpStorage);
+
     res.status(200).send("OTP sent");
   } catch (error) {
     res.status(500).send("Error sending OTP");
@@ -1306,11 +1321,9 @@ app.post("/api/hrlogin", async (req, res) => {
     return res.status(401).json({ message: "Designation is incorrect" });
   }
 
-  // Generate OTP and set expiration
+  // Generate OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
-
-  otpStorage[email] = { otp, expiresAt: expirationTime };
+  otpStorage[email] = { otp }; // Temporary storage without expiration
   console.log("Otp is :", otpStorage);
 
   let transporter;
@@ -1328,7 +1341,14 @@ app.post("/api/hrlogin", async (req, res) => {
   };
 
   try {
+    // Send OTP mail
     await transporter.sendMail(mailOptions);
+
+    // Start OTP expiration timer only after the email is sent
+    const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
+    otpStorage[email].expiresAt = expirationTime;
+    console.log("OTP with expiration time set:", otpStorage);
+
     res.status(200).send("OTP sent");
   } catch (error) {
     res.status(500).send("Error sending OTP");

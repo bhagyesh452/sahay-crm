@@ -174,7 +174,7 @@ function RMofCertification({ setrmofcertificationToken }) {
             return;
         }
 
-        if (!captchaToken) {
+        if (showCaptcha && !captchaToken) {
             Swal.fire("Error!", "Please complete the CAPTCHA verification!", "error");
             return;
         }

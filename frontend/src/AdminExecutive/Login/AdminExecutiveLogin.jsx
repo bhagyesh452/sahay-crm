@@ -174,21 +174,13 @@ function AdminExecutiveLogin({ setAdminExecutiveToken }) {
             return;
         }
 
-        if (!captchaToken) {
+        if (showCaptcha && !captchaToken) {
             Swal.fire("Error!", "Please complete the CAPTCHA verification!", "error");
             return;
         }
 
         try {
             const response = await axios.post(`${secretKey}/verify-otp`, { email, otp, captchaToken });
-
-            if (response.status === 200) {
-                const { token } = response.data;
-                setAdminExecutiveToken(token);
-                localStorage.setItem("adminExecutiveToken", token);
-                navigate(`/adminexecutive/dashboard/${adminExecutiveUserId}`);
-                setErrorMessage('');
-            }
 
             if (response.status === 200) {
                 const { token, captchaRequired } = response.data;
