@@ -362,16 +362,16 @@ app.post("/api/sendOtp/admin", async (req, res) => {
       secure: true,
       auth: {
         type: 'OAuth2',
-        user: 'alerts@startupsahay.com', // Replace with your Gmail email ID
-        clientId: process.env.GOOGLE_CLIENT_ID, // Replace with your OAuth2 client ID
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Replace with your OAuth2 client secret
-        refreshToken: process.env.GOOGLE_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
-        accessToken: process.env.GOOGLE_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
+        user: 'otp@startupsahay.com', // Replace with your Gmail email ID
+        clientId: process.env.GOOGLE_OTP_CLIENT_ID, // Replace with your OAuth2 client ID
+        clientSecret: process.env.GOOGLE_OTP_CLIENT_SECRET, // Replace with your OAuth2 client secret
+        refreshToken: process.env.GOOGLE_OTP_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
+        accessToken: process.env.GOOGLE_OTP_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
       }
     });
 
     await transporter.sendMail({
-      from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>',
+      from: '"Start-Up Sahay Private Limited" <otp@startupsahay.com>',
       to: email,
       subject: "Your OTP for Employee Login",
       text: `Your OTP is ${otp}. It is valid for 1 minute.`,
@@ -429,16 +429,16 @@ app.post("/api/sendOtp", async (req, res) => {
       secure: true,
       auth: {
         type: 'OAuth2',
-        user: 'alerts@startupsahay.com', // Replace with your Gmail email ID
-        clientId: process.env.GOOGLE_CLIENT_ID, // Replace with your OAuth2 client ID
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Replace with your OAuth2 client secret
-        refreshToken: process.env.GOOGLE_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
-        accessToken: process.env.GOOGLE_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
+        user: 'otp@startupsahay.com', // Replace with your Gmail email ID
+        clientId: process.env.GOOGLE_OTP_CLIENT_ID, // Replace with your OAuth2 client ID
+        clientSecret: process.env.GOOGLE_OTP_CLIENT_SECRET, // Replace with your OAuth2 client secret
+        refreshToken: process.env.GOOGLE_OTP_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
+        accessToken: process.env.GOOGLE_OTP_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
       }
     });
 
     await transporter.sendMail({
-      from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>',
+      from: '"Start-Up Sahay Private Limited" <otp@startupsahay.com>',
       to: email,
       subject: "Your OTP for Login",
       text: `Your OTP is ${otp}. It is valid for 1 minute.`,

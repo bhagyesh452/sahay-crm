@@ -144,7 +144,7 @@ function EmployeePanelCopy({ fordesignation }) {
     const [filteredDataForwraded, setFilteredDataForwraded] = useState([]);
     const [activeFilterFieldsForwarded, setActiveFilterFieldsForwraded] = useState([]); // New state for active filter fields
     const [activeFilterFieldForwarded, setActiveFilterFieldForwarded] = useState(null);
-    const [webhookData, setwebhookData] = useState([])
+
 
 
 
@@ -597,13 +597,15 @@ function EmployeePanelCopy({ fordesignation }) {
     const maturedTabRef = useRef(null); // Ref for the Matured tab
     const forwardedTabRef = useRef(null); // Ref for the Forwarded tab
     const notInterestedTabRef = useRef(null); // Ref for the Not Interested tab
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate) => {
+    const [callHistoryDataToMap, setCallHistoryDataToMap] = useState([])
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, callHistoryData) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
         setCompanyName(companyName);
         setcallHistoryBdmName(bdmName);
         setCallHistoryBdmAcceptStatus(bdmAcceptStatus)
         setCallHistoryBdmForwardedDate(bdeForwardDate)
+        setCallHistoryDataToMap(callHistoryData)
 
     }
 
@@ -1379,6 +1381,7 @@ function EmployeePanelCopy({ fordesignation }) {
                                                 closeCompanyProfile={handleCloseCompanyProfile}
                                                 cleanString={cleanString}
                                                 calculateAgeFromDate={calculateAgeFromDate}
+
                                             />
                                         )}
                                     </div>
@@ -1676,6 +1679,8 @@ function EmployeePanelCopy({ fordesignation }) {
                     </div>
                 </div>) : showCallHistory ?
                     (<CallHistory
+                        callHistory={callHistoryDataToMap}
+                        setCallHistory={setCallHistoryDataToMap}
                         handleCloseHistory={hanleCloseCallHistory}
                         clientNumber={clientNumber}
                         bdenumber={data.number}

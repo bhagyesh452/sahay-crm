@@ -18,11 +18,11 @@ async function createTransporter() {
         secure: true,
         auth: {
             type: "OAuth2",
-            user: "alerts@startupsahay.com",
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-            accessToken: process.env.GOOGLE_ACCESS_TOKEN,
+            user: "otp@startupsahay.com",
+        clientId: process.env.GOOGLE_OTP_CLIENT_ID, // Replace with your OAuth2 client ID
+        clientSecret: process.env.GOOGLE_OTP_CLIENT_SECRET, // Replace with your OAuth2 client secret
+        refreshToken: process.env.GOOGLE_OTP_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
+        accessToken: process.env.GOOGLE_OTP_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
         },
     });
 }
@@ -85,7 +85,7 @@ router.post("/send-otp", async (req, res) => {
     }
 
     const mailOptions = {
-        from: 'alerts@startupsahay.com',
+        from: 'otp@startupsahay.com',
         to: email,
         subject: 'Your OTP Code',
         text: `Your OTP code is ${otp}`,

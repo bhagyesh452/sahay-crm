@@ -118,7 +118,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const interestedTabRef = useRef(null); // Ref for the Interested tab
     const maturedTabRef = useRef(null); // Ref for the Matured tab
     const notInterestedTabRef = useRef(null); // Ref for the Not Interested tab
-
+    const [callHistoryDataToMap, setCallHistoryDataToMap] = useState([])
     const handleCloseProjection = () => {
         setShowProjection(false);
     };
@@ -135,11 +135,12 @@ function EmployeeTeamLeadsCopy({ designation }) {
         setShowAssignLeadsFromBdm(false);
     };
 
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate,ename) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, ename , callHistoryData) => {
         setShowCallHistory(true);
         setClientNumber(clientNumber);
         setcallHistoryBdmName(ename)
         setCompanyName(companyName);
+        setCallHistoryDataToMap(callHistoryData)
         // setcallHistoryBdeName(ename)
     };
 
@@ -681,55 +682,55 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     }, [data.ename, revertBackRequestData.length]);
 
-console.log("revertBackRequestData",revertBackRequestData)
-console.log("open" , openRevertBackRequestDialog)
+    console.log("revertBackRequestData", revertBackRequestData)
+    console.log("open", openRevertBackRequestDialog)
 
-useEffect(() => {
-    fetchData();
-    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-      secure: true, // Use HTTPS
-      path: '/socket.io',
-      reconnection: true,
-      transports: ['websocket'],
-    });
+    useEffect(() => {
+        fetchData();
+        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
+        });
 
-    socket.on("rejectrequestrevertbackcompany", (res) => {
-      console.log("res", res)
-      if (data.ename === res.data.ename) {
-       setOpenRevertBackRequestDialog(true)
-       
-      }
-    });
+        socket.on("rejectrequestrevertbackcompany", (res) => {
+            console.log("res", res)
+            if (data.ename === res.data.ename) {
+                setOpenRevertBackRequestDialog(true)
 
-    // Clean up the socket connection when the component unmounts
-    return () => {
-      socket.disconnect();
+            }
+        });
+
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            socket.disconnect();
+        };
+    }, [data.ename]);
+
+    //   ------------------------function to calculate age for inco date------------------------
+
+    const calculateAgeFromDate = (dateString) => {
+        const incorporationDate = new Date(dateString);
+        const currentDate = new Date();
+
+        let years = currentDate.getFullYear() - incorporationDate.getFullYear();
+        let months = currentDate.getMonth() - incorporationDate.getMonth();
+        let days = currentDate.getDate() - incorporationDate.getDate();
+
+        if (days < 0) {
+            months -= 1;
+            days += new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+        }
+
+        if (months < 0) {
+            years -= 1;
+            months += 12;
+        }
+
+        return `${years > 0 ? `${years} year${years > 1 ? "s" : ""} ` : ""}${months > 0 ? `${months} month${months > 1 ? "s" : ""} ` : ""
+            }${days > 0 ? `${days} day${days > 1 ? "s" : ""}` : ""}`.trim();
     };
-  }, [data.ename]);
-
-//   ------------------------function to calculate age for inco date------------------------
-
-const calculateAgeFromDate = (dateString) => {
-    const incorporationDate = new Date(dateString);
-    const currentDate = new Date();
-
-    let years = currentDate.getFullYear() - incorporationDate.getFullYear();
-    let months = currentDate.getMonth() - incorporationDate.getMonth();
-    let days = currentDate.getDate() - incorporationDate.getDate();
-
-    if (days < 0) {
-        months -= 1;
-        days += new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
-    }
-
-    if (months < 0) {
-        years -= 1;
-        months += 12;
-    }
-
-    return `${years > 0 ? `${years} year${years > 1 ? "s" : ""} ` : ""}${months > 0 ? `${months} month${months > 1 ? "s" : ""} ` : ""
-        }${days > 0 ? `${days} day${days > 1 ? "s" : ""}` : ""}`.trim();
-};
 
 
 
@@ -1064,7 +1065,7 @@ const calculateAgeFromDate = (dateString) => {
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
                                                     bdenumber={data.number}
-                                                calculateAgeFromDate={calculateAgeFromDate}
+                                                    calculateAgeFromDate={calculateAgeFromDate}
 
                                                 />
                                             )}
@@ -1113,7 +1114,7 @@ const calculateAgeFromDate = (dateString) => {
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
                                                     bdenumber={data.number}
-                                                calculateAgeFromDate={calculateAgeFromDate}
+                                                    calculateAgeFromDate={calculateAgeFromDate}
 
                                                 />
                                             )}
@@ -1158,7 +1159,7 @@ const calculateAgeFromDate = (dateString) => {
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
                                                     bdenumber={data.number}
-                                                calculateAgeFromDate={calculateAgeFromDate}
+                                                    calculateAgeFromDate={calculateAgeFromDate}
 
                                                 />
                                             )}
@@ -1247,7 +1248,7 @@ const calculateAgeFromDate = (dateString) => {
                                                     handleMouseEnter={handleMouseEnter}
                                                     handleMouseUp={handleMouseUp}
                                                     bdenumber={data.number}
-                                                calculateAgeFromDate={calculateAgeFromDate}
+                                                    calculateAgeFromDate={calculateAgeFromDate}
 
                                                 />
                                             )}
@@ -1262,6 +1263,8 @@ const calculateAgeFromDate = (dateString) => {
 
             ) : showCallHistory ? (
                 <CallHistory
+                    callHistory={callHistoryDataToMap}
+                    setCallHistory={setCallHistoryDataToMap}
                     handleCloseHistory={hanleCloseCallHistory}
                     clientNumber={clientNumber}
                     bdenumber={data.number}

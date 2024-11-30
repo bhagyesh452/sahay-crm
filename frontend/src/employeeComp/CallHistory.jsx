@@ -5,14 +5,14 @@ import Nodata from '../components/Nodata';
 import { IconChevronRight, IconChevronLeft } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
 
-function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, companyName, fordesignation, note, bdeForwardDate }) {
+function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, companyName, fordesignation, note, bdeForwardDate,callHistory,setCallHistory}) {
     console.log(bdenumber, bdmName, fordesignation);
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-    const [callHistory, setCallHistory] = useState([]);
+    // const [callHistory, setCallHistory] = useState([]);
     const [searchResult, setSearchResult] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 100;
@@ -69,7 +69,7 @@ function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, com
     todayEndDate.setUTCHours(13, 0, 0, 0);
 
     // Set start timestamp to 6 months before the current date at 04:00 (4 AM) UTC
-    todayStartDate.setMonth(todayStartDate.getMonth() - 12);
+    todayStartDate.setMonth(todayStartDate.getMonth() - 5);
     todayStartDate.setUTCHours(4, 0, 0, 0);
 
     // console.log("Start date is :", todayStartDate);

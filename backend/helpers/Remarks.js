@@ -525,7 +525,7 @@ router.post('/webhook', async (req, res) => {
             // Find or create the year entry
             let yearData = company.callLogsDetails.find((y) => y.year === year);
             if (!yearData) {
-              console.log(`Adding new year: ${year}`);
+              // console.log(`Adding new year: ${year}`);
               yearData = { year, months: [] };
               company.callLogsDetails.push(yearData);
             }
@@ -533,7 +533,7 @@ router.post('/webhook', async (req, res) => {
             // Find or create the month entry
             let monthData = yearData.months.find((m) => m.month === month);
             if (!monthData) {
-              console.log(`Adding new month: ${month}`);
+              // console.log(`Adding new month: ${month}`);
               monthData = { month, dates: [] };
               yearData.months.push(monthData);
             }
@@ -541,7 +541,7 @@ router.post('/webhook', async (req, res) => {
             // Find or create the date entry
             let dateData = monthData.dates.find((d) => d.date === log.call_date);
             if (!dateData) {
-              console.log(`Adding new date: ${log.call_date}`);
+              // console.log(`Adding new date: ${log.call_date}`);
               dateData = { date: log.call_date, details: [] };
               monthData.dates.push(dateData);
             }
@@ -549,7 +549,7 @@ router.post('/webhook', async (req, res) => {
             // Check for duplicate call logs
             const isDuplicate = dateData.details.some((detail) => detail.callId === log.id);
             if (!isDuplicate) {
-              console.log(`Adding new call log for date: ${log.call_date}`);
+              // console.log(`Adding new call log for date: ${log.call_date}`);
               dateData.details.push({
                 callId: log.id,
                 call_date: log.call_date,
@@ -570,7 +570,7 @@ router.post('/webhook', async (req, res) => {
             }
           }
 
-          console.log("Updated callLogsDetails", JSON.stringify(company.callLogsDetails, null, 2));
+          // console.log("Updated callLogsDetails", JSON.stringify(company.callLogsDetails, null, 2));
 
           // Save only the updated callLogsDetails
           await CompanyModel.updateOne(
@@ -578,7 +578,7 @@ router.post('/webhook', async (req, res) => {
             { $set: { callLogsDetails: company.callLogsDetails } }
           );
 
-          console.log(`Call logs updated successfully for company ID: ${company._id}`);
+          // console.log(`Call logs updated successfully for company ID: ${company._id}`);
         }
       } else {
         console.log(`No call logs for employee: ${employee.emp_name}`);

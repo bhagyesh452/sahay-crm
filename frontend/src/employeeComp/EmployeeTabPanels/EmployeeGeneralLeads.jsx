@@ -170,77 +170,114 @@ function EmployeeGeneralLeads({
     const [callHistoryMap, setCallHistoryMap] = useState()
 
     // Date Setup for API
-  const today = new Date();
-  const todayStartDate = new Date(today);
-  const todayEndDate = new Date(today);
+    const today = new Date();
+    const todayStartDate = new Date(today);
+    const todayEndDate = new Date(today);
 
-  // Set end timestamp to current date at 13:00 (1 PM) UTC
-  todayEndDate.setUTCHours(13, 0, 0, 0);
+    // Set end timestamp to current date at 13:00 (1 PM) UTC
+    todayEndDate.setUTCHours(13, 0, 0, 0);
 
-  // Set start timestamp to 6 months before the current date at 04:00 (4 AM) UTC
-  todayStartDate.setMonth(todayStartDate.getMonth() - 12);
-  todayStartDate.setUTCHours(4, 0, 0, 0);
+    // Set start timestamp to 6 months before the current date at 04:00 (4 AM) UTC
+    todayStartDate.setMonth(todayStartDate.getMonth() - 5);
+    todayStartDate.setUTCHours(4, 0, 0, 0);
 
-  // Convert to Unix timestamps (seconds since epoch)
-  const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
-  const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
+    // Convert to Unix timestamps (seconds since epoch)
+    const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
+    const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
-  useEffect(() => {
-    // Fetch call history data on component mount
-    const fetchCallHistoryData = async () => {
-      try {
-        // setIsLoading(true);
+    useEffect(() => {
+        const fetchEmployeeData = async () => {
+            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+            const url = 'https://api1.callyzer.co/v2/call-log/history';
+            const companyNumbers = generalData?.map(
+                (company) => String(company["Company Number"])
+            );
 
-        // Get all company numbers from generalData
-        const companyNumbers = generalData.map(
-          (company) => company["Company Number"]
-        );
+            if (companyNumbers.length > 0) {
+                const body = {
+                    "call_from": startTimestamp,
+                    "call_to": endTimestamp,
+                    "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+                    "client_numbers": companyNumbers
+                };
+                try {
 
-        const url = "https://api1.callyzer.co/v2/call-log/history";
-        const apiKey = process.env.REACT_APP_API_KEY;
+                    // POST request to the call-log API
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    });
 
-        const body = {
-          call_from: startTimestamp,
-          call_to: endTimestamp,
-          call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
-          client_numbers: companyNumbers,
+                    // Check for errors in the POST request
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+                    }
+
+                    // Process the POST response
+                    const data = await response.json();
+                    console.log("data.result is :", data.result);
+                    const callHistoryMap = {};
+                    data?.result.forEach((call) => {
+                        const number = call.client_number;
+                        console.log("Processing call for client_number:", number);
+                        console.log("Call object:", call);
+
+                        const matchedCompany = generalData.find((company) => {
+                            const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
+                            const clientNumber = String(number || "").trim().toLowerCase();
+                            const empNumber = call.emp_number ? String(call.emp_number).trim().toLowerCase() : "";
+                            const empName = call.emp_name ? String(call.emp_name).trim().toLowerCase() : "";
+                            const bdeNumberProp = String(bdenumber || "").trim().toLowerCase(); // Use prop value
+
+                            return (
+                                companyNumber === clientNumber &&
+                                ((bdeNumberProp && bdeNumberProp === empNumber) ||
+                                    (company.bdmName && company.bdmName.trim().toLowerCase() === empName))
+                            );
+                        });
+
+                        console.log("Matched company:", matchedCompany);
+
+                        if (matchedCompany) {
+                            if (!callHistoryMap[number]) {
+                                callHistoryMap[number] = [];
+                            }
+                            callHistoryMap[number].push(call);
+                        }
+                    });
+                    console.log("callHistoryMap", callHistoryMap)
+
+                    const updatedGeneralLeads = generalData.map((company) => {
+                        const companyNumber = String(company["Company Number"]);
+                        return {
+                            ...company,
+                            callHistoryData: callHistoryMap[companyNumber] || [],
+                        };
+                    });
+
+                    setGeneralData(updatedGeneralLeads); // Update with enriched data
+                } catch (err) {
+                    console.log(err);
+                } finally {
+                    // setIsLoading(false);
+                }
+
+            }
+
+
         };
+        fetchEmployeeData();
+    }, [generalData]);
 
-        // API request
-        const response = await axios.post(url, body, {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-        });
 
-        // Process response data
-        const callHistoryAvailability = {};
-        response.data.result.forEach((call) => {
-          const number = call.client_number;
-          if (callHistoryAvailability[number]) {
-            callHistoryAvailability[number] = true; // Call history exists
-          } else {
-            callHistoryAvailability[number] = false; // No call history
-          }
-        });
+    console.log("generalData", generalData)
+    console.log("callHistoryMap", callHistoryMap)
 
-        setCallHistoryMap(callHistoryAvailability); // Update state with call history data
-      } catch (error) {
-        console.error("Error fetching call history data:", error);
-      } finally {
-        // setIsLoading(false);
-      }
-    };
-
-    if (generalData.length) {
-      fetchCallHistoryData();
-    }
-  }, [generalData, startTimestamp, endTimestamp]);
-
-    // console.log("activeFilterFieldsGeneral", activeFilterFields)
-    console.log("generalData" , generalData)
-    // console.log("openBackdrop", openBacdrop)
 
     return (
         <div className="sales-panels-main" onMouseUp={handleMouseUp}>
@@ -641,22 +678,25 @@ function EmployeeGeneralLeads({
                                                 <td>
                                                     <LuHistory
                                                         onClick={() => {
-                                                            handleShowCallHistory(
-                                                                company["Company Name"],
-                                                                company["Company Number"],
-                                                                bdenumber,
-                                                                company.bdmName,
-                                                                company.bdmAcceptStatus,
-                                                                company.bdeForwardDate
-
-                                                            );
+                                                            if (company.callHistoryData?.length > 0) {
+                                                                handleShowCallHistory(
+                                                                    company["Company Name"],
+                                                                    company["Company Number"],
+                                                                    bdenumber,
+                                                                    company.bdmName,
+                                                                    company.bdmAcceptStatus,
+                                                                    company.bdeForwardDate,
+                                                                    company.callHistoryData // Pass call history data
+                                                                );
+                                                            }
                                                         }}
                                                         style={{
-                                                            cursor: "pointer",
+                                                            cursor: company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
                                                             width: "15px",
                                                             height: "15px",
+                                                            opacity: company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                         }}
-                                                        color="grey"
+                                                        color={company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
                                                     />
                                                 </td>
                                                 <td>
