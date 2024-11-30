@@ -69,7 +69,7 @@ function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, com
     todayEndDate.setUTCHours(13, 0, 0, 0);
 
     // Set start timestamp to 6 months before the current date at 04:00 (4 AM) UTC
-    todayStartDate.setMonth(todayStartDate.getMonth() - 5);
+    todayStartDate.setMonth(todayStartDate.getMonth() - 12);
     todayStartDate.setUTCHours(4, 0, 0, 0);
 
     // console.log("Start date is :", todayStartDate);

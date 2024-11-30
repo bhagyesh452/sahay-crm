@@ -267,11 +267,11 @@ async function createTransporter() {
 }
 
 app.post("/api/admin/login-admin", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
 
   const user = await onlyAdminModel.findOne({
-    admin_email: username,
+    admin_email: email,
     admin_password: password,
   });
 
@@ -313,6 +313,77 @@ app.post("/api/employeelogin", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
+
+// Verify email and password before sending OTP
+app.post("/api/verifyCredentials/admin", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await onlyAdminModel
+  .findOne({ admin_email: email, admin_password: password })
+  .lean()
+  .select('admin_email admin_password');
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    } else {
+      res.status(200).json({ message: "Credentials verified" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
+
+app.post("/api/sendOtp/admin", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await onlyAdminModel
+  .findOne({ admin_email: email })
+  .lean()
+  .select('admin_email admin_password');
+    if (!user) {
+      return res.status(404).json({ message: "Email not registered" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+    const otpExpiry = Date.now() + 1 * 60 * 1000; // 10-minute expiry
+
+    otpStore.set(email, { otp, otpExpiry });
+
+    console.log("otpStore", otpStore)
+
+    // Send OTP via email
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        type: 'OAuth2',
+        user: 'alerts@startupsahay.com', // Replace with your Gmail email ID
+        clientId: process.env.GOOGLE_CLIENT_ID, // Replace with your OAuth2 client ID
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Replace with your OAuth2 client secret
+        refreshToken: process.env.GOOGLE_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
+        accessToken: process.env.GOOGLE_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
+      }
+    });
+
+    await transporter.sendMail({
+      from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>',
+      to: email,
+      subject: "Your OTP for Employee Login",
+      text: `Your OTP is ${otp}. It is valid for 1 minute.`,
+    });
+
+    res.status(200).json({
+      message: "OTP sent successfully",
+      otpExpiry, // Return expiry timestamp
+    });
+  } catch (error) {
+    console.log("error", error)
+    res.status(500).json({ message: "Error sending OTP", error: error.message });
   }
 });
 
@@ -369,7 +440,7 @@ app.post("/api/sendOtp", async (req, res) => {
     await transporter.sendMail({
       from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>',
       to: email,
-      subject: "Your OTP for Employee Login",
+      subject: "Your OTP for Login",
       text: `Your OTP is ${otp}. It is valid for 1 minute.`,
     });
 
@@ -406,7 +477,7 @@ app.post("/api/verifyCaptcha", async (req, res) => {
   const { token } = req.body;
 
   try {
-    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const secretKey = process.env.REACT_APP_GOOGLERECAPTCHA_KEY;
 
     const response = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify`,
@@ -632,7 +703,7 @@ app.post("/api/recruiterlogin", async (req, res) => {
       expiresIn: "10h",
     });
     //console.log(bdmToken)
-    res.status(200).json({ recruiterToken });
+    res.status(200).json({ recruiterToken : recruiterToken ,recruiterUserId: user._id });
     //socketIO.emit("Employee-login");
   }
 })

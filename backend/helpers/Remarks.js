@@ -428,11 +428,11 @@ router.post('/webhook', async (req, res) => {
 
   try {
     for (const employee of employeeData) {
-      console.log('Processing Employee:', employee.emp_name);
+      // console.log('Processing Employee:', employee.emp_name);
 
       if (employee.call_logs && employee.call_logs.length > 0) {
         for (const log of employee.call_logs) {
-          console.log('Processing Call Log:', log);
+          // console.log('Processing Call Log:', log);
 
           const year = new Date(log.call_date).getFullYear();
           const month = new Date(log.call_date).toLocaleString('default', { month: 'long' });
@@ -447,13 +447,14 @@ router.post('/webhook', async (req, res) => {
           //   console.log(Company not found for number: ${log.client_number});
           //   continue;
           // }
-          console.log(`"company" , ${company}`);
+          // console.log(`"company" , ${company}`);
 
-          console.log(`Found Company: ${company["Company Name"]}, ID: ${company._id}`);
+          // console.log(`Found Company: ${company["Company Name"]}, ID: ${company._id}`);
 
           // Emit a socket message if emp_name does not match ename or bdmName
-          if (employee.emp_name !== company.ename && employee.emp_name !== company.bdmName) {
-            console.log("socket working")
+          if (employee.emp_name.toLowerCase() !== company.ename.toLowerCase() &&
+          employee.emp_name.toLowerCase() !== company.bdmName.toLowerCase()) {
+            // console.log("socket working")
             socketIO.emit('unexpectedCaller', {
               message: `Unexpected caller detected for company: ${company["Company Name"]}`,
               companyId: company._id,
@@ -465,7 +466,7 @@ router.post('/webhook', async (req, res) => {
               bdmName: company.bdmName
             });
             let GetEmployeeProfile = "no-image"
-            console.log(`Mismatch: Employee ${employee.emp_name} called ${company["Company Name"]}`);
+            // console.log(`Mismatch: Employee ${employee.emp_name} called ${company["Company Name"]}`);
             const requestCreate = {
               ename: company.ename,
               actualEmployeeCalling: employee.emp_name,
@@ -487,7 +488,7 @@ router.post('/webhook', async (req, res) => {
 
           // If callLogsDetails is missing, initialize it with full structure
           if (!company.callLogsDetails || company.callLogsDetails.length === 0) {
-            console.log('Initializing callLogsDetails with full structure');
+            // console.log('Initializing callLogsDetails with full structure');
             company.callLogsDetails = [
               {
                 year: year,

@@ -65,60 +65,6 @@ function DataManagerLogin({ setManagerToken }) {
     fetchData();
   }, []);
 
-  //   async function getLocationInfo(latitude, longitude) {
-  //     try {
-  //       const response = await fetch(
-  //         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-  //       );
-
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! Status: ${response.status}`);
-  //       }
-
-  //       const data = await response.json();
-
-  //       if (data.error) {
-  //         throw new Error(`Nominatim API error: ${data.error}`);
-  //       }
-
-  //       const { address } = data;
-  //       //console.log(address)
-  //       setAddress(`${address.suburb} ,${address.state_district}`);
-
-  //       // Log the location information
-  //     } catch (error) {
-  //       console.error("Error fetching location:", error.message);
-  //     }
-  //   }
-
-  //   const [locationAccess, setLocationAccess] = useState(false);
-
-  //   useEffect(() => {
-  //     let watchId;
-  //     const successCallback = (position) => {
-  //       const userLatitude = position.coords.latitude;
-  //       const userLongitude = position.coords.longitude;
-  //       setLocationAccess(true);
-  //       getLocationInfo(userLatitude, userLongitude);
-  //     };
-
-  //     const errorCallback = (error) => {
-  //       console.error("Geolocation error:", error.message);
-  //       if (error.code === error.PERMISSION_DENIED) {
-  //         setLocationAccess(false);
-  //       }
-  //       // Handle other error cases if needed
-  //     };
-
-  //     navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-
-  //     // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
-
-  //     // Cleanup function to clear the watch if the component unmounts
-  //     return () => {
-  //       navigator.geolocation.clearWatch(watchId);
-  //     };
-  //   }, []);
 
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
