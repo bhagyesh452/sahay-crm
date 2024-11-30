@@ -496,13 +496,17 @@ function EmployeePanelCopy({ fordesignation }) {
         {
             queryKey: ['newData', cleanString(data.ename), currentPage, searchQuery, fetchingId], // Add searchQuery to the queryKey
             queryFn: async () => {
+                
+                // Normalize searchText by replacing non-breaking spaces with regular spaces
+                const normalizedSearchText = searchQuery.replace(/\u00A0/g, " ");
+
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees-new/${cleanString(data.ename)}`, {
                     params: {
                         dataStatus: dataStatus,
                         limit: itemsPerPage,
                         skip: skip,
-                        search: searchQuery // Send the search query as a parameter
+                        search: normalizedSearchText // Send the search query as a parameter
                     }
                 });
                 return response.data; // Directly return the data
@@ -1003,7 +1007,7 @@ function EmployeePanelCopy({ fordesignation }) {
             }${days > 0 ? `${days} day${days > 1 ? "s" : ""}` : ""}`.trim();
     };
 
-    console.log("isDataAvailable" , isDataAvailable);
+    console.log("isDataAvailable", isDataAvailable);
 
 
 

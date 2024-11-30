@@ -156,11 +156,10 @@ function ManagerBookings() {
   }, []);
 
   useEffect(() => {
-    setLeadFormData(
-      infiniteBooking.filter((obj) =>
-        obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())
-      )
-    );
+    // Normalize searchText by replacing non-breaking spaces with regular spaces
+    const normalizedSearchText = searchText.replace(/\u00A0/g, " ");
+
+    setLeadFormData(infiniteBooking.filter((obj) => obj["Company Name"].toLowerCase().includes(normalizedSearchText.toLowerCase())));
   }, [searchText]);
 
   const fetchRedesignedFormData = async () => {
@@ -1468,7 +1467,7 @@ function ManagerBookings() {
                               </li>
                               <li className="nav-item rm_bkng_item_no ms-auto">
                                 <div className="rm_bkng_item_no nav-link clr-ff8800">
-                                <span style={{
+                                  <span style={{
                                     color: "#797373",
                                     marginRight: "2px"
                                   }}
@@ -3275,8 +3274,8 @@ function ManagerBookings() {
                                 <div
                                   key={BookingIndex + 2}
                                   className={`tab-pane fade rm_bkng_item_detail_inner ${activeIndexBooking === BookingIndex + 2
-                                      ? "show active"
-                                      : ""
+                                    ? "show active"
+                                    : ""
                                     }`}
                                   id={`Booking_${BookingIndex + 2}`}
                                 >
