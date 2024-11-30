@@ -320,12 +320,19 @@ function TestLeads() {
     //         console.error('Error searching leads:', error.message);
     //     } finally {
     //         setCurrentDataLoading(false);
-
     //     }
     // };
 
-    const handleFilterSearch = async (searchQuery, page = 1, limit = itemsPerPage) => {
+    // Debounce utility function
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func(...args), delay);
+        };
+    };
 
+    const handleFilterSearch = async (searchQuery, page = 1, limit = itemsPerPage) => {
         try {
             setCurrentDataLoading(true);
             setIsSearching(true);
@@ -366,10 +373,10 @@ function TestLeads() {
         } finally {
             setCurrentDataLoading(false)
         }
-    }
+    };
 
-
-
+    // Debounced version of the search function
+    const debouncedHandleFilterSearch = debounce(handleFilterSearch, 300);
 
     //--------------------function to add leads-------------------------------------
     const [openAddLeadsDialog, setOpenAddLeadsDialog] = useState(false)
@@ -1469,8 +1476,7 @@ function TestLeads() {
         }
     }, [selectedYear, selectedMonth]);
 
-    console.log(selectedYear)
-
+    // console.log(selectedYear)
 
     useEffect(() => {
         if (selectedYear && selectedMonth && selectedDate) {
@@ -1482,7 +1488,7 @@ function TestLeads() {
         }
     }, [selectedYear, selectedMonth, selectedDate]);
 
-    console.log("inco date", selectedCompanyIncoDate)
+    // console.log("inco date", selectedCompanyIncoDate)
 
 
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
@@ -1720,9 +1726,16 @@ function TestLeads() {
                                         <input
                                             value={searchText}
                                             onChange={(e) => {
-                                                setSearchText(e.target.value);
-                                                handleFilterSearch(e.target.value)
-                                                //setCurrentPage(0);
+                                                // Normalize searchText by replacing non-breaking spaces with regular spaces
+                                                const normalizedSearchText = e.target.value.replace(/\u00A0/g, " ");
+                                                setSearchText(normalizedSearchText);
+                                                // handleFilterSearch(normalizedSearchText);
+                                                if (normalizedSearchText !== "") {
+                                                    debouncedHandleFilterSearch(normalizedSearchText); // Trigger debounced search
+                                                } else {
+                                                    handleFilterSearch(""); // Reset to fetch default data if input is empty
+                                                }
+                                                // setCurrentPage(0);
                                             }}
                                             className="form-control search-cantrol mybtn"
                                             placeholder="Search…"
@@ -2022,7 +2035,7 @@ function TestLeads() {
                                                                     color="grey"
                                                                 />
                                                             </td>)}
-                                                             <td>
+                                                            <td>
                                                                 <Tooltip
                                                                     title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
                                                                     arrow

@@ -1794,7 +1794,8 @@ router.get('/search-leads', async (req, res) => {
 
       if (searchTerm !== '') {
         if (!isNaN(searchTerm)) {
-          query = { 'Company Number': searchTerm };
+          // query = { 'Company Number': searchTerm };  // Search by exact number
+          query.$expr = { $regexMatch: { input: { $toString: "$Company Number" }, regex: searchQuery, options: "i" } }; // Search by partial number
         } else {
           const escapedSearchTerm = escapeRegex(searchTerm);
           query = {
