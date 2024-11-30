@@ -2028,7 +2028,7 @@ function TestLeads() {
                                                                         );
                                                                     }}
                                                                     style={{
-                                                                        cursor: "pointer",
+                                                                        cursor: "not-allowed",
                                                                         width: "15px",
                                                                         height: "15px",
                                                                     }}
@@ -2148,7 +2148,7 @@ function TestLeads() {
                                                                         );
                                                                     }}
                                                                     style={{
-                                                                        cursor: "pointer",
+                                                                        cursor: "not-allowed",
                                                                         width: "15px",
                                                                         height: "15px",
                                                                     }}
@@ -2267,7 +2267,7 @@ function TestLeads() {
                                                                         );
                                                                     }}
                                                                     style={{
-                                                                        cursor: "pointer",
+                                                                        cursor: "not-allowed",
                                                                         width: "15px",
                                                                         height: "15px",
                                                                     }}
@@ -2386,7 +2386,7 @@ function TestLeads() {
                                                                         );
                                                                     }}
                                                                     style={{
-                                                                        cursor: "pointer",
+                                                                        cursor: "not-allowed",
                                                                         width: "15px",
                                                                         height: "15px",
                                                                     }}
