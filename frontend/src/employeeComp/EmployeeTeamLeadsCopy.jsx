@@ -252,9 +252,13 @@ function EmployeeTeamLeadsCopy({ designation }) {
     const { data: teamLeadsData, isLoading: isTeamLeadsLoading, isError: isTeamLeadsError, refetch: refetchTeamLeads } = useQuery({
         queryKey: ["teamLeadsData", data.ename, currentPage, searchQuery],
         queryFn: async () => {
+
+            // Normalize searchText by replacing non-breaking spaces with regular spaces
+            const normalizedSearchText = searchQuery.replace(/\u00A0/g, " ");
+
             const res = await axios.get(`${secretKey}/bdm-data/teamLeadsData/${data.ename}`, {
                 params: {
-                    searchQuery: searchQuery, // Send the search query as a parameter
+                    searchQuery: normalizedSearchText, // Send the search query as a parameter
                     page: currentPage + 1, // Send current page for pagination
                     limit: itemsPerPage, // Set the limit of records per page
                 }

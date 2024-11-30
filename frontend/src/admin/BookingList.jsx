@@ -162,6 +162,7 @@ function BookingList() {
   const { data: bookingData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
     queryKey: ["bookingData", page, searchText],
     queryFn: async () => {
+      
       // Normalize searchText by replacing non-breaking spaces with regular spaces
       const normalizedSearchText = searchText.replace(/\u00A0/g, " ");
 

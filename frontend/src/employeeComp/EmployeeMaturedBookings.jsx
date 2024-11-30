@@ -129,7 +129,10 @@ function EmployeeMaturedBookings() {
   }, [data.ename]);
 
   useEffect(() => {
-    setFormData(infiniteBooking.filter((obj) => obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())));
+    // Normalize searchText by replacing non-breaking spaces with regular spaces
+    const normalizedSearchText = searchText.replace(/\u00A0/g, " ");
+
+    setFormData(infiniteBooking.filter((obj) => obj["Company Name"].toLowerCase().includes(normalizedSearchText.toLowerCase())));
   }, [searchText]);
 
 
