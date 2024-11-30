@@ -57,7 +57,8 @@ function EmployeeGeneralLeads({
     setGeneralDataCount,
     openingBackdrop,
     cleanString,
-    calculateAgeFromDate
+    calculateAgeFromDate,
+    isDataAvailable
 
 }) {
 
@@ -581,8 +582,9 @@ function EmployeeGeneralLeads({
                                                             cursor: "pointer",
                                                             width: "15px",
                                                             height: "15px",
-                                                        }}
-                                                        color="grey"
+                                                          }}
+                                                          color="darkgrey"
+                                                          disabled={!isDataAvailable} // Disable the button if data is not available
                                                     />
                                                 </td>
                                                 <td>
