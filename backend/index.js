@@ -549,6 +549,7 @@ app.post("/api/datamanagerlogin", async (req, res) => {
   const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
 
   otpStorage[email] = { otp, expiresAt: expirationTime };
+  console.log("Otp is :", otpStorage);
 
   let transporter;
   try {
@@ -561,7 +562,7 @@ app.post("/api/datamanagerlogin", async (req, res) => {
     from: "alerts@startupsahay.com",
     to: email,
     subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It is valid for 1 minute.`,
+    text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
   };
 
   try {
@@ -707,6 +708,7 @@ app.post("/api/rmofcertificationlogin", async (req, res) => {
   const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
 
   otpStorage[email] = { otp, expiresAt: expirationTime };
+  console.log("Otp is :", otpStorage);
 
   let transporter;
   try {
@@ -719,7 +721,7 @@ app.post("/api/rmofcertificationlogin", async (req, res) => {
     from: "alerts@startupsahay.com",
     to: email,
     subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It is valid for 1 minute.`,
+    text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
   };
 
   try {
@@ -800,6 +802,7 @@ app.post("/api/adminexecutivelogin", async (req, res) => {
   const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
 
   otpStorage[email] = { otp, expiresAt: expirationTime };
+  console.log("Otp is :", otpStorage);
 
   let transporter;
   try {
@@ -812,7 +815,7 @@ app.post("/api/adminexecutivelogin", async (req, res) => {
     from: "alerts@startupsahay.com",
     to: email,
     subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It is valid for 1 minute.`,
+    text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
   };
 
   try {
@@ -1308,6 +1311,7 @@ app.post("/api/hrlogin", async (req, res) => {
   const expirationTime = Date.now() + 90 * 1000; // 1:30 minute
 
   otpStorage[email] = { otp, expiresAt: expirationTime };
+  console.log("Otp is :", otpStorage);
 
   let transporter;
   try {
@@ -1320,7 +1324,7 @@ app.post("/api/hrlogin", async (req, res) => {
     from: "alerts@startupsahay.com",
     to: email,
     subject: "Your OTP Code",
-    text: `Your OTP code is ${otp}. It is valid for 1 minute.`,
+    text: `Your OTP code is ${otp}. It is valid for 1:30 minute.`,
   };
 
   try {
