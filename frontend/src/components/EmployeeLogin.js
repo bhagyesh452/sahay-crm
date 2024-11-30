@@ -544,6 +544,7 @@ const navigate = useNavigate();
         password,
         designation,
       });
+      console.log("respojse", response)
       const response2 = await axios.post(`${secretKey}/loginDetails`, {
         ename,
         date,
