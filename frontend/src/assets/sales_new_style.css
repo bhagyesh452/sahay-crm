@@ -312,14 +312,14 @@
 .History_Timeline_item_l
 {
     background: #fff0c4;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 100px;
     color: #d28412;
-    margin-right: 20px;
+    margin-right: 12px;
     z-index: 1;
     border: 2px solid #fafafa;
 }
@@ -334,12 +334,12 @@
 }
 .History_Timeline_item::before {
     position: absolute;
-    content: "";
+    content: "";    
     height: 100%;
     width: 1px;
     background: #c8d4da;
     top: 4px;
-    left: 15px;
+    left: 20px;
     z-index: 0;
 }
 .History_Timeline_item:last-child::before
@@ -379,4 +379,19 @@
 .Overview_Main .booking_inner_dtl_h, .Overview_Main .booking_inner_dtl_b 
 {
     font-size: 10px !important;
+}
+.Overoviewbkngbtn
+{
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    font-weight: 400;
+    background: #f6f6f6;
+    border: none;
+}
+.Overoviewbkngbtn.active
+{
+    font-weight: 500 !IMPORTANT;
+    background: #ffdb6e !important;
+    color: #30343b;
 }
