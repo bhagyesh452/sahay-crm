@@ -34,7 +34,7 @@ function AdminRemarksDialog({
     }
   };
 
-  console.log("filetredRearks", filteredRemarks);
+  //console.log("filetredRearks", filteredRemarks);
 
   const functionopenpopupremarks = async (companyID) => {
     await fetchRemarksHistory();
@@ -125,13 +125,13 @@ function AdminRemarksDialog({
         <DialogContent>
           <div className="remarks-content">
             {/* Check if there are any remarks */}
-            {console.log("filetees", filteredRemarks[0]?.remarks)}
+            {/* //{console.log("filetees", filteredRemarks[0]?.remarks)} */}
             {filteredRemarks[0]?.remarks?.length > 0 ||
             filteredRemarks[0]?.serviceWiseRemarks?.length > 0 ? (
               <>
                 {/* Display remarks sorted in descending order */}
                 {filteredRemarks[0]?.remarks.slice().map((historyItem) => {
-                  console.log("Remarks History Item:", historyItem); // Log historyItem to see what is inside
+                  //console.log("Remarks History Item:", historyItem); // Log historyItem to see what is inside
                   return (
                     <div className="col-sm-12" key={historyItem._id}>
                       <div className="card RemarkCard position-relative">
@@ -166,7 +166,7 @@ function AdminRemarksDialog({
 
                 {/* Display service-wise remarks sorted in descending order */}
                 {filteredRemarks[0]?.serviceWiseRemarks.map((serviceItem) => {
-                  console.log("Service-Wise Remarks Item:", serviceItem); // Log serviceItem to see what is inside
+                  //.log("Service-Wise Remarks Item:", serviceItem); // Log serviceItem to see what is inside
                   return (
                     <div className="col-sm-12" key={serviceItem._id}>
                       <div className="card RemarkCard position-relative">

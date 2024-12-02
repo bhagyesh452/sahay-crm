@@ -1637,103 +1637,113 @@ function TestLeads() {
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
-    // useEffect(() => {
-    //     const dataToFilter = dataStatus === "Unassigned"
-    //         ? unAssignedData
-    //         : dataStatus === "Extracted"
-    //             ? extractedData
-    //             : assignedData;
-    //     const finalFiltering = !isFilter && !isSearching ? data : dataToFilter
-    //     const fetchEmployeeData = async () => {
-    //         const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-    //         const url = 'https://api1.callyzer.co/v2/call-log/history';
-    //         const companyNumbers = finalFiltering?.map(
-    //             (company) => String(company["Company Number"])
-    //         );
+    useEffect(() => {
+        const dataToFilter = dataStatus === "Unassigned"
+            ? unAssignedData
+            : dataStatus === "Extracted"
+                ? extractedData
+                : assignedData;
 
-    //         if (companyNumbers.length > 0) {
-    //             const body = {
-    //                 "call_from": startTimestamp,
-    //                 "call_to": endTimestamp,
-    //                 "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-    //                 "client_numbers": companyNumbers
-    //             };
-    //             try {
+        // const finalFiltering = !isFilter && !isSearching ? data : dataToFilter;
+        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter;
+        console.log("finalFiltering", data)
+        const saveCallHistoryToBackend = async (clientNumber, callHistoryData) => {
+            try {
+                const response = await axios.post(
+                    `${secretKey}/remarks/save-client-call-history`,
+                    { client_number: clientNumber, callHistoryData }
+                );
 
-    //                 // POST request to the call-log API
-    //                 const response = await fetch(url, {
-    //                     method: 'POST',
-    //                     headers: {
-    //                         'Authorization': `Bearer ${apiKey}`,
-    //                         'Content-Type': 'application/json'
-    //                     },
-    //                     body: JSON.stringify(body)
-    //                 });
+                console.log(`Call history for ${clientNumber} saved successfully.`);
+            } catch (err) {
+                console.error(`Error saving call history for ${clientNumber}:`, err);
+            }
+        };
 
-    //                 // Check for errors in the POST request
-    //                 if (!response.ok) {
-    //                     const errorData = await response.json();
-    //                     throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-    //                 }
+        const fetchEmployeeData = async () => {
+            console.log("Fetching employee data...");
+            console.log("completeLeads:", completeLeads);
 
-    //                 // Process the POST response
-    //                 const data = await response.json();
-    //                 console.log("data.result is :", data.result);
-    //                 const callHistoryMap = {};
-    //                 data?.result.forEach((call) => {
-    //                     const number = call.client_number;
-    //                     console.log("Processing call for client_number:", number);
-    //                     console.log("Call object:", call);
+            const apiKey = process.env.REACT_APP_API_KEY;
+            const url = "https://api1.callyzer.co/v2/call-log/history";
+            const companyNumbers = finalFiltering?.map(
+                (company) => String(company["Company Number"])
+            );
 
-    //                     const matchedCompany = finalFiltering.find((company) => {
-    //                         const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
-    //                         const clientNumber = String(number || "").trim().toLowerCase();
-    //                         const empNumber = call.emp_number ? String(call.emp_number).trim().toLowerCase() : "";
-    //                         const empName = call.emp_name ? String(call.emp_name).trim().toLowerCase() : "";
-    //                         const bdeNumberProp = String(bdenumber || "").trim().toLowerCase(); // Use prop value
+            console.log("companyNumbers:", companyNumbers);
 
-    //                         return (
-    //                             companyNumber === clientNumber &&
-    //                             ((bdeNumberProp && bdeNumberProp === empNumber) ||
-    //                                 (company.bdmName && company.bdmName.trim().toLowerCase() === empName))
-    //                         );
-    //                     });
+            if (companyNumbers.length > 0) {
+                const body = {
+                    call_from: startTimestamp,
+                    call_to: endTimestamp,
+                    call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+                    client_numbers: companyNumbers,
+                };
 
-    //                     console.log("Matched company:", matchedCompany);
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${apiKey}`,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(body),
+                    });
 
-    //                     if (matchedCompany) {
-    //                         if (!callHistoryMap[number]) {
-    //                             callHistoryMap[number] = [];
-    //                         }
-    //                         callHistoryMap[number].push(call);
-    //                     }
-    //                 });
-    //                 console.log("callHistoryMap", callHistoryMap)
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+                    }
 
-    //                 const updatedGeneralLeads = finalFiltering.map((company) => {
-    //                     const companyNumber = String(company["Company Number"]);
-    //                     return {
-    //                         ...company,
-    //                         callHistoryData: callHistoryMap[companyNumber] || [],
-    //                     };
-    //                 });
-    //                 if(dataStatus === "Unassigned"){
-    //                     setunAssignedData(updatedGeneralLeads)
-    //                 }else if(data)
+                    const data = await response.json();
+                    console.log("data.result:", data.result);
 
-    //                 //setfinalFiltering(updatedGeneralLeads); // Update with enriched data
-    //             } catch (err) {
-    //                 console.log(err);
-    //             } finally {
-    //                 // setIsLoading(false);
-    //             }
+                    const callHistoryMap = {};
+                    data?.result.forEach((call) => {
+                        const number = call.client_number;
 
-    //         }
+                        const matchedCompany = completeLeads.find((company) => {
+                            const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
+                            const clientNumber = String(number || "").trim().toLowerCase();
+                            return companyNumber === clientNumber;
+                        });
+
+                        if (matchedCompany) {
+                            if (!callHistoryMap[number]) {
+                                callHistoryMap[number] = [];
+                            }
+                            callHistoryMap[number].push(call);
+                        }
+                    });
+
+                    console.log("callHistoryMap:", callHistoryMap);
+
+                    const updatedGeneralLeads = completeLeads.map((company) => {
+                        const companyNumber = String(company["Company Number"]);
+                        const callHistoryData = callHistoryMap[companyNumber] || [];
+
+                        // Save call history for each company number
+                        saveCallHistoryToBackend(companyNumber, callHistoryData);
+
+                        return {
+                            ...company,
+                            callHistoryData,
+                        };
+                    });
+
+                    setData(updatedGeneralLeads); // Ensure state update
+                } catch (err) {
+                    console.error("Error fetching call history:", err);
+                }
+            }
+        };
+
+        fetchEmployeeData();
+    }, [completeLeads]);
 
 
-    //     };
-    //     fetchEmployeeData();
-    // }, [data]);
+    console.log("extractedData", data)
+    console.log("completeLeads", completeLeads)
 
 
     const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName) => {

@@ -83,6 +83,19 @@ const informationSchema = new mongoose.Schema({
 }, {
   timestamps: true,
 });
+const clientCallHistorySchema = new mongoose.Schema({
+  client_number: { type: String, required: true },
+  call_date: { type: String, required: true },
+  call_time: { type: String, required: true },
+  call_type: { type: String, required: true },
+  client_country_code: { type: String },
+  client_name: { type: String },
+  duration: { type: Number },
+  emp_name: { type: String },
+  emp_number: { type: String },
+  synced_at: { type: String },
+  callId: { type: String, unique: true }, // Ensures no duplicates
+});
 
 // Define the schema for call logs
 const callLogSchema = new mongoose.Schema({
@@ -315,6 +328,7 @@ const CompanySchema = new mongoose.Schema({
   bdmNextFollowUpDate: {
     type: Date
   },
+  clientCallHistory: [clientCallHistorySchema], // New field
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);

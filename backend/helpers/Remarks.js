@@ -597,6 +597,66 @@ router.post('/webhook', async (req, res) => {
   }
 });
 
+router.post("/save-client-call-history", async (req, res) => {
+  const { client_number, callHistoryData } = req.body;
+  
+
+  try {
+    // Convert client_number to a number
+    const numericClientNumber = Number(client_number);
+    console.log("type after conversion:", typeof(numericClientNumber), numericClientNumber);
+
+    // Validate the conversion
+    if (isNaN(numericClientNumber)) {
+        return res.status(400).json({ error: "Invalid client number format" });
+    }
+
+      // Find the company by client number
+      const company = await CompanyModel.findOne({ "Company Number": numericClientNumber });
+
+      if (!company) {
+          return res.status(404).json({ error: "Company not found" });
+      }
+      
+
+      // Filter out duplicate call logs based on callId
+      const existingCallIds = company.clientCallHistory?.map((log) => log.callId) || [];
+      const newCallHistory = callHistoryData
+          .filter((call) => !existingCallIds.includes(call.id))
+          .map((call) => ({
+              client_number: call.client_number,
+              call_date: call.call_date,
+              call_time: call.call_time,
+              call_type: call.call_type,
+              client_country_code: call.client_country_code,
+              client_name: call.client_name,
+              duration: call.duration,
+              emp_name: call.emp_name,
+              emp_number: call.emp_number,
+              synced_at: call.synced_at,
+              callId: call.id,
+          }));
+
+      // Use the `$push` operator to append new call logs without modifying other fields
+      await CompanyModel.updateOne(
+          { "Company Number": numericClientNumber },
+          {
+              $push: {
+                  clientCallHistory: { $each: newCallHistory },
+              },
+          }
+      );
+
+      res.status(200).json({ message: "Call history saved successfully" });
+  } catch (error) {
+      console.error("Error saving call history:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+
 
 
 

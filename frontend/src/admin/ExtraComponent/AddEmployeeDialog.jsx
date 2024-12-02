@@ -329,22 +329,6 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                     // bdmWork,
                 };
 
-                // Set designation based on otherDesignation
-                // if (otherdesignation !== "") {
-                //   dataToSend.designation = otherdesignation;
-                // } else {
-                //   dataToSend.designation = designation;
-                // }
-
-                // if (newDesignation === "Floor Manager" || newDesignation === "Business Development Manager") {
-                //     dataToSend.bdmWork = true;
-                //     dataToSendUpdated.bdmWork = true;
-                // } else {
-                //     dataToSend.bdmWork = false;
-                //     dataToSendUpdated.bdmWork = false;
-                // }
-                // console.log(isUpdateMode, "updateMode")
-
                 if (isUpdateMode) {
                     if (dataToSend.ename === "") {
                         Swal.fire("Invalid Details", "Please Enter Details Properly", "warning");
