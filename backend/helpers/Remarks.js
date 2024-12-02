@@ -441,7 +441,7 @@ router.post('/webhook', async (req, res) => {
           let company = await CompanyModel.findOne({
             "Company Number": log.client_number,
           });
-          const employeeDetails = await adminModel.findOne({ ename: employee.emp_name })
+          const employeeDetails = await adminModel.findOne({ ename: employee.emp_name }).select('designation').lean();
           console.log('Employee Details:', employeeDetails);
           // if (!company) {
           //   console.log(Company not found for number: ${log.client_number});

@@ -177,7 +177,7 @@ router.post("/update-status/:id", async (req, res) => {
       updates.bdmStatus = newStatus;
       updates.lastActionDate = new Date();
       updates.previousStatusToUndo = company.Status;
-      console.log("workinghereelse", updates)
+      // console.log("workinghereelse", updates)
       promises.push(
         CompanyModel.findByIdAndUpdate(id, {
           $set: updates,
