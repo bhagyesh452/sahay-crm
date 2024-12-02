@@ -2202,6 +2202,11 @@ router.put("/einfo/:id", async (req, res) => {
       currentData.number = dataToSendUpdated.number;
     }
 
+     // Update `offerLetter` only if it's valid and an object
+     if (dataToSendUpdated.offerLetter && typeof dataToSendUpdated.offerLetter === "object") {
+      currentData.offerLetter = dataToSendUpdated.offerLetter;
+    }
+
     // Update targetDetails ratios and results
     dataToSendUpdated.targetDetails.forEach(target => {
       const amount = parseFloat(target.amount);
