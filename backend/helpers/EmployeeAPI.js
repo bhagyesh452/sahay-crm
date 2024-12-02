@@ -2173,6 +2173,7 @@ router.get("/einfo", async (req, res) => {
 router.put("/einfo/:id", async (req, res) => {
   const id = req.params.id;
   const dataToSendUpdated = req.body;
+  console.log("Data to be updated:", dataToSendUpdated);
 
   try {
     // Find the current employee data by ID
