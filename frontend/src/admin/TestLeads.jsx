@@ -108,8 +108,8 @@ function TestLeads() {
 
     //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
-        const response = await axios.get(`${secretKey}/company-data/leads`)
-        setCompleteLeads(response.data)
+        // const response = await axios.get(`${secretKey}/company-data/leads`)
+        // setCompleteLeads(response.data)
     };
 
     const formatBdeForwardDate = (dateString) => {
@@ -1661,7 +1661,7 @@ function TestLeads() {
 
         const fetchEmployeeData = async () => {
             console.log("Fetching employee data...");
-            console.log("completeLeads:", completeLeads);
+            // console.log("completeLeads:", completeLeads);
 
             const apiKey = process.env.REACT_APP_API_KEY;
             const url = "https://api1.callyzer.co/v2/call-log/history";
@@ -1701,7 +1701,7 @@ function TestLeads() {
                     data?.result.forEach((call) => {
                         const number = call.client_number;
 
-                        const matchedCompany = completeLeads.find((company) => {
+                        const matchedCompany = finalFiltering.find((company) => {
                             const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
                             const clientNumber = String(number || "").trim().toLowerCase();
                             return companyNumber === clientNumber;
@@ -1717,7 +1717,7 @@ function TestLeads() {
 
                     console.log("callHistoryMap:", callHistoryMap);
 
-                    const updatedGeneralLeads = completeLeads.map((company) => {
+                    const updatedGeneralLeads = finalFiltering.map((company) => {
                         const companyNumber = String(company["Company Number"]);
                         const callHistoryData = callHistoryMap[companyNumber] || [];
 
