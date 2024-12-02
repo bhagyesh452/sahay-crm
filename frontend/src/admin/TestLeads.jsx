@@ -1738,11 +1738,11 @@ function TestLeads() {
         };
 
         fetchEmployeeData();
-    }, [completeLeads]);
+    }, [data]);
 
 
     console.log("extractedData", data)
-    console.log("completeLeads", completeLeads)
+    // console.log("completeLeads", completeLeads)
 
 
     const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName) => {
