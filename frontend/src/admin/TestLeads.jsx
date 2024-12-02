@@ -1647,7 +1647,7 @@ function TestLeads() {
     //     const fetchEmployeeData = async () => {
     //         const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
     //         const url = 'https://api1.callyzer.co/v2/call-log/history';
-    //         const companyNumbers = generalData?.map(
+    //         const companyNumbers = finalFiltering?.map(
     //             (company) => String(company["Company Number"])
     //         );
 
@@ -1685,7 +1685,7 @@ function TestLeads() {
     //                     console.log("Processing call for client_number:", number);
     //                     console.log("Call object:", call);
 
-    //                     const matchedCompany = generalData.find((company) => {
+    //                     const matchedCompany = finalFiltering.find((company) => {
     //                         const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
     //                         const clientNumber = String(number || "").trim().toLowerCase();
     //                         const empNumber = call.emp_number ? String(call.emp_number).trim().toLowerCase() : "";
@@ -1710,15 +1710,18 @@ function TestLeads() {
     //                 });
     //                 console.log("callHistoryMap", callHistoryMap)
 
-    //                 const updatedGeneralLeads = generalData.map((company) => {
+    //                 const updatedGeneralLeads = finalFiltering.map((company) => {
     //                     const companyNumber = String(company["Company Number"]);
     //                     return {
     //                         ...company,
     //                         callHistoryData: callHistoryMap[companyNumber] || [],
     //                     };
     //                 });
+    //                 if(dataStatus === "Unassigned"){
+    //                     setunAssignedData(updatedGeneralLeads)
+    //                 }else if(data)
 
-    //                 setGeneralData(updatedGeneralLeads); // Update with enriched data
+    //                 //setfinalFiltering(updatedGeneralLeads); // Update with enriched data
     //             } catch (err) {
     //                 console.log(err);
     //             } finally {

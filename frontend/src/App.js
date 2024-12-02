@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Navigate, Route } from "react-router-dom";
 import { useState } from "react";
 import EmployeeLogin from "./components/EmployeeLogin";
 import ConveertedLeads from "./components/ConveertedLeads";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 // Admin Panel Imports
 //import Dashboard from "./admin/Dashboard";
 import AdminLayout from "./admin/AdminLayout.jsx";
@@ -167,6 +168,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
+      <ToastContainer /> {/* Add ToastContainer here */}
         <Routes>
 
           {/* --------------------------------------------------Path for BDE/BDM---------------------------------------------------------- */}
