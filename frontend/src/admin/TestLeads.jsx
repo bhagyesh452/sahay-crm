@@ -1644,9 +1644,8 @@ function TestLeads() {
                 ? extractedData
                 : assignedData;
 
-        // const finalFiltering = !isFilter && !isSearching ? data : dataToFilter;
-        const finalFiltering = completeLeads;
-        console.log("finalFiltering", completeLeads)
+        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter;
+        console.log("finalFiltering", data)
         const saveCallHistoryToBackend = async (clientNumber, callHistoryData) => {
             try {
                 const response = await axios.post(
@@ -1673,7 +1672,6 @@ function TestLeads() {
             console.log("companyNumbers:", companyNumbers);
 
             if (companyNumbers.length > 0) {
-                console.log("here")
                 const body = {
                     call_from: startTimestamp,
                     call_to: endTimestamp,
@@ -1691,7 +1689,10 @@ function TestLeads() {
                         body: JSON.stringify(body),
                     });
 
-                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+                    }
 
                     const data = await response.json();
                     console.log("data.result:", data.result);
@@ -1740,7 +1741,8 @@ function TestLeads() {
     }, [completeLeads]);
 
 
-    
+    console.log("extractedData", data)
+    console.log("completeLeads", completeLeads)
 
 
     const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName) => {
