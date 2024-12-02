@@ -96,129 +96,6 @@ router.get("/leads/interestedleads/followupleads", async (req, res) => {
   }
 });
 
-// router.post("/update-status/:id", async (req, res) => {
-//   const { id } = req.params;
-//   const { newStatus, title, date, time, oldStatus } = req.body;
-//   const socketIO = req.io;
-
-//   try {
-//     // Find the company by ID in the CompanyModel to get the company details
-//     const company = await CompanyModel.findById(id);
-//     let shouldEmitSocket = false; // Flag to track if socket event should be emitted
-//     // if (!company) {
-//     //   return res.status(404).json({ error: "Company not found" });
-//     // }
-
-//     console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, company.Status)
-
-//     //Update the status field in the CompanyModel
-//     if ((newStatus === "Not Interested") && (company.bdmAcceptStatus === "MaturedAccepted")) {
-//       console.log("if", newStatus, title, date, time, oldStatus);
-//       shouldEmitSocket = true; // Set the flag for socket emission
-//       await CompanyModel.findByIdAndUpdate(id, {
-//         $set: {
-//           // Status: newStatus,
-//           lastActionDate: new Date(),
-//           bdmAcceptStatus: "NotForwarded"
-//         },
-//         $unset: {
-//           bdmStatus: ""
-//         }
-
-//       });
-//       await TeamLeadsModel.findByIdAndDelete(id);
-//     } else if ((newStatus === "Busy" || newStatus === "Not Picked Up" || newStatus === "FollowUp" || newStatus === "Interested") && (company.bdmAcceptStatus === "MaturedAccepted")) {
-//       console.log("yahan elseif", newStatus, title, date, time, oldStatus);
-//       await CompanyModel.findByIdAndUpdate(id, {
-//         $set: {
-//           bdmStatus: newStatus,
-//           lastActionDate: new Date(),
-//           // bdmAcceptStatus:"NotForwarded"
-//         },
-//         // $unset : {
-//         //   bdmStatus : ""
-//         // }
-
-//       });
-//     } else {
-//       console.log("yahan else", newStatus, title, date, time, oldStatus);
-//       await CompanyModel.findByIdAndUpdate(id, {
-//         Status: newStatus,
-//         AssignDate: new Date(),
-//         bdmStatus: newStatus,
-//         lastActionDate: new Date(),
-//         previousStatusToUndo: company.Status
-//       });
-//       console.log("else", newStatus, title, date, time, oldStatus);
-//     }
-
-//     // Define an array of statuses for which the lead history should be deleted
-//     const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched", "Not Picked Up"];
-
-//     if (deleteStatuses.includes(newStatus)) {
-//       // Find the company in LeadHistoryForInterestedandFollowModel
-//       const leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
-//         "Company Name": company["Company Name"],
-//       });
-
-//       // If lead history exists, delete the document
-//       if (leadHistory) {
-//         await LeadHistoryForInterestedandFollowModel.deleteOne({
-//           "Company Name": company["Company Name"],
-//         });
-//       }
-
-//     } else if (newStatus === "FollowUp" || newStatus === "Interested") {
-
-//       // Find the company in LeadHistoryForInterestedandFollowModel
-//       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
-//         "Company Name": company["Company Name"],
-//       });
-//       // console.log("0 leadHistory", leadHistory)
-
-//       if (leadHistory) {
-//         // console.log("1 leadHistory", leadHistory)
-//         // If the record exists, update old status, new status, date, and time
-//         leadHistory.oldStatus = "Interested";
-//         leadHistory.newStatus = newStatus;
-//       } else {
-//         // console.log("2 leadHistory", leadHistory)
-//         // If the record does not exist, create a new one with the company name, ename, and statuses
-//         leadHistory = new LeadHistoryForInterestedandFollowModel({
-//           _id: id,
-//           "Company Name": company["Company Name"],
-//           ename: company.ename,
-//           oldStatus: oldStatus,
-//           newStatus: newStatus,
-//           date: new Date(),  // Convert the date string to a Date object
-//           time: time,
-//         });
-//       }
-//       // console.log("3 leadHistory", leadHistory)
-
-//       // Save the lead history update
-//       await leadHistory.save();
-//     }
-//     // Emit the socket message only if the flag is set
-//     if (shouldEmitSocket) {
-//       console.log("Emitting socket event");
-//       socketIO.emit("bdm-moved-to-notinterested", {
-//         message: `Status updated to "Not Interested" for company: ${company["Company Name"]}`,
-//         companyName: company["Company Name"],
-//         ename: company.ename,
-//         newStatus,
-//         date,
-//         time,
-//       });
-//     }
-
-
-//     res.status(200).json({ message: "Status updated successfully" });
-//   } catch (error) {
-//     console.error("Error updating status:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
 
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
@@ -239,7 +116,7 @@ router.post("/update-status/:id", async (req, res) => {
     const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched", "Not Picked Up"];
     const promises = []; // Array to collect all async operations
 
-    console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, company.Status);
+    // console.log("bdmAcceptStatus", company.bdmAcceptStatus, newStatus, company.Status);
 
     // Case: Not Interested with MaturedAccepted
     if (newStatus === "Not Interested" && (company.bdmAcceptStatus === "Accept")) {
@@ -249,7 +126,7 @@ router.post("/update-status/:id", async (req, res) => {
       updates.bdmStatus = newStatus;
       // updates.bdmAcceptStatus = "NotForwarded";
       updates.Status = newStatus;
-      console.log("workinghere", updates)
+      // console.log("workinghere", updates)
       promises.push(
         CompanyModel.findByIdAndUpdate(id, {
           $set: updates,
@@ -267,7 +144,7 @@ router.post("/update-status/:id", async (req, res) => {
       // updates.bdmStatus = newStatus;
       updates.bdmAcceptStatus = "NotForwarded";
       //updates.Status = newStatus;
-      console.log("workinghere", updates)
+      // console.log("workinghere", updates)
       promises.push(
         CompanyModel.findByIdAndUpdate(id, {
           $set: updates,
@@ -3119,23 +2996,6 @@ router.post("/postData", async (req, res) => {
     },
   }));
   await CompanyModel.bulkWrite(bulkOperations);
-
-  // If not assigned, post data to MongoDB or perform any desired action
-  // const updatePromises = selectedObjects.map((obj) => {
-  //   // Add AssignData property with the current date
-  //   const updatedObj = {
-  //     ...obj,
-  //     ename: employeeSelection,
-  //     AssignDate: new Date(),
-  //   };
-  //   return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
-  // });
-
-  // Add the recent update to the RecentUpdatesModel
-
-
-  // Execute all update promises
-  // await Promise.all(updatePromises);
 
   res.json({ message: "Data posted successfully" });
 });
