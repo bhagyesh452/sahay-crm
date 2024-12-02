@@ -1478,17 +1478,6 @@ function ManageLeads() {
 
     const hanleCloseCallHistory = () => {
         setShowCallHistory(false);
-        // if (activeTabId === "Interested" && interestedTabRef.current) {
-        //     interestedTabRef.current.click(); // Trigger the Interested tab click
-        // } else if (activeTabId === "Matured" && maturedTabRef.current) {
-        //     maturedTabRef.current.click(); // Trigger the Matured tab click
-        // } else if (activeTabId === "All" && allTabRef.current) {
-        //     allTabRef.current.click(); // Trigger the Matured tab click
-        // } else if (activeTabId === "Not Interested" && notInterestedTabRef.current) {
-        //     notInterestedTabRef.current.click(); // Trigger the Matured tab click
-        // } else if (activeTabId === "Forwarded" && forwardedTabRef.current) {
-        //     forwardedTabRef.current.click(); // Trigger the Matured tab click
-        // }
     };
 
     const calculateAgeFromDate = (dateString) => {

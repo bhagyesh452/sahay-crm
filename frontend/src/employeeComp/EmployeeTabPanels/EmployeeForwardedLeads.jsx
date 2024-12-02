@@ -352,7 +352,7 @@ function EmployeeForwardedLeads({
 
 
     return (
-        <div className="sales-panels-main" onMouseUp={handleMouseUp}>
+        <div className="sales-panels-main no-select" onMouseUp={handleMouseUp}>
             {!formOpen && !addFormOpen && (
                 <>
                     <div className="table table-responsive e-Leadtable-style m-0">

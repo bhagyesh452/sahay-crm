@@ -906,6 +906,12 @@ th.th-sticky1::after {
 .disabled {
   opacity: 0.5;
 }
+.no-select {
+  user-select: none; /* Prevents text selection */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10+ */
+  -moz-user-select: none; /* Firefox */
+}
 
 .space {
   margin-right: 1rem !important;

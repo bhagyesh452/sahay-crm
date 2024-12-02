@@ -174,7 +174,7 @@ function TeamLeadsGeneral({
   };
 
   return (
-    <div className="sales-panels-main">
+    <div className="sales-panels-main no-select">
       <div className="table table-responsive e-Leadtable-style m-0">
         <table
           className="table table-vcenter table-nowrap"

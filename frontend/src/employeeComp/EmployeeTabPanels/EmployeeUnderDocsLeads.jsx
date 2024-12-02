@@ -280,7 +280,7 @@ function EmployeeUnderDocsLeads({
 
 
     return (
-        <div className="sales-panels-main" onMouseUp={handleMouseUp}>
+        <div className="sales-panels-main no-select" onMouseUp={handleMouseUp}>
             {openBacdrop && (<Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={openBacdrop}
