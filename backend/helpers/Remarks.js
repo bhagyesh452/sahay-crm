@@ -452,8 +452,13 @@ router.post('/webhook', async (req, res) => {
           // console.log(`Found Company: ${company["Company Name"]}, ID: ${company._id}`);
 
           // Emit a socket message if emp_name does not match ename or bdmName
-          if (employee.emp_name.toLowerCase() !== company.ename.toLowerCase() &&
-            employee.emp_name.toLowerCase() !== company.bdmName.toLowerCase()) {
+          if (
+            (employeeDetails?.designation === "Sales Executive" ||
+             employeeDetails?.designation === "Sales Manager" ||
+             employeeDetails?.designation === "Floor Manager") &&
+            employee.emp_name.toLowerCase() !== company.ename.toLowerCase() &&
+            employee.emp_name.toLowerCase() !== company.bdmName.toLowerCase()
+          ) {
             // console.log("socket working")
             socketIO.emit('unexpectedCaller', {
               message: `Unexpected caller detected for company: ${company["Company Name"]}`,
