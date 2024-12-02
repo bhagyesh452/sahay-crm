@@ -651,7 +651,7 @@ function TeamLeadsNotInterested({
                                                         bdenumber,
                                                         company.bdmName,
                                                         company.bdmAcceptStatus,
-                                                        company.bdeForwardDate,
+                                                        company.bdmName,
                                                         company.callHistoryData // Pass call history data
                                                     );
                                                 }

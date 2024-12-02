@@ -135,14 +135,16 @@ function EmployeeTeamLeadsCopy({ designation }) {
         setShowAssignLeadsFromBdm(false);
     };
 
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, ename , callHistoryData) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, ename , callHistoryData) => {
         setShowCallHistory(true);
         setClientNumber(clientNumber);
         setcallHistoryBdmName(ename)
         setCompanyName(companyName);
         setCallHistoryDataToMap(callHistoryData)
+        console.log("callHistoryData" , callHistoryData)
         // setcallHistoryBdeName(ename)
     };
+    console.log("callHistoryDataToMap" , callHistoryDataToMap)
 
     const hanleCloseCallHistory = () => {
         setShowCallHistory(false);
@@ -682,8 +684,7 @@ function EmployeeTeamLeadsCopy({ designation }) {
         }
     }, [data.ename, revertBackRequestData.length]);
 
-    console.log("revertBackRequestData", revertBackRequestData)
-    console.log("open", openRevertBackRequestDialog)
+   
 
     useEffect(() => {
         fetchData();

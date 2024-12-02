@@ -277,6 +277,7 @@ function TeamLeadsInterested({
 
     // console.log("Current page is :", currentPage);
     // console.log("Total pages are :", totalPages);
+    console.log("intesrestedData" , interestedData)
 
     return (
         <div className="sales-panels-main no-select">
@@ -743,7 +744,7 @@ function TeamLeadsInterested({
                                                         bdenumber,
                                                         company.bdmName,
                                                         company.bdmAcceptStatus,
-                                                        company.bdeForwardDate,
+                                                        company.bdmName,
                                                         company.callHistoryData // Pass call history data
                                                     );
                                                 }

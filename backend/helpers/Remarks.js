@@ -441,8 +441,8 @@ router.post('/webhook', async (req, res) => {
           let company = await CompanyModel.findOne({
             "Company Number": log.client_number,
           });
-          // const employeeDetails = await adminModel.findOne({ ename: company.ename })
-          // console.log('Employee Details:', employeeDetails);
+          const employeeDetails = await adminModel.findOne({ ename: employee.emp_name })
+          console.log('Employee Details:', employeeDetails);
           // if (!company) {
           //   console.log(Company not found for number: ${log.client_number});
           //   continue;
@@ -453,14 +453,14 @@ router.post('/webhook', async (req, res) => {
 
           // Emit a socket message if emp_name does not match ename or bdmName
           if (employee.emp_name.toLowerCase() !== company.ename.toLowerCase() &&
-          employee.emp_name.toLowerCase() !== company.bdmName.toLowerCase()) {
+            employee.emp_name.toLowerCase() !== company.bdmName.toLowerCase()) {
             // console.log("socket working")
             socketIO.emit('unexpectedCaller', {
               message: `Unexpected caller detected for company: ${company["Company Name"]}`,
               companyId: company._id,
               companyName: company["Company Name"],
               expectedEmployee: [company.ename, company.bdmName],
-              actualEmployee: employee.emp_name,
+              callingEmployeeName: employee.emp_name,
               callDetails: log,
               ename: company.ename,
               bdmName: company.bdmName
@@ -474,7 +474,7 @@ router.post('/webhook', async (req, res) => {
               requestTime: new Date(),
               designation: "SE",
               status: "Unread",
-              employee_status:"Unread",
+              employee_status: "Unread",
               img_url: GetEmployeeProfile,
               employeeRequestType: `Unexpected Caller`,
               companyName: company["Company Name"],
@@ -482,7 +482,7 @@ router.post('/webhook', async (req, res) => {
             }
             const addRequest = new NotiModel(requestCreate);
             const saveRequest = await addRequest.save();
-            
+
           }
 
 

@@ -5,7 +5,7 @@ import Nodata from '../components/Nodata';
 import { IconChevronRight, IconChevronLeft } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
 
-function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, companyName, fordesignation, note, bdeForwardDate,callHistory,setCallHistory}) {
+function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, companyName, fordesignation, note, bdeForwardDate, callHistory, setCallHistory }) {
     console.log(bdenumber, bdmName, fordesignation);
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -83,63 +83,65 @@ function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, com
 
     let clientNumberArray = [clientNumber];
 
-    useEffect(() => {
-        const fetchEmployeeData = async () => {
-            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-            const url = 'https://api1.callyzer.co/v2/call-log/history';
+    // useEffect(() => {
+    //     const fetchEmployeeData = async () => {
+    //         const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+    //         const url = 'https://api1.callyzer.co/v2/call-log/history';
 
-            const body = {
-                "call_from": startTimestamp,
-                "call_to": endTimestamp,
-                "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-                "client_numbers": clientNumberArray
-            };
+    //         const body = {
+    //             "call_from": startTimestamp,
+    //             "call_to": endTimestamp,
+    //             "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+    //             "client_numbers": clientNumberArray
+    //         };
 
-            try {
-                setIsLoading(true);
-                // POST request to the call-log API
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                });
+    //         try {
+    //             setIsLoading(true);
+    //             // POST request to the call-log API
+    //             const response = await fetch(url, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Authorization': `Bearer ${apiKey}`,
+    //                     'Content-Type': 'application/json'
+    //                 },
+    //                 body: JSON.stringify(body)
+    //             });
 
-                // Check for errors in the POST request
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-                }
+    //             // Check for errors in the POST request
+    //             if (!response.ok) {
+    //                 const errorData = await response.json();
+    //                 throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+    //             }
 
-                // Process the POST response
-                const data = await response.json();
-                console.log("data.result is :", data.result);
-                console.log("Calling history is :", bdenumber, bdmName, data.result.filter((data) => data.emp_number === bdenumber && bdmName === data.emp_name));
-                if (bdenumber) {
-                    setCallHistory(data.result.filter((data) => (data.emp_number === bdenumber) || (bdmName === data.emp_name)));
-                } else {
-                    setCallHistory(data.result);
-                }
-                //setCallHistory(data.result.filter((data)=>data.emp_number === bdenumber));
-                // console.log("Calling history is :", data);
-            } catch (err) {
-                console.log(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchEmployeeData();
-    }, [clientNumber]);
+    //             // Process the POST response
+    //             const data = await response.json();
+    //             console.log("data.result is :", data.result);
+    //             console.log("Calling history is :", bdenumber, bdmName, data.result.filter((data) => data.emp_number === bdenumber && bdmName === data.emp_name));
+    //             if (bdenumber) {
+    //                 setCallHistory(data.result.filter((data) => (data.emp_number === bdenumber) || (bdmName === data.emp_name)));
+    //             } else {
+    //                 setCallHistory(data.result);
+    //             }
+    //             //setCallHistory(data.result.filter((data)=>data.emp_number === bdenumber));
+    //             // console.log("Calling history is :", data);
+    //         } catch (err) {
+    //             console.log(err);
+    //         } finally {
+    //             setIsLoading(false);
+    //         }
+    //     };
+    //     fetchEmployeeData();
+    // }, [clientNumber]);
 
     // Calculate data for current page
-    const currentData = (searchValue ? searchResult : callHistory).slice(
-        currentPage * itemsPerPage,
-        (currentPage + 1) * itemsPerPage
-    );
 
-    
+    const currentData = (searchValue ? searchResult ?? [] : callHistory ?? [])
+        .slice(
+            currentPage * itemsPerPage,
+            (currentPage + 1) * itemsPerPage
+        );
+console.log("callHistory" , callHistory)
+
     // console.log("currentData", currentData);
 
     console.log("note", note)
@@ -163,7 +165,7 @@ function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, com
                             <div className={"d-flex align-items-center"}>
                                 <div className={fordesignation === "admin" || fordesignation === "datamanager" ? "ml-3" : "d-none"}>
                                     <div className="selection-data" >
-                                     <b>{note}</b>
+                                        <b>{note}</b>
                                     </div>
                                 </div>
 
@@ -195,7 +197,6 @@ function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, com
 
                 <div className="page-body">
                     <div className="container-xl">
-
                         <div class="card-header my-tab">
                             <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
                                 data-bs-toggle="tabs">
@@ -206,7 +207,9 @@ function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, com
                                         data-bs-toggle="tab"
                                     >
                                         {companyName} ({clientNumber}) Calling History{" "}
-                                        <span className="no_badge">{(searchValue ? searchResult : callHistory).length}</span>
+                                        <span className="no_badge">
+                                            {(searchValue ? searchResult ?? [] : callHistory ?? []).length}
+                                        </span>
                                     </a>
                                 </li>
                             </ul>
@@ -261,8 +264,8 @@ function CallHistory({ handleCloseHistory, clientNumber, bdenumber, bdmName, com
                                         ) : (
                                             <>
                                                 <tbody>
-                                                    {currentData.length > 0 ? (
-                                                        currentData.map((item, index) => (
+                                                    {currentData?.length > 0 ? (
+                                                        currentData?.map((item, index) => (
                                                             <tr key={index} style={{ border: "1px solid #ddd" }}>
                                                                 <td className="td-sticky">{currentPage * itemsPerPage + index + 1}</td>
                                                                 <td className="td-sticky1">{item.emp_name}</td>
