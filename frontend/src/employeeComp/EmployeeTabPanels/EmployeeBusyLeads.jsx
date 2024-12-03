@@ -249,11 +249,12 @@ function EmployeeBusyLeads({
                 console.log("callHistoryMap:", callHistoryMap);
 
                 // Save matched call history to database
-                await Promise.all(
+                const updatedGeneralData = await Promise.all(
                     busyData.map(async (company) => {
                         const companyNumber = String(company["Company Number"]);
                         const callHistoryForCompany = callHistoryMap[companyNumber] || [];
-
+    
+                        // Save to the database if there is call history
                         if (callHistoryForCompany.length > 0) {
                             try {
                                 await axios.post(`${secretKey}/remarks/save-client-call-history`, {
@@ -267,9 +268,17 @@ function EmployeeBusyLeads({
                         } else {
                             console.log(`No call history to save for company ${companyNumber}.`);
                         }
+    
+                        // Update local busyData with call history
+                        return {
+                            ...company,
+                            callHistoryData: callHistoryForCompany,
+                        };
                     })
                 );
-
+    
+                // Update the generalData state with enriched data
+                setBusyData(updatedGeneralData);
                 console.log("All call history saved successfully.");
             } catch (err) {
                 console.error("Error fetching and saving call history:", err);
@@ -280,7 +289,7 @@ function EmployeeBusyLeads({
     }, [busyData]);
 
     // console.log("activeFilterFieldsBusy", activeFilterFields);
-    // console.log("generalData" , busyData);
+    console.log("busyData" , busyData);
 
     return (
         <div className="sales-panels-main no-select" onMouseUp={handleMouseUp}>

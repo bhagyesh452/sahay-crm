@@ -250,11 +250,12 @@ function EmployeeGeneralLeads({
                 console.log("callHistoryMap:", callHistoryMap);
 
                 // Save matched call history to database
-                await Promise.all(
+                const updatedGeneralData = await Promise.all(
                     generalData.map(async (company) => {
                         const companyNumber = String(company["Company Number"]);
                         const callHistoryForCompany = callHistoryMap[companyNumber] || [];
-
+    
+                        // Save to the database if there is call history
                         if (callHistoryForCompany.length > 0) {
                             try {
                                 await axios.post(`${secretKey}/remarks/save-client-call-history`, {
@@ -268,8 +269,17 @@ function EmployeeGeneralLeads({
                         } else {
                             console.log(`No call history to save for company ${companyNumber}.`);
                         }
+    
+                        // Update local generalData with call history
+                        return {
+                            ...company,
+                            callHistoryData: callHistoryForCompany,
+                        };
                     })
                 );
+    
+                // Update the generalData state with enriched data
+                setGeneralData(updatedGeneralData);
 
                 console.log("All call history saved successfully.");
             } catch (err) {

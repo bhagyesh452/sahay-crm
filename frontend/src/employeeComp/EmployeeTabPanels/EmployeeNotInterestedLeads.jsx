@@ -251,26 +251,36 @@ function EmployeeNotInterestedLeads({
             console.log("callHistoryMap:", callHistoryMap);
     
             // Save matched call history to database
-            await Promise.all(
-              notInterestedLeads.map(async (company) => {
-                const companyNumber = String(company["Company Number"]);
-                const callHistoryForCompany = callHistoryMap[companyNumber] || [];
-    
-                if (callHistoryForCompany.length > 0) {
-                  try {
-                    await axios.post(`${secretKey}/remarks/save-client-call-history`, {
-                      client_number: companyNumber,
-                      callHistoryData: callHistoryForCompany,
-                    });
-                    console.log(`Call history for company ${companyNumber} saved successfully.`);
-                  } catch (err) {
-                    console.error(`Error saving call history for ${companyNumber}:`, err.response?.data || err.message);
-                  }
-                } else {
-                  console.log(`No call history to save for company ${companyNumber}.`);
-                }
-              })
+            const updatedGeneralData = await Promise.all(
+                notInterestedLeads.map(async (company) => {
+                    const companyNumber = String(company["Company Number"]);
+                    const callHistoryForCompany = callHistoryMap[companyNumber] || [];
+
+                    // Save to the database if there is call history
+                    if (callHistoryForCompany.length > 0) {
+                        try {
+                            await axios.post(`${secretKey}/remarks/save-client-call-history`, {
+                                client_number: companyNumber,
+                                callHistoryData: callHistoryForCompany,
+                            });
+                            console.log(`Call history for company ${companyNumber} saved successfully.`);
+                        } catch (err) {
+                            console.error(`Error saving call history for ${companyNumber}:`, err.response?.data || err.message);
+                        }
+                    } else {
+                        console.log(`No call history to save for company ${companyNumber}.`);
+                    }
+
+                    // Update local busyData with call history
+                    return {
+                        ...company,
+                        callHistoryData: callHistoryForCompany,
+                    };
+                })
             );
+
+            // Update the generalData state with enriched data
+            setNotInterestedData(updatedGeneralData);
     
             console.log("All call history saved successfully.");
           } catch (err) {

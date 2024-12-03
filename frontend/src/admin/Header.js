@@ -273,33 +273,33 @@ const isHolidayOrSunday = (date) => {
 // }, [totalEmployees]);
 
 
-// useEffect(() => {
+useEffect(() => {
  
-//   const employeeNumbers = totalEmployees.map((item) => item.number); // Extract the 'number' field
+  const employeeNumbers = totalEmployees.map((item) => item.number); // Extract the 'number' field
 
-//       // Calculate the previous day
-//       const previousDay = new Date();
-//       console.log("previousDay", previousDay);
-//       previousDay.setDate(previousDay.getDate() - 1);
+      // Calculate the previous day
+      const previousDay = new Date();
+      console.log("previousDay", previousDay);
+      previousDay.setDate(previousDay.getDate() - 1);
 
-//       // Find the last working day
-//       while (isHolidayOrSunday(previousDay)) {
-//           previousDay.setDate(previousDay.getDate() - 1); // Move to the previous day
-//       }
+      // Find the last working day
+      while (isHolidayOrSunday(previousDay)) {
+          previousDay.setDate(previousDay.getDate() - 1); // Move to the previous day
+      }
 
-//       const fetchAndSaveData = async () => {
-//           // Loop through employee numbers and fetch/save data for each
-//           for (let empNumber of employeeNumbers) {
-//               const dailyData = await fetchDailyData(previousDay, empNumber); // Fetch for the last working day
-//               if (dailyData) {
-//                   await saveMonthlyDataToDatabase(empNumber, dailyData); // Save the data for this employee
-//               }
-//           }
-//       };
+      const fetchAndSaveData = async () => {
+          // Loop through employee numbers and fetch/save data for each
+          for (let empNumber of employeeNumbers) {
+              const dailyData = await fetchDailyData(previousDay, empNumber); // Fetch for the last working day
+              if (dailyData) {
+                  await saveMonthlyDataToDatabase(empNumber, dailyData); // Save the data for this employee
+              }
+          }
+      };
 
-//       fetchAndSaveData();
+      fetchAndSaveData();
  
-// }, [totalEmployees]);
+}, [totalEmployees]);
 
   return (
     <div>
