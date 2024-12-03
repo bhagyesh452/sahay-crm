@@ -530,7 +530,11 @@ const handleSendOtp = async (e) => {
         setIsOtpSent(true);
         const expiryTime = otpExpiry || Date.now() + 1 * 60 * 1000; // Use current time + 3 mins if backend doesn't send `otpExpiry`
         startTimer(expiryTime);
-        Swal.fire("Success", "OTP sent to your email.", "success");
+        Swal.fire({
+            icon: "success",
+            title: "Success",
+            html: `A 6-digit OTP has been sent to <b>${email}</b>`,
+          });
     } catch (error) {
         setErrorMessage(error.response.data.message || "Error sending OTP.");
     } finally {

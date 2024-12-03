@@ -2548,18 +2548,22 @@ function EmployeeMaturedBookings() {
                                               handleViewPdOtherDocs(obj.filename, currentLeadform["Company Name"])
                                             }
                                           >
-                                            {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
-                                              <PdfImageViewerAdmin
-                                                type="pdf"
-                                                path={obj.filename}
-                                                companyName={currentLeadform["Company Name"]}
-                                              />
-                                            ) : (
-                                              <img
-                                                src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
-                                                alt={pdfimg}
-                                              ></img>
-                                            )}
+                                             {
+                                                obj?.filename && typeof obj.filename === "string" && obj.filename.toLowerCase().endsWith(".pdf") ? (
+                                                  <PdfImageViewerAdmin
+                                                    type="pdf"
+                                                    path={obj.filename}
+                                                    companyName={currentLeadform?.["Company Name"] || "Unknown Company"}
+                                                  />
+                                                ) : obj?.filename && typeof obj.filename === "string" ? (
+                                                  <img
+                                                    src={`${secretKey}/bookings/otherpdf/${currentLeadform?.["Company Name"] || "Unknown Company"}/${obj.filename}`}
+                                                    alt={pdfimg}
+                                                  />
+                                                ) : (
+                                                  <span>No file available</span>
+                                                )
+                                              }
                                           </div>
                                           <div className="booking-docs-preview-text">
                                             <p className="booking-img-name-txtwrap text-wrap m-auto m-0" title={obj.originalname}>

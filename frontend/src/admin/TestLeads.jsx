@@ -107,10 +107,10 @@ function TestLeads() {
     }, []);
 
     //--------------------function to fetch Total Leads ------------------------------
-    const fetchTotalLeads = async () => {
-        // const response = await axios.get(`${secretKey}/company-data/leads`)
-        // setCompleteLeads(response.data)
-    };
+    // const fetchTotalLeads = async () => {
+    //     const response = await axios.get(`${secretKey}/company-data/leads`)
+    //     setCompleteLeads(response.data)
+    // };
 
     const formatBdeForwardDate = (dateString) => {
         if (!dateString) return "";
@@ -188,7 +188,7 @@ function TestLeads() {
     useEffect(() => {
         if (!isSearching && !isFilter) {
             fetchData(1, latestSortCount)
-            fetchTotalLeads()
+            //fetchTotalLeads()
             fetchEmployeesData()
             //fetchRemarksHistory()
         }
@@ -1637,6 +1637,8 @@ function TestLeads() {
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
+    // console.log(startTimestamp, endTimestamp)
+
     useEffect(() => {
         const dataToFilter = dataStatus === "Unassigned"
             ? unAssignedData
@@ -1645,6 +1647,7 @@ function TestLeads() {
                 : assignedData;
 
         const finalFiltering = !isFilter && !isSearching ? data : dataToFilter;
+        // const finalFiltering = completeLeads
         console.log("finalFiltering", data)
         const saveCallHistoryToBackend = async (clientNumber, callHistoryData) => {
             try {
@@ -1743,9 +1746,10 @@ function TestLeads() {
 
     console.log("extractedData", data)
     // console.log("completeLeads", completeLeads)
+    const [callHistoryDataToMap, setCallHistoryDataToMap] = useState([])
 
 
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName , callHistoryData) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
         setCompanyName(companyName);
@@ -1753,7 +1757,7 @@ function TestLeads() {
         setCallHistoryBdmAcceptStatus(bdmAcceptStatus)
         setCallHistoryBdmForwardedDate(bdeForwardDate)
         setcallHistoryBdeName(bdeName)
-
+        setCallHistoryDataToMap(callHistoryData)
     }
 
     const hanleCloseCallHistory = () => {
@@ -2137,22 +2141,29 @@ function TestLeads() {
                                                             {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
-                                                                        handleShowCallHistory(
-                                                                            company["Company Name"],
-                                                                            company["Company Number"],
-                                                                            "",
-                                                                            company.bdmName,
-                                                                            company.bdmAcceptStatus,
-                                                                            company.bdeForwardDate,
-                                                                            company.ename
-                                                                        );
+                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
+                                                                            handleShowCallHistory(
+                                                                                company["Company Name"],
+                                                                                company["Company Number"],
+                                                                                "",
+                                                                                company.bdmName,
+                                                                                company.bdmAcceptStatus,
+                                                                                company.bdeForwardDate,
+                                                                                company.ename,
+                                                                                company.clientCallHistory ? company.clientCallHistory : 
+                                                                                company.callHistoryData ? company.callHistoryData : [],
+                                                                            );
+                                                                        }
+                                                                        
+                                                                        
                                                                     }}
                                                                     style={{
-                                                                        cursor: "not-allowed",
+                                                                        cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
                                                                         width: "15px",
                                                                         height: "15px",
+                                                                        opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color="grey"
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                             </td>)}
                                                             <td>
@@ -2255,24 +2266,29 @@ function TestLeads() {
                                                             {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
-                                                                        handleShowCallHistory(
-                                                                            company["Company Name"],
-                                                                            company["Company Number"],
-                                                                            "",
-                                                                            company.bdmName,
-                                                                            company.bdmAcceptStatus,
-                                                                            company.bdeForwardDate,
-                                                                            company.ename
-
-
-                                                                        );
+                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
+                                                                            handleShowCallHistory(
+                                                                                company["Company Name"],
+                                                                                company["Company Number"],
+                                                                                "",
+                                                                                company.bdmName,
+                                                                                company.bdmAcceptStatus,
+                                                                                company.bdeForwardDate,
+                                                                                company.ename,
+                                                                                company.clientCallHistory ? company.clientCallHistory : 
+                                                                                company.callHistoryData ? company.callHistoryData : [],
+                                                                            );
+                                                                        }
+                                                                        
+                                                                        
                                                                     }}
                                                                     style={{
-                                                                        cursor: "not-allowed",
+                                                                        cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
                                                                         width: "15px",
                                                                         height: "15px",
+                                                                        opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color="grey"
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                             </td>)}
                                                             <td>
@@ -2373,25 +2389,29 @@ function TestLeads() {
                                                             {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
-                                                                        handleShowCallHistory(
-                                                                            company["Company Name"],
-                                                                            company["Company Number"],
-                                                                            "",
-                                                                            company.bdmName,
-                                                                            company.bdmAcceptStatus,
-                                                                            company.bdeForwardDate,
-                                                                            company.ename
-
-
-
-                                                                        );
+                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
+                                                                            handleShowCallHistory(
+                                                                                company["Company Name"],
+                                                                                company["Company Number"],
+                                                                                "",
+                                                                                company.bdmName,
+                                                                                company.bdmAcceptStatus,
+                                                                                company.bdeForwardDate,
+                                                                                company.ename,
+                                                                                company.clientCallHistory ? company.clientCallHistory : 
+                                                                                company.callHistoryData ? company.callHistoryData : [],
+                                                                            );
+                                                                        }
+                                                                        
+                                                                        
                                                                     }}
                                                                     style={{
-                                                                        cursor: "not-allowed",
+                                                                        cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
                                                                         width: "15px",
                                                                         height: "15px",
+                                                                        opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color="grey"
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                             </td>)}
                                                             <td>
@@ -2492,25 +2512,29 @@ function TestLeads() {
                                                             {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
-                                                                        handleShowCallHistory(
-                                                                            company["Company Name"],
-                                                                            company["Company Number"],
-                                                                            "",
-                                                                            company.bdmName,
-                                                                            company.bdmAcceptStatus,
-                                                                            company.bdeForwardDate,
-                                                                            company.ename
-
-
-
-                                                                        );
+                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
+                                                                            handleShowCallHistory(
+                                                                                company["Company Name"],
+                                                                                company["Company Number"],
+                                                                                "",
+                                                                                company.bdmName,
+                                                                                company.bdmAcceptStatus,
+                                                                                company.bdeForwardDate,
+                                                                                company.ename,
+                                                                                company.clientCallHistory ? company.clientCallHistory : 
+                                                                                company.callHistoryData ? company.callHistoryData : [],
+                                                                            );
+                                                                        }
+                                                                        
+                                                                        
                                                                     }}
                                                                     style={{
-                                                                        cursor: "not-allowed",
+                                                                        cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
                                                                         width: "15px",
                                                                         height: "15px",
+                                                                        opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color="grey"
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                             </td>)}
                                                             <td>
@@ -2697,6 +2721,8 @@ function TestLeads() {
             {
                 showCallHistory &&
                 (<CallHistory
+                    callHistory={callHistoryDataToMap}
+                    setCallHistory={setCallHistoryDataToMap}
                     handleCloseHistory={hanleCloseCallHistory}
                     clientNumber={clientNumber}
                     companyName={companyName}
