@@ -107,10 +107,10 @@ function TestLeads() {
     }, []);
 
     //--------------------function to fetch Total Leads ------------------------------
-    const fetchTotalLeads = async () => {
-        const response = await axios.get(`${secretKey}/company-data/leads`)
-        setCompleteLeads(response.data)
-    };
+    // const fetchTotalLeads = async () => {
+    //     const response = await axios.get(`${secretKey}/company-data/leads`)
+    //     setCompleteLeads(response.data)
+    // };
 
     const formatBdeForwardDate = (dateString) => {
         if (!dateString) return "";
@@ -188,7 +188,7 @@ function TestLeads() {
     useEffect(() => {
         if (!isSearching && !isFilter) {
             fetchData(1, latestSortCount)
-            fetchTotalLeads()
+            //fetchTotalLeads()
             fetchEmployeesData()
             //fetchRemarksHistory()
         }
@@ -1637,6 +1637,8 @@ function TestLeads() {
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
+    console.log(startTimestamp, endTimestamp)
+
     useEffect(() => {
         const dataToFilter = dataStatus === "Unassigned"
             ? unAssignedData
@@ -1743,7 +1745,7 @@ function TestLeads() {
 
 
     console.log("extractedData", data)
-    console.log("completeLeads", completeLeads)
+    // console.log("completeLeads", completeLeads)
     const [callHistoryDataToMap, setCallHistoryDataToMap] = useState([])
 
 
