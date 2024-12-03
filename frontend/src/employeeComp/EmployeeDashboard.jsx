@@ -98,6 +98,7 @@ import EmployeeCallLogs from "./EmployeeDashboardComponents/EmployeeCallLogs.jsx
 import { maxHeight } from "@mui/system";
 import EmployeePerformanceReport from "./EmployeeDashboardComponents/EmployeePerformanceReport.jsx";
 import TodaysCollection from "./TodaysCollection.jsx";
+import CurrentMonthLeadsReport from "./EmployeeDashboardComponents/CurrentMonthLeadsReport.jsx";
 import { jwtDecode } from "jwt-decode";
 
 
@@ -2652,6 +2653,9 @@ function EmployeeDashboard() {
                   {data.length !== 0 && (<div className="col-sm-4 col-md-4 col-lg-4  mt-3">
                     <EmployeeCallLogs employeeData={data} />
                   </div>)}
+                  <div className="col-sm-4 col-md-4 col-lg-4  mt-3">
+                    <CurrentMonthLeadsReport employeeData={data} />
+                  </div>
                 </div>
               </div>
             </div>

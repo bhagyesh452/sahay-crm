@@ -21,6 +21,7 @@ const fetch = require('node-fetch');
 const { previousDay } = require("date-fns");
 require('dotenv').config();
 const { sendMailEmployees } = require("./sendMailEmployees");
+const LeadsModel = require("../models/Leads.js");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const mongoose = require('mongoose');
 
@@ -272,12 +273,12 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo?.designation && {
         bdmWork:
           employeementInfo.designation === "Business Development Manager" ||
-          employeementInfo.designation === "Business Development Executive" ||
-          employeementInfo.designation === "Floor Manager" ||
-          employeementInfo.designation === "Sales Executive" ||
-          oldDesignation === "Business Development Manager" ||
-          oldDesignation === "Sales Executive" ||
-          oldDesignation === "Floor Manager"
+            employeementInfo.designation === "Business Development Executive" ||
+            employeementInfo.designation === "Floor Manager" ||
+            employeementInfo.designation === "Sales Executive" ||
+            oldDesignation === "Business Development Manager" ||
+            oldDesignation === "Sales Executive" ||
+            oldDesignation === "Floor Manager"
             ? true
             : false,
       }),
@@ -851,7 +852,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(designation && {
         bdmWork:
           designation === "Business Development Manager" ||
-          designation === "Business Development Executive" ||
+            designation === "Business Development Executive" ||
             designation === "Floor Manager" ||
             designation === "Sales Executive" ||
             oldDesignation === "Business Development Manager" ||
@@ -886,7 +887,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
     if (officialNo && officialNo !== currentData.number) {
       // Initialize the array if it doesn't exist
       const oldNumbersArray = currentData.oldNumbersAssignedByCompany || [];
-      console.log("oldNumbersArray",oldNumbersArray)
+      console.log("oldNumbersArray", oldNumbersArray)
 
       // Check if the current number is already in the array to avoid duplicates
       if (
@@ -1020,11 +1021,11 @@ router.put("/savedeletedemployee", upload.fields([
         ...({ designation: newDesignation }),
         ...(data?.newDesignation && {
           bdmWork: data.newDesignation === "Business Development Manager" ||
-          data.designation === "Business Development Executive" ||
+            data.designation === "Business Development Executive" ||
             data.newDesignation === "Floor Manager" ||
-          data.designation === "Sales Executive" ||
+            data.designation === "Sales Executive" ||
             oldDesignation === "Business Development Manager" ||
-          oldDesignation === "Sales Executive" ||
+            oldDesignation === "Sales Executive" ||
             oldDesignation === "Floor Manager" ? true : false
         }),
         ...(data?.joiningDate && { jdate: data.joiningDate }),
@@ -1334,15 +1335,15 @@ router.put(
       const getFileDetails = (fileArray) =>
         fileArray
           ? fileArray.map((file) => ({
-              fieldname: file.fieldname,
-              originalname: file.originalname,
-              encoding: file.encoding,
-              mimetype: file.mimetype,
-              destination: file.destination,
-              filename: file.filename,
-              path: file.path,
-              size: file.size,
-            }))
+            fieldname: file.fieldname,
+            originalname: file.originalname,
+            encoding: file.encoding,
+            mimetype: file.mimetype,
+            destination: file.destination,
+            filename: file.filename,
+            path: file.path,
+            size: file.size,
+          }))
           : [];
 
       // Step 1: Create the new employee(s)
@@ -1370,9 +1371,8 @@ router.put(
           // Personal Info
           ...(data.firstName || data.middleName || data.lastName) && {
             ename: `${data.firstName || ""} ${data.lastName || ""}`,
-            empFullName: `${data.firstName || ""} ${data.middleName || ""} ${
-              data.lastName || ""
-            }`,
+            empFullName: `${data.firstName || ""} ${data.middleName || ""} ${data.lastName || ""
+              }`,
           },
           ...(data.dob && !isNaN(Date.parse(data.dob)) && {
             dob: new Date(data.dob),
@@ -2202,8 +2202,8 @@ router.put("/einfo/:id", async (req, res) => {
       currentData.number = dataToSendUpdated.number;
     }
 
-     // Update `offerLetter` only if it's valid and an object
-     if (dataToSendUpdated.offerLetter && typeof dataToSendUpdated.offerLetter === "object") {
+    // Update `offerLetter` only if it's valid and an object
+    if (dataToSendUpdated.offerLetter && typeof dataToSendUpdated.offerLetter === "object") {
       currentData.offerLetter = dataToSendUpdated.offerLetter;
     }
 
@@ -3135,6 +3135,68 @@ router.post("/projectionstatustoday-no/:userId", async (req, res) => {
   }
 });
 
+router.get("/currentMonthLeadsReport/:employeeName", async (req, res) => {
+  const { employeeName } = req.params;
 
+  try {
+    // Get the first and last dates of the current month
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    // Query the database
+    const leads = await LeadsModel.find({
+      ename: employeeName,
+      Status: { $in: ["Interested", "FollowUp", "Matured"] },
+      // bdmAcceptStatus: { $in: ["Pending", "Accept"] },
+      lastActionDate: {
+        $gte: firstDayOfMonth,
+        $lte: lastDayOfMonth
+      }
+    });
+
+    // Group data by status
+    const result = {
+      interestedLeads: 0,
+      // interestedLeadsData: [],
+      followUpLeads: 0,
+      // followUpLeadsData: [],
+      forwardedLeads: 0,
+      // forwardedLeadsData: [],
+      maturedLeads: 0,
+      // maturedLeadsData: [],
+    };
+
+    // Process leads
+    leads.forEach((lead) => {
+      // If bdmAcceptStatus is Pending or Accept, process as forwarded only
+      if (lead.bdmAcceptStatus === "Pending" || lead.bdmAcceptStatus === "Accept") {
+        result.forwardedLeads++;
+        // result.forwardedLeadsData.push(lead);
+      } else {
+        // Otherwise, process based on the Status
+        switch (lead.Status) {
+          case "Interested":
+            result.interestedLeads++;
+            // result.interestedLeadsData.push(lead);
+            break;
+          case "FollowUp":
+            result.followUpLeads++;
+            // result.followUpLeadsData.push(lead);
+            break;
+          case "Matured":
+            result.maturedLeads++;
+            // result.maturedLeadsData.push(lead);
+            break;
+        }
+      }
+    });
+
+    res.status(200).json({ result: true, message: "Lead report fetched successfully", data: result });
+  } catch (error) {
+    console.error("Error fetching leads:", error);
+    res.status(500).json({ result: false, message: "Error fetching current month leads", error: error });
+  }
+});
 
 module.exports = router;
