@@ -726,8 +726,7 @@ function EmployeeGeneralLeads({
                                                                 (call) =>
                                                                     call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
                                                             )
-                                                                ? "grey"
-                                                                : "lightgrey" // Change color based on availability
+                                                                ? "#fbb900" : "#000000"
                                                         }
                                                     />
                                                 </td>

@@ -1854,7 +1854,7 @@ function ManageLeads() {
                                                                         height: "15px",
                                                                         opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                         </td>)}
                                                         <td>
@@ -1988,7 +1988,7 @@ function ManageLeads() {
                                                                         height: "15px",
                                                                         opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                         </td>)}
                                                         <td>
@@ -2121,7 +2121,7 @@ function ManageLeads() {
                                                                         height: "15px",
                                                                         opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                         </td>)}
                                                         <td>
@@ -2254,7 +2254,7 @@ function ManageLeads() {
                                                                         height: "15px",
                                                                         opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                         </td>)}
                                                         <td>

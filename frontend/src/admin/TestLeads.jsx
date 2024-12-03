@@ -1637,7 +1637,7 @@ function TestLeads() {
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
-    console.log(startTimestamp, endTimestamp)
+    // console.log(startTimestamp, endTimestamp)
 
     useEffect(() => {
         const dataToFilter = dataStatus === "Unassigned"
@@ -2163,7 +2163,7 @@ function TestLeads() {
                                                                         height: "15px",
                                                                         opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                             </td>)}
                                                             <td>
@@ -2288,7 +2288,7 @@ function TestLeads() {
                                                                         height: "15px",
                                                                         opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                             </td>)}
                                                             <td>
@@ -2411,7 +2411,7 @@ function TestLeads() {
                                                                         height: "15px",
                                                                         opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                             </td>)}
                                                             <td>
@@ -2534,7 +2534,7 @@ function TestLeads() {
                                                                         height: "15px",
                                                                         opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
                                                                     }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "grey" : "lightgrey"} // Change color based on availability
+                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
                                                                 />
                                                             </td>)}
                                                             <td>
