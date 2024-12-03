@@ -604,7 +604,7 @@ router.post("/save-client-call-history", async (req, res) => {
   try {
     // Convert client_number to a number
     const numericClientNumber = Number(client_number);
-    console.log("type after conversion:", typeof(numericClientNumber), numericClientNumber);
+    // console.log("type after conversion:", typeof(numericClientNumber), numericClientNumber);
 
     // Validate the conversion
     if (isNaN(numericClientNumber)) {
