@@ -108,8 +108,8 @@ function TestLeads() {
 
     //--------------------function to fetch Total Leads ------------------------------
     const fetchTotalLeads = async () => {
-        // const response = await axios.get(`${secretKey}/company-data/leads`)
-        // setCompleteLeads(response.data)
+        const response = await axios.get(`${secretKey}/company-data/leads`)
+        setCompleteLeads(response.data)
     };
 
     const formatBdeForwardDate = (dateString) => {
@@ -1645,6 +1645,7 @@ function TestLeads() {
                 : assignedData;
 
         const finalFiltering = !isFilter && !isSearching ? data : dataToFilter;
+        // const finalFiltering = completeLeads
         console.log("finalFiltering", data)
         const saveCallHistoryToBackend = async (clientNumber, callHistoryData) => {
             try {
@@ -1742,10 +1743,11 @@ function TestLeads() {
 
 
     console.log("extractedData", data)
-    // console.log("completeLeads", completeLeads)
+    console.log("completeLeads", completeLeads)
+    const [callHistoryDataToMap, setCallHistoryDataToMap] = useState([])
 
 
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName , callHistoryData) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
         setCompanyName(companyName);
@@ -1753,7 +1755,7 @@ function TestLeads() {
         setCallHistoryBdmAcceptStatus(bdmAcceptStatus)
         setCallHistoryBdmForwardedDate(bdeForwardDate)
         setcallHistoryBdeName(bdeName)
-
+        setCallHistoryDataToMap(callHistoryData)
     }
 
     const hanleCloseCallHistory = () => {
@@ -2144,7 +2146,9 @@ function TestLeads() {
                                                                             company.bdmName,
                                                                             company.bdmAcceptStatus,
                                                                             company.bdeForwardDate,
-                                                                            company.ename
+                                                                            company.ename,
+                                                                            company.clientCallHistory ? company.clientCallHistory : 
+                                                                            company.callHistoryData ? company.callHistoryData : [],
                                                                         );
                                                                     }}
                                                                     style={{
@@ -2262,8 +2266,9 @@ function TestLeads() {
                                                                             company.bdmName,
                                                                             company.bdmAcceptStatus,
                                                                             company.bdeForwardDate,
-                                                                            company.ename
-
+                                                                            company.ename,
+                                                                            company.clientCallHistory ? company.clientCallHistory : 
+                                                                            company.callHistoryData ? company.callHistoryData : [],
 
                                                                         );
                                                                     }}
@@ -2380,8 +2385,9 @@ function TestLeads() {
                                                                             company.bdmName,
                                                                             company.bdmAcceptStatus,
                                                                             company.bdeForwardDate,
-                                                                            company.ename
-
+                                                                            company.ename,
+                                                                            company.clientCallHistory ? company.clientCallHistory : 
+                                                                            company.callHistoryData ? company.callHistoryData : [],
 
 
                                                                         );
@@ -2499,7 +2505,9 @@ function TestLeads() {
                                                                             company.bdmName,
                                                                             company.bdmAcceptStatus,
                                                                             company.bdeForwardDate,
-                                                                            company.ename
+                                                                            company.ename,
+                                                                            company.clientCallHistory ? company.clientCallHistory : 
+                                                                            company.callHistoryData ? company.callHistoryData : [],
 
 
 
@@ -2697,6 +2705,8 @@ function TestLeads() {
             {
                 showCallHistory &&
                 (<CallHistory
+                    callHistory={callHistoryDataToMap}
+                    setCallHistory={setCallHistoryDataToMap}
                     handleCloseHistory={hanleCloseCallHistory}
                     clientNumber={clientNumber}
                     companyName={companyName}

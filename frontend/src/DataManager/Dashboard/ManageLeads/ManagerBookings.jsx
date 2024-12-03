@@ -4442,27 +4442,21 @@ function ManagerBookings() {
                                                   )
                                                 }
                                               >
-                                                {objMain.paymentReceipt[0].filename
-                                                  .toLowerCase()
-                                                  .endsWith(".pdf") ? (
+                                                {objMain?.paymentReceipt?.[0]?.filename?.toLowerCase().endsWith(".pdf") ? (
                                                   <PdfImageViewerAdmin
                                                     type="paymentrecieptpdf"
-                                                    path={
-                                                      objMain.paymentReceipt[0]
-                                                        .filename
-                                                    }
-                                                    companyName={
-                                                      currentLeadform[
-                                                      "Company Name"
-                                                      ]
-                                                    }
+                                                    path={objMain.paymentReceipt[0].filename}
+                                                    companyName={currentLeadform?.["Company Name"] || "Unknown Company"}
                                                   />
-                                                ) : (
+                                                ) : objMain?.paymentReceipt?.[0]?.filename ? (
                                                   <img
-                                                    src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
+                                                    src={`${secretKey}/bookings/recieptpdf/${currentLeadform?.["Company Name"] || "Unknown Company"}/${objMain.paymentReceipt[0].filename}`}
                                                     alt={"MyImg"}
                                                   ></img>
+                                                ) : (
+                                                  <span>No receipt available</span>
                                                 )}
+
                                               </div>
                                               <div className="booking-docs-preview-text">
                                                 <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
@@ -4486,24 +4480,23 @@ function ManagerBookings() {
                                                 )
                                               }
                                             >
-                                              {obj.filename
-                                                .toLowerCase()
-                                                .endsWith(".pdf") ? (
-                                                <PdfImageViewerAdmin
-                                                  type="pdf"
-                                                  path={obj.filename}
-                                                  companyName={
-                                                    currentLeadform[
-                                                    "Company Name"
-                                                    ]
-                                                  }
-                                                />
-                                              ) : (
-                                                <img
-                                                  src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
-                                                  alt={pdfimg}
-                                                ></img>
-                                              )}
+                                              {
+                                                obj?.filename && typeof obj.filename === "string" && obj.filename.toLowerCase().endsWith(".pdf") ? (
+                                                  <PdfImageViewerAdmin
+                                                    type="pdf"
+                                                    path={obj.filename}
+                                                    companyName={currentLeadform?.["Company Name"] || "Unknown Company"}
+                                                  />
+                                                ) : obj?.filename && typeof obj.filename === "string" ? (
+                                                  <img
+                                                    src={`${secretKey}/bookings/otherpdf/${currentLeadform?.["Company Name"] || "Unknown Company"}/${obj.filename}`}
+                                                    alt={pdfimg}
+                                                  />
+                                                ) : (
+                                                  <span>No file available</span>
+                                                )
+                                              }
+
                                             </div>
                                             <div className="booking-docs-preview-text">
                                               <p

@@ -162,7 +162,7 @@ function BookingList() {
   const { data: bookingData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
     queryKey: ["bookingData", page, searchText],
     queryFn: async () => {
-      
+
       // Normalize searchText by replacing non-breaking spaces with regular spaces
       const normalizedSearchText = searchText.replace(/\u00A0/g, " ");
 
@@ -3502,25 +3502,21 @@ function BookingList() {
                                                 )
                                               }
                                             >
-                                              {objMain.paymentReceipt[0].filename
-                                                .toLowerCase()
-                                                .endsWith(".pdf") ? (
+                                              {objMain?.paymentReceipt?.[0]?.filename?.toLowerCase().endsWith(".pdf") ? (
                                                 <PdfImageViewerAdmin
                                                   type="paymentrecieptpdf"
-                                                  path={
-                                                    objMain.paymentReceipt[0]
-                                                      .filename
-                                                  }
-                                                  companyName={
-                                                    currentLeadform["Company Name"]
-                                                  }
+                                                  path={objMain.paymentReceipt[0].filename}
+                                                  companyName={currentLeadform["Company Name"]}
                                                 />
-                                              ) : (
+                                              ) : objMain?.paymentReceipt?.[0]?.filename ? (
                                                 <img
                                                   src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
                                                   alt={"MyImg"}
                                                 ></img>
+                                              ) : (
+                                                <span>No receipt available</span>
                                               )}
+
                                             </div>
                                             <div className="booking-docs-preview-text">
                                               <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
@@ -3542,22 +3538,22 @@ function BookingList() {
                                               )
                                             }
                                           >
-                                            {obj.filename
-                                              .toLowerCase()
-                                              .endsWith(".pdf") ? (
+                                            {obj?.filename && typeof obj.filename === "string" &&
+                                              obj.filename.toLowerCase().endsWith(".pdf") ? (
                                               <PdfImageViewerAdmin
                                                 type="pdf"
                                                 path={obj.filename}
-                                                companyName={
-                                                  currentLeadform["Company Name"]
-                                                }
+                                                companyName={currentLeadform["Company Name"]}
                                               />
-                                            ) : (
+                                            ) : obj?.filename && typeof obj.filename === "string" ? (
                                               <img
                                                 src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
                                                 alt={pdfimg}
-                                              ></img>
+                                              />
+                                            ) : (
+                                              <span>No file available</span>
                                             )}
+
                                           </div>
                                           <div className="booking-docs-preview-text">
                                             <p
