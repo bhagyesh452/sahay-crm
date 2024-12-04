@@ -1,605 +1,192 @@
-// import React, { useEffect, useState } from "react";
-// import L from "leaflet";
-// import "leaflet/dist/leaflet.css";
-// import axios from "axios";
-// import Swal from "sweetalert2";
-// import socketIO from "socket.io-client";
-// import logo from "../../static/mainLogo.png"
-// import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+// // import React, { useEffect, useState } from "react";
+// // import L from "leaflet";
+// // import "leaflet/dist/leaflet.css";
+// // import axios from "axios";
+// // import Swal from "sweetalert2";
+// // import socketIO from "socket.io-client";
+// // import logo from "../../static/mainLogo.png"
+// // import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 
-// function HrLogin({ setHrToken }){
-//     const secretKey = process.env.REACT_APP_SECRET_KEY;
+// // function HrLogin({ setHrToken }){
+// //     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
-//     const [data, setData] = useState([])
-//     const [email , setEmail] = useState("")
-//     const [password , setPassword] = useState("")
-//     const [showPassword , setShowPassword] = useState(false)
-//     const [designation , setDesignation] = useState("")
-//     const [userId , setUserId] = useState(null)
-//     const[errorMessage , setErrorMessage] = useState("")
-//     const [ename , setEname] = useState("")
-//     const [hrUserId, setHrUserId] = useState(null)
+// //     const [data, setData] = useState([])
+// //     const [email , setEmail] = useState("")
+// //     const [password , setPassword] = useState("")
+// //     const [showPassword , setShowPassword] = useState(false)
+// //     const [designation , setDesignation] = useState("")
+// //     const [userId , setUserId] = useState(null)
+// //     const[errorMessage , setErrorMessage] = useState("")
+// //     const [ename , setEname] = useState("")
+// //     const [hrUserId, setHrUserId] = useState(null)
+   
+// //     useEffect(() => {
+// //         document.title = `HR-Sahay-CRM`;
+// //       }, []);
 
-//     useEffect(() => {
-//         document.title = `HR-Sahay-CRM`;
-//       }, []);
-
-//       const fetchData = async () => {
-//         try {
-//         const encodedPassword = encodeURIComponent(password);
-//           const response = await axios.get(`${secretKey}/employee/einfo/${email}/${encodedPassword}`);
-//           console.log(response.data)
-//           console.log(email , password)
-//           setData(response.data);
-//           setHrUserId(response.data._id)
-//           setDesignation(response.data.designation)
-//         } catch (error) {
-//           console.log("Error finding employee", error);
-//         }
-//       };
-
-
-//       useEffect(() => {
-//         if (email && password) {
-//           fetchData();
-//         }
-//       }, [email, password]);
+// //       const fetchData = async () => {
+// //         try {
+// //         const encodedPassword = encodeURIComponent(password);
+// //           const response = await axios.get(`${secretKey}/employee/einfo/${email}/${encodedPassword}`);
+// //           console.log(response.data)
+// //           console.log(email , password)
+// //           setData(response.data);
+// //           setHrUserId(response.data._id)
+// //           setDesignation(response.data.designation)
+// //         } catch (error) {
+// //           console.log("Error finding employee", error);
+// //         }
+// //       };
 
 
+// //       useEffect(() => {
+// //         if (email && password) {
+// //           fetchData();
+// //         }
+// //       }, [email, password]);
 
 
-//     const handleSubmit = async(e) => {
-//         e.preventDefault()
-//         try {
-//             const response = await axios.post(`${secretKey}/hrlogin`, {
-//                 email,
-//                 password,
-//                 designation
-//             });
-//             console.log(response.data);
-//             const { hrToken } = response.data
-//             setHrToken(hrToken);
-//             localStorage.setItem("hrName", ename)
-//             localStorage.setItem("hrToken", hrToken)
-//             localStorage.setItem("hrUserId", hrUserId)
-//             console.log("userId" , hrUserId);
-//             window.location.replace(`/hr/dashboard`);
-//         } catch (error) {
-//             console.error("Login Failed", error);
-//             if (error.response === 401) {
-//                 if(error.response.data.message === "Invalid email or Password"){
-//                     setErrorMessage("Invalid Credentials");
-//                 } else if (error.response.data.message === "Designation id incorrect") {
-//                     setErrorMessage("Only Authorizedd for hr")
-//                 } else {
-//                     setErrorMessage("Unknown Error Occured")
-//                 } 
-//             } else {
-//                 setErrorMessage("Unknown Error Occured")
-//             }
-//         }
-//     }
+    
+
+// //     const handleSubmit = async(e) => {
+// //         e.preventDefault()
+// //         try {
+// //             const response = await axios.post(`${secretKey}/hrlogin`, {
+// //                 email,
+// //                 password,
+// //                 designation
+// //             });
+// //             console.log(response.data);
+// //             const { hrToken , userId , ename } = response.data
+// //             setHrToken(hrToken);
+// //             localStorage.setItem("hrName", ename)
+// //             localStorage.setItem("hrToken", hrToken)
+// //             localStorage.setItem("hrUserId", userId)
+// //             console.log("userId" , userId , hrToken);
+// //             // window.location.replace(`/hr/dashboard`);
+// //             window.location.replace(`/hr/dashboard`);
+// //         } catch (error) {
+// //             console.error("Login Failed", error);
+// //             if (error.response === 401) {
+// //                 if(error.response.data.message === "Invalid email or Password"){
+// //                     setErrorMessage("Invalid Credentials");
+// //                 } else if (error.response.data.message === "Designation id incorrect") {
+// //                     setErrorMessage("Only Authorizedd for hr")
+// //                 } else {
+// //                     setErrorMessage("Unknown Error Occured")
+// //                 } 
+// //             } else {
+// //                 setErrorMessage("Unknown Error Occured")
+// //             }
+// //         }
+// //     }
+
+// //     // console.log("infileof hr",hrToken)
 
 
 
 
-//     return (
-//         <div>
-//             <div className="page page-center">
-//                 <div className="container container-tight py-4">
-//                     <div className="login-card">
-//                         <div className="row align-items-stretch">
-//                             <div className="col-sm-6 p-0">
-//                                 <div className="card card-md h-100">
-//                                     <div className="card-body d-flex align-items-center justify-content-center">
-//                                         <div className="logo">
-//                                             <img src={logo}></img>
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                             <div className="col-sm-6 p-0">
-//                                 <div className="card card-md login-box">
-//                                     <div className="card-body">
-//                                         <h2 className="h2 text-center mb-4">HR Login</h2>
-//                                         <form  method="get" autocomplete="off" novalidate>
-//                                             <div className="mb-3">
-//                                                 <label className="form-label">Username</label>
-//                                                 <input
-//                                                     onChange={(e)=>{
-//                                                         setEmail(e.target.value)
-//                                                     }}
-//                                                     type="email"
-//                                                     className="form-control"
-//                                                     placeholder="Email or Phone Number"
-//                                                     autocomplete="off"
-//                                                 />
-//                                             </div>
-//                                             <div className="mb-2">
-//                                                 <label className="form-label">
-//                                                     Password
-//                                                 </label>
-//                                                 <div className="input-group input-group-flat">
-//                                                     <input
-//                                                         onChange={(e)=>{
-//                                                             setPassword(e.target.value)
-//                                                         }}
-//                                                         type={showPassword ? "text" : "password"}
-//                                                         className="form-control"
-//                                                         placeholder="Your password"
-//                                                         autoComplete="off"
-//                                                     />
-//                                                     <span className="input-group-text">
-//                                                         <a
-//                                                             href="#"
-//                                                             className="link-secondary"
-//                                                             title="Show password"
-//                                                             data-bs-toggle="tooltip"
-//                                                             onClick={() => setShowPassword(!showPassword)}
-//                                                         >
-//                                                             <svg
-//                                                                 xmlns="http://www.w3.org/2000/svg"
-//                                                                 className="icon"
-//                                                                 width="24"
-//                                                                 height="24"
-//                                                                 viewBox="0 0 24 24"
-//                                                                 strokeWidth="2"
-//                                                                 stroke="currentColor"
-//                                                                 fill="none"
-//                                                                 strokeLinecap="round"
-//                                                                 strokeLinejoin="round"
-//                                                             >
-//                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-//                                                                 <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-//                                                                 <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
-//                                                             </svg>
-//                                                         </a>
-//                                                     </span>
-//                                                 </div>
-//                                             </div>
-//                                             <div style={{ textAlign: "center", color: "red" }}>
-//                                                 <span>{errorMessage}</span>
-//                                             </div>
-//                                             <div className="form-footer">
-//                                                 <button
-//                                                     type="submit"
-//                                                     onClick={handleSubmit}
-//                                                     className="btn btn-primary w-100"
-//                                                 >
-//                                                     Submit
-//                                                 </button>
-//                                             </div>
-//                                         </form>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     )
-// }
+// //     return (
+// //         <div>
+// //             <div className="page page-center">
+// //                 <div className="container container-tight py-4">
+// //                     <div className="login-card">
+// //                         <div className="row align-items-stretch">
+// //                             <div className="col-sm-6 p-0">
+// //                                 <div className="card card-md h-100">
+// //                                     <div className="card-body d-flex align-items-center justify-content-center">
+// //                                         <div className="logo">
+// //                                             <img src={logo}></img>
+// //                                         </div>
+// //                                     </div>
+// //                                 </div>
+// //                             </div>
+// //                             <div className="col-sm-6 p-0">
+// //                                 <div className="card card-md login-box">
+// //                                     <div className="card-body">
+// //                                         <h2 className="h2 text-center mb-4">HR Login</h2>
+// //                                         <form  method="get" autocomplete="off" novalidate>
+// //                                             <div className="mb-3">
+// //                                                 <label className="form-label">Username</label>
+// //                                                 <input
+// //                                                     onChange={(e)=>{
+// //                                                         setEmail(e.target.value)
+// //                                                     }}
+// //                                                     type="email"
+// //                                                     className="form-control"
+// //                                                     placeholder="Email or Phone Number"
+// //                                                     autocomplete="off"
+// //                                                 />
+// //                                             </div>
+// //                                             <div className="mb-2">
+// //                                                 <label className="form-label">
+// //                                                     Password
+// //                                                 </label>
+// //                                                 <div className="input-group input-group-flat">
+// //                                                     <input
+// //                                                         onChange={(e)=>{
+// //                                                             setPassword(e.target.value)
+// //                                                         }}
+// //                                                         type={showPassword ? "text" : "password"}
+// //                                                         className="form-control"
+// //                                                         placeholder="Your password"
+// //                                                         autoComplete="off"
+// //                                                     />
+// //                                                     <span className="input-group-text">
+// //                                                         <a
+// //                                                             href="#"
+// //                                                             className="link-secondary"
+// //                                                             title="Show password"
+// //                                                             data-bs-toggle="tooltip"
+// //                                                             onClick={() => setShowPassword(!showPassword)}
+// //                                                         >
+// //                                                             <svg
+// //                                                                 xmlns="http://www.w3.org/2000/svg"
+// //                                                                 className="icon"
+// //                                                                 width="24"
+// //                                                                 height="24"
+// //                                                                 viewBox="0 0 24 24"
+// //                                                                 strokeWidth="2"
+// //                                                                 stroke="currentColor"
+// //                                                                 fill="none"
+// //                                                                 strokeLinecap="round"
+// //                                                                 strokeLinejoin="round"
+// //                                                             >
+// //                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+// //                                                                 <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+// //                                                                 <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+// //                                                             </svg>
+// //                                                         </a>
+// //                                                     </span>
+// //                                                 </div>
+// //                                             </div>
+// //                                             <div style={{ textAlign: "center", color: "red" }}>
+// //                                                 <span>{errorMessage}</span>
+// //                                             </div>
+// //                                             <div className="form-footer">
+// //                                                 <button
+// //                                                     type="submit"
+// //                                                     onClick={handleSubmit}
+// //                                                     className="btn btn-primary w-100"
+// //                                                 >
+// //                                                     Submit
+// //                                                 </button>
+// //                                             </div>
+// //                                         </form>
+// //                                     </div>
+// //                                 </div>
+// //                             </div>
+// //                         </div>
+// //                     </div>
+// //                 </div>
+// //             </div>
+// //         </div>
+// //     )
+// // }
 
-// export default HrLogin;
-
-// import React, { useEffect, useState } from "react";
-// import { useNavigate } from 'react-router-dom';
-// import "leaflet/dist/leaflet.css";
-// import axios from "axios";
-// import Swal from "sweetalert2";
-// import socketIO from "socket.io-client";
-// import logo from "../../static/mainLogo.png"
-// import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-// import ReCAPTCHA from "react-google-recaptcha";
-
-// function HrLogin({ setHrToken }) {
-
-//     const secretKey = process.env.REACT_APP_SECRET_KEY;
-//     const captchaKey = process.env.REACT_APP_CAPTCHA_KEY;
-//     const navigate = useNavigate();
-
-//     const [data, setData] = useState([]);
-//     const [email, setEmail] = useState("");
-//     const [password, setPassword] = useState("");
-//     const [showPassword, setShowPassword] = useState(false);
-//     const [designation, setDesignation] = useState("");
-//     const [otp, setOtp] = useState("");
-//     const [showOtpTextBox, setShowOtpTextBox] = useState(false);
-//     const [otpValidTill, setOtpValidTill] = useState(0); // Timer state in seconds
-//     const [captchaToken, setCaptchaToken] = useState("");
-//     const [showCaptcha, setShowCaptcha] = useState(false);
-//     const [userId, setUserId] = useState(null);
-//     const [errorMessage, setErrorMessage] = useState("");
-//     const [ename, setEname] = useState("");
-//     const [hrUserId, setHrUserId] = useState(null);
-
-//     useEffect(() => {
-//         document.title = `HR-Sahay-CRM`;
-//     }, []);
-
-//     const fetchData = async () => {
-//         try {
-//             const encodedPassword = encodeURIComponent(password);
-//             const response = await axios.get(`${secretKey}/employee/einfo/${email}/${encodedPassword}`);
-//             console.log(response.data)
-//             console.log(email, password)
-//             setData(response.data);
-//             setHrUserId(response.data._id)
-//             setDesignation(response.data.designation)
-//         } catch (error) {
-//             console.log("Error finding employee", error);
-//         }
-//     };
-
-
-//     useEffect(() => {
-//         if (email && password) {
-//             fetchData();
-//         }
-//     }, [email, password]);
-
-//     // const handleSubmit = async (e) => {
-//     //     e.preventDefault()
-//     //     try {
-//     //         const response = await axios.post(`${secretKey}/hrlogin`, {
-//     //             email,
-//     //             password,
-//     //             designation
-//     //         });
-//     //         console.log(response.data);
-//     //         const { hrToken } = response.data
-//     //         setHrToken(hrToken);
-//     //         localStorage.setItem("hrName", ename)
-//     //         localStorage.setItem("hrToken", hrToken)
-//     //         localStorage.setItem("hrUserId", hrUserId)
-//     //         console.log("userId", hrUserId);
-//     //         window.location.replace(`/hr/dashboard`);
-//     //     } catch (error) {
-//     //         console.error("Login Failed", error);
-//     //         if (error.response === 401) {
-//     //             if (error.response.data.message === "Invalid email or Password") {
-//     //                 setErrorMessage("Invalid Credentials");
-//     //             } else if (error.response.data.message === "Designation id incorrect") {
-//     //                 setErrorMessage("Only Authorizedd for hr")
-//     //             } else {
-//     //                 setErrorMessage("Unknown Error Occured")
-//     //             }
-//     //         } else {
-//     //             setErrorMessage("Unknown Error Occured")
-//     //         }
-//     //     }
-//     // };
-
-
-//     const onChange = (value) => {
-//         setCaptchaToken(value); // Save the reCAPTCHA token
-//     };
-
-//     const startOtpTimer = () => {
-//         const expiryTime = 90; // 1:30 minute in seconds
-//         setOtpValidTill(expiryTime);
-
-//         const timerInterval = setInterval(() => {
-//             setOtpValidTill((prev) => {
-//                 if (prev <= 1) {
-//                     clearInterval(timerInterval);
-//                     return 0;
-//                 }
-//                 return prev - 1;
-//             });
-//         }, 1000);
-//     };
-
-//     const formatTime = (seconds) => {
-//         const minutes = Math.floor(seconds / 60);
-//         const remainingSeconds = seconds % 60;
-//         return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-//     };
-
-//     const validateEmail = (email) => {
-//         const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-//         return re.test(String(email).toLowerCase());
-//     };
-
-//     const handleSendOtp = async (e) => {
-//         e.preventDefault();
-
-//         if (email.length === 0) {
-//             Swal.fire("Error!", "Please enter your email!", "error");
-//             setShowOtpTextBox(false);
-//             return;
-//         }
-
-//         if (!validateEmail(email)) {
-//             Swal.fire("Error!", "Please enter a valid email!", "error");
-//             setShowOtpTextBox(false);
-//             return;
-//         }
-
-//         if (!password) {
-//             Swal.fire("Error!", "Please enter your password!", "error");
-//             setShowOtpTextBox(false);
-//             return;
-//         }
-
-//         try {
-//             // Show loading feedback immediately
-//             Swal.fire({
-//                 title: "Sending OTP...",
-//                 text: "Please wait while we send the OTP to your email.",
-//                 allowOutsideClick: false,
-//                 didOpen: () => {
-//                     Swal.showLoading();
-//                 },
-//             });
-
-//             const response = await axios.post(`${secretKey}/hrlogin`, { email, password });
-//             if (response.status === 200) {
-//                 setErrorMessage("");
-//                 Swal.fire("Success!", "OTP has been sent to your email!", "success");
-//                 setShowOtpTextBox(true);
-//                 startOtpTimer();
-//                 localStorage.setItem("hrName", data.ename)
-//                 localStorage.setItem("hrUserId", hrUserId);
-//             }
-//         } catch (error) {
-//             Swal.close();
-//             if (error.response && error.response.status === 401) {
-//                 setErrorMessage("Invalid email or password.");
-//             } else {
-//                 setErrorMessage("Something went wrong. Please try again later.");
-//             }
-//             setShowOtpTextBox(false);
-//         }
-//     };
-
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-
-//         if (otp.length === 0) {
-//             Swal.fire("Error!", "Please enter OTP!", "error");
-//             return;
-//         }
-
-//         if (showCaptcha && !captchaToken) {
-//             Swal.fire("Error!", "Please complete the CAPTCHA verification!", "error");
-//             return;
-//         }
-
-//         try {
-//             const response = await axios.post(`${secretKey}/verify-otp`, { email, otp, captchaToken });
-
-//             if (response.status === 200) {
-//                 const { token, captchaRequired } = response.data;
-
-//                 if (captchaRequired) {
-//                     setShowCaptcha(true); // Show CAPTCHA
-//                 } else {
-//                     // Successfully verified
-//                     setHrToken(token);
-//                     localStorage.setItem("hrToken", token);
-//                     navigate(`/hr/dashboard`);
-//                     setShowOtpTextBox(false);
-//                     setShowCaptcha(false);
-//                     setErrorMessage('');
-//                 }
-//             }
-//         } catch (error) {
-//             if (error.response && error.response.status === 400) {
-//                 Swal.fire("Error!", "Invalid OTP. Please try again!", "error");
-//             } else if (error.response && error.response.status === 406) {
-//                 Swal.fire("Error!", "OTP Has Expired!", "error");
-//                 setShowOtpTextBox(false);
-//                 setShowCaptcha(false);
-//             } else if (error.response && error.response.status === 403) {
-//                 Swal.fire("Error!", "CAPTCHA validation failed!", "error");
-//             } else {
-//                 Swal.fire("Error!", "Error verifying OTP. Please try again!", "error");
-//             }
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <div className="page page-center">
-//                 <div className="container container-tight py-4">
-//                     <div className="login-card">
-//                         <div className="row align-items-stretch">
-//                             <div className="col-sm-6 p-0">
-//                                 <div className="card card-md h-100">
-//                                     <div className="card-body d-flex align-items-center justify-content-center">
-//                                         <div className="logo">
-//                                             <img src={logo}></img>
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                             <div className="col-sm-6 p-0">
-//                                 <div className="card card-md login-box">
-//                                     <div className="card-body">
-//                                         <h2 className="h2 text-center mb-4">HR Login</h2>
-//                                         <form method="get" autocomplete="off" novalidate>
-
-//                                             {/* <div className="mb-3">
-//                                                 <label className="form-label">Username</label>
-//                                                 <input
-//                                                     onChange={(e) => {
-//                                                         setEmail(e.target.value)
-//                                                     }}
-//                                                     type="email"
-//                                                     className="form-control"
-//                                                     placeholder="Email or Phone Number"
-//                                                     autocomplete="off"
-//                                                 />
-//                                             </div>
-//                                             <div className="mb-2">
-//                                                 <label className="form-label">
-//                                                     Password
-//                                                 </label>
-//                                                 <div className="input-group input-group-flat">
-//                                                     <input
-//                                                         onChange={(e) => {
-//                                                             setPassword(e.target.value)
-//                                                         }}
-//                                                         type={showPassword ? "text" : "password"}
-//                                                         className="form-control"
-//                                                         placeholder="Your password"
-//                                                         autoComplete="off"
-//                                                     />
-//                                                     <span className="input-group-text">
-//                                                         <a
-//                                                             href="#"
-//                                                             className="link-secondary"
-//                                                             title="Show password"
-//                                                             data-bs-toggle="tooltip"
-//                                                             onClick={() => setShowPassword(!showPassword)}
-//                                                         >
-//                                                             <svg
-//                                                                 xmlns="http://www.w3.org/2000/svg"
-//                                                                 className="icon"
-//                                                                 width="24"
-//                                                                 height="24"
-//                                                                 viewBox="0 0 24 24"
-//                                                                 strokeWidth="2"
-//                                                                 stroke="currentColor"
-//                                                                 fill="none"
-//                                                                 strokeLinecap="round"
-//                                                                 strokeLinejoin="round"
-//                                                             >
-//                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-//                                                                 <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-//                                                                 <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
-//                                                             </svg>
-//                                                         </a>
-//                                                     </span>
-//                                                 </div>
-//                                             </div>
-//                                             <div style={{ textAlign: "center", color: "red" }}>
-//                                                 <span>{errorMessage}</span>
-//                                             </div>
-//                                             <div className="form-footer">
-//                                                 <button
-//                                                     type="submit"
-//                                                     onClick={handleSubmit}
-//                                                     className="btn btn-primary w-100"
-//                                                 >
-//                                                     Submit
-//                                                 </button>
-//                                             </div> */}
-
-//                                             {!showOtpTextBox ? (
-//                                                 <>
-//                                                     <div className="mb-3">
-//                                                         <label className="form-label">Username</label>
-//                                                         <input
-//                                                             onChange={(e) => setEmail(e.target.value)}
-//                                                             type="email"
-//                                                             className="form-control"
-//                                                             placeholder="Email or Phone Number"
-//                                                             autocomplete="off"
-//                                                         />
-//                                                     </div>
-
-//                                                     <div className="mb-2">
-//                                                         <label className="form-label">
-//                                                             Password
-//                                                         </label>
-//                                                         <div className="input-group input-group-flat">
-//                                                             <input
-//                                                                 onChange={(e) => setPassword(e.target.value)}
-//                                                                 type={showPassword ? "text" : "password"}
-//                                                                 className="form-control"
-//                                                                 placeholder="Your password"
-//                                                                 autoComplete="off"
-//                                                             />
-//                                                             <span className="input-group-text">
-//                                                                 <a
-//                                                                     href="#"
-//                                                                     className="link-secondary"
-//                                                                     title="Show password"
-//                                                                     data-bs-toggle="tooltip"
-//                                                                     onClick={() => setShowPassword(!showPassword)}
-//                                                                 >
-//                                                                     <svg
-//                                                                         xmlns="http://www.w3.org/2000/svg"
-//                                                                         className="icon"
-//                                                                         width="24"
-//                                                                         height="24"
-//                                                                         viewBox="0 0 24 24"
-//                                                                         strokeWidth="2"
-//                                                                         stroke="currentColor"
-//                                                                         fill="none"
-//                                                                         strokeLinecap="round"
-//                                                                         strokeLinejoin="round"
-//                                                                     >
-//                                                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-//                                                                         <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-//                                                                         <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
-//                                                                     </svg>
-//                                                                 </a>
-//                                                             </span>
-//                                                         </div>
-//                                                     </div>
-
-//                                                     <div style={{ textAlign: "center", color: "red" }}>
-//                                                         <span>{errorMessage}</span>
-//                                                     </div>
-//                                                 </>
-//                                             ) : (
-//                                                 <>
-//                                                     <input
-//                                                         onChange={(e) => setOtp(e.target.value)}
-//                                                         type="text"
-//                                                         className="form-control"
-//                                                         placeholder="Enter your OTP here"
-//                                                         autoComplete="off"
-//                                                     />
-
-//                                                     <p className="text-black-50 mt-1">
-//                                                         {otpValidTill > 0
-//                                                             ? `OTP Expires in: ${formatTime(otpValidTill)} Seconds`
-//                                                             : "OTP has expired"}
-//                                                     </p>
-
-//                                                     {showCaptcha && <ReCAPTCHA
-//                                                         sitekey={captchaKey}
-//                                                         onChange={onChange}
-//                                                     />}
-//                                                 </>
-//                                             )}
-
-//                                             <div className="form-footer">
-//                                                 {!showOtpTextBox ? <button
-//                                                     type="submit"
-//                                                     onClick={(e) => handleSendOtp(e)}
-//                                                     className="btn btn-primary w-100"
-//                                                 >
-//                                                     Send OTP
-//                                                 </button> : <button
-//                                                     type="submit"
-//                                                     onClick={(e) => handleSubmit(e)}
-//                                                     className="btn btn-primary w-100"
-//                                                 >
-//                                                     Submit
-//                                                 </button>}
-//                                             </div>
-
-//                                         </form>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
-
-// export default HrLogin;
+// // export default HrLogin;
 
 import React, { useEffect, useState, useRef } from "react";
 import L from "leaflet";

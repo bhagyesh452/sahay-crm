@@ -324,7 +324,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                     reportingManager: reportingManager,
                     password: password,
                     jdate: jdate,
-                    AddedOn: AddedOn,
+                    //AddedOn: AddedOn,
                     targetDetails: targetObjects,
                     // bdmWork,
                 };
