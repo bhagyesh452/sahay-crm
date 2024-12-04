@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from "../../Components/Header/Header.jsx";
 import Navbar from "../../Components/Navbar/Navbar.jsx";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -267,12 +267,21 @@ function ManageLeads() {
         return `${day}/${month}/${year}`;
     }
 
+    // Debounce utility function
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func(...args), delay);
+        };
+    };
+
     const handleFilterSearch = async (searchQuery, page = 1, limit = itemsPerPage) => {
         try {
             setCurrentDataLoading(true);
             setIsSearching(true);
-            setIsFilter(false);
-            handleClearFilter()
+            handleClearFilter();
+            
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
                 params: {
                     searchQuery,
@@ -309,6 +318,12 @@ function ManageLeads() {
             setCurrentDataLoading(false);
         }
     };
+
+    // Memoize the debounced function to ensure it's stable across renders
+    const debouncedHandleFilterSearch = useMemo(
+        () => debounce(handleFilterSearch, 500),
+        [] // Empty dependency array ensures this is created only once
+    );
 
     //--------------------function to add leads-------------------------------------
     const [openAddLeadsDialog, setOpenAddLeadsDialog] = useState(false)
@@ -1428,7 +1443,6 @@ function ManageLeads() {
         setCompanyIncoDate(null);
         setSelectedCompanyIncoDate(null);
         setSelectedRows([]);
-        fetchData(1, latestSortCount);
     }
 
     const functionCloseFilterDrawer = () => {
@@ -1468,7 +1482,7 @@ function ManageLeads() {
     const [callHistoryDataToMap, setCallHistoryDataToMap] = useState([])
 
 
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName , callHistoryData) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName, callHistoryData) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
         setCompanyName(companyName);
@@ -1556,14 +1570,20 @@ function ManageLeads() {
                                             // Normalize searchText by replacing non-breaking spaces with regular spaces
                                             const normalizedSearchText = e.target.value.replace(/\u00A0/g, " ");
                                             setSearchText(normalizedSearchText);
-                                            handleFilterSearch(normalizedSearchText);
-                                            //setCurrentPage(0);
+                                            // handleFilterSearch(normalizedSearchText);
+                                            if (normalizedSearchText !== "") {
+                                                debouncedHandleFilterSearch(normalizedSearchText); // Trigger debounced search
+                                            } else {
+                                                handleFilterSearch(""); // Reset to fetch default data if input is empty
+                                            }
+                                            // setCurrentPage(0);
                                         }}
                                         className="form-control search-cantrol mybtn"
                                         placeholder="Search…"
                                         type="text"
                                         name="bdeName-search"
-                                        id="bdeName-search" />
+                                        id="bdeName-search"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -1831,31 +1851,31 @@ function ManageLeads() {
                                                         <td>{company["Company Number"]}</td>
                                                         {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                             <LuHistory
-                                                                    onClick={() => {
-                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
-                                                                            handleShowCallHistory(
-                                                                                company["Company Name"],
-                                                                                company["Company Number"],
-                                                                                "",
-                                                                                company.bdmName,
-                                                                                company.bdmAcceptStatus,
-                                                                                company.bdeForwardDate,
-                                                                                company.ename,
-                                                                                company.clientCallHistory ? company.clientCallHistory : 
+                                                                onClick={() => {
+                                                                    if (company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0) {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename,
+                                                                            company.clientCallHistory ? company.clientCallHistory :
                                                                                 company.callHistoryData ? company.callHistoryData : [],
-                                                                            );
-                                                                        }
-                                                                        
-                                                                        
-                                                                    }}
-                                                                    style={{
-                                                                        cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
-                                                                        width: "15px",
-                                                                        height: "15px",
-                                                                        opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
-                                                                    }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
-                                                                />
+                                                                        );
+                                                                    }
+
+
+                                                                }}
+                                                                style={{
+                                                                    cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                    opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
+                                                                }}
+                                                                color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
+                                                            />
                                                         </td>)}
                                                         <td>
                                                             <Tooltip
@@ -1965,31 +1985,31 @@ function ManageLeads() {
                                                         <td>{company["Company Number"]}</td>
                                                         {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                             <LuHistory
-                                                                    onClick={() => {
-                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
-                                                                            handleShowCallHistory(
-                                                                                company["Company Name"],
-                                                                                company["Company Number"],
-                                                                                "",
-                                                                                company.bdmName,
-                                                                                company.bdmAcceptStatus,
-                                                                                company.bdeForwardDate,
-                                                                                company.ename,
-                                                                                company.clientCallHistory ? company.clientCallHistory : 
+                                                                onClick={() => {
+                                                                    if (company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0) {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename,
+                                                                            company.clientCallHistory ? company.clientCallHistory :
                                                                                 company.callHistoryData ? company.callHistoryData : [],
-                                                                            );
-                                                                        }
-                                                                        
-                                                                        
-                                                                    }}
-                                                                    style={{
-                                                                        cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
-                                                                        width: "15px",
-                                                                        height: "15px",
-                                                                        opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
-                                                                    }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
-                                                                />
+                                                                        );
+                                                                    }
+
+
+                                                                }}
+                                                                style={{
+                                                                    cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                    opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
+                                                                }}
+                                                                color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
+                                                            />
                                                         </td>)}
                                                         <td>
                                                             <Tooltip
@@ -2098,31 +2118,31 @@ function ManageLeads() {
                                                         <td>{company["Company Number"]}</td>
                                                         {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                             <LuHistory
-                                                                    onClick={() => {
-                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
-                                                                            handleShowCallHistory(
-                                                                                company["Company Name"],
-                                                                                company["Company Number"],
-                                                                                "",
-                                                                                company.bdmName,
-                                                                                company.bdmAcceptStatus,
-                                                                                company.bdeForwardDate,
-                                                                                company.ename,
-                                                                                company.clientCallHistory ? company.clientCallHistory : 
+                                                                onClick={() => {
+                                                                    if (company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0) {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename,
+                                                                            company.clientCallHistory ? company.clientCallHistory :
                                                                                 company.callHistoryData ? company.callHistoryData : [],
-                                                                            );
-                                                                        }
-                                                                        
-                                                                        
-                                                                    }}
-                                                                    style={{
-                                                                        cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
-                                                                        width: "15px",
-                                                                        height: "15px",
-                                                                        opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
-                                                                    }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
-                                                                />
+                                                                        );
+                                                                    }
+
+
+                                                                }}
+                                                                style={{
+                                                                    cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                    opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
+                                                                }}
+                                                                color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
+                                                            />
                                                         </td>)}
                                                         <td>
                                                             <Tooltip
@@ -2231,31 +2251,31 @@ function ManageLeads() {
                                                         <td>{company["Company Number"]}</td>
                                                         {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                             <LuHistory
-                                                                    onClick={() => {
-                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
-                                                                            handleShowCallHistory(
-                                                                                company["Company Name"],
-                                                                                company["Company Number"],
-                                                                                "",
-                                                                                company.bdmName,
-                                                                                company.bdmAcceptStatus,
-                                                                                company.bdeForwardDate,
-                                                                                company.ename,
-                                                                                company.clientCallHistory ? company.clientCallHistory : 
+                                                                onClick={() => {
+                                                                    if (company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0) {
+                                                                        handleShowCallHistory(
+                                                                            company["Company Name"],
+                                                                            company["Company Number"],
+                                                                            "",
+                                                                            company.bdmName,
+                                                                            company.bdmAcceptStatus,
+                                                                            company.bdeForwardDate,
+                                                                            company.ename,
+                                                                            company.clientCallHistory ? company.clientCallHistory :
                                                                                 company.callHistoryData ? company.callHistoryData : [],
-                                                                            );
-                                                                        }
-                                                                        
-                                                                        
-                                                                    }}
-                                                                    style={{
-                                                                        cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
-                                                                        width: "15px",
-                                                                        height: "15px",
-                                                                        opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
-                                                                    }}
-                                                                    color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
-                                                                />
+                                                                        );
+                                                                    }
+
+
+                                                                }}
+                                                                style={{
+                                                                    cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
+                                                                    width: "15px",
+                                                                    height: "15px",
+                                                                    opacity: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? 1 : 0.5, // Visual feedback for disabled state
+                                                                }}
+                                                                color={company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "#fbb900" : "#000000"} // Change color based on availability
+                                                            />
                                                         </td>)}
                                                         <td>
                                                             <Tooltip
@@ -3859,7 +3879,12 @@ function ManageLeads() {
                         </div>
                     </div>
                     <div className="footer-Drawer d-flex justify-content-between align-items-center">
-                        <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
+                        <button className='filter-footer-btn btn-clear' onClick={() => {
+                            fetchData(1, latestSortCount);
+                            handleClearFilter();
+                        }}>
+                            Clear Filter
+                        </button>
                         <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button>
                     </div>
                 </div>

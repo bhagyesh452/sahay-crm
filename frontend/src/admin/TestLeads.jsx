@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from "./Header";
 import Navbar from "./Navbar";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -336,8 +336,8 @@ function TestLeads() {
         try {
             setCurrentDataLoading(true);
             setIsSearching(true);
-            setIsFilter(false);
-            handleClearFilter()
+            handleClearFilter();
+
             const response = await axios.get(`${secretKey}/company-data/search-leads`, {
                 params: {
                     searchQuery,
@@ -375,8 +375,11 @@ function TestLeads() {
         }
     };
 
-    // Debounced version of the search function
-    const debouncedHandleFilterSearch = debounce(handleFilterSearch, 300);
+    // Memoize the debounced function to ensure it's stable across renders
+    const debouncedHandleFilterSearch = useMemo(
+        () => debounce(handleFilterSearch, 500),
+        [] // Empty dependency array ensures this is created only once
+    );
 
     //--------------------function to add leads-------------------------------------
     const [openAddLeadsDialog, setOpenAddLeadsDialog] = useState(false)
@@ -1568,7 +1571,6 @@ function TestLeads() {
         setCompanyIncoDate(null)
         setSelectedCompanyIncoDate(null)
         setSelectedRows([])
-        fetchData(1, latestSortCount)
     }
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
@@ -1744,12 +1746,12 @@ function TestLeads() {
     // }, [data]);
 
 
-    console.log("extractedData", data)
+    // console.log("extractedData", data);
     // console.log("completeLeads", completeLeads)
     const [callHistoryDataToMap, setCallHistoryDataToMap] = useState([])
 
 
-    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName , callHistoryData) => {
+    const handleShowCallHistory = (companyName, clientNumber, bdenumber, bdmName, bdmAcceptStatus, bdeForwardDate, bdeName, callHistoryData) => {
         setShowCallHistory(true)
         setClientNumber(clientNumber)
         setCompanyName(companyName);
@@ -1865,7 +1867,8 @@ function TestLeads() {
                                             placeholder="Search…"
                                             type="text"
                                             name="bdeName-search"
-                                            id="bdeName-search" />
+                                            id="bdeName-search"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -2141,7 +2144,7 @@ function TestLeads() {
                                                             {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
-                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
+                                                                        if (company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0) {
                                                                             handleShowCallHistory(
                                                                                 company["Company Name"],
                                                                                 company["Company Number"],
@@ -2150,12 +2153,12 @@ function TestLeads() {
                                                                                 company.bdmAcceptStatus,
                                                                                 company.bdeForwardDate,
                                                                                 company.ename,
-                                                                                company.clientCallHistory ? company.clientCallHistory : 
-                                                                                company.callHistoryData ? company.callHistoryData : [],
+                                                                                company.clientCallHistory ? company.clientCallHistory :
+                                                                                    company.callHistoryData ? company.callHistoryData : [],
                                                                             );
                                                                         }
-                                                                        
-                                                                        
+
+
                                                                     }}
                                                                     style={{
                                                                         cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
@@ -2266,7 +2269,7 @@ function TestLeads() {
                                                             {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
-                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
+                                                                        if (company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0) {
                                                                             handleShowCallHistory(
                                                                                 company["Company Name"],
                                                                                 company["Company Number"],
@@ -2275,12 +2278,12 @@ function TestLeads() {
                                                                                 company.bdmAcceptStatus,
                                                                                 company.bdeForwardDate,
                                                                                 company.ename,
-                                                                                company.clientCallHistory ? company.clientCallHistory : 
-                                                                                company.callHistoryData ? company.callHistoryData : [],
+                                                                                company.clientCallHistory ? company.clientCallHistory :
+                                                                                    company.callHistoryData ? company.callHistoryData : [],
                                                                             );
                                                                         }
-                                                                        
-                                                                        
+
+
                                                                     }}
                                                                     style={{
                                                                         cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
@@ -2389,7 +2392,7 @@ function TestLeads() {
                                                             {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
-                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
+                                                                        if (company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0) {
                                                                             handleShowCallHistory(
                                                                                 company["Company Name"],
                                                                                 company["Company Number"],
@@ -2398,12 +2401,12 @@ function TestLeads() {
                                                                                 company.bdmAcceptStatus,
                                                                                 company.bdeForwardDate,
                                                                                 company.ename,
-                                                                                company.clientCallHistory ? company.clientCallHistory : 
-                                                                                company.callHistoryData ? company.callHistoryData : [],
+                                                                                company.clientCallHistory ? company.clientCallHistory :
+                                                                                    company.callHistoryData ? company.callHistoryData : [],
                                                                             );
                                                                         }
-                                                                        
-                                                                        
+
+
                                                                     }}
                                                                     style={{
                                                                         cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
@@ -2512,7 +2515,7 @@ function TestLeads() {
                                                             {(dataStatus === "Extracted" || dataStatus === "Assigned") && (<td>
                                                                 <LuHistory
                                                                     onClick={() => {
-                                                                        if(company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0){
+                                                                        if (company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0) {
                                                                             handleShowCallHistory(
                                                                                 company["Company Name"],
                                                                                 company["Company Number"],
@@ -2521,12 +2524,12 @@ function TestLeads() {
                                                                                 company.bdmAcceptStatus,
                                                                                 company.bdeForwardDate,
                                                                                 company.ename,
-                                                                                company.clientCallHistory ? company.clientCallHistory : 
-                                                                                company.callHistoryData ? company.callHistoryData : [],
+                                                                                company.clientCallHistory ? company.clientCallHistory :
+                                                                                    company.callHistoryData ? company.callHistoryData : [],
                                                                             );
                                                                         }
-                                                                        
-                                                                        
+
+
                                                                     }}
                                                                     style={{
                                                                         cursor: company.clientCallHistory?.length > 0 || company.callHistoryData?.length > 0 ? "pointer" : "not-allowed",
@@ -4233,7 +4236,12 @@ function TestLeads() {
                         </div>
                     </div>
                     <div className="footer-Drawer d-flex justify-content-between align-items-center">
-                        <button className='filter-footer-btn btn-clear' onClick={handleClearFilter}>Clear Filter</button>
+                        <button className='filter-footer-btn btn-clear' onClick={() => {
+                            fetchData(1, latestSortCount);
+                            handleClearFilter();
+                        }}>
+                            Clear Filter
+                        </button>
                         <button className='filter-footer-btn btn-yellow' onClick={handleFilterData}>Apply Filter</button>
                     </div>
                 </div>
