@@ -38,11 +38,11 @@ const EmployeeDraftSchema = new mongoose.Schema({
   },
   personal_number: {
     type: String,
-    unique: true
+    // unique: true
   },
   personal_email: {
     type: String,
-    unique: true
+    // unique: true
   },
   currentAddress: {
     type: String

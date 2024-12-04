@@ -285,34 +285,34 @@ function EmployeeInterestedLeads({
         // Save matched call history to database
         const updatedGeneralData = await Promise.all(
           interestedData.map(async (company) => {
-              const companyNumber = String(company["Company Number"]);
-              const callHistoryForCompany = callHistoryMap[companyNumber] || [];
+            const companyNumber = String(company["Company Number"]);
+            const callHistoryForCompany = callHistoryMap[companyNumber] || [];
 
-              // Save to the database if there is call history
-              if (callHistoryForCompany.length > 0) {
-                  try {
-                      await axios.post(`${secretKey}/remarks/save-client-call-history`, {
-                          client_number: companyNumber,
-                          callHistoryData: callHistoryForCompany,
-                      });
-                      console.log(`Call history for company ${companyNumber} saved successfully.`);
-                  } catch (err) {
-                      console.error(`Error saving call history for ${companyNumber}:`, err.response?.data || err.message);
-                  }
-              } else {
-                  console.log(`No call history to save for company ${companyNumber}.`);
-              }
-
-              // Update local busyData with call history
-              return {
-                  ...company,
+            // Save to the database if there is call history
+            if (callHistoryForCompany.length > 0) {
+              try {
+                await axios.post(`${secretKey}/remarks/save-client-call-history`, {
+                  client_number: companyNumber,
                   callHistoryData: callHistoryForCompany,
-              };
-          })
-      );
+                });
+                console.log(`Call history for company ${companyNumber} saved successfully.`);
+              } catch (err) {
+                console.error(`Error saving call history for ${companyNumber}:`, err.response?.data || err.message);
+              }
+            } else {
+              console.log(`No call history to save for company ${companyNumber}.`);
+            }
 
-      // Update the generalData state with enriched data
-      setInterestedData(updatedGeneralData);
+            // Update local busyData with call history
+            return {
+              ...company,
+              callHistoryData: callHistoryForCompany,
+            };
+          })
+        );
+
+        // Update the generalData state with enriched data
+        setInterestedData(updatedGeneralData);
 
         console.log("All call history saved successfully.");
       } catch (err) {
@@ -740,354 +740,361 @@ function EmployeeInterestedLeads({
               </tbody>
             ) : (
               <tbody>
-                {interestedData && interestedData.map((company, index) => (
-
-                  <tr
-                    key={company._id}
-                    style={{ border: "1px solid #ddd" }}
-                    onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
-                    onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
-                    onMouseUp={handleMouseUp} // End drag selection
-                    id={
-                      selectedRows && selectedRows.includes(company._id) ? "selected_admin" : ""
-                    } // Highlight selected rows
-                  >
-                    {(fordesignation === "admin" || fordesignation === "datamanager") && (
+                {interestedData && interestedData.map((company, index) => {
+               
+                  console.log("companycheckinghere" , company)
+                  console.log("type" , typeof(bdenumber))
+               
+                  return (
+                    <tr
+                      key={company._id}
+                      style={{ border: "1px solid #ddd" }}
+                      onMouseDown={() => handleMouseDown(company._id)} // Start drag selection
+                      onMouseOver={() => handleMouseEnter(company._id)} // Continue drag selection
+                      onMouseUp={handleMouseUp} // End drag selection
+                      id={
+                        selectedRows && selectedRows.includes(company._id) ? "selected_admin" : ""
+                      } // Highlight selected rows
+                    >
+                      {(fordesignation === "admin" || fordesignation === "datamanager") && (
+                        <td
+                          className="AEP-sticky-left-1"
+                          style={{
+                            position: "sticky",
+                            left: 0,
+                            zIndex: 1,
+                            background: "white",
+                          }}
+                        >
+                          <label className="table-check">
+                            <input
+                              type="checkbox"
+                              checked={selectedRows && selectedRows.includes(company._id)}
+                              onChange={(e) => handleCheckboxChange(company._id, e)}
+                              onMouseUp={handleMouseUp}
+                            />
+                            <span class="table_checkmark"></span>
+                          </label>
+                        </td>
+                      )}
                       <td
-                        className="AEP-sticky-left-1"
-                        style={{
-                          position: "sticky",
-                          left: 0,
-                          zIndex: 1,
-                          background: "white",
-                        }}
-                      >
-                        <label className="table-check">
-                          <input
-                            type="checkbox"
-                            checked={selectedRows && selectedRows.includes(company._id)}
-                            onChange={(e) => handleCheckboxChange(company._id, e)}
-                            onMouseUp={handleMouseUp}
-                          />
-                          <span class="table_checkmark"></span>
-                        </label>
-                      </td>
-                    )}
-                    <td
-                      className={
-                        (fordesignation === "admin" || fordesignation === "datamanager")
-                          ? "AEP-sticky-left-2"
-                          : "rm-sticky-left-1 "
-                      }
-                    >
-                      {startIndex + index + 1}
-                    </td>
-                    <td style={{ width: 'fit-content' }}
-                      className={
-                        (fordesignation === "admin" || fordesignation === "datamanager")
-                          ? "AEP-sticky-left-3"
-                          : "rm-sticky-left-2 "
-                      }
-                    >
-                      {company["Company Name"]}
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center justify-content-between wApp">
-                        <div>{company["Company Number"]}</div>
-                        <a
-                          target="_blank"
-                          href={`https://wa.me/91${company["Company Number"]}`}
-                        >
-                          <FaWhatsapp />
-                        </a>
-                      </div>
-                    </td>
-                    <td>
-                      <LuHistory
-                        onClick={() => {
-                          // Check if call history is available and contains relevant data
-                          const filteredCallHistory = (company.clientCallHistory || company.callHistoryData || []).filter(
-                            (call) =>
-                              call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
-                          );
-
-                          if (filteredCallHistory.length > 0) {
-                            handleShowCallHistory(
-                              company["Company Name"],
-                              company["Company Number"],
-                              bdenumber,
-                              company.bdmName,
-                              company.bdmAcceptStatus,
-                              company.bdeForwardDate,
-                              filteredCallHistory
-                            );
-                          }
-                        }}
-                        style={{
-                          cursor:
-                            (company.clientCallHistory || company.callHistoryData)?.some(
-                              (call) =>
-                                call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
-                            )
-                              ? "pointer"
-                              : "not-allowed",
-                          width: "15px",
-                          height: "15px",
-                          opacity:
-                            (company.clientCallHistory || company.callHistoryData)?.some(
-                              (call) =>
-                                call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
-                            )
-                              ? 1
-                              : 0.5, // Visual feedback for disabled state
-                        }}
-                        color={
-                          (company.clientCallHistory || company.callHistoryData)?.some(
-                            (call) =>
-                              call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
-                          )
-                            ? "#fbb900" : "#000000"// Change color based on availability
+                        className={
+                          (fordesignation === "admin" || fordesignation === "datamanager")
+                            ? "AEP-sticky-left-2"
+                            : "rm-sticky-left-1 "
                         }
-                      />
-                    </td>
-                    <td style={{ width: "150px" }}>
-                      <div className="d-flex align-items-center justify-content-between">
-                        {(fordesignation === "admin" || fordesignation === "datamanager") ? (
-                          <div
-                            className={company.Status === "Interested" ? "dfault_interested-status" :
-                              company.Status === "FollowUp" ? "dfault_followup-status" :
-                                null}>
-                            {company.Status}
-                          </div>) : (
-                          <EmployeeStatusChange
-                            key={company._id}
-                            companyName={company && company["Company Name"]}
-                            companyStatus={company.Status}
-                            id={company._id}
-                            refetch={refetch}
-                            mainStatus={dataStatus}
-                            setCompanyName={setCompanyName}
-                            setCompanyEmail={setCompanyEmail}
-                            setCompanyInco={setCompanyInco}
-                            setCompanyId={setCompanyId}
-                            setCompanyNumber={setCompanyNumber}
-                            setDeletedEmployeeStatus={setDeletedEmployeeStatus}
-                            setNewBdeName={setNewBdeName}
-                            isDeletedEmployeeCompany={
-                              company.isDeletedEmployeeCompany
-                            }
-                            cemail={company["Company Email"]}
-                            cindate={company["Incorporation Date"]}
-                            cnum={company["Company Number"]}
-                            ename={ename}
-                            bdmAcceptStatus={company.bdmAcceptStatus}
-                            handleFormOpen={handleOpenFormOpen}
-                            setOpenBacdrop={setOpenBacdrop}
-                            previousStatus={company.previousStatusToUndo}
-                          />
-                        )}
-                        <div
-                          className={
-                            (company.interestedInformation === null || company.interestedInformation.length === 0)
-                              ? (company.Status === "Interested"
-                                ? "intersted-history-btn disabled"
-                                : company.Status === "FollowUp"
-                                  ? "followup-history-btn disabled"
-                                  : "")
-                              : (company.Status === "Interested"
-                                ? "intersted-history-btn"
-                                : company.Status === "FollowUp"
-                                  ? "followup-history-btn"
-                                  : "")
-                          }
-                        >
-
-                          <FaEye
-                            key={company._id}
-                            style={{ border: "transparent", background: "none" }}
-                            data-bs-toggle="modal"
-                            data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
-                            title="Interested Information"
-                          //disabled={!company.interestedInformation}
-                          />
-
-                          <EmployeeInterestedInformationDialog
-                            key={company._id}
-                            modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
-                            companyName={company["Company Name"]}
-                            interestedInformation={company.interestedInformation} // Pass the interested information here
-                            refetch={refetch}
-                            ename={ename}
-                            secretKey={secretKey}
-                            status={company.Status}
-                            companyStatus={company.Status}
-                            forView={true}
-                            fordesignation={fordesignation}
-
-                          />
+                      >
+                        {startIndex + index + 1}
+                      </td>
+                      <td style={{ width: 'fit-content' }}
+                        className={
+                          (fordesignation === "admin" || fordesignation === "datamanager")
+                            ? "AEP-sticky-left-3"
+                            : "rm-sticky-left-2 "
+                        }
+                      >
+                        {company["Company Name"]}
+                      </td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-between wApp">
+                          <div>{company["Company Number"]}</div>
+                          <a
+                            target="_blank"
+                            href={`https://wa.me/91${company["Company Number"]}`}
+                          >
+                            <FaWhatsapp />
+                          </a>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div
-                        key={company._id}
-                        className="d-flex align-items-center justify-content-between w-100"
-                      >
+                      </td>
+                      <td>
+                        <LuHistory
+                          onClick={() => {
+                            // Check if call history is available and contains relevant data
+                            const filteredCallHistory = (company.clientCallHistory || company.callHistoryData || []).filter(
+                              (call) =>
+                                call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
+                            );
 
-                        {(fordesignation === "admin" || fordesignation === "datamanager") ? (<>
-
-                          <AdminRemarksDialog
-                            key={`${company["Company Name"]}-${index}`}
-                            currentRemarks={company.Remarks}
-                            companyID={company._id}
-                            companyStatus={company.Status}
-                            secretKey={secretKey} />
-                        </>
-
-                        ) :
-                          (<>
-
-                            <p
-                              className="rematkText text-wrap m-0"
-                              title={company.Remarks}
-                            >
-                              {!company["Remarks"] ? "No Remarks" : company.Remarks}
-                            </p>
-                            <RemarksDialog
+                            if (filteredCallHistory.length > 0) {
+                              handleShowCallHistory(
+                                company["Company Name"],
+                                company["Company Number"],
+                                bdenumber,
+                                company.bdmName,
+                                company.bdmAcceptStatus,
+                                company.bdeForwardDate,
+                                filteredCallHistory
+                              );
+                            }
+                          }}
+                          style={{
+                            cursor:
+                              (company.clientCallHistory || company.callHistoryData)?.some(
+                                (call) =>
+                                  call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
+                              )
+                                ? "pointer"
+                                : "not-allowed",
+                            width: "15px",
+                            height: "15px",
+                            opacity:
+                              (company.clientCallHistory || company.callHistoryData)?.some(
+                                (call) =>
+                                  call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
+                              )
+                                ? 1
+                                : 0.5, // Visual feedback for disabled state
+                          }}
+                          color={
+                            (company.clientCallHistory || company.callHistoryData)?.some(
+                              (call) =>
+                                call.emp_number === bdenumber || call.emp_name?.trim().toLowerCase() === company.bdmName?.trim().toLowerCase()
+                            )
+                              ? "#fbb900" : "#000000"// Change color based on availability
+                          }
+                        />
+                      </td>
+                      <td style={{ width: "150px" }}>
+                        <div className="d-flex align-items-center justify-content-between">
+                          {(fordesignation === "admin" || fordesignation === "datamanager") ? (
+                            <div
+                              className={company.Status === "Interested" ? "dfault_interested-status" :
+                                company.Status === "FollowUp" ? "dfault_followup-status" :
+                                  null}>
+                              {company.Status}
+                            </div>) : (
+                            <EmployeeStatusChange
                               key={company._id}
-                              currentCompanyName={company["Company Name"]}
-                              //remarksHistory={remarksHistory} // pass your remarks history data
-                              companyId={company._id}
-                              remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
-                              isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
-                              bdmAcceptStatus={company.bdmAcceptStatus}
+                              companyName={company && company["Company Name"]}
                               companyStatus={company.Status}
-                              secretKey={secretKey}
-                              //fetchRemarksHistory={fetchRemarksHistory}
-                              bdeName={ename}
-                              bdmName={company.bdmName}
+                              id={company._id}
                               refetch={refetch}
-                              mainRemarks={company.Remarks}
-                              designation={designation}
-                              fordesignation={fordesignation}
-                            />
-                          </>)}
-                      </div>
-                    </td>
-                    <td>
-                      <EmployeeNextFollowDate
-                        key={company._id}
-                        id={company._id}
-                        nextFollowDate={company.bdeNextFollowUpDate}
-                        refetch={refetch}
-                        status={company.Status}
-                      />
-                    </td>
-                    <td>
-                      <Tooltip
-                        title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
-                        arrow
-                      >
-                        <span>
-                          {formatDateNew(company["Company Incorporation Date  "])}
-                        </span>
-                      </Tooltip>
-                    </td>
-                    <td>{company["City"]}</td>
-                    <td>{company["State"]}</td>
-                    <td>{company["Company Email"]}</td>
-                    <td>{formatDateNew(company["AssignDate"])}</td>
-                    <td className="rm-sticky-action">
-                      <div className="d-flex align-items-center justify-content-between">
-                        {projectionData && projectionData
-                          .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
-                          .some((item) => item.companyName === company["Company Name"]) ? (
-                          <IconButton
-                            onClick={() => {
-                              // Find the latest projection for the specified company after sorting
-                              const matchedItem = projectionData
-                                .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))
-                                .find((item) => item.companyName === company["Company Name"]);
-
-                              const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
-                              const currentDate = new Date().setHours(0, 0, 0, 0);
-
-                              // Check if payment date is before the current date
-                              if (paymentDate >= currentDate) {
-                                setIsProjectionEditable((fordesignation === "admin" || fordesignation === "datamanager") ? false : true);  // Enable edit mode
-                                setViewProjection((fordesignation === "admin" || fordesignation === "datamanager") ? true : false); // Open new projection dialog with disabled fields when designation is admin or datamanager
-                                setShowNewAddProjection(true);  // Open new projection dialog
-                                setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
-                                // console.log("Projection data to be updated :", matchedItem);
-                                setViewedForParticularCompany(false)
-                                setCompanyId(company._id)
-                              } else {
-                                setIsProjectionEditable(false); // Disable edit mode
-                                (fordesignation === "admin" || fordesignation === "datamanager") && setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
-                                setShowNewAddProjection(true);  // Open new projection dialog
-                                setProjectionDataToBeFilled(fordesignation === "admin" || fordesignation === "datamanager" ? matchedItem : company); // Set matched item in the state
-                                setViewedForParticularCompany(true)
-                                setCompanyId(company._id)
-                                // console.log("Projection data to be viewed :", matchedItem);
+                              mainStatus={dataStatus}
+                              setCompanyName={setCompanyName}
+                              setCompanyEmail={setCompanyEmail}
+                              setCompanyInco={setCompanyInco}
+                              setCompanyId={setCompanyId}
+                              setCompanyNumber={setCompanyNumber}
+                              setDeletedEmployeeStatus={setDeletedEmployeeStatus}
+                              setNewBdeName={setNewBdeName}
+                              isDeletedEmployeeCompany={
+                                company.isDeletedEmployeeCompany
                               }
-                            }}
-                          >
-                            <RiEditCircleFill
-                              color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
-                                ? "#fbb900"
-                                : (fordesignation === "admin" || fordesignation === "datamanager") ? "#fbb900" : "grey"}
-                              style={{
-                                width: "17px",
-                                height: "17px",
-                              }}
-                              title={(fordesignation === "admin" || fordesignation === "datamanager") ? "View Projection"
-                                : projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
-                                  ? "Update Projection" : "Add Projection"}
-                            />
-                          </IconButton>
-                        ) : (
-                          <IconButton
-                            onClick={() => {
-                              setViewedForParticularCompany(true)
-                              setIsProjectionEditable(false); // Not opened in editing mode
-                              setShowNewAddProjection(true);  // Open new projection dialog
-                              setViewProjection(false); // Open new projection dialog with enabled fields
-                              setProjectionDataToBeFilled(company); // Send whole company data when no match found
-                              // console.log("Projection data to be added :", company);
-                            }}
-                            disabled={fordesignation === "admin" || fordesignation === "datamanager"}
-                          >
-                            <RiEditCircleFill
-                              color={(fordesignation === "admin" || fordesignation === "datamanager") ? "lightgrey" : "grey"}
-                              style={{
-                                width: "17px",
-                                height: "17px",
-                              }}
-                              title={(fordesignation === "admin" || fordesignation === "datamanager") ? "View Projection" : "Add Projection"}
-                            />
-                          </IconButton>
-                        )}
-                        {
-                          ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (
-                            <TiArrowForward onClick={() => {
-                              setShowForwardToBdmPopup(true);
-                              setCompanyId(company._id);
-                              setCompanyName(company["Company Name"]);
-                              setCompanyStatus(company.Status);
-                            }}
-                              style={{
-                                cursor: "pointer",
-                                width: "17px",
-                                height: "17px",
-                              }}
-                              title="Forward To BDM"
-                              color="grey"
+                              cemail={company["Company Email"]}
+                              cindate={company["Incorporation Date"]}
+                              cnum={company["Company Number"]}
+                              ename={ename}
+                              bdmAcceptStatus={company.bdmAcceptStatus}
+                              handleFormOpen={handleOpenFormOpen}
+                              setOpenBacdrop={setOpenBacdrop}
+                              previousStatus={company.previousStatusToUndo}
                             />
                           )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <div
+                            className={
+                              (company.interestedInformation === null || company.interestedInformation.length === 0)
+                                ? (company.Status === "Interested"
+                                  ? "intersted-history-btn disabled"
+                                  : company.Status === "FollowUp"
+                                    ? "followup-history-btn disabled"
+                                    : "")
+                                : (company.Status === "Interested"
+                                  ? "intersted-history-btn"
+                                  : company.Status === "FollowUp"
+                                    ? "followup-history-btn"
+                                    : "")
+                            }
+                          >
+
+                            <FaEye
+                              key={company._id}
+                              style={{ border: "transparent", background: "none" }}
+                              data-bs-toggle="modal"
+                              data-bs-target={`#${`modal-${company["Company Name"].replace(/\s+/g, '')}`}-info`}
+                              title="Interested Information"
+                            //disabled={!company.interestedInformation}
+                            />
+
+                            <EmployeeInterestedInformationDialog
+                              key={company._id}
+                              modalId={`modal-${company["Company Name"].replace(/\s+/g, '')}-info`}
+                              companyName={company["Company Name"]}
+                              interestedInformation={company.interestedInformation} // Pass the interested information here
+                              refetch={refetch}
+                              ename={ename}
+                              secretKey={secretKey}
+                              status={company.Status}
+                              companyStatus={company.Status}
+                              forView={true}
+                              fordesignation={fordesignation}
+
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div
+                          key={company._id}
+                          className="d-flex align-items-center justify-content-between w-100"
+                        >
+
+                          {(fordesignation === "admin" || fordesignation === "datamanager") ? (<>
+
+                            <AdminRemarksDialog
+                              key={`${company["Company Name"]}-${index}`}
+                              currentRemarks={company.Remarks}
+                              companyID={company._id}
+                              companyStatus={company.Status}
+                              secretKey={secretKey} />
+                          </>
+
+                          ) :
+                            (<>
+
+                              <p
+                                className="rematkText text-wrap m-0"
+                                title={company.Remarks}
+                              >
+                                {!company["Remarks"] ? "No Remarks" : company.Remarks}
+                              </p>
+                              <RemarksDialog
+                                key={company._id}
+                                currentCompanyName={company["Company Name"]}
+                                //remarksHistory={remarksHistory} // pass your remarks history data
+                                companyId={company._id}
+                                remarksKey="remarks" // Adjust this based on the type of remarks (general or bdm)
+                                isEditable={company.bdmAcceptStatus !== "Accept"} // Allow editing if status is not "Accept"
+                                bdmAcceptStatus={company.bdmAcceptStatus}
+                                companyStatus={company.Status}
+                                secretKey={secretKey}
+                                //fetchRemarksHistory={fetchRemarksHistory}
+                                bdeName={ename}
+                                bdmName={company.bdmName}
+                                refetch={refetch}
+                                mainRemarks={company.Remarks}
+                                designation={designation}
+                                fordesignation={fordesignation}
+                              />
+                            </>)}
+                        </div>
+                      </td>
+                      <td>
+                        <EmployeeNextFollowDate
+                          key={company._id}
+                          id={company._id}
+                          nextFollowDate={company.bdeNextFollowUpDate}
+                          refetch={refetch}
+                          status={company.Status}
+                        />
+                      </td>
+                      <td>
+                        <Tooltip
+                          title={`Age: ${calculateAgeFromDate(company["Company Incorporation Date  "])}`}
+                          arrow
+                        >
+                          <span>
+                            {formatDateNew(company["Company Incorporation Date  "])}
+                          </span>
+                        </Tooltip>
+                      </td>
+                      <td>{company["City"]}</td>
+                      <td>{company["State"]}</td>
+                      <td>{company["Company Email"]}</td>
+                      <td>{formatDateNew(company["AssignDate"])}</td>
+                      <td className="rm-sticky-action">
+                        <div className="d-flex align-items-center justify-content-between">
+                          {projectionData && projectionData
+                            .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate)) // Sort by projectionDate in descending order
+                            .some((item) => item.companyName === company["Company Name"]) ? (
+                            <IconButton
+                              onClick={() => {
+                                // Find the latest projection for the specified company after sorting
+                                const matchedItem = projectionData
+                                  .sort((a, b) => new Date(b.projectionDate) - new Date(a.projectionDate))
+                                  .find((item) => item.companyName === company["Company Name"]);
+
+                                const paymentDate = new Date(matchedItem.estPaymentDate).setHours(0, 0, 0, 0);
+                                const currentDate = new Date().setHours(0, 0, 0, 0);
+
+                                // Check if payment date is before the current date
+                                if (paymentDate >= currentDate) {
+                                  setIsProjectionEditable((fordesignation === "admin" || fordesignation === "datamanager") ? false : true);  // Enable edit mode
+                                  setViewProjection((fordesignation === "admin" || fordesignation === "datamanager") ? true : false); // Open new projection dialog with disabled fields when designation is admin or datamanager
+                                  setShowNewAddProjection(true);  // Open new projection dialog
+                                  setProjectionDataToBeFilled(matchedItem); // Set matched item in the state
+                                  // console.log("Projection data to be updated :", matchedItem);
+                                  setViewedForParticularCompany(false)
+                                  setCompanyId(company._id)
+                                } else {
+                                  setIsProjectionEditable(false); // Disable edit mode
+                                  (fordesignation === "admin" || fordesignation === "datamanager") && setViewProjection(true); // Open new projection dialog with disabled fields whose payment date is passed
+                                  setShowNewAddProjection(true);  // Open new projection dialog
+                                  setProjectionDataToBeFilled(fordesignation === "admin" || fordesignation === "datamanager" ? matchedItem : company); // Set matched item in the state
+                                  setViewedForParticularCompany(true)
+                                  setCompanyId(company._id)
+                                  // console.log("Projection data to be viewed :", matchedItem);
+                                }
+                              }}
+                            >
+                              <RiEditCircleFill
+                                color={projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                  ? "#fbb900"
+                                  : (fordesignation === "admin" || fordesignation === "datamanager") ? "#fbb900" : "grey"}
+                                style={{
+                                  width: "17px",
+                                  height: "17px",
+                                }}
+                                title={(fordesignation === "admin" || fordesignation === "datamanager") ? "View Projection"
+                                  : projectionData.find((item) => item.companyName === company["Company Name"] && new Date(item.estPaymentDate).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+                                    ? "Update Projection" : "Add Projection"}
+                              />
+                            </IconButton>
+                          ) : (
+                            <IconButton
+                              onClick={() => {
+                                setViewedForParticularCompany(true)
+                                setIsProjectionEditable(false); // Not opened in editing mode
+                                setShowNewAddProjection(true);  // Open new projection dialog
+                                setViewProjection(false); // Open new projection dialog with enabled fields
+                                setProjectionDataToBeFilled(company); // Send whole company data when no match found
+                                // console.log("Projection data to be added :", company);
+                              }}
+                              disabled={fordesignation === "admin" || fordesignation === "datamanager"}
+                            >
+                              <RiEditCircleFill
+                                color={(fordesignation === "admin" || fordesignation === "datamanager") ? "lightgrey" : "grey"}
+                                style={{
+                                  width: "17px",
+                                  height: "17px",
+                                }}
+                                title={(fordesignation === "admin" || fordesignation === "datamanager") ? "View Projection" : "Add Projection"}
+                              />
+                            </IconButton>
+                          )}
+                          {
+                            ((fordesignation !== "admin" && fordesignation !== "datamanager") && designation !== "Sales Manager") && (
+                              <TiArrowForward onClick={() => {
+                                setShowForwardToBdmPopup(true);
+                                setCompanyId(company._id);
+                                setCompanyName(company["Company Name"]);
+                                setCompanyStatus(company.Status);
+                              }}
+                                style={{
+                                  cursor: "pointer",
+                                  width: "17px",
+                                  height: "17px",
+                                }}
+                                title="Forward To BDM"
+                                color="grey"
+                              />
+                            )}
+                        </div>
+                      </td>
+                    </tr>
+
+                  )
+
+                })}
 
               </tbody>
             )}

@@ -346,6 +346,210 @@ router.put("/newcompanyname/:id", async (req, res) => {
   }
 });
 
+// router.post('/addemployee/hrside', async (req, res) => {
+//   try {
+//     // Extract employee details from request body
+//     const {
+//       email,
+//       number,
+//       ename,
+//       empFullName,
+//       department,
+//       oldDesignation,
+//       newDesignation,
+//       branchOffice,
+//       reportingManager,
+//       password,
+//       jdate,
+//       AddedOn,
+//       targetDetails,
+//       salary,
+//       gender,
+//       bdmWork
+//     } = req.body;
+//     console.log("adddedOn", AddedOn)
+
+//     // Ensure newDesignation is "Business Development Executive" for setting targetDetails
+//     let adjustedTargetDetails = targetDetails.filter(
+//       (target) =>
+//         target.year &&
+//         target.month &&
+//         target.amount > 0
+//     ); // Filter out any empty or invalid objects
+
+//     if (newDesignation === "Business Development Executive") {
+//       const newAddedOn = new Date(AddedOn);
+//       const currentYear = newAddedOn.getFullYear();
+//       const currentMonthIndex = newAddedOn.getMonth(); // Zero-indexed month
+//       const currentMonth = newAddedOn.getMonth() + 1; // Month is zero-indexed, add 1 for 1-based index
+//       const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+//       const remainingDaysInMonth = daysInMonth - newAddedOn.getDate();
+//       // Convert the numeric month to its name
+//       const monthNames = [
+//         "January", "February", "March", "April", "May", "June",
+//         "July", "August", "September", "October", "November", "December"
+//       ];
+//       const currentMonthName = monthNames[currentMonthIndex];
+//       // Check if there is already a target for the current month and year
+//       const hasCurrentMonthTarget = adjustedTargetDetails.some(
+//         (target) =>
+//           target.year === currentYear.toString() &&
+//           target.month === currentMonthName
+//       );
+
+//       if (!hasCurrentMonthTarget) {
+//         // Add a new target only if no target exists for the current month and year
+//         const targetAmount = remainingDaysInMonth >= 10 ? salary : salary / 2;
+
+//         adjustedTargetDetails.push({
+//           year: currentYear.toString(),
+//           month: currentMonthName,
+//           amount: targetAmount.toString(), // Ensure amount is saved as a string for consistency
+//           achievedAmount: 0,
+//           ratio: 0,
+//           result: "N/A",
+//         });
+//       }
+//     }
+//     console.log("adjustedTargetDetails", adjustedTargetDetails)
+
+//     // Remove spaces from the number
+//     const sanitizedNumber = number.replace(/\s+/g, '');
+//     // console.log("Received request for adding employee:", req.body);
+//     // Step 1: Find the record of the last generated employee ID
+//     let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
+
+//     // Step 2: Get the total number of employees
+//     let totalEmployees = await adminModel.countDocuments();
+
+//     // Step 3: If no record exists, generate employee ID from scratch, else increment the last one
+//     let newEmployeeID;
+//     if (!lastEmployeeIdRecord || lastEmployeeIdRecord.lastEmployeeId === "SSPL0000") {
+//       // No last employee ID found, start with SSPL0001 + total count
+//       newEmployeeID = `SSPL${(totalEmployees + 1).toString().padStart(4, '0')}`;
+
+//       // Update or insert the lastEmployeeId in the collection with the new ID
+//       if (lastEmployeeIdRecord) {
+//         await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
+//       } else {
+//         await lastEmployeeIdsModel.create({ lastEmployeeId: newEmployeeID });
+//       }
+//     } else {
+//       // Last employee ID found, increment by 1
+//       let lastEmployeeID = lastEmployeeIdRecord.lastEmployeeId;
+
+//       // Extract the number part and increment
+//       let employeeNumber = parseInt(lastEmployeeID.replace("SSPL", ""), 10) + 1;
+
+//       // Generate new employee ID
+//       newEmployeeID = `SSPL${employeeNumber.toString().padStart(4, '0')}`;
+
+//       // Update lastEmployeeId in the collection with the new ID
+//       await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
+//     }
+
+//     // Step 4: Create a new employee document
+//     const newEmployee = new adminModel({
+//       email,
+//       number: sanitizedNumber, // Save sanitized number
+//       employeeID: newEmployeeID,
+//       ename,
+//       empFullName,
+//       department,
+//       designation: oldDesignation,
+//       newDesignation,
+//       branchOffice,
+//       reportingManager,
+//       password,
+//       jdate,
+//       AddedOn: new Date(AddedOn),
+//       targetDetails: adjustedTargetDetails, // Use adjusted target details
+//       bdmWork,
+//       salary,
+//       gender
+//     });
+
+//     // console.log("newemployee", newEmployee);
+//     // console.log("newemployee" , newEmployee);
+
+//     // Step 5: Save the new employee to the database
+//     const result = await newEmployee.save();
+
+//     // Also creating employee in employee draft model
+//     const newEmployeeDraft = new EmployeeDraftModel({
+//       _id: result._id,  // Use the same _id
+//       number: sanitizedNumber, // Save sanitized number
+//       employeeID: newEmployeeID,
+//       ename,
+//       empFullName,
+//       department,
+//       designation: oldDesignation,
+//       newDesignation,
+//       branchOffice,
+//       reportingManager,
+//       email,
+//       password,
+//       jdate,
+//       AddedOn: new Date(AddedOn),
+//       bdmWork,
+//       salary,
+//       gender
+//     });
+
+//     const savedEmployeeDraft = await newEmployeeDraft.save();
+
+//     // Step 6: Send welcome email to the new employee
+//     const subject = `Welcome to Startup Sahay! Your CRM Login Details`;
+//     const html = `
+//         <p>Dear ${ename},</p>
+//         <p>Welcome to the team at Startup Sahay Private Limited! We’re excited to have you onboard.</p>
+//         <p>As part of your onboarding process, we’ve created your account in our CRM system to help you manage and track your tasks efficiently. Below are your login details:</p>
+//         <ul>
+//             <li>CRM URL: startupsahay.in</li>
+//             <li><b>Username:</b> ${email}</li>
+//             <li><b>Password:</b> ${password}</li>
+//         </ul>
+//          <p>How to Access the CRM:</p>
+//          <p> - Go to startupsahay.in.</p>
+//          <p> - Enter your business email ID as your username.</p>
+//          <p> - Use password mentioned above to log in</p>
+
+//          <p>If you encounter any issues while logging in or have any questions, feel free to reach out to the HR team or your team head.</p>
+//          <p>We’re here to help ensure you have a smooth start. Welcome again to Startup Sahay, and we look forward to working with you!</p>
+
+//         <p>Best regards,<br>HR Team</br><br>Start-Up Sahay Private Limited</p>
+//     `;
+
+//     // Send email using the sendMailEmployees function
+//     try {
+//       const emailInfo = await sendMailEmployees(
+//         [email],
+//         subject,
+//         "", // Empty text (use HTML version instead)
+//         html
+//       );
+
+//       // console.log(`Email sent: ${emailInfo.messageId}`);
+//     } catch (emailError) {
+//       console.error('Error sending email:', emailError);
+//       return res.status(500).json({ message: 'Employee added but email sending failed.' });
+//     }
+
+//     // Step 7: Send response
+//     res.status(200).json({
+//       message: "Employee created successfully",
+//       data: newEmployee
+//     });
+
+//   } catch (error) {
+//     console.log("Error creating employee:", error);
+//     res.status(500).json({
+//       message: "Internal server error",
+//       error: error.message
+//     });
+//   }
+// });
+
 router.post('/addemployee/hrside', async (req, res) => {
   try {
     // Extract employee details from request body
@@ -367,48 +571,73 @@ router.post('/addemployee/hrside', async (req, res) => {
       gender,
       bdmWork
     } = req.body;
-    console.log("adddedOn", AddedOn)
-    // console.log("adddedOn" , AddedOn)
-    const newAddedOn = new Date(AddedOn);
-    // Remove spaces from the number
-    const sanitizedNumber = number.replace(/\s+/g, '');
-    // console.log("Received request for adding employee:", req.body);
-    // Step 1: Find the record of the last generated employee ID
-    let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
 
-    // Step 2: Get the total number of employees
+    console.log("Added On:", AddedOn);
+
+    // Ensure newDesignation is "Business Development Executive" for setting targetDetails
+    let adjustedTargetDetails = targetDetails.filter(
+      (target) => target.year && target.month && target.amount > 0
+    );
+
+    if (newDesignation === "Business Development Executive" || newDesignation === "Business Development Manager") {
+      const newAddedOn = new Date(AddedOn);
+      const currentYear = newAddedOn.getFullYear();
+      const currentMonthIndex = newAddedOn.getMonth();
+      const daysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
+      const remainingDaysInMonth = daysInMonth - newAddedOn.getDate();
+
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const currentMonthName = monthNames[currentMonthIndex];
+
+      const hasCurrentMonthTarget = adjustedTargetDetails.some(
+        (target) => target.year === currentYear.toString() && target.month === currentMonthName
+      );
+
+      if (!hasCurrentMonthTarget) {
+        const targetAmount = remainingDaysInMonth >= 10 ? salary : salary / 2;
+
+        adjustedTargetDetails.push({
+          year: currentYear.toString(),
+          month: currentMonthName,
+          amount: targetAmount.toString(),
+          achievedAmount: 0,
+          ratio: 0,
+          result: "N/A",
+        });
+      }
+    }
+
+    console.log("Adjusted Target Details:", adjustedTargetDetails);
+
+    const sanitizedNumber = number ? number.replace(/\s+/g, '') : null;
+
+    // Validate personal_number or set fallback values
+    if (!sanitizedNumber) {
+      throw new Error("Employee number is required and cannot be null.");
+    }
+
+    // Find the record of the last generated employee ID
+    let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
     let totalEmployees = await adminModel.countDocuments();
 
-    // Step 3: If no record exists, generate employee ID from scratch, else increment the last one
     let newEmployeeID;
     if (!lastEmployeeIdRecord || lastEmployeeIdRecord.lastEmployeeId === "SSPL0000") {
-      // No last employee ID found, start with SSPL0001 + total count
       newEmployeeID = `SSPL${(totalEmployees + 1).toString().padStart(4, '0')}`;
-
-      // Update or insert the lastEmployeeId in the collection with the new ID
-      if (lastEmployeeIdRecord) {
-        await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
-      } else {
-        await lastEmployeeIdsModel.create({ lastEmployeeId: newEmployeeID });
-      }
+      await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } }, { upsert: true });
     } else {
-      // Last employee ID found, increment by 1
       let lastEmployeeID = lastEmployeeIdRecord.lastEmployeeId;
-
-      // Extract the number part and increment
       let employeeNumber = parseInt(lastEmployeeID.replace("SSPL", ""), 10) + 1;
-
-      // Generate new employee ID
       newEmployeeID = `SSPL${employeeNumber.toString().padStart(4, '0')}`;
-
-      // Update lastEmployeeId in the collection with the new ID
       await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
     }
 
-    // Step 4: Create a new employee document
+    // Create the employee document
     const newEmployee = new adminModel({
       email,
-      number: sanitizedNumber, // Save sanitized number
+      number: sanitizedNumber,
       employeeID: newEmployeeID,
       ename,
       empFullName,
@@ -419,23 +648,19 @@ router.post('/addemployee/hrside', async (req, res) => {
       reportingManager,
       password,
       jdate,
-      AddedOn: newAddedOn,
-      targetDetails,
+      AddedOn: new Date(AddedOn),
+      targetDetails: adjustedTargetDetails,
       bdmWork,
       salary,
       gender
     });
 
-    console.log("newemployee", newEmployee);
-    // console.log("newemployee" , newEmployee);
-
-    // Step 5: Save the new employee to the database
     const result = await newEmployee.save();
 
-    // Also creating employee in employee draft model
+    // Save the draft only after successfully saving the employee
     const newEmployeeDraft = new EmployeeDraftModel({
-      _id: result._id,  // Use the same _id
-      number: sanitizedNumber, // Save sanitized number
+      _id: result._id,
+      number: sanitizedNumber,
       employeeID: newEmployeeID,
       ename,
       empFullName,
@@ -447,15 +672,15 @@ router.post('/addemployee/hrside', async (req, res) => {
       email,
       password,
       jdate,
-      AddedOn: newAddedOn,
+      AddedOn: new Date(AddedOn),
       bdmWork,
       salary,
       gender
     });
 
-    const savedEmployeeDraft = await newEmployeeDraft.save();
+    await newEmployeeDraft.save();
 
-    // Step 6: Send welcome email to the new employee
+    // Send the welcome email
     const subject = `Welcome to Startup Sahay! Your CRM Login Details`;
     const html = `
         <p>Dear ${ename},</p>
@@ -477,29 +702,20 @@ router.post('/addemployee/hrside', async (req, res) => {
         <p>Best regards,<br>HR Team</br><br>Start-Up Sahay Private Limited</p>
     `;
 
-    // Send email using the sendMailEmployees function
     try {
-      const emailInfo = await sendMailEmployees(
-        [email],
-        subject,
-        "", // Empty text (use HTML version instead)
-        html
-      );
-
-      // console.log(`Email sent: ${emailInfo.messageId}`);
+      await sendMailEmployees([email], subject, "", html);
     } catch (emailError) {
-      console.error('Error sending email:', emailError);
-      return res.status(500).json({ message: 'Employee added but email sending failed.' });
+      console.error("Error sending email:", emailError);
+      return res.status(500).json({ message: "Employee added but email sending failed." });
     }
 
-    // Step 7: Send response
     res.status(200).json({
       message: "Employee created successfully",
       data: newEmployee
     });
 
   } catch (error) {
-    console.log("Error creating employee:", error);
+    console.error("Error creating employee:", error.message);
     res.status(500).json({
       message: "Internal server error",
       error: error.message
@@ -507,12 +723,10 @@ router.post('/addemployee/hrside', async (req, res) => {
   }
 });
 
+
 router.post('/hr-bulk-add-employees', async (req, res) => {
   try {
     const { employeesData } = req.body;
-
-    console.log("employeesData", employeesData)
-    // console.log("employeesData" , employeesData)
 
     if (!employeesData || !Array.isArray(employeesData)) {
       return res.status(400).json({ message: 'Invalid data format' });
@@ -525,14 +739,53 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
     // Fetch the last employee ID record once
     let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
     let lastEmployeeID = lastEmployeeIdRecord ? lastEmployeeIdRecord.lastEmployeeId : "SSPL0000";
+    let employeeNumber = parseInt(lastEmployeeID.replace("SSPL", ""), 10);
 
-    let employeeNumber = parseInt(lastEmployeeID.replace("SSPL", ""), 10); // Extract the numeric part of the employee ID
+    // Helper function to adjust target details for "Business Development Executive"
+    const adjustTargetDetails = (employee) => {
+      let adjustedTargetDetails = (employee.targetDetails || []).filter(
+        (target) => target.year && target.month && target.amount > 0
+      );
 
-    // Array to hold the promises for inserting each employee
+      if (employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager") {
+        const newAddedOn = new Date(employee.AddedOn);
+        const currentYear = newAddedOn.getFullYear();
+        const currentMonthIndex = newAddedOn.getMonth(); // Zero-indexed month
+        const daysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
+        const remainingDaysInMonth = daysInMonth - newAddedOn.getDate();
+
+        const monthNames = [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+        const currentMonthName = monthNames[currentMonthIndex];
+
+        const hasCurrentMonthTarget = adjustedTargetDetails.some(
+          (target) =>
+            target.year === currentYear.toString() &&
+            target.month === currentMonthName
+        );
+
+        if (!hasCurrentMonthTarget) {
+          const targetAmount = remainingDaysInMonth >= 10 ? employee.salary : employee.salary / 2;
+
+          adjustedTargetDetails.push({
+            year: currentYear.toString(),
+            month: currentMonthName,
+            amount: targetAmount.toString(),
+            achievedAmount: 0,
+            ratio: 0,
+            result: "N/A",
+          });
+        }
+      }
+
+      return adjustedTargetDetails;
+    };
+
+    // Array to hold promises for inserting each employee
     const employeeInsertPromises = employeesData.map(async (employee) => {
       try {
-
-
         // Increment the employee number for each new employee
         employeeNumber += 1;
         let newEmployeeID = `SSPL${employeeNumber.toString().padStart(4, '0')}`;
@@ -544,15 +797,20 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
         };
         const generatedPassword = generateRandomPassword(employee.firstName);
 
-        // Add the new employee ID and password to the employee object
-        employee.employeeID = newEmployeeID;
-        employee.password = generatedPassword;
+        // Adjust target details for the employee
+        const adjustedTargetDetails = adjustTargetDetails(employee);
 
-        // Create a new employee document and save it to the database
-        const newEmployee = new adminModel(employee);
+        // Create a new employee object with the adjusted target details
+        const newEmployee = new adminModel({
+          ...employee,
+          employeeID: newEmployeeID,
+          password: generatedPassword,
+          targetDetails: adjustedTargetDetails,
+        });
+
         await newEmployee.save();
 
-        // Send the welcome email (same as in your original code)
+        // Send the welcome email
         const subject = `Welcome to Startup Sahay! Your CRM Login Details`;
         const html = `
           <p>Dear ${employee.firstName},</p>
@@ -573,8 +831,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
         `;
 
         try {
-          const emailInfo = await sendMailEmployees([employee.email], subject, "", html);
-          // console.log(`Email sent: ${emailInfo.messageId}`);
+          await sendMailEmployees([employee.email], subject, "", html);
         } catch (emailError) {
           console.error('Error sending email:', emailError);
         }
@@ -586,7 +843,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
         failureCount++;
         failureDetails.push({
           email: employee.email,
-          error: error.message
+          error: error.message,
         });
       }
     });
@@ -602,7 +859,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
       message: 'Employees processed successfully',
       successCount,
       failureCount,
-      failureDetails
+      failureDetails,
     });
   } catch (error) {
     console.error('Error adding employees:', error.message);
@@ -610,6 +867,113 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
   }
 });
 
+const getMonthName = (monthIndex) => {
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  return monthNames[monthIndex];
+};
+
+// Utility function to calculate target for future months
+const calculateFutureTarget = (salary, multiplier) => {
+  return Math.min(salary * multiplier, salary * 5); // Cap target at 5 times the salary
+};
+
+// Cron job to run at 1:58 PM IST on the 4th of every month
+cron.schedule("30 0 1 * *", async () => {
+  console.log(`Cron Job Triggered at ${new Date().toISOString()}`);
+  console.log("Cron Job Started: Updating current month targets for BDE and BDM based on  30 minutes past midnight UTC (which is 6:00 AM IST).");
+
+  try {
+    // Fetch all BDE and BDM employees
+    const employees = await adminModel.find({
+      $or: [{ newDesignation: "Business Development Executive" }, { newDesignation: "Business Development Manager" }]
+    });
+
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonthIndex = today.getMonth(); // Zero-indexed month
+    const currentMonthName = getMonthName(currentMonthIndex);
+
+    for (const employee of employees) {
+      const { AddedOn, salary, targetDetails } = employee;
+
+      // Ensure AddedOn date is valid
+      if (!AddedOn) {
+        console.log(`Skipping employee ${employee.email}: Missing AddedOn date.`);
+        continue;
+      }
+
+      const creationDate = new Date(AddedOn);
+      if (creationDate > today) {
+        console.log(`Skipping employee ${employee.email}: AddedOn is in the future.`);
+        continue;
+      }
+
+      const targetSalary = parseFloat(salary);
+
+      if (isNaN(targetSalary) || targetSalary <= 0) {
+        console.log(`Skipping employee ${employee.email}: Invalid salary.`);
+        continue;
+      }
+
+      // Calculate the number of months since the employee was added
+      const monthsSinceAdded =
+        currentYear * 12 + currentMonthIndex -
+        (creationDate.getFullYear() * 12 + creationDate.getMonth());
+
+      if (monthsSinceAdded < 0) {
+        console.log(`Skipping employee ${employee.email}: AddedOn date is in the future.`);
+        continue;
+      }
+
+      // Check if a target already exists for the current month
+      const hasCurrentMonthTarget = targetDetails.some(
+        (target) => target.year === currentYear.toString() && target.month === currentMonthName
+      );
+
+      if (!hasCurrentMonthTarget) {
+        let targetAmount;
+
+        if (monthsSinceAdded === 0) {
+          // For the first month (current month)
+          const daysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
+          const remainingDaysInMonth = daysInMonth - creationDate.getDate();
+          targetAmount = remainingDaysInMonth >= 10 ? targetSalary : targetSalary / 2;
+        } else if (monthsSinceAdded === 1) {
+          // For the second month
+          targetAmount = calculateFutureTarget(targetSalary, 2);
+        } else if (monthsSinceAdded === 2) {
+          // For the third month
+          targetAmount = calculateFutureTarget(targetSalary, 4);
+        } else {
+          // For subsequent months
+          targetAmount = calculateFutureTarget(targetSalary, 5);
+        }
+
+        // Add the target for the current month
+        employee.targetDetails.push({
+          year: currentYear.toString(),
+          month: currentMonthName,
+          amount: targetAmount.toString(),
+          achievedAmount: 0,
+          ratio: 0,
+          result: "N/A"
+        });
+
+        console.log(`Assigned target for ${employee.email}: ${targetAmount} for ${currentMonthName} ${currentYear}`);
+      }
+    }
+
+    // Save all updated employees in the database
+    await Promise.all(employees.map((employee) => employee.save()));
+    console.log("Current month target updates based on AddedOn completed successfully.");
+
+  } catch (error) {
+    console.error("Error updating current month targets based on AddedOn:", error);
+  }
+});
 
 
 // router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
@@ -887,7 +1251,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
     if (officialNo && officialNo !== currentData.number) {
       // Initialize the array if it doesn't exist
       const oldNumbersArray = currentData.oldNumbersAssignedByCompany || [];
-      console.log("oldNumbersArray", oldNumbersArray)
+      // console.log("oldNumbersArray", oldNumbersArray)
 
       // Check if the current number is already in the array to avoid duplicates
       if (
@@ -1486,10 +1850,6 @@ router.put(
     }
   }
 );
-
-module.exports = router;
-
-
 
 const functionCalculateAchievedRevenue = (redesignedData, ename, Filterby) => {
   //console.log("yahan chla achieved full function")
@@ -2241,6 +2601,7 @@ router.put("/einfo/:id", async (req, res) => {
 
     // Save the updated data
     const updatedData = await currentData.save();
+    console.log("updatedDATA", updatedData)
 
     res.json({ message: "Data updated successfully", updatedData });
   } catch (error) {
@@ -3148,7 +3509,6 @@ router.get("/currentMonthLeadsReport/:employeeName", async (req, res) => {
     const leads = await LeadsModel.find({
       ename: employeeName,
       Status: { $in: ["Interested", "FollowUp", "Matured"] },
-      // bdmAcceptStatus: { $in: ["Pending", "Accept"] },
       lastActionDate: {
         $gte: firstDayOfMonth,
         $lte: lastDayOfMonth

@@ -26,7 +26,7 @@
 //     e.preventDefault();
 //     try {
 //       const response = await axios.post(`${secretKey}/admin/login-admin`, {
-//         username,
+//         email : username,
 //         password,
 //       });
 

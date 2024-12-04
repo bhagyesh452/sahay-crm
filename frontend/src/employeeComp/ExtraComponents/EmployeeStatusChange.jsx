@@ -88,19 +88,6 @@ const EmployeeStatusChange = ({
           console.error("Failed to update status:", response.data.message);
         }
       }
-      // } else {
-      //   const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
-      //   // setMaturedBooking(currentObject);
-      //   console.log("currentObject", currentObject);
-      //   // setDeletedEmployeeStatus(isDeletedEmployeeCompany);
-      //   if (!isDeletedEmployeeCompany) {
-      //     console.log("formchal");
-      //     // setFormOpen(true);
-      //   } else {
-      //     console.log("addleadfromchal");
-      //     // setAddFormOpen(true);
-      //   }
-
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
@@ -174,7 +161,7 @@ const EmployeeStatusChange = ({
           confirmButtonText: 'OK'
         });
         // Assuming `fetchNewData` is a function to fetch updated employee data
-        // refetch();
+        refetch();
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);

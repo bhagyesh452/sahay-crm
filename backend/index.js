@@ -390,10 +390,11 @@ app.post("/api/sendOtp/admin", async (req, res) => {
 // Verify email and password before sending OTP
 app.post("/api/verifyCredentials", async (req, res) => {
   const { email, password } = req.body;
+console.log(email,password)
 
   try {
     const user = await adminModel.findOne({ email, password }).lean().select('email password ');
-
+    console.log("user", user)
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     } else {
@@ -526,7 +527,7 @@ app.post("/api/datamanagerlogin", async (req, res) => {
       expiresIn: "10h",
     });
     //console.log(newtoken)
-    res.status(200).json({ newtoken : newtoken , dataManagerUserId : user._id });
+    res.status(200).json({ newtoken: newtoken, dataManagerUserId: user._id });
     // socketIO.emit("Employee-login");
   }
 });

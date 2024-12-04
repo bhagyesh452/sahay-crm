@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router()
 const dotenv = require('dotenv')
 dotenv.config();
-
+const cron = require("node-cron");
+const fs = require("fs");
+const path = require("path");
 const CompanyModel = require("../models/Leads");
 // const authRouter = require('./helpers/Oauth');
 // const requestRouter = require('./helpers/request');
@@ -442,7 +444,7 @@ router.post('/webhook', async (req, res) => {
             "Company Number": log.client_number,
           });
           const employeeDetails = await adminModel.findOne({ ename: employee.emp_name }).select('designation').lean();
-          console.log('Employee Details:', employeeDetails);
+          // console.log('Employee Details:', employeeDetails);
           // if (!company) {
           //   console.log(Company not found for number: ${log.client_number});
           //   continue;
@@ -454,8 +456,8 @@ router.post('/webhook', async (req, res) => {
           // Emit a socket message if emp_name does not match ename or bdmName
           if (
             (employeeDetails?.designation === "Sales Executive" ||
-             employeeDetails?.designation === "Sales Manager" ||
-             employeeDetails?.designation === "Floor Manager") &&
+              employeeDetails?.designation === "Sales Manager" ||
+              employeeDetails?.designation === "Floor Manager") &&
             employee.emp_name.toLowerCase() !== company.ename.toLowerCase() &&
             employee.emp_name.toLowerCase() !== company.bdmName.toLowerCase()
           ) {
@@ -597,69 +599,258 @@ router.post('/webhook', async (req, res) => {
   }
 });
 
-router.post("/save-client-call-history", async (req, res) => {
-  const { client_number, callHistoryData } = req.body;
-  
+// File path to store progress
+const PROGRESS_FILE = path.join(__dirname, "batch_progress.json");
 
+// Function to save progress
+const saveProgress = (lastProcessedIndex) => {
+  fs.writeFileSync(PROGRESS_FILE, JSON.stringify({ lastProcessedIndex }), "utf-8");
+};
+
+// Function to load progress
+const loadProgress = () => {
+  if (fs.existsSync(PROGRESS_FILE)) {
+    const data = fs.readFileSync(PROGRESS_FILE, "utf-8");
+    return JSON.parse(data)?.lastProcessedIndex || 0;
+  }
+  return 0;
+};
+
+// Function to process call history in batches
+const processCallHistoryInBatches = async () => {
   try {
-    // Convert client_number to a number
-    const numericClientNumber = Number(client_number);
-    // console.log("type after conversion:", typeof(numericClientNumber), numericClientNumber);
+    console.log("Starting batch processing...");
 
-    // Validate the conversion
-    if (isNaN(numericClientNumber)) {
-        return res.status(400).json({ error: "Invalid client number format" });
+    const companies = await CompanyModel.find({}, { "Company Number": 1 });
+    const companyNumbers = companies
+      .map((company) => String(company["Company Number"]).trim())
+      .filter((num) => num && !isNaN(num)); // Filter valid numbers
+
+    if (companyNumbers.length === 0) {
+      console.log("No valid company numbers found.");
+      return;
     }
 
-      // Find the company by client number
-      const company = await CompanyModel.findOne({ "Company Number": numericClientNumber });
+    console.log(`Total company numbers to process: ${companyNumbers.length}`);
 
-      if (!company) {
-          return res.status(404).json({ error: "Company not found" });
+    const chunks = [];
+    for (let i = 0; i < companyNumbers.length; i += 10) {
+      chunks.push(companyNumbers.slice(i, i + 10));
+    }
+
+    console.log(`Total chunks to process: ${chunks.length}`);
+
+    // Load last processed index
+    let lastProcessedIndex = loadProgress();
+    console.log(`Resuming from chunk index: ${lastProcessedIndex}`);
+
+    for (let i = lastProcessedIndex; i < chunks.length; i++) {
+      const chunk = chunks[i];
+      console.log(`Processing chunk ${i + 1}/${chunks.length}:`, chunk);
+
+      await fetchAndSaveCallHistory(chunk);
+
+      console.log(`Chunk ${i + 1}/${chunks.length} processed successfully.`);
+
+      // Save progress
+      saveProgress(i + 1);
+
+      if (i < chunks.length - 1) {
+        console.log("Waiting for 2 minutes before processing the next chunk...");
+        await new Promise((resolve) => setTimeout(resolve, 120000)); // 2 minutes
       }
-      
+    }
 
-      // Filter out duplicate call logs based on callId
-      const existingCallIds = company.clientCallHistory?.map((log) => log.callId) || [];
-      const newCallHistory = callHistoryData
-          .filter((call) => !existingCallIds.includes(call.id))
-          .map((call) => ({
-              client_number: call.client_number,
-              call_date: call.call_date,
-              call_time: call.call_time,
-              call_type: call.call_type,
-              client_country_code: call.client_country_code,
-              client_name: call.client_name,
-              duration: call.duration,
-              emp_name: call.emp_name,
-              emp_number: call.emp_number,
-              synced_at: call.synced_at,
-              callId: call.id,
-          }));
-
-      // Use the `$push` operator to append new call logs without modifying other fields
-      await CompanyModel.updateOne(
-          { "Company Number": numericClientNumber },
-          {
-              $push: {
-                  clientCallHistory: { $each: newCallHistory },
-              },
-          }
-      );
-
-      res.status(200).json({ message: "Call history saved successfully" });
+    console.log("All chunks processed successfully. Resetting progress.");
+    saveProgress(0); // Reset progress when all chunks are processed
   } catch (error) {
-      console.error("Error saving call history:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error processing call history in batches:", error.message);
   }
+};
+
+const fetchAndSaveCallHistory = async (clientNumbers) => {
+  try {
+    const today = new Date();
+    const todayStartDate = new Date(today);
+    const todayEndDate = new Date(today);
+
+    todayEndDate.setUTCHours(13, 0, 0, 0);
+    todayStartDate.setMonth(todayStartDate.getMonth() - 5);
+    todayStartDate.setUTCHours(4, 0, 0, 0);
+
+    const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
+    const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
+
+    const body = {
+      call_from: startTimestamp,
+      call_to: endTimestamp,
+      call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+      client_numbers: clientNumbers,
+    };
+
+    console.log("Fetching call history for:", clientNumbers);
+    const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46"; // Replace with your actual API key
+    const response = await axios({
+      method: "POST",
+      url: "https://api1.callyzer.co/v2/call-log/history",
+      data: body, // Correctly send the body using "data"
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const callHistoryData = response.data?.result || [];
+
+    console.log(`Fetched ${callHistoryData.length} call logs for batch.`);
+
+    for (const call of callHistoryData) {
+      const clientNumber = Number(call.client_number);
+      if (isNaN(clientNumber)) continue;
+
+      const company = await CompanyModel.findOne({
+        "Company Number": clientNumber,
+      });
+
+      if (!company) continue;
+
+      const existingCallIds =
+        company.clientCallHistory?.map((log) => log.callId) || [];
+      const newCallHistory = callHistoryData
+        .filter((call) => !existingCallIds.includes(call.id))
+        .map((call) => ({
+          client_number: call.client_number,
+          call_date: call.call_date,
+          call_time: call.call_time,
+          call_type: call.call_type,
+          client_country_code: call.client_country_code,
+          client_name: call.client_name,
+          duration: call.duration,
+          emp_name: call.emp_name,
+          emp_number: call.emp_number,
+          synced_at: call.synced_at,
+          callId: call.id,
+        }));
+
+      if (newCallHistory.length > 0) {
+        await CompanyModel.updateOne(
+          { "Company Number": clientNumber },
+          {
+            $push: {
+              clientCallHistory: { $each: newCallHistory },
+            },
+          }
+        );
+
+        console.log(
+          `Saved ${newCallHistory.length} new call logs for company number: ${clientNumber}`
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching or saving call history:", error);
+  }
+};
+
+// Schedule the task to run every 2 minutes
+cron.schedule("*/2 * * * *", () => {
+  console.log("Cron job started: Fetching and processing call history.");
+  processCallHistoryInBatches();
 });
 
+// Cron job to run every 10 minutes
+cron.schedule("*/10 * * * *", async () => {
+  console.log("Cron Job Started: Fetching and saving call data every 10 minutes.");
 
+  try {
+    const today = new Date();
+    const todayStartDate = new Date(today);
+    const todayEndDate = new Date(today);
 
+    todayEndDate.setUTCHours(13, 0, 0, 0);
+    todayStartDate.setMonth(todayStartDate.getMonth());
+    todayStartDate.setUTCHours(4, 0, 0, 0);
 
+    const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
+    const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
+    console.log(startTimestamp ,endTimestamp)
 
+    const body = {
+      call_from: startTimestamp,
+      call_to: endTimestamp,
+      call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+      client_numbers: [], // Send an empty client numbers array
+    };
 
+    console.log("Fetching call data with empty client numbers array Daily report.");
+    const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46"; // Replace with your actual API key
+    const response = await axios({
+      method: "POST",
+      url: "https://api1.callyzer.co/v2/call-log/history",
+      data: body, // Correctly send the body using "data"
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const callHistoryData = response.data?.result || [];
+
+    console.log(`Fetched ${callHistoryData.length} call logs for this batch daily report.`);
+
+    for (const call of callHistoryData) {
+      const clientNumber = Number(call.client_number);
+      if (isNaN(clientNumber)) continue;
+
+      const company = await CompanyModel.findOne({
+        "Company Number": clientNumber,
+      });
+
+      if (!company) {
+        console.log(`No matching company found for client number: ${clientNumber}`);
+        continue;
+      }
+
+      const existingCallIds =
+        company.clientCallHistory?.map((log) => log.callId) || [];
+      const newCallHistory = callHistoryData
+        .filter((call) => !existingCallIds.includes(call.id))
+        .map((call) => ({
+          client_number: call.client_number,
+          call_date: call.call_date,
+          call_time: call.call_time,
+          call_type: call.call_type,
+          client_country_code: call.client_country_code,
+          client_name: call.client_name,
+          duration: call.duration,
+          emp_name: call.emp_name,
+          emp_number: call.emp_number,
+          synced_at: call.synced_at,
+          callId: call.id,
+        }));
+
+      if (newCallHistory.length > 0) {
+        await CompanyModel.updateOne(
+          { "Company Number": clientNumber },
+          {
+            $push: {
+              clientCallHistory: { $each: newCallHistory },
+            },
+          }
+        );
+
+        console.log(
+          `Saved ${newCallHistory.length} new call logs for company number: ${clientNumber} daily report`
+        );
+      }
+    }
+
+    console.log("Call data processing completed for this batch.");
+  } catch (error) {
+    console.error("Error fetching or saving call data daily report:", error);
+  }
+});
 
 
 module.exports = router;
