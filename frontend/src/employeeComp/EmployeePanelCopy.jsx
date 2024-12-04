@@ -170,21 +170,27 @@ function EmployeePanelCopy({ fordesignation }) {
                     { setter: setGeneralData, countSetter: setGeneralDataCount },
                     { setter: setCompleteGeneralData, countSetter: () => { } },
                     { setter: setDataToFilterGeneral, countSetter: () => { } },
+
                     { setter: setUnderDocsData, countSetter: setUnderDocsDataCount },
                     { setter: setCompleteUnderDocsData, countSetter: () => { } },
                     { setter: setDataToFilterUnderDocs, countSetter: () => { } },
+
                     { setter: setInterestedData, countSetter: setInterestedDataCount },
                     { setter: setCompleteInterestedData, countSetter: () => { } },
                     { setter: setDataToFilterInterested, countSetter: () => { } },
+
                     { setter: setBusyData, countSetter: setBusyDataCount },
                     { setter: setCompleteBusyData, countSetter: () => { } },
                     { setter: setDataToFilterBusy, countSetter: () => { } },
+
                     { setter: setMaturedData, countSetter: setMaturedDataCount },
                     { setter: setCompleteMaturedData, countSetter: () => { } },
                     { setter: setDataToFilterMatured, countSetter: () => { } },
+
                     { setter: setNotInterestedData, countSetter: setNotInterestedDataCount },
                     { setter: setCompleteNotInterestedData, countSetter: () => { } },
                     { setter: setDataToFilterNotInterested, countSetter: () => { } },
+                    
                     { setter: setForwardedData, countSetter: setForwardedDataCount },
                     { setter: setCompleteForwardedData, countSetter: () => { } },
                     { setter: setDataToFilterForwarded, countSetter: () => { } },
@@ -275,18 +281,18 @@ function EmployeePanelCopy({ fordesignation }) {
             updateDataByStatus();
         };
 
-        socket.on("employee_lead_status_successfull_update", (res) => {
-            //console.log("socket response:", res);
+        // socket.on("employee_lead_status_successfull_update", (res) => {
+        //     //console.log("socket response:", res);
 
-            // Safely extract and compare `ename` fields
-            const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
-            const dataEname = (data.ename || "").toString().trim().toLowerCase();
+        //     // Safely extract and compare `ename` fields
+        //     const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
+        //     const dataEname = (data.ename || "").toString().trim().toLowerCase();
 
-            if (updatedEname === dataEname) {
-                //console.log("Updating document in state:", res.updatedDocument);
-                updateDocumentInState(res.updatedDocument);
-            }
-        });
+        //     if (updatedEname === dataEname) {
+        //         //console.log("Updating document in state:", res.updatedDocument);
+        //         updateDocumentInState(res.updatedDocument);
+        //     }
+        // });
 
         socket.on("employee__nextfollowupdate_successfull_update", (res) => {
             //console.log("socket response:", res);

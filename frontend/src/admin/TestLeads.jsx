@@ -1641,109 +1641,109 @@ function TestLeads() {
 
     // console.log(startTimestamp, endTimestamp)
 
-    // useEffect(() => {
-    //     const dataToFilter = dataStatus === "Unassigned"
-    //         ? unAssignedData
-    //         : dataStatus === "Extracted"
-    //             ? extractedData
-    //             : assignedData;
+    useEffect(() => {
+        const dataToFilter = dataStatus === "Unassigned"
+            ? unAssignedData
+            : dataStatus === "Extracted"
+                ? extractedData
+                : assignedData;
 
-    //     const finalFiltering = !isFilter && !isSearching ? data : dataToFilter;
-    //     // const finalFiltering = completeLeads
-    //     console.log("finalFiltering", data)
-    //     const saveCallHistoryToBackend = async (clientNumber, callHistoryData) => {
-    //         try {
-    //             const response = await axios.post(
-    //                 `${secretKey}/remarks/save-client-call-history`,
-    //                 { client_number: clientNumber, callHistoryData }
-    //             );
+        const finalFiltering = !isFilter && !isSearching ? data : dataToFilter;
+        // const finalFiltering = completeLeads
+        console.log("finalFiltering", data)
+        const saveCallHistoryToBackend = async (clientNumber, callHistoryData) => {
+            try {
+                const response = await axios.post(
+                    `${secretKey}/remarks/save-client-call-history`,
+                    { client_number: clientNumber, callHistoryData }
+                );
 
-    //             console.log(`Call history for ${clientNumber} saved successfully.`);
-    //         } catch (err) {
-    //             console.error(`Error saving call history for ${clientNumber}:`, err);
-    //         }
-    //     };
+                console.log(`Call history for ${clientNumber} saved successfully.`);
+            } catch (err) {
+                console.error(`Error saving call history for ${clientNumber}:`, err);
+            }
+        };
 
-    //     const fetchEmployeeData = async () => {
-    //         console.log("Fetching employee data...");
-    //         // console.log("completeLeads:", completeLeads);
+        const fetchEmployeeData = async () => {
+            console.log("Fetching employee data...");
+            // console.log("completeLeads:", completeLeads);
 
-    //         const apiKey = process.env.REACT_APP_API_KEY;
-    //         const url = "https://api1.callyzer.co/v2/call-log/history";
-    //         const companyNumbers = finalFiltering?.map(
-    //             (company) => String(company["Company Number"])
-    //         );
+            const apiKey = process.env.REACT_APP_API_KEY;
+            const url = "https://api1.callyzer.co/v2/call-log/history";
+            const companyNumbers = finalFiltering?.map(
+                (company) => String(company["Company Number"])
+            );
 
-    //         console.log("companyNumbers:", companyNumbers);
+            console.log("companyNumbers:", companyNumbers);
 
-    //         if (companyNumbers.length > 0) {
-    //             const body = {
-    //                 call_from: startTimestamp,
-    //                 call_to: endTimestamp,
-    //                 call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
-    //                 client_numbers: companyNumbers,
-    //             };
+            if (companyNumbers.length > 0) {
+                const body = {
+                    call_from: startTimestamp,
+                    call_to: endTimestamp,
+                    call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+                    client_numbers: companyNumbers,
+                };
 
-    //             try {
-    //                 const response = await fetch(url, {
-    //                     method: "POST",
-    //                     headers: {
-    //                         Authorization: `Bearer ${apiKey}`,
-    //                         "Content-Type": "application/json",
-    //                     },
-    //                     body: JSON.stringify(body),
-    //                 });
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${apiKey}`,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(body),
+                    });
 
-    //                 if (!response.ok) {
-    //                     const errorData = await response.json();
-    //                     throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-    //                 }
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+                    }
 
-    //                 const data = await response.json();
-    //                 console.log("data.result:", data.result);
+                    const data = await response.json();
+                    console.log("data.result:", data.result);
 
-    //                 const callHistoryMap = {};
-    //                 data?.result.forEach((call) => {
-    //                     const number = call.client_number;
+                    const callHistoryMap = {};
+                    data?.result.forEach((call) => {
+                        const number = call.client_number;
 
-    //                     const matchedCompany = finalFiltering.find((company) => {
-    //                         const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
-    //                         const clientNumber = String(number || "").trim().toLowerCase();
-    //                         return companyNumber === clientNumber;
-    //                     });
+                        const matchedCompany = finalFiltering.find((company) => {
+                            const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
+                            const clientNumber = String(number || "").trim().toLowerCase();
+                            return companyNumber === clientNumber;
+                        });
 
-    //                     if (matchedCompany) {
-    //                         if (!callHistoryMap[number]) {
-    //                             callHistoryMap[number] = [];
-    //                         }
-    //                         callHistoryMap[number].push(call);
-    //                     }
-    //                 });
+                        if (matchedCompany) {
+                            if (!callHistoryMap[number]) {
+                                callHistoryMap[number] = [];
+                            }
+                            callHistoryMap[number].push(call);
+                        }
+                    });
 
-    //                 console.log("callHistoryMap:", callHistoryMap);
+                    console.log("callHistoryMap:", callHistoryMap);
 
-    //                 const updatedGeneralLeads = finalFiltering.map((company) => {
-    //                     const companyNumber = String(company["Company Number"]);
-    //                     const callHistoryData = callHistoryMap[companyNumber] || [];
+                    const updatedGeneralLeads = finalFiltering.map((company) => {
+                        const companyNumber = String(company["Company Number"]);
+                        const callHistoryData = callHistoryMap[companyNumber] || [];
 
-    //                     // Save call history for each company number
-    //                     saveCallHistoryToBackend(companyNumber, callHistoryData);
+                        // Save call history for each company number
+                        saveCallHistoryToBackend(companyNumber, callHistoryData);
 
-    //                     return {
-    //                         ...company,
-    //                         callHistoryData,
-    //                     };
-    //                 });
+                        return {
+                            ...company,
+                            callHistoryData,
+                        };
+                    });
 
-    //                 setData(updatedGeneralLeads); // Ensure state update
-    //             } catch (err) {
-    //                 console.error("Error fetching call history:", err);
-    //             }
-    //         }
-    //     };
+                    setData(updatedGeneralLeads); // Ensure state update
+                } catch (err) {
+                    console.error("Error fetching call history:", err);
+                }
+            }
+        };
 
-    //     fetchEmployeeData();
-    // }, [data]);
+        fetchEmployeeData();
+    }, [data]);
 
 
     // console.log("extractedData", data);

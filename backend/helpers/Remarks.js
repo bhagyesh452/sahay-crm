@@ -768,11 +768,13 @@ cron.schedule("*/10 * * * *", async () => {
     const todayEndDate = new Date(today);
 
     todayEndDate.setUTCHours(13, 0, 0, 0);
-    todayStartDate.setMonth(todayStartDate.getMonth() - 5);
+    todayStartDate.setMonth(todayStartDate.getMonth());
     todayStartDate.setUTCHours(4, 0, 0, 0);
 
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
+
+    console.log(startTimestamp ,endTimestamp)
 
     const body = {
       call_from: startTimestamp,
@@ -846,7 +848,7 @@ cron.schedule("*/10 * * * *", async () => {
 
     console.log("Call data processing completed for this batch.");
   } catch (error) {
-    console.error("Error fetching or saving call data:", error);
+    console.error("Error fetching or saving call data daily report:", error);
   }
 });
 
