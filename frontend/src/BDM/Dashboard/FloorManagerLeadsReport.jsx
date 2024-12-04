@@ -20,6 +20,7 @@ function FloorManagerLeadsReport({ isAdmin }) {
 
     const [leadsReport, setLeadsReport] = useState([]);
     const [originalData, setOriginalData] = useState([]); // State to hold the original data
+    const [searchFromName, setSearchFromName] = useState("");
     const [floorManagerBranch, setFloorManagerBranch] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -104,7 +105,7 @@ function FloorManagerLeadsReport({ isAdmin }) {
         try {
             setIsLoading(true);
             const res = await axios.get(`${secretKey}/bdm-data/floorManagerLeadsReport`, {
-                params: { startDate, endDate }
+                params: { startDate, endDate, searchFromName }
             });
             // console.log("Leads report is :", res.data.data);
             setLeadsReport(res.data.data);
@@ -119,7 +120,7 @@ function FloorManagerLeadsReport({ isAdmin }) {
 
     useEffect(() => {
         fetchLeadsReport();
-    }, [startDate, endDate]);
+    }, [startDate, endDate, searchFromName]);
 
     // Function to sort data based on a key
     const sortData = (key, order) => {
@@ -182,6 +183,24 @@ function FloorManagerLeadsReport({ isAdmin }) {
                         </div>
 
                         <div className="d-flex align-items-center pr-1">
+                            <div class="input-icon mr-1">
+                                <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                </span>
+                                <input
+                                    value={searchFromName}
+                                    onChange={(e) => setSearchFromName(e.target.value)}
+                                    className="form-control"
+                                    placeholder="Enter BDE/BDM Name..."
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
+                            </div>
+
                             <div className="data-filter">
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs} >
