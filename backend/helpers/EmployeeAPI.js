@@ -881,7 +881,7 @@ const calculateFutureTarget = (salary, multiplier) => {
 };
 
 // Cron job to run at 1:58 PM IST on the 4th of every month
-cron.schedule("15 14 4 * *", async () => {
+cron.schedule("30 0 1 * *", async () => {
   console.log("Cron Job Started: Updating current month targets for BDE and BDM based on AddedOn");
 
   try {
