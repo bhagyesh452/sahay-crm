@@ -1828,7 +1828,7 @@ router.get("/floorManagerProjectionSummaryReport/:floorManagerName", async (req,
 
 router.get("/floorManagerLeadsReport", async (req, res) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, searchFromName } = req.query;
 
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
@@ -1887,18 +1887,14 @@ router.get("/floorManagerLeadsReport", async (req, res) => {
     }, {});
 
     // Step 3: Get employee details from adminModel and DeletedEmployeeModel
-    const employees = await adminModel
-      .find({
-        newDesignation: { $in: ["Business Development Executive", "Business Development Manager", "Floor Manager"] }
-      })
-      .select("ename branchOffice newDesignation");
+    const employeeFilter = {
+      newDesignation: { $in: ["Business Development Executive", "Business Development Manager", "Floor Manager"] },
+      ...(searchFromName ? { ename: { $regex: searchFromName, $options: "i" } } : {})
+    };
 
-    const deletedEmployees = await DeletedEmployeeModel
-      .find({
-        newDesignation: { $in: ["Business Development Executive", "Business Development Manager", "Floor Manager"] }
-      })
-      .select("ename branchOffice newDesignation");
-
+    const employees = await adminModel.find(employeeFilter).select("ename branchOffice newDesignation");
+    const deletedEmployees = await DeletedEmployeeModel.find(employeeFilter).select("ename branchOffice newDesignation");
+    
     const employeeData = [...employees, ...deletedEmployees];
 
     // Step 4: Merge company lead data with employee data and set defaults for missing counts
