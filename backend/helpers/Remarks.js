@@ -752,105 +752,115 @@ const fetchAndSaveCallHistory = async (clientNumbers) => {
   }
 };
 
-// Schedule the task to run every 2 minutes
-cron.schedule("*/2 * * * *", () => {
-  console.log("Cron job started: Fetching and processing call history.");
-  processCallHistoryInBatches();
-});
+let isProcessing = false;
+
+// cron.schedule("*/2 * * * *", async () => {
+//   if (isProcessing) {
+//     console.log("Previous job still running. Skipping this iteration.");
+//     return;
+//   }
+
+//   try {
+//     isProcessing = true;
+//     console.log("Cron job started: Fetching and processing call history.");
+//     await processCallHistoryInBatches();
+//   } finally {
+//     isProcessing = false;
+//   }
+// });
 
 // Cron job to run every 10 minutes
-cron.schedule("*/10 * * * *", async () => {
-  console.log("Cron Job Started: Fetching and saving call data every 10 minutes.");
+// cron.schedule("*/10 * * * *", async () => {
+//   console.log("Cron Job Started: Fetching and saving call data every 10 minutes.");
 
-  try {
-    const today = new Date();
-    const todayStartDate = new Date(today);
-    const todayEndDate = new Date(today);
+//   try {
+//     const today = new Date();
+//     const todayStartDate = new Date(today);
+//     const todayEndDate = new Date(today);
 
-    todayEndDate.setUTCHours(13, 0, 0, 0);
-    todayStartDate.setMonth(todayStartDate.getMonth());
-    todayStartDate.setUTCHours(4, 0, 0, 0);
+//     todayEndDate.setUTCHours(13, 0, 0, 0);
+//     todayStartDate.setMonth(todayStartDate.getMonth());
+//     todayStartDate.setUTCHours(4, 0, 0, 0);
 
-    const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
-    const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
+//     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
+//     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
-    console.log(startTimestamp ,endTimestamp)
+//     console.log(startTimestamp ,endTimestamp)
 
-    const body = {
-      call_from: startTimestamp,
-      call_to: endTimestamp,
-      call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
-      client_numbers: [], // Send an empty client numbers array
-    };
+//     const body = {
+//       call_from: startTimestamp,
+//       call_to: endTimestamp,
+//       call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+//       client_numbers: [], // Send an empty client numbers array
+//     };
 
-    console.log("Fetching call data with empty client numbers array Daily report.");
-    const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46"; // Replace with your actual API key
-    const response = await axios({
-      method: "POST",
-      url: "https://api1.callyzer.co/v2/call-log/history",
-      data: body, // Correctly send the body using "data"
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-    });
+//     console.log("Fetching call data with empty client numbers array Daily report.");
+//     const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46"; // Replace with your actual API key
+//     const response = await axios({
+//       method: "POST",
+//       url: "https://api1.callyzer.co/v2/call-log/history",
+//       data: body, // Correctly send the body using "data"
+//       headers: {
+//         Authorization: `Bearer ${apiKey}`,
+//         "Content-Type": "application/json",
+//       },
+//     });
 
-    const callHistoryData = response.data?.result || [];
+//     const callHistoryData = response.data?.result || [];
 
-    console.log(`Fetched ${callHistoryData.length} call logs for this batch daily report.`);
+//     console.log(`Fetched ${callHistoryData.length} call logs for this batch daily report.`);
 
-    for (const call of callHistoryData) {
-      const clientNumber = Number(call.client_number);
-      if (isNaN(clientNumber)) continue;
+//     for (const call of callHistoryData) {
+//       const clientNumber = Number(call.client_number);
+//       if (isNaN(clientNumber)) continue;
 
-      const company = await CompanyModel.findOne({
-        "Company Number": clientNumber,
-      });
+//       const company = await CompanyModel.findOne({
+//         "Company Number": clientNumber,
+//       });
 
-      if (!company) {
-        console.log(`No matching company found for client number: ${clientNumber}`);
-        continue;
-      }
+//       if (!company) {
+//         console.log(`No matching company found for client number: ${clientNumber}`);
+//         continue;
+//       }
 
-      const existingCallIds =
-        company.clientCallHistory?.map((log) => log.callId) || [];
-      const newCallHistory = callHistoryData
-        .filter((call) => !existingCallIds.includes(call.id))
-        .map((call) => ({
-          client_number: call.client_number,
-          call_date: call.call_date,
-          call_time: call.call_time,
-          call_type: call.call_type,
-          client_country_code: call.client_country_code,
-          client_name: call.client_name,
-          duration: call.duration,
-          emp_name: call.emp_name,
-          emp_number: call.emp_number,
-          synced_at: call.synced_at,
-          callId: call.id,
-        }));
+//       const existingCallIds =
+//         company.clientCallHistory?.map((log) => log.callId) || [];
+//       const newCallHistory = callHistoryData
+//         .filter((call) => !existingCallIds.includes(call.id))
+//         .map((call) => ({
+//           client_number: call.client_number,
+//           call_date: call.call_date,
+//           call_time: call.call_time,
+//           call_type: call.call_type,
+//           client_country_code: call.client_country_code,
+//           client_name: call.client_name,
+//           duration: call.duration,
+//           emp_name: call.emp_name,
+//           emp_number: call.emp_number,
+//           synced_at: call.synced_at,
+//           callId: call.id,
+//         }));
 
-      if (newCallHistory.length > 0) {
-        await CompanyModel.updateOne(
-          { "Company Number": clientNumber },
-          {
-            $push: {
-              clientCallHistory: { $each: newCallHistory },
-            },
-          }
-        );
+//       if (newCallHistory.length > 0) {
+//         await CompanyModel.updateOne(
+//           { "Company Number": clientNumber },
+//           {
+//             $push: {
+//               clientCallHistory: { $each: newCallHistory },
+//             },
+//           }
+//         );
 
-        console.log(
-          `Saved ${newCallHistory.length} new call logs for company number: ${clientNumber} daily report`
-        );
-      }
-    }
+//         console.log(
+//           `Saved ${newCallHistory.length} new call logs for company number: ${clientNumber} daily report`
+//         );
+//       }
+//     }
 
-    console.log("Call data processing completed for this batch.");
-  } catch (error) {
-    console.error("Error fetching or saving call data daily report:", error);
-  }
-});
-
+//     console.log("Call data processing completed for this batch.");
+//   } catch (error) {
+//     console.error("Error fetching or saving call data daily report:", error);
+//   }
+// });
 
 module.exports = router;
