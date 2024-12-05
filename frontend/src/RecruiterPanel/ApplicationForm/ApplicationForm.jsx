@@ -148,7 +148,7 @@ function ApplicationForm() {
         if (uploadedCV.length > 0) {
             formDataToSend.append('uploadedCV', uploadedCV[0]); // Only one file assumed for CV upload
         }
-        console.log("formatDataToSend", formDataToSend);
+        // console.log("formatDataToSend", formDataToSend);
         try {
             // Send the form data to your backend using Axios
             setOpenBacdrop(true);

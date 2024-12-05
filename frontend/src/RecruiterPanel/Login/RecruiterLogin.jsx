@@ -52,7 +52,7 @@
 //         designation
 //     })
 
-//     const { recruiterToken } = response.data
+//     const { recruiterToken ,recruiterUserId } = response.data
 //     console.log(recruiterToken)
 //     setRecruiterToken(recruiterToken)
 //     localStorage.setItem("RecuiterName" , data.ename)

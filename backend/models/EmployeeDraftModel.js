@@ -73,7 +73,7 @@ const EmployeeDraftSchema = new mongoose.Schema({
   },
   number: {
     type: String,
-    unique: true
+    //unique: true
   },
   email: {
     type: String,
