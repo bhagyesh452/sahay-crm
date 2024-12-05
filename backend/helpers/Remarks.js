@@ -754,20 +754,20 @@ const fetchAndSaveCallHistory = async (clientNumbers) => {
 
 let isProcessing = false;
 
-cron.schedule("*/2 * * * *", async () => {
-  if (isProcessing) {
-    console.log("Previous job still running. Skipping this iteration.");
-    return;
-  }
+// cron.schedule("*/2 * * * *", async () => {
+//   if (isProcessing) {
+//     console.log("Previous job still running. Skipping this iteration.");
+//     return;
+//   }
 
-  try {
-    isProcessing = true;
-    console.log("Cron job started: Fetching and processing call history.");
-    await processCallHistoryInBatches();
-  } finally {
-    isProcessing = false;
-  }
-});
+//   try {
+//     isProcessing = true;
+//     console.log("Cron job started: Fetching and processing call history.");
+//     await processCallHistoryInBatches();
+//   } finally {
+//     isProcessing = false;
+//   }
+// });
 
 // Cron job to run every 10 minutes
 // cron.schedule("*/10 * * * *", async () => {
@@ -862,6 +862,5 @@ cron.schedule("*/2 * * * *", async () => {
 //     console.error("Error fetching or saving call data daily report:", error);
 //   }
 // });
-
 
 module.exports = router;
