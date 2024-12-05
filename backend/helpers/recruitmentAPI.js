@@ -58,192 +58,108 @@ function formatDatePro(inputDate) {
 }
 router.post('/application-form/save', upload.single('uploadedCV'), async (req, res) => {
   try {
-    const {
-      empFullName,
-      personal_email,
-      personal_number,
-      appliedFor,
-      qualification,
-      experience,
-      currentCTC,
-      expectedCTC,
-      applicationSource,
-      notes
-    } = req.body;
-    const socketIO = req.io;
-    // Validate required fields
-    if (!empFullName || !personal_email || !personal_number || !appliedFor ||
-      !qualification || !experience || !currentCTC || !expectedCTC || !applicationSource) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-    // Extract the filename from the uploaded file
-    const uploadedFileName = req.file ? req.file.filename : '';
-    // Create a new application object
-    const newApplication = new RecruitmentModel({
-      empFullName,
-      personal_email,
-      personal_number,
-      appliedFor,
-      qualification,
-      experience,
-      currentCTC,
-      expectedCTC,
-      applicationSource,
-      notes,
-      uploadedCV: req.file ? req.file : '',
-      fillingDate: new Date(),
-      fillingTime: new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }),
-    });
+      const {
+          empFullName,
+          personal_email,
+          personal_number,
+          appliedFor,
+          qualification,
+          experience,
+          currentCTC,
+          expectedCTC,
+          applicationSource,
+          notes
+      } = req.body;
 
-    // Save the application to the database
-    const savedApplicationData = await newApplication.save();
+      const socketIO = req.io;
 
-    // Define the path for the PDF
-    setTimeout(() => {
-      const pdfPath = path.join(__dirname, `../RecruitmentApplicationForm/${empFullName}`, req.file.filename);
-
-      // Check if the PDF exists
-      fs.access(pdfPath, fs.constants.F_OK, async (err) => {
-        if (err) {
-          console.error(`PDF file not found: ${pdfPath}`);
-          return res.status(500).json({ message: 'PDF not found, cannot send email.' });
-        }
-
-        // Prepare email content
-        const attachments = [{
-          filename: `${req.file.originalname}`,
-          path: pdfPath
-        }];
-        const sendingDate = formatDatePro(new Date());
-        const subject = `Your Application has been submitted | Start-Up Sahay Private Limited | ${sendingDate}`;
-        const html = `
-          <p>Dear ${empFullName},</p>
-          <p>We hope this email finds you well. We wanted to express our sincere gratitude for taking the time to apply for the Web/FullStack Developer position at Start-Up Sahay Private Limited. Your interest in our company and your application are greatly appreciated.</p>
-          <p>At Start-Up Sahay Private Limited, we are committed to finding exceptional talent like yourself to join our team. Your application is currently under review, and our hiring team will carefully assess your qualifications and experience. If your profile aligns with our requirements, we will be in touch with you to schedule an interview.</p>
-          <p>In the meantime, please feel free to learn more about our company by reviewing all the details mentioned below. If you have any questions or would like to get in touch with us, don't hesitate to contact our us.</p>
-          <p>Note: Before the interview, we kindly request that you take the time to thoroughly read and understand our company's work and carefully review the job description. This will help you prepare effectively for the interview and demonstrate your genuine interest in our organization.</p>
-          <p class="mt-2">
-                        <b>Company Name: </b>
-                        <span >Start-Up Sahay Private Limited</span>
-                      </p>  
-          <p class="mt-2">
-                        <b>Contact Person: </b>
-                        <span >Miss. Palak Parekh</span>
-                      </p>
-          <p class="mt-2">
-                        <b>Contact Number: </b>
-                        <span >+91 90544 54382, +91 74868 62706</span>
-                      </p>
-          <p class="mt-2">
-                        <b>Email Id: </b>
-                        <span >hr@startupsahay.com, recruiter@startupsahay.com</span>
-                      </p>
-           <p class="mt-2">
-                        <b>Company Web:</b>
-                        <span >www.startupsahay.com</span>
-                      </p>
-            <p class="mt-2">
-                        <b>Address:</b>
-                        <span >B-304, Ganesh Glory 11, Jagatpur Road, Near BSNL Office, Gota, Ahmedabad, Gujarat - 382470</span>
-                      </p> 
-            <p class="mt-2">
-                        <b>Location:</b>
-                        <span >https://rb.gy/ys4wb1</span>
-                      </p>
-            <p class="mt-2">
-                        <b>Schedule Your Interview With Us From Here:</b>
-                        <span>https://rb.gy/vht2o</span>
-                      </p>                
-          <p>Thank you once again for considering Start-Up Sahay Private Limited as your potential employer. We look forward to the possibility of working together and wish you the best of luck in your job search.</p>
-          `;
-
-        const subject2 = `${empFullName} | Job Application Form | ${sendingDate}`;
-        const html2 = `
-        <h1>Applicant Data</h1>
-        <p class="mt-2">
-                        <b>Full Name:</b>
-                        <span>${empFullName}</span>
-                      </p> 
-        <p class="mt-2">
-                        <b>Email:</b>
-                        <span>${personal_email}</span>
-                      </p>  
-        <p class="mt-2">
-                        <b>Contact Number:</b>
-                        <span>${personal_number}</span>
-                      </p>
-        <p class="mt-2">
-                        <b>Position: </b>
-                        <span>${appliedFor}</span>
-                      </p>
-        <p class="mt-2">
-                        <b>Qualification:</b>
-                        <span>${qualification}</span>
-                      </p>
-        <p class="mt-2">
-                        <b>Experience:</b>
-                        <span>${experience}</span>
-                      </p>
-        <p class="mt-2">
-                        <b>Current CTC:</b>
-                        <span>${currentCTC}</span>
-                      </p>
-         <p class="mt-2">
-                        <b>Expected CTC:</b>
-                        <span>${expectedCTC}</span>
-                      </p>
-          <p class="mt-2">
-                        <b>Referral:</b>
-                        <span>${applicationSource}</span>
-                      </p>
-          <p class="mt-2">
-                        <b>Notes:</b>
-                        <span>${notes}</span>
-                      </p>            
-`;
-        try {
-          // Send email employee email
-          const emailInfo = await sendMailRecruiter(
-            [personal_email],
-            subject,
-            "",
-            html,
-
-          );
-          // Send email hr mail
-          const emailInfo2 = await sendMailResponseRecruiter(
-            ["hr@startupsahay.com", "recruiter@startupsahay.com"],
-            subject2,
-            "",
-            html2,
-            attachments
-          );
-          console.log(`Email sent: ${emailInfo.messageId}`)
-          console.log(`Email sent: ${emailInfo2.messageId}`)
-
-        } catch (emailError) {
-          console.error('Error sending email:', emailError);
-          return res.status(500).json({ message: 'Application submitted, but failed to send email.' });
-        }
-      });
-    }, 4000)
-
-    // Send response after email is sent
-    socketIO.emit('recruiter-application-submitted', { data: savedApplicationData });
-    return res.status(200).json({ message: 'Application submitted successfully and email sent.' });
-  } catch (error) {
-    if (error.code === 11000) {
-      // Handle duplicate key error for email or personal number
-      if (error.keyValue.personal_email) {
-        return res.status(400).json({ message: 'Applicant already exists.' });
-      } else if (error.keyValue.personal_number) {
-        return res.status(400).json({ message: 'Applicant already exists.' });
+      // Validate required fields
+      if (!empFullName || !personal_email || !personal_number || !appliedFor ||
+          !qualification || !experience || !currentCTC || !expectedCTC || !applicationSource) {
+          return res.status(400).json({ message: 'All fields are required' });
       }
-    }
-    console.error('Error submitting application:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+
+      // Create a new application object
+      const newApplication = new RecruitmentModel({
+          empFullName,
+          personal_email,
+          personal_number,
+          appliedFor,
+          qualification,
+          experience,
+          currentCTC,
+          expectedCTC,
+          applicationSource,
+          notes,
+          uploadedCV: req.file ? req.file : '',
+          fillingDate: new Date(),
+          fillingTime: new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }),
+      });
+
+      // Save the application to the database
+      const savedApplicationData = await newApplication.save();
+
+      // Send an immediate response to the client
+      socketIO.emit('recruiter-application-submitted', { data: savedApplicationData });
+      res.status(200).json({ message: 'Application submitted successfully.' });
+
+      // Send emails in the background after a delay
+      setTimeout(async () => {
+          try {
+              const subject = `Your Application has been submitted | Start-Up Sahay Private Limited`;
+              const html = `
+                  <p>Dear ${empFullName},</p>
+                  <p>Thank you for applying for the position of ${appliedFor} at Start-Up Sahay Private Limited.</p>
+                  <p>Your application has been received, and we will review it shortly. You will be notified if you are shortlisted for further rounds.</p>
+                  <p>Best regards,<br>HR Team, Start-Up Sahay Private Limited</p>
+              `;
+
+              const subject2 = `New Job Application: ${empFullName}`;
+              const html2 = `
+                  <h1>New Application Received</h1>
+                  <p><b>Name:</b> ${empFullName}</p>
+                  <p><b>Email:</b> ${personal_email}</p>
+                  <p><b>Contact:</b> ${personal_number}</p>
+                  <p><b>Applied For:</b> ${appliedFor}</p>
+                  <p><b>Experience:</b> ${experience} years</p>
+                  <p><b>Qualification:</b> ${qualification}</p>
+                  <p><b>Current CTC:</b> ${currentCTC}</p>
+                  <p><b>Expected CTC:</b> ${expectedCTC}</p>
+                  <p><b>Source:</b> ${applicationSource}</p>
+              `;
+
+              const attachments = req.file ? [{
+                  filename: req.file.originalname,
+                  path: req.file.path,
+              }] : [];
+
+              // Send mail to the applicant
+              await sendMailRecruiter([personal_email], subject, '', html);
+
+              // Send mail to HR
+              await sendMailResponseRecruiter(['hr@startupsahay.com', 'recruiter@startupsahay.com'], subject2, '', html2, attachments);
+
+              console.log('Emails sent successfully');
+          } catch (emailError) {
+              // Log email errors but don't affect the client response
+              console.error('Error sending email:', emailError);
+          }
+      }, 2000);
+
+  } catch (error) {
+      if (error.code === 11000) {
+          // Handle duplicate key error for email or personal number
+          if (error.keyValue.personal_email) {
+              return res.status(400).json({ message: 'Applicant with this email already exists.' });
+          } else if (error.keyValue.personal_number) {
+              return res.status(400).json({ message: 'Applicant with this number already exists.' });
+          }
+      }
+      console.error('Error submitting application:', error);
+      return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 router.get('/recruiter-complete', async (req, res) => {
   try {
