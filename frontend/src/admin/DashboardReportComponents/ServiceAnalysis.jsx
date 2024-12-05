@@ -5,7 +5,9 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import Nodata from '../../components/Nodata';
 import RemainingServiceAnalysis from './RemainingServiceAnalysis';
 
+
 function ServiceAnalysis() {
+    
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const currentYear = new Date().getFullYear();
@@ -13,8 +15,13 @@ function ServiceAnalysis() {
 
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [expandedService, setExpandedService] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [bookingData, setBookingData] = useState([]);
+
+    const toggleServiceDetails = (serviceName) => {
+        setExpandedService(expandedService === serviceName ? null : serviceName);
+    };
 
     const formatSalary = (amount) => {
         return new Intl.NumberFormat('en-IN', { minimumFractionDigits: 0 }).format(amount);
@@ -37,7 +44,7 @@ function ServiceAnalysis() {
         try {
             setIsLoading(true);
             const res = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
-            console.log("Fetched bookings are :", res.data);
+            // console.log("Fetched bookings are :", res.data);
             setBookingData(res.data);
         } catch (error) {
             console.log("Error fetching bookings data", error);
@@ -50,101 +57,15 @@ function ServiceAnalysis() {
         fetchBookings();
     }, []);
 
-    // const getServiceAnalysisData = () => {
-    //     // Initialize an object to store service analysis data
-    //     const serviceAnalysis = {};
-
-    //     const processServiceData = (booking, service) => {
-    //         // Initialize the service if not already in serviceAnalysis
-    //         if (!serviceAnalysis[service.serviceName]) {
-    //             serviceAnalysis[service.serviceName] = {
-    //                 timesSold: 0,
-    //                 totalPayment: 0,
-    //                 advancePayment: 0,
-    //                 remainingPaymentsArray: [], // Array to store remaining payments
-    //             };
-    //         }
-
-    //         // Update the service analysis data
-    //         serviceAnalysis[service.serviceName].timesSold += 1;
-    //         serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWOGST;
-
-    //         if (service.paymentTerms === "Full Advanced") {
-    //             // Full advanced payment, no remaining payment
-    //             serviceAnalysis[service.serviceName].advancePayment += service.totalPaymentWOGST;
-
-    //         } else if (service.paymentTerms === "two-part") {
-    //             // Calculate advance payment (adjusted for GST if applicable)
-    //             const adjustedFirstPayment = service.withGST
-    //                 ? service.firstPayment / 1.18
-    //                 : service.firstPayment;
-
-    //             serviceAnalysis[service.serviceName].advancePayment += adjustedFirstPayment;
-
-    //             // Collect remaining payments for this service
-    //             const secondPayment = service.withGST ? service.secondPayment/1.18 : service.secondPayment;
-    //             const thirdPayment = service.withGST ? service.thirdPayment/1.18 : service.thirdPayment;
-    //             const fourthPayment = service.withGST ? service.fourthPayment/1.18 : service.fourthPayment;
-
-    //             const remainingPayment = (secondPayment + thirdPayment + fourthPayment);
-
-    //             // Push the remaining payment to the array
-    //             serviceAnalysis[service.serviceName].remainingPaymentsArray.push(remainingPayment);
-
-    //         }
-    //     };
-
-    //     const processBooking = (booking) => {
-    //         const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
-    //         const bookingYear = new Date(booking.bookingDate).getFullYear();
-
-    //         if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
-    //             booking.services.forEach(service => processServiceData(booking, service));
-    //         }
-    //     };
-
-    //     // Process main booking data
-    //     bookingData.forEach(booking => {
-    //         processBooking(booking);
-
-    //         // Process moreBookings array
-    //         booking.moreBookings.forEach(moreBooking => {
-    //             processBooking(moreBooking);
-    //         });
-    //     });
-
-    //     // Calculate total remaining payments for each service
-    //     return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
-    //         const totalRemainingPayment = data.remainingPaymentsArray.reduce((sum, payment) => sum + payment, 0);
-
-    //         return {
-    //             id: index + 1,
-    //             serviceName,
-    //             timesSold: data.timesSold,
-    //             totalPayment: data.totalPayment,
-    //             advancePayment: data.advancePayment,
-    //             remainingPayment: totalRemainingPayment,  // Return the total remaining payment
-    //             averageSellingPrice: data.totalPayment / data.timesSold || 0,
-    //         };
-    //     });
-    // };
-
-    // const serviceAnalysisData = getServiceAnalysisData();
-
-    // const totalTimesSold = serviceAnalysisData.reduce((total, service) => total + service.timesSold, 0);
-    // const totalTotalPayment = serviceAnalysisData.reduce((total, service) => total + service.totalPayment, 0);
-    // const totalAdvancePayment = serviceAnalysisData.reduce((total, service) => total + service.advancePayment, 0);
-    // const totalRemainingPayment = serviceAnalysisData.reduce((total, service) => total + service.remainingPayment, 0);
-    // const totalAverageSellingPrice = totalTimesSold ? (totalTotalPayment / totalTimesSold) : 0;
-
-
-
     // Combine total of all services whose names start with ISO Certificate :
     const getServiceAnalysisData = () => {
         // Initialize an object to store service analysis data
         const serviceAnalysis = {};
 
         const processServiceData = (booking, service) => {
+
+            // console.log("Booking data is :", booking);
+
             // Standardize service name for "ISO Certificate" services
             const serviceNameKey = service.serviceName.startsWith("ISO Certificate") ? "ISO Certificate" : service.serviceName;
 
@@ -155,12 +76,20 @@ function ServiceAnalysis() {
                     totalPayment: 0,
                     advancePayment: 0,
                     remainingPaymentsArray: [], // Array to store remaining payments
+                    serviceBriefDetails: [],    // Array to store individual BDE/BDM details
                 };
             }
 
             // Update the service analysis data
             serviceAnalysis[serviceNameKey].timesSold += 1;
             serviceAnalysis[serviceNameKey].totalPayment += service.totalPaymentWOGST;
+
+            // Add individual BDE and BDM details with the payment
+            serviceAnalysis[serviceNameKey].serviceBriefDetails.push({
+                bdeName: booking.bdeName,
+                bdmName: booking.bdmName,
+                amount: service.totalPaymentWOGST,
+            });
 
             if (service.paymentTerms === "Full Advanced") {
                 // Full advanced payment, no remaining payment
@@ -217,6 +146,7 @@ function ServiceAnalysis() {
                 advancePayment: data.advancePayment,
                 remainingPayment: totalRemainingPayment,  // Return the total remaining payment
                 averageSellingPrice: data.totalPayment / data.timesSold || 0,
+                serviceBriefDetails: data.serviceBriefDetails, // Include the detailed breakdown
             };
         });
     };
@@ -234,14 +164,17 @@ function ServiceAnalysis() {
         <>
             <div className="card">
                 <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                    
                     <div className="dashboard-title pl-1"  >
                         <h2 className="m-0">
                             Service Analysis
                         </h2>
                     </div>
+                    
                     <div className="d-flex align-items-center pr-1">
                         <div className="filter-booking mr-1 d-flex align-items-center">
                             <div className='d-flex align-items-center justify-content-between'>
+
                                 <div className='form-group ml-1'>
                                     <select className='form-select' value={selectedYear} onChange={handleYearChange}>
                                         <option disabled>--Select Year--</option>
@@ -250,6 +183,7 @@ function ServiceAnalysis() {
                                         ))}
                                     </select>
                                 </div>
+
                                 <div className='form-group ml-1'>
                                     <select className='form-select' value={selectedMonth} onChange={handleMonthChange}>
                                         <option disabled>--Select Month--</option>
@@ -258,6 +192,7 @@ function ServiceAnalysis() {
                                         ))}
                                     </select>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -297,18 +232,49 @@ function ServiceAnalysis() {
                                 </tbody>
                             ) : serviceAnalysisData.length !== 0 ? (
                                 <>
-
                                     <tbody>
                                         {serviceAnalysisData.map((service, index) => (
-                                            <tr key={index}>
-                                                <td>{service.id}</td>
-                                                <td>{service.serviceName}</td>
-                                                <td>{service.timesSold}</td>
-                                                <td>₹ {formatSalary(service.totalPayment.toFixed(2))}</td>
-                                                <td>₹ {formatSalary(service.advancePayment.toFixed(2))}</td>
-                                                <td>₹ {formatSalary(service.remainingPayment.toFixed(2))}</td>
-                                                <td>₹ {formatSalary(service.averageSellingPrice.toFixed(2))}</td>
-                                            </tr>
+                                            <>
+                                                <tr onClick={() => toggleServiceDetails(service.serviceName)} style={{ cursor: 'pointer' }} key={index}>
+                                                    <td>{service.id}</td>
+                                                    <td>{service.serviceName}</td>
+                                                    <td>{service.timesSold}</td>
+                                                    <td>₹ {formatSalary(service.totalPayment.toFixed(2))}</td>
+                                                    <td>₹ {formatSalary(service.advancePayment.toFixed(2))}</td>
+                                                    <td>₹ {formatSalary(service.remainingPayment.toFixed(2))}</td>
+                                                    <td>₹ {formatSalary(service.averageSellingPrice.toFixed(2))}</td>
+                                                </tr>
+
+                                                {expandedService === service.serviceName && (
+                                                    <tr id='expandedId'>
+                                                        <td colSpan="7" id='parent-TD-Inner'>
+                                                            <div id='table-default' className="table table-default dash w-100 m-0 arrowsudo">
+                                                                <table className='table-vcenter table-nowrap admin-dash-tbl w-100 innerTable'  >
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className='innerTH'>Sr.No</th>
+                                                                            <th className='innerTH'>BDE Name</th>
+                                                                            <th className='innerTH'>BDM Name</th>
+                                                                            <th className='innerTH'>Amount</th>
+                                                                        </tr>
+                                                                    </thead>
+
+                                                                    <tbody>
+                                                                        {service.serviceBriefDetails.map((detail, detailIndex) => (
+                                                                            <tr key={detailIndex}>
+                                                                                <td>{detailIndex + 1}</td>
+                                                                                <td>{detail.bdeName}</td>
+                                                                                <td>{detail.bdmName}</td>
+                                                                                <td>₹ {formatSalary(detail.amount.toFixed(2))}</td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </>
                                         ))}
                                     </tbody>
 
@@ -341,7 +307,7 @@ function ServiceAnalysis() {
                 <RemainingServiceAnalysis />
             </div>
         </>
-    )
+    );
 }
 
 export default ServiceAnalysis;
