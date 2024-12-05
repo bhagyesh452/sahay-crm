@@ -3977,26 +3977,29 @@ export default function EditableMoreBooking({
                                               <div className="docItemImg">
                                                 <img
                                                   src={
-                                                    leadData.paymentReceipt[0].name.endsWith(
-                                                      ".pdf"
-                                                    )
+                                                    Array.isArray(leadData.paymentReceipt) &&
+                                                      leadData.paymentReceipt.length > 0 &&
+                                                      leadData.paymentReceipt[0]?.name?.endsWith(".pdf")
                                                       ? pdfimg
                                                       : img
                                                   }
-                                                ></img>
+                                                  alt="Payment Receipt"
+                                                />
                                               </div>
                                               <div
                                                 className="docItemName wrap-MyText"
                                                 title={
-                                                  leadData.paymentReceipt[0].name.split(
-                                                    "-"
-                                                  )[1]
+                                                  Array.isArray(leadData.paymentReceipt) &&
+                                                    leadData.paymentReceipt[0]?.name?.includes("-")
+                                                    ? leadData.paymentReceipt[0].name.split("-")[1]
+                                                    : "No Name Available"
                                                 }
                                               >
                                                 {
-                                                  leadData.paymentReceipt[0].name.split(
-                                                    "-"
-                                                  )[1]
+                                                  Array.isArray(leadData.paymentReceipt) &&
+                                                    leadData.paymentReceipt[0]?.name?.includes("-")
+                                                    ? leadData.paymentReceipt[0].name.split("-")[1]
+                                                    : "No Name Available"
                                                 }
                                               </div>
                                             </>
@@ -4081,56 +4084,24 @@ export default function EditableMoreBooking({
                                                 <div className="docItemImg">
                                                   <img
                                                     src={
-                                                      val.name.endsWith(".pdf")
+                                                      val?.name?.endsWith(".pdf")
                                                         ? pdfimg
-                                                        : img
+                                                        : img || "path/to/default/image.jpg" // Fallback to a default image
                                                     }
-                                                  ></img>
+                                                  />
                                                 </div>
                                                 <div
                                                   className="docItemName wrap-MyText"
-                                                  title="logo.png"
+                                                  title={val?.name || "No title available"} // Safely access `val.name` or provide a fallback
                                                 >
-                                                  {val.name.split("-")[1]}
+                                                  {val?.name?.includes("-") // Check if `val.name` exists and contains a `-`
+                                                    ? val.name.split("-")[1] // Safely split and access the part after `-`
+                                                    : "No valid name available"} // Provide a fallback text
                                                 </div>
                                               </div>
                                             </>
                                           )
                                         )}
-
-                                        {/* <div className="UploadDocPreview">
-                                          <div className="docItemImg">
-                                            <img src={img}></img>
-                                          </div>
-                                          <div
-                                            className="docItemName wrap-MyText"
-                                            title="logo.png"
-                                          >
-                                            logo.png
-                                          </div>
-                                        </div>
-                                        <div className="UploadDocPreview">
-                                          <div className="docItemImg">
-                                            <img src={wordimg}></img>
-                                          </div>
-                                          <div
-                                            className="docItemName wrap-MyText"
-                                            title=" information.word"
-                                          >
-                                            information.word
-                                          </div>
-                                        </div>
-                                        <div className="UploadDocPreview">
-                                          <div className="docItemImg">
-                                            <img src={excelimg}></img>
-                                          </div>
-                                          <div
-                                            className="docItemName wrap-MyText"
-                                            title="financials.csv"
-                                          >
-                                            financials.csv
-                                          </div>
-                                        </div> */}
                                       </div>
                                     </div>
                                   </div>}
