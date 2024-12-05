@@ -757,6 +757,7 @@ app.post("/api/recruiterlogin", async (req, res) => {
     email: email,
     password: password,
   });
+  
   //console.log(user)
   if (!user) {
     // If user is not found

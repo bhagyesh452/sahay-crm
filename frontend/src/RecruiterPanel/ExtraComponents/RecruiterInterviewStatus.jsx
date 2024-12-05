@@ -94,6 +94,7 @@ const RecruiterInterviewStatus = ({
         <option value="Taken By Palak">Taken By Palak</option>
         <option value="Taken By Hiral">Taken By Hiral</option>
         <option value="Taken By Vaibhav">Taken By Vaibhav</option>
+        <option value="Taken By Mr. Saurav">Taken By Mr. Saurav</option>
         <option value="Taken By Mr. Rahul">Taken By Mr. Rahul</option>
         <option value="Taken By Mr. Nimesh">Taken By Mr. Nimesh</option>
         <option value="Taken By Palak & Mr. Nimesh">Taken By Palak & Mr. Nimesh</option>
