@@ -156,7 +156,7 @@ function EmployeeDataReport() {
     };
 
     const mergeEmployeeAndCompanyData = (employeeData, companyData) => {
-
+console.log("Company data is :", companyData);
         const merged = employeeData.map(employee => {
             const companyInfo = companyData.find(company => company._id === employee.ename) || {};
 
@@ -2136,6 +2136,39 @@ function EmployeeDataReport() {
                                             </div>
                                         </th>
 
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['Forwarded'] = el}>
+                                                    Forwarded
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('Forwarded') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("Forwarded")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("Forwarded")} />
+                                                    )}
+                                                </div>
+                                                {showFilterMenu && activeFilterField === 'Forwarded' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTableEmployeeDataReport
+                                                            filterField={activeFilterField}
+                                                            filteredData={filteredData}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeMergedData}
+                                                            companyData={companyData}
+                                                            dataForFilter={mergedDataForFilter}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            showingMenu={setShowFilterMenu}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+
                                         {/* <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
@@ -2607,8 +2640,10 @@ function EmployeeDataReport() {
                                             </tr>
                                         ))} */}
 
-                                        {mergedData.map((obj, index) => (
+                                        {mergedData.map((obj, index) => 
+                                        (
                                             <tr key={index}>
+                                                {/* {console.log("Object is :", obj)} */}
                                                 <td>{index + 1}</td>
                                                 <td>{obj.ename}</td>
                                                 <td>
@@ -2679,6 +2714,19 @@ function EmployeeDataReport() {
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Interested`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Forwarded`}
                                                         style={{
                                                             color: "black",
                                                             textDecoration: "none",
