@@ -7,7 +7,7 @@ import RemainingServiceAnalysis from './RemainingServiceAnalysis';
 
 
 function ServiceAnalysis() {
-    
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const currentYear = new Date().getFullYear();
@@ -58,60 +58,217 @@ function ServiceAnalysis() {
     }, []);
 
     // Combine total of all services whose names start with ISO Certificate :
+    // const getServiceAnalysisData = () => {
+    //     // Initialize an object to store service analysis data
+    //     const serviceAnalysis = {};
+
+    //     const processServiceData = (booking, service) => {
+
+    //         console.log("Booking data is :", booking);
+
+    //         // Standardize service name for "ISO Certificate" services
+    //         const serviceNameKey = service.serviceName.startsWith("ISO Certificate") ? "ISO Certificate" : service.serviceName;
+
+    //         // Initialize the service if not already in serviceAnalysis
+    //         if (!serviceAnalysis[serviceNameKey]) {
+    //             serviceAnalysis[serviceNameKey] = {
+    //                 timesSold: 0,
+    //                 totalPayment: 0,
+    //                 advancePayment: 0,
+    //                 remainingPaymentsArray: [], // Array to store remaining payments
+    //                 serviceBriefDetails: [],    // Array to store individual BDE/BDM details
+    //             };
+    //         }
+
+    //         // Update the service analysis data
+    //         serviceAnalysis[serviceNameKey].timesSold += 1;
+    //         serviceAnalysis[serviceNameKey].totalPayment += service.totalPaymentWOGST;
+
+    //         // Add individual BDE and BDM details with the payment
+    //         serviceAnalysis[serviceNameKey].serviceBriefDetails.push({
+    //             bdeName: booking.bdeName,
+    //             bdmName: booking.bdmName,
+    //             amount: service.totalPaymentWOGST,
+    //         });
+
+    //         if (service.paymentTerms === "Full Advanced") {
+    //             // Full advanced payment, no remaining payment
+    //             serviceAnalysis[serviceNameKey].advancePayment += service.totalPaymentWOGST;
+
+    //         } else if (service.paymentTerms === "two-part") {
+    //             // Calculate advance payment (adjusted for GST if applicable)
+    //             const adjustedFirstPayment = service.withGST
+    //                 ? service.firstPayment / 1.18
+    //                 : service.firstPayment;
+
+    //             serviceAnalysis[serviceNameKey].advancePayment += adjustedFirstPayment;
+
+    //             // Collect remaining payments for this service
+    //             const secondPayment = service.withGST ? service.secondPayment / 1.18 : service.secondPayment;
+    //             const thirdPayment = service.withGST ? service.thirdPayment / 1.18 : service.thirdPayment;
+    //             const fourthPayment = service.withGST ? service.fourthPayment / 1.18 : service.fourthPayment;
+
+    //             const remainingPayment = secondPayment + thirdPayment + fourthPayment;
+
+    //             // Push the remaining payment to the array
+    //             serviceAnalysis[serviceNameKey].remainingPaymentsArray.push(remainingPayment);
+    //         }
+    //     };
+
+    //     const processBooking = (booking) => {
+    //         const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
+    //         const bookingYear = new Date(booking.bookingDate).getFullYear();
+
+    //         if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
+    //             booking.services.forEach(service => processServiceData(booking, service));
+    //         }
+    //     };
+
+    //     // Process main booking data
+    //     bookingData.forEach(booking => {
+    //         processBooking(booking);
+
+    //         // Process moreBookings array
+    //         booking.moreBookings.forEach(moreBooking => {
+    //             processBooking(moreBooking);
+    //         });
+    //     });
+
+    //     // Calculate total remaining payments for each service
+    //     return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
+    //         const totalRemainingPayment = data.remainingPaymentsArray.reduce((sum, payment) => sum + payment, 0);
+
+    //         return {
+    //             id: index + 1,
+    //             serviceName,
+    //             timesSold: data.timesSold,
+    //             totalPayment: data.totalPayment,
+    //             advancePayment: data.advancePayment,
+    //             remainingPayment: totalRemainingPayment,  // Return the total remaining payment
+    //             averageSellingPrice: data.totalPayment / data.timesSold || 0,
+    //             serviceBriefDetails: data.serviceBriefDetails, // Include the detailed breakdown
+    //         };
+    //     });
+    // };
+
     const getServiceAnalysisData = () => {
-        // Initialize an object to store service analysis data
         const serviceAnalysis = {};
 
         const processServiceData = (booking, service) => {
+            const serviceNameKey = service.serviceName.startsWith("ISO Certificate")
+                ? "ISO Certificate"
+                : service.serviceName;
 
-            // console.log("Booking data is :", booking);
-
-            // Standardize service name for "ISO Certificate" services
-            const serviceNameKey = service.serviceName.startsWith("ISO Certificate") ? "ISO Certificate" : service.serviceName;
-
-            // Initialize the service if not already in serviceAnalysis
             if (!serviceAnalysis[serviceNameKey]) {
                 serviceAnalysis[serviceNameKey] = {
                     timesSold: 0,
                     totalPayment: 0,
                     advancePayment: 0,
-                    remainingPaymentsArray: [], // Array to store remaining payments
-                    serviceBriefDetails: [],    // Array to store individual BDE/BDM details
+                    remainingPaymentsArray: [],
+                    serviceBriefDetails: [],
                 };
             }
 
-            // Update the service analysis data
             serviceAnalysis[serviceNameKey].timesSold += 1;
             serviceAnalysis[serviceNameKey].totalPayment += service.totalPaymentWOGST;
 
-            // Add individual BDE and BDM details with the payment
-            serviceAnalysis[serviceNameKey].serviceBriefDetails.push({
-                bdeName: booking.bdeName,
-                bdmName: booking.bdmName,
-                amount: service.totalPaymentWOGST,
-            });
+            const advanceAmount = service.paymentTerms === "Full Advanced"
+                ? service.totalPaymentWOGST
+                : (service.withGST ? (service.firstPayment / 1.18) : (service.firstPayment)) || 0;
 
-            if (service.paymentTerms === "Full Advanced") {
-                // Full advanced payment, no remaining payment
-                serviceAnalysis[serviceNameKey].advancePayment += service.totalPaymentWOGST;
+            // Add the advance amount to the total advance payment for this service
+            serviceAnalysis[serviceNameKey].advancePayment += advanceAmount;
 
-            } else if (service.paymentTerms === "two-part") {
-                // Calculate advance payment (adjusted for GST if applicable)
-                const adjustedFirstPayment = service.withGST
-                    ? service.firstPayment / 1.18
-                    : service.firstPayment;
+            // Process BDE data
+            let existingEmployee = serviceAnalysis[serviceNameKey].serviceBriefDetails.find(
+                detail => detail.employeeName === booking.bdeName
+            );
 
-                serviceAnalysis[serviceNameKey].advancePayment += adjustedFirstPayment;
+            if (!existingEmployee) {
+                existingEmployee = {
+                    employeeName: booking.bdeName,
+                    timesSold: 0,
+                    totalAmount: 0,
+                    advance: 0,
+                    remaining: 0,
+                    average: 0,
+                };
+                serviceAnalysis[serviceNameKey].serviceBriefDetails.push(existingEmployee);
+            }
 
-                // Collect remaining payments for this service
+            const isSameName = booking.bdeName === booking.bdmName;
+            const isCloseBy = booking.bdmType === "Close-by";
+            const isSupportedBy = booking.bdmType === "Supported-by";
+
+            if (isSameName || isCloseBy) {
+                const factor = isSameName ? 1 : 0.5;
+                existingEmployee.timesSold += factor;
+                existingEmployee.totalAmount += service.totalPaymentWOGST * factor;
+                existingEmployee.advance += service.paymentTerms === "Full Advanced"
+                    ? service.totalPaymentWOGST * factor
+                    // : service.firstPayment * factor;
+                    : (service.withGST ? (service.firstPayment / 1.18) * factor : (service.firstPayment * factor));
+            }
+
+            if (isSupportedBy) {
+                // Merge BDM's data into the BDE's data for `Supported-by` type
+                existingEmployee.timesSold += 1;
+                existingEmployee.totalAmount += service.totalPaymentWOGST;
+                existingEmployee.advance += service.paymentTerms === "Full Advanced"
+                    ? service.totalPaymentWOGST
+                    // : service.firstPayment;
+                    : (service.withGST ? (service.firstPayment / 1.18) : (service.firstPayment));
+            }
+
+            if (service.paymentTerms === "two-part") {
                 const secondPayment = service.withGST ? service.secondPayment / 1.18 : service.secondPayment;
                 const thirdPayment = service.withGST ? service.thirdPayment / 1.18 : service.thirdPayment;
                 const fourthPayment = service.withGST ? service.fourthPayment / 1.18 : service.fourthPayment;
 
-                const remainingPayment = secondPayment + thirdPayment + fourthPayment;
-
-                // Push the remaining payment to the array
+                const remainingPayment = (secondPayment + thirdPayment + fourthPayment) *
+                    (isSameName ? 1 : isCloseBy ? 0.5 : 1);
+                existingEmployee.remaining += remainingPayment;
                 serviceAnalysis[serviceNameKey].remainingPaymentsArray.push(remainingPayment);
+            }
+
+            existingEmployee.average = existingEmployee.totalAmount / existingEmployee.timesSold || 0;
+
+            // Process BDM data only for Close-by type (skip Supported-by type)
+            if (!isSameName && isCloseBy) {
+                let existingBDM = serviceAnalysis[serviceNameKey].serviceBriefDetails.find(
+                    detail => detail.employeeName === booking.bdmName
+                );
+
+                if (!existingBDM) {
+                    existingBDM = {
+                        employeeName: booking.bdmName,
+                        timesSold: 0,
+                        totalAmount: 0,
+                        advance: 0,
+                        remaining: 0,
+                        average: 0,
+                    };
+                    serviceAnalysis[serviceNameKey].serviceBriefDetails.push(existingBDM);
+                }
+
+                const factor = 0.5; // For Close-by
+                existingBDM.timesSold += factor;
+                existingBDM.totalAmount += service.totalPaymentWOGST * factor;
+                existingBDM.advance += service.paymentTerms === "Full Advanced"
+                    ? service.totalPaymentWOGST * factor
+                    : service.firstPayment * factor;
+
+                if (service.paymentTerms === "two-part") {
+                    const secondPayment = service.withGST ? service.secondPayment / 1.18 : service.secondPayment;
+                    const thirdPayment = service.withGST ? service.thirdPayment / 1.18 : service.thirdPayment;
+                    const fourthPayment = service.withGST ? service.fourthPayment / 1.18 : service.fourthPayment;
+
+                    const remainingPayment = (secondPayment + thirdPayment + fourthPayment) * factor;
+                    existingBDM.remaining += remainingPayment;
+                    serviceAnalysis[serviceNameKey].remainingPaymentsArray.push(remainingPayment);
+                }
+
+                existingBDM.average = existingBDM.totalAmount / existingBDM.timesSold || 0;
             }
         };
 
@@ -124,17 +281,14 @@ function ServiceAnalysis() {
             }
         };
 
-        // Process main booking data
         bookingData.forEach(booking => {
             processBooking(booking);
 
-            // Process moreBookings array
             booking.moreBookings.forEach(moreBooking => {
                 processBooking(moreBooking);
             });
         });
 
-        // Calculate total remaining payments for each service
         return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
             const totalRemainingPayment = data.remainingPaymentsArray.reduce((sum, payment) => sum + payment, 0);
 
@@ -144,9 +298,9 @@ function ServiceAnalysis() {
                 timesSold: data.timesSold,
                 totalPayment: data.totalPayment,
                 advancePayment: data.advancePayment,
-                remainingPayment: totalRemainingPayment,  // Return the total remaining payment
+                remainingPayment: totalRemainingPayment,
                 averageSellingPrice: data.totalPayment / data.timesSold || 0,
-                serviceBriefDetails: data.serviceBriefDetails, // Include the detailed breakdown
+                serviceBriefDetails: data.serviceBriefDetails,
             };
         });
     };
@@ -160,17 +314,19 @@ function ServiceAnalysis() {
     const totalRemainingPayment = serviceAnalysisData.reduce((total, service) => total + service.remainingPayment, 0);
     const totalAverageSellingPrice = totalTimesSold ? (totalTotalPayment / totalTimesSold) : 0;
 
+
+
     return (
         <>
             <div className="card">
                 <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
-                    
+
                     <div className="dashboard-title pl-1"  >
                         <h2 className="m-0">
                             Service Analysis
                         </h2>
                     </div>
-                    
+
                     <div className="d-flex align-items-center pr-1">
                         <div className="filter-booking mr-1 d-flex align-items-center">
                             <div className='d-flex align-items-center justify-content-between'>
@@ -235,6 +391,7 @@ function ServiceAnalysis() {
                                     <tbody>
                                         {serviceAnalysisData.map((service, index) => (
                                             <>
+                                                {console.log("Services data :", service)}
                                                 <tr onClick={() => toggleServiceDetails(service.serviceName)} style={{ cursor: 'pointer' }} key={index}>
                                                     <td>{service.id}</td>
                                                     <td>{service.serviceName}</td>
@@ -253,9 +410,12 @@ function ServiceAnalysis() {
                                                                     <thead>
                                                                         <tr>
                                                                             <th className='innerTH'>Sr.No</th>
-                                                                            <th className='innerTH'>BDE Name</th>
-                                                                            <th className='innerTH'>BDM Name</th>
-                                                                            <th className='innerTH'>Amount</th>
+                                                                            <th className='innerTH'>Employee Name</th>
+                                                                            <th className='innerTH'>Times Sold</th>
+                                                                            <th className='innerTH'>Total Payment</th>
+                                                                            <th className='innerTH'>Advance Payment</th>
+                                                                            <th className='innerTH'>Remaining Payment</th>
+                                                                            <th className='innerTH'>Average Selling Price</th>
                                                                         </tr>
                                                                     </thead>
 
@@ -263,9 +423,12 @@ function ServiceAnalysis() {
                                                                         {service.serviceBriefDetails.map((detail, detailIndex) => (
                                                                             <tr key={detailIndex}>
                                                                                 <td>{detailIndex + 1}</td>
-                                                                                <td>{detail.bdeName}</td>
-                                                                                <td>{detail.bdmName}</td>
-                                                                                <td>₹ {formatSalary(detail.amount.toFixed(2))}</td>
+                                                                                <td>{detail.employeeName}</td>
+                                                                                <td>{detail.timesSold}</td>
+                                                                                <td>₹ {formatSalary(detail.totalAmount.toFixed(2))}</td>
+                                                                                <td>₹ {formatSalary(detail.advance.toFixed(2))}</td>
+                                                                                <td>₹ {formatSalary(detail.remaining.toFixed(2))}</td>
+                                                                                <td>₹ {formatSalary(detail.average.toFixed(2))}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
