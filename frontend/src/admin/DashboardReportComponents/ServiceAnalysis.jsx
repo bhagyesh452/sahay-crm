@@ -206,7 +206,8 @@ function ServiceAnalysis() {
                 existingEmployee.totalAmount += service.totalPaymentWOGST * factor;
                 existingEmployee.advance += service.paymentTerms === "Full Advanced"
                     ? service.totalPaymentWOGST * factor
-                    : service.firstPayment * factor;
+                    // : service.firstPayment * factor;
+                    : (service.withGST ? (service.firstPayment / 1.18) * factor : (service.firstPayment * factor));
             }
 
             if (isSupportedBy) {
@@ -215,7 +216,8 @@ function ServiceAnalysis() {
                 existingEmployee.totalAmount += service.totalPaymentWOGST;
                 existingEmployee.advance += service.paymentTerms === "Full Advanced"
                     ? service.totalPaymentWOGST
-                    : service.firstPayment;
+                    // : service.firstPayment;
+                    : (service.withGST ? (service.firstPayment / 1.18) : (service.firstPayment));
             }
 
             if (service.paymentTerms === "two-part") {
@@ -418,7 +420,7 @@ function ServiceAnalysis() {
                                                                     </thead>
 
                                                                     <tbody>
-                                                                        {/* {service.serviceBriefDetails.map((detail, detailIndex) => (
+                                                                        {service.serviceBriefDetails.map((detail, detailIndex) => (
                                                                             <tr key={detailIndex}>
                                                                                 <td>{detailIndex + 1}</td>
                                                                                 <td>{detail.employeeName}</td>
@@ -428,7 +430,7 @@ function ServiceAnalysis() {
                                                                                 <td>₹ {formatSalary(detail.remaining.toFixed(2))}</td>
                                                                                 <td>₹ {formatSalary(detail.average.toFixed(2))}</td>
                                                                             </tr>
-                                                                        ))} */}
+                                                                        ))}
                                                                     </tbody>
                                                                 </table>
                                                             </div>
