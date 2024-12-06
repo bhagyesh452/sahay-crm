@@ -5,6 +5,7 @@ function CurrentMonthLeadsReport({ employeeData }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+    const [selectedMonthOption, setSelectedMonthOption] = useState('This Month');
     const [interestedLeads, setInterestedLeads] = useState(0);
     const [followUpLeads, setFollowUpLeads] = useState(0);
     const [forwardedLeads, setForwardedLeads] = useState(0);
@@ -12,7 +13,11 @@ function CurrentMonthLeadsReport({ employeeData }) {
 
     const fetchCurrentMonthLeadsReport = async () => {
         try {
-            const res = await axios.get(`${secretKey}/employee/currentMonthLeadsReport/${employeeData.ename}`);
+            const res = await axios.get(`${secretKey}/employee/currentMonthLeadsReport/${employeeData.ename}`, {
+                params: {
+                    month: selectedMonthOption,
+                }
+            });
             // console.log("Current month leads report is :", res.data.data);
             setInterestedLeads(res.data.data.interestedLeads);
             setFollowUpLeads(res.data.data.followUpLeads);
@@ -25,15 +30,26 @@ function CurrentMonthLeadsReport({ employeeData }) {
 
     useEffect(() => {
         fetchCurrentMonthLeadsReport();
-    }, [employeeData]);
+    }, [employeeData, selectedMonthOption]);
 
     return (
         <div>
             <div className="dash-card" style={{ minHeight: '299px' }}>
                 <div className="dash-card-head d-flex align-items-center justify-content-between">
                     <h2 className="m-0">
-                        Current Month Leads Report
+                        {selectedMonthOption === "This Month" ? "Current" : "Last"} Month Leads Report
                     </h2>
+
+                    <div className="dash-select-filter">
+                        <select class="form-select form-select-sm my-filter-select"
+                            aria-label=".form-select-sm example"
+                            value={selectedMonthOption}
+                            onChange={(e) => setSelectedMonthOption(e.target.value)}
+                        >
+                            <option value="This Month">This Month</option>
+                            <option value="Last Month">Last Month</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="dash-card-body">

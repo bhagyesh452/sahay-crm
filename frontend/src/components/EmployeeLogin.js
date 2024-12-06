@@ -306,7 +306,6 @@
 // export default EmployeeLogin;
 
 import React, { useEffect, useState, useRef } from "react";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -689,4 +688,3 @@ function EmployeeLogin({ setnewToken }) {
 }
 
 export default EmployeeLogin;
-

@@ -37,8 +37,12 @@ const FilterableTableEmployeeDataReport = ({
                 if (companyInfo) {
                     // Look for each status in the statusCounts array of the companyInfo
                     switch (filterField) {
-                        case 'Untouched':
+                        case 'Untouched': {
                             return companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Untouched')?.count ?? 0;
+                        }
+                        case 'Under Docs': {
+                            return companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Under Docs')?.count ?? 0;
+                        }
                         case 'Busy': {
                             return companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Busy')?.count ?? 0;
                         }
@@ -53,6 +57,9 @@ const FilterableTableEmployeeDataReport = ({
                         }
                         case 'Interested': {
                             return companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Interested')?.count ?? 0;
+                        }
+                        case 'Forwarded': {
+                            return companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Forwarded')?.count ?? 0;
                         }
                         case 'Not Interested': {
                             return companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Not Interested')?.count ?? 0;

@@ -156,7 +156,6 @@ function EmployeeDataReport() {
     };
 
     const mergeEmployeeAndCompanyData = (employeeData, companyData) => {
-
         const merged = employeeData.map(employee => {
             const companyInfo = companyData.find(company => company._id === employee.ename) || {};
 
@@ -1788,6 +1787,40 @@ function EmployeeDataReport() {
                                             </div>
                                         </th>
 
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['Under Docs'] = el}>
+                                                    Under Docs
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('Under Docs') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("Under Docs")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("Under Docs")} />
+                                                    )}
+                                                </div>
+
+                                                {showFilterMenu && activeFilterField === 'Under Docs' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTableEmployeeDataReport
+                                                            filterField={activeFilterField}
+                                                            filteredData={filteredData}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeMergedData}
+                                                            companyData={companyData}
+                                                            dataForFilter={mergedDataForFilter}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            showingMenu={setShowFilterMenu}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+
                                         {/* <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
@@ -2116,6 +2149,39 @@ function EmployeeDataReport() {
                                                     )}
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'Interested' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTableEmployeeDataReport
+                                                            filterField={activeFilterField}
+                                                            filteredData={filteredData}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeMergedData}
+                                                            companyData={companyData}
+                                                            dataForFilter={mergedDataForFilter}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            showingMenu={setShowFilterMenu}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['Forwarded'] = el}>
+                                                    Forwarded
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('Forwarded') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("Forwarded")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("Forwarded")} />
+                                                    )}
+                                                </div>
+                                                {showFilterMenu && activeFilterField === 'Forwarded' && (
                                                     <div
                                                         ref={filterMenuRef}
                                                         className="filter-menu"
@@ -2607,10 +2673,13 @@ function EmployeeDataReport() {
                                             </tr>
                                         ))} */}
 
-                                        {mergedData.map((obj, index) => (
+                                        {mergedData.map((obj, index) => 
+                                        (
                                             <tr key={index}>
+                                                {/* {console.log("Object is :", obj)} */}
                                                 <td>{index + 1}</td>
                                                 <td>{obj.ename}</td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Untouched`}
@@ -2624,6 +2693,21 @@ function EmployeeDataReport() {
                                                         {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
                                                     </Link>
                                                 </td>
+
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/UnderDocs`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Under Docs")?.count || 0}
+                                                    </Link>
+                                                </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Busy`}
@@ -2637,6 +2721,7 @@ function EmployeeDataReport() {
                                                         {obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Not Picked Up`}
@@ -2650,6 +2735,7 @@ function EmployeeDataReport() {
                                                         {obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Junk`}
@@ -2663,6 +2749,7 @@ function EmployeeDataReport() {
                                                         {obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/FollowUp`}
@@ -2676,6 +2763,7 @@ function EmployeeDataReport() {
                                                         {obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Interested`}
@@ -2689,6 +2777,21 @@ function EmployeeDataReport() {
                                                         {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
                                                     </Link>
                                                 </td>
+
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Forwarded`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Forwarded")?.count || 0}
+                                                    </Link>
+                                                </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Not Interested`}
@@ -2702,6 +2805,7 @@ function EmployeeDataReport() {
                                                         {obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Matured`}
@@ -2715,6 +2819,7 @@ function EmployeeDataReport() {
                                                         {obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/complete`}
@@ -2728,6 +2833,7 @@ function EmployeeDataReport() {
                                                         {obj.totalLeads?.toLocaleString()}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     {formatDateFinal(obj.lastAssignDate)}
                                                     <OpenInNewIcon
@@ -2744,6 +2850,7 @@ function EmployeeDataReport() {
                                                         }}
                                                     />
                                                 </td>
+
                                             </tr>
                                         ))}
                                     </tbody>
@@ -2830,6 +2937,9 @@ function EmployeeDataReport() {
                                                     {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0), 0).toLocaleString()}
                                                 </td>
                                                 <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Under Docs")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
                                                     {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0), 0).toLocaleString()}
                                                 </td>
                                                 <td>
@@ -2843,6 +2953,9 @@ function EmployeeDataReport() {
                                                 </td>
                                                 <td>
                                                     {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Forwarded")?.count || 0), 0).toLocaleString()}
                                                 </td>
                                                 <td>
                                                     {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0), 0).toLocaleString()}

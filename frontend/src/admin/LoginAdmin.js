@@ -1,7 +1,6 @@
 // import React from "react";
 // import axios from "axios";
 // import { useState , useEffect } from "react";
-
 // import "../dist/css/tabler.min.css?1684106062";
 // import "../dist/css/tabler-flags.min.css?1684106062";
 // import "../dist/css/tabler-payments.min.css?1684106062";
@@ -18,7 +17,6 @@
 //   useEffect(() => {
 //     document.title = `Admin-Sahay-CRM`;
 //   }, []);
-
 
 //   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -40,8 +38,8 @@
 //     } catch (error) {
 //       console.error("Login failed:", error.message);
 //       setErrorMessage("Incorrect Credentials!");
-//     }
-//   };
+//     }
+//   };
 
 //   return (
 //     <div>
@@ -149,7 +147,6 @@
 // export default LoginAdmin;
 
 import React, { useEffect, useState, useRef } from "react";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Swal from "sweetalert2";

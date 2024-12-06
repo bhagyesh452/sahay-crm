@@ -1840,7 +1840,7 @@ router.get("/floorManagerLeadsReport", async (req, res) => {
     const companyPipeline = [
       {
         $match: {
-          Status: { $in: ["Interested", "FollowUp", "Busy", "Not Picked Up"] },
+          Status: { $in: ["Interested", "FollowUp"] },
           bdmAcceptStatus: { $in: ["NotForwarded", "Pending", "Accept"] },
           ...(start && end ? { AssignDate: { $gte: start, $lte: end } } : {})
         }
