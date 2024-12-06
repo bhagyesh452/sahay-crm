@@ -3497,21 +3497,31 @@ router.post("/projectionstatustoday-no/:userId", async (req, res) => {
 });
 
 router.get("/currentMonthLeadsReport/:employeeName", async (req, res) => {
+
   const { employeeName } = req.params;
+  const { month } = req.query;
 
   try {
     // Get the first and last dates of the current month
     const now = new Date();
-    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    let firstDay, lastDay;
+
+    if (month === "Last Month") {
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      firstDay = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+      lastDay = new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 0);
+    } else {
+      firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    }
 
     // Query the database
     const leads = await LeadsModel.find({
       ename: employeeName,
       Status: { $in: ["Interested", "FollowUp", "Matured"] },
       lastActionDate: {
-        $gte: firstDayOfMonth,
-        $lte: lastDayOfMonth
+        $gte: firstDay,
+        $lte: lastDay
       }
     });
 

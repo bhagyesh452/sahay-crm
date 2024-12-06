@@ -156,7 +156,6 @@ function EmployeeDataReport() {
     };
 
     const mergeEmployeeAndCompanyData = (employeeData, companyData) => {
-console.log("Company data is :", companyData);
         const merged = employeeData.map(employee => {
             const companyInfo = companyData.find(company => company._id === employee.ename) || {};
 
@@ -1788,6 +1787,40 @@ console.log("Company data is :", companyData);
                                             </div>
                                         </th>
 
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['Under Docs'] = el}>
+                                                    Under Docs
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('Under Docs') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("Under Docs")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("Under Docs")} />
+                                                    )}
+                                                </div>
+
+                                                {showFilterMenu && activeFilterField === 'Under Docs' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTableEmployeeDataReport
+                                                            filterField={activeFilterField}
+                                                            filteredData={filteredData}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeMergedData}
+                                                            companyData={companyData}
+                                                            dataForFilter={mergedDataForFilter}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            showingMenu={setShowFilterMenu}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+
                                         {/* <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
@@ -2646,6 +2679,7 @@ console.log("Company data is :", companyData);
                                                 {/* {console.log("Object is :", obj)} */}
                                                 <td>{index + 1}</td>
                                                 <td>{obj.ename}</td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Untouched`}
@@ -2659,6 +2693,21 @@ console.log("Company data is :", companyData);
                                                         {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
                                                     </Link>
                                                 </td>
+
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/UnderDocs`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Under Docs")?.count || 0}
+                                                    </Link>
+                                                </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Busy`}
@@ -2672,6 +2721,7 @@ console.log("Company data is :", companyData);
                                                         {obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Not Picked Up`}
@@ -2685,6 +2735,7 @@ console.log("Company data is :", companyData);
                                                         {obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Junk`}
@@ -2698,6 +2749,7 @@ console.log("Company data is :", companyData);
                                                         {obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/FollowUp`}
@@ -2711,6 +2763,7 @@ console.log("Company data is :", companyData);
                                                         {obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Interested`}
@@ -2724,6 +2777,7 @@ console.log("Company data is :", companyData);
                                                         {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Forwarded`}
@@ -2734,9 +2788,10 @@ console.log("Company data is :", companyData);
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                     >
-                                                        {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
+                                                        {obj.statusCounts?.find((status) => status.status === "Forwarded")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Not Interested`}
@@ -2750,6 +2805,7 @@ console.log("Company data is :", companyData);
                                                         {obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/Matured`}
@@ -2763,6 +2819,7 @@ console.log("Company data is :", companyData);
                                                         {obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     <Link
                                                         to={`/employeereport/${obj.ename}/complete`}
@@ -2776,6 +2833,7 @@ console.log("Company data is :", companyData);
                                                         {obj.totalLeads?.toLocaleString()}
                                                     </Link>
                                                 </td>
+
                                                 <td>
                                                     {formatDateFinal(obj.lastAssignDate)}
                                                     <OpenInNewIcon
@@ -2792,6 +2850,7 @@ console.log("Company data is :", companyData);
                                                         }}
                                                     />
                                                 </td>
+
                                             </tr>
                                         ))}
                                     </tbody>
@@ -2878,6 +2937,9 @@ console.log("Company data is :", companyData);
                                                     {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0), 0).toLocaleString()}
                                                 </td>
                                                 <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Under Docs")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
                                                     {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0), 0).toLocaleString()}
                                                 </td>
                                                 <td>
@@ -2891,6 +2953,9 @@ console.log("Company data is :", companyData);
                                                 </td>
                                                 <td>
                                                     {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Forwarded")?.count || 0), 0).toLocaleString()}
                                                 </td>
                                                 <td>
                                                     {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0), 0).toLocaleString()}

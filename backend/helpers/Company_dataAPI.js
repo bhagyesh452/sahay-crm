@@ -3052,23 +3052,104 @@ router.get("/get-bde-name-for-mybookings/:companyName", async (req, res) => {
   }
 });
 
+// router.get("/fetchLeads", async (req, res) => {
+//   try {
+//     // Aggregating the data based on ename and status
+//     const data = await CompanyModel.aggregate([
+//       {
+//         $match: {
+//           ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             ename: "$ename",
+//             status: "$Status",
+//           },
+//           count: { $sum: 1 },
+//           lastAssignDate: { $max: "$AssignDate" }, // Get the latest AssignDate for each ename
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: "$_id.ename",
+//           statusCounts: {
+//             $push: {
+//               status: "$_id.status",
+//               count: "$count",
+//             },
+//           },
+//           totalLeads: { $sum: "$count" },
+//           lastAssignDate: { $max: "$lastAssignDate" },
+//         },
+//       },
+//       {
+//         $sort: { _id: 1 }, // Sort by ename
+//       },
+//     ]);
+
+//     res.send(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 router.get("/fetchLeads", async (req, res) => {
   try {
-    // Aggregating the data based on ename and status
     const data = await CompanyModel.aggregate([
       {
         $match: {
-          ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
+          ename: { $ne: "Not Alloted" }, // Filter out "Not Alloted"
+        },
+      },
+      {
+        $addFields: {
+          statusCategory: {
+            $switch: {
+              branches: [
+                {
+                  case: { $and: [{ $eq: ["$Status", "Interested"] }, { $eq: ["$bdmAcceptStatus", "NotForwarded"] }] },
+                  then: "Interested",
+                },
+                {
+                  case: { $and: [{ $eq: ["$Status", "FollowUp"] }, { $eq: ["$bdmAcceptStatus", "NotForwarded"] }] },
+                  then: "FollowUp",
+                },
+                {
+                  case: {
+                    $and: [
+                      { $in: ["$Status", ["Interested", "FollowUp"]] },
+                      { $in: ["$bdmAcceptStatus", ["Accept", "Pending"]] },
+                    ],
+                  },
+                  then: "Forwarded",
+                },
+                { case: { $eq: ["$Status", "Untouched"] }, then: "Untouched" },
+                { case: { $eq: ["$Status", "Busy"] }, then: "Busy" },
+                { case: { $eq: ["$Status", "Not Picked Up"] }, then: "Not Picked Up" },
+                { case: { $eq: ["$Status", "Junk"] }, then: "Junk" },
+                { case: { $eq: ["$Status", "Not Interested"] }, then: "Not Interested" },
+                { case: { $eq: ["$Status", "Matured"] }, then: "Matured" },
+                {
+                  case: { $in: ["$Status", ["Docs/Info Sent (W&E)", "Docs/Info Sent (W)", "Docs/Info Sent (E)"]] },
+                  then: "Under Docs",
+                },
+              ],
+              default: "Other",
+            },
+          },
         },
       },
       {
         $group: {
           _id: {
             ename: "$ename",
-            status: "$Status",
+            statusCategory: "$statusCategory",
           },
           count: { $sum: 1 },
-          lastAssignDate: { $max: "$AssignDate" }, // Get the latest AssignDate for each ename
+          lastAssignDate: { $max: "$AssignDate" }, // Get the latest AssignDate
         },
       },
       {
@@ -3076,12 +3157,25 @@ router.get("/fetchLeads", async (req, res) => {
           _id: "$_id.ename",
           statusCounts: {
             $push: {
-              status: "$_id.status",
+              status: "$_id.statusCategory",
               count: "$count",
             },
           },
-          totalLeads: { $sum: "$count" },
           lastAssignDate: { $max: "$lastAssignDate" },
+        },
+      },
+      {
+        $addFields: {
+          // Calculate total leads by summing up counts from statusCounts
+          totalLeads: {
+            $sum: {
+              $map: {
+                input: "$statusCounts",
+                as: "item",
+                in: "$$item.count",
+              },
+            },
+          },
         },
       },
       {
@@ -3095,6 +3189,7 @@ router.get("/fetchLeads", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 // Fetch data for forwarded and received cases :
 router.get("/fetchForwardedLeads", async (req, res) => {
