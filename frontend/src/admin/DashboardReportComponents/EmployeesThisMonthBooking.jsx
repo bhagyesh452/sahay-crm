@@ -225,11 +225,137 @@ function EmployeesThisMonthBooking() {
         return totalCount;
     }
     const functionCalculateGeneralRevenue = () => {
+        let totalCount = 0;
+        const todayDate = new Date();
+        const tempStartDate = new Date(generalStartDate);
+        const tempEndDate = new Date(generalEndDate);
+        tempStartDate.setHours(0, 0, 0, 0);
+        tempEndDate.setHours(0, 0, 0, 0);
+        redesignedData.map((mainBooking) => {
+            let date = new Date(mainBooking.bookingDate);
+            date.setHours(0, 0, 0, 0);
+            let condition = tempStartDate <= date && tempEndDate >= date
+            if (condition) {
+                totalCount += Math.floor(mainBooking.receivedAmount);
+            }
+            else if (mainBooking.remainingPayments.length !== 0) {
+                mainBooking.remainingPayments.map((remainingObj) => {
+                    let date2 = new Date(remainingObj.paymentDate);
+                    date2.setHours(0, 0, 0, 0);
+                    let conditionMore = tempStartDate <= date2 && tempEndDate >= date2
+                    if (conditionMore) {
+                        totalCount += Math.floor(remainingObj.receivedPayment);
+                    }
+
+                })
+
+            }
+            mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                let date = new Date(moreObject.bookingDate);
+                date.setHours(0, 0, 0, 0);
+                let condition2 = tempStartDate <= date && tempEndDate >= date
+                if (condition2) {
+                    totalCount += Math.floor(moreObject.receivedAmount);
+                } else if (moreObject.remainingPayments.length !== 0) {
+                    moreObject.remainingPayments.map((remainingObj) => {
+                        let date2 = new Date(remainingObj.paymentDate);
+                        date2.setHours(0, 0, 0, 0);
+                        let conditionMore = tempStartDate <= date2 && tempEndDate >= date2
+                        if (conditionMore) {
+                            totalCount += Math.floor(remainingObj.receivedPayment);
+                        }
+
+                    })
+
+                }
+            })
+
+        })
+
+        return totalCount;
     }
     const functionCalculateGeneralRemaining = () => {
+        let totalCount = 0;
+        const todayDate = new Date();
+        const tempStartDate = new Date(generalStartDate);
+        const tempEndDate = new Date(generalEndDate);
+        tempStartDate.setHours(0, 0, 0, 0);
+        tempEndDate.setHours(0, 0, 0, 0);
+        redesignedData.map((mainBooking) => {
+
+            if (mainBooking.remainingPayments.length !== 0) {
+                mainBooking.remainingPayments.map((remainingObj) => {
+                    let date = new Date(remainingObj.paymentDate);
+                    date.setHours(0, 0, 0, 0);
+                    let condition = tempStartDate <= date && tempEndDate >= date
+                    if (condition) {
+                        totalCount += Math.floor(remainingObj.receivedPayment);
+                    }
+
+                })
+
+            }
+            mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                if (moreObject.remainingPayments.length !== 0) {
+                    moreObject.remainingPayments.map((remainingObj) => {
+                        let date2 = new Date(remainingObj.paymentDate);
+                        date2.setHours(0, 0, 0, 0);
+                        let conditionMore = tempStartDate <= date2 && tempEndDate >= date2
+                        if (conditionMore) {
+                            totalCount += Math.floor(remainingObj.receivedPayment);
+                        }
+
+                    })
+
+                }
+            })
+
+        })
+
+        return totalCount;
     }
     const functionCalculateGeneralAdvanced = () => {
+        let totalCount = 0;
+        const todayDate = new Date();
+        const tempStartDate = new Date(generalStartDate);
+        const tempEndDate = new Date(generalEndDate);
+        tempStartDate.setHours(0, 0, 0, 0);
+        tempEndDate.setHours(0, 0, 0, 0);
+        redesignedData.map((mainBooking) => {
+            let date = new Date(mainBooking.bookingDate);
+            date.setHours(0, 0, 0, 0);
+
+            let condition = tempStartDate <= date && tempEndDate >= date
+            if (condition) {
+                mainBooking.services.forEach((service) => {
+                    if (service.paymentTerms === "Full Advanced") {
+                        totalCount += Math.floor(service.totalPaymentWGST);
+                    } else {
+                        totalCount += Math.floor(service.firstPayment);
+                    }
+                })
+            }
+
+            mainBooking.moreBookings.length !== 0 && mainBooking.moreBookings.map((moreObject) => {
+                let date = new Date(moreObject.bookingDate);
+                date.setHours(0, 0, 0, 0);
+                let condition2 = tempStartDate <= date && tempEndDate >= date
+                if (condition2) {
+                    moreObject.services.forEach((service) => {
+                        if (service.paymentTerms === "Full Advanced") {
+                            totalCount += Math.floor(service.totalPaymentWGST);
+                        } else {
+                            totalCount += Math.floor(service.firstPayment);
+                        }
+                    })
+                }
+            })
+
+        })
+
+        return totalCount;
     }
+
 
 
 
