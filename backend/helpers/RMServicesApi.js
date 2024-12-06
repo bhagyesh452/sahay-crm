@@ -59,7 +59,7 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
   const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
   console.log(command)
 
-  exec(command, (error, stdout, stderr) => {
+  exec(command,{ shell: '/bin/bash' }, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing script: ${error.message}`); 0
       socketIO.emit("test-script-output", {
