@@ -208,6 +208,101 @@ router.get("/redesigned-final-leadData", async (req, res) => {
   }
 });
 
+router.get("/redesigned-final-leadData-tableView", async (req, res) => {
+  try {
+    const { page = 1, limit = 500 } = req.query; // Default page is 1, limit is 500
+    const skip = (page - 1) * limit;
+
+    // Fetch raw data with pagination
+    const bookingsData = await RedesignedLeadformModel.find()
+      .sort({ lastActionDate: -1 }) // Sort by lastActionDate (assumes it exists in the model)
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const allServicesWithDetails = [];
+
+    bookingsData.forEach((booking) => {
+      // Process main booking services
+      booking.services.forEach((service) => {
+        allServicesWithDetails.push({
+          "Company Name": booking["Company Name"],
+          "Company Number": booking["Company Number"],
+          "Company Email": booking["Company Email"],
+          panNumber: booking.panNumber,
+          bdeName: booking.bdeName,
+          bdeEmail: booking.bdeEmail || '',
+          bdmName: booking.bdmName,
+          bdmType: booking.bdmType || 'Close-by',
+          bookingDate: booking.bookingDate,
+          paymentMethod: booking.paymentMethod || '',
+          caCase: booking.caCase || false,
+          caNumber: booking.caNumber || 0,
+          caEmail: booking.caEmail || '',
+          serviceName: service.serviceName || '',
+          totalPaymentWOGST: service.totalPaymentWOGST || 0,
+          totalPaymentWGST: service.totalPaymentWGST || 0,
+          withGST: service.withGST || false,
+          firstPayment: service.firstPayment || 0,
+          secondPayment: service.secondPayment || 0,
+          thirdPayment: service.thirdPayment || 0,
+          fourthPayment: service.fourthPayment || 0,
+          secondPaymentRemarks: service.secondPaymentRemarks || '',
+          thirdPaymentRemarks: service.thirdPaymentRemarks || '',
+          fourthPaymentRemarks: service.fourthPaymentRemarks || '',
+          bookingPublishDate: booking.bookingPublishDate || '',
+        });
+      });
+
+      // Process moreBookings services
+      booking.moreBookings.forEach((moreBooking) => {
+        moreBooking.services.forEach((service) => {
+          allServicesWithDetails.push({
+            "Company Name": booking["Company Name"],
+            "Company Number": booking["Company Number"],
+            "Company Email": booking["Company Email"],
+            panNumber: booking.panNumber,
+            bdeName: moreBooking.bdeName,
+            bdeEmail: moreBooking.bdeEmail || '',
+            bdmName: moreBooking.bdmName,
+            bdmType: moreBooking.bdmType || 'Close-by',
+            bookingDate: moreBooking.bookingDate,
+            paymentMethod: moreBooking.paymentMethod || '',
+            caCase: moreBooking.caCase || false,
+            caNumber: moreBooking.caNumber || 0,
+            caEmail: moreBooking.caEmail || '',
+            serviceName: service.serviceName || '',
+            totalPaymentWOGST: service.totalPaymentWOGST || 0,
+            totalPaymentWGST: service.totalPaymentWGST || 0,
+            withGST: service.withGST || false,
+            firstPayment: service.firstPayment || 0,
+            secondPayment: service.secondPayment || 0,
+            thirdPayment: service.thirdPayment || 0,
+            fourthPayment: service.fourthPayment || 0,
+            secondPaymentRemarks: service.secondPaymentRemarks || '',
+            thirdPaymentRemarks: service.thirdPaymentRemarks || '',
+            fourthPaymentRemarks: service.fourthPaymentRemarks || '',
+            bookingPublishDate: moreBooking.bookingPublishDate || '',
+          });
+        });
+      });
+    });
+
+    // Sort the processed data by bookingDate in descending order
+    allServicesWithDetails.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+
+    const totalCount = await RedesignedLeadformModel.countDocuments(); // Total number of documents for pagination
+
+    res.status(200).json({
+      totalCount,
+      data: allServicesWithDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
+});
+
+
 router.get("/admin-redesigned-final-leadData", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;

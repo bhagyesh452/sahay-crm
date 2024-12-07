@@ -1,61 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { FaList } from "react-icons/fa6";
-import { FaTableCellsLarge } from "react-icons/fa6";
-import ClipLoader from "react-spinners/ClipLoader";
-import { MdDelete } from "react-icons/md";
-import Swal from "sweetalert2";
-import { MdOutlineSwapHoriz } from "react-icons/md";
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-// import '../../assets/table.css';
-// import '../../assets/styles.css';
+import React, { useState, useEffect, useRef } from "react";
+import { ClipLoader } from "react-spinners";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
+import FilterableComponentEmployee from "../employeeComp/ExtraComponents/FilterableComponentEmployee";
 
-function BookingsTableView({
-
-    tabelViewState,
-    listViewState,
-    listViewOpen,
-    tableViewOpen,
-}) {
-    // const [openTableView, setOpenTableView] = useState(false)
-    // const [openListView, setOpenListView] = useState(true)
-    const [currentDataLoading, setCurrentDataLoading] = useState(false)
-    const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
+function BookingsTableView({ tableViewOpen }) {
+    const [currentPage, setCurrentPage] = useState(1);
+    
+    const [fetchedBookingsData, setFetchedBookingsData] = useState([]);
+    const [dataToFilter, setDataToFilter] = useState([]);
+    const [completeBookingsData, setCompleteBookingsData] = useState([]);
+    const [itemsPerPage, setItemsPerPage] = useState(500);
+    const [searchText, setSearchText] = useState(""); // State for search input
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const navigate = useNavigate();
+
     useEffect(() => {
         document.title = `AdminHead-Sahay-CRM`;
     }, []);
 
-    const handleViewTable = () => {
-        // tabelViewState(true)
-        // listViewState(false)
-        navigate(`/md/bookings`);
-    }
     const allServicesWithDetails = [];
 
     const { data: bookingsData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
         queryKey: ["bookingsData"],
         queryFn: async () => {
-
-            // Normalize searchText by replacing non-breaking spaces with regular spaces
-            //   const normalizedSearchText = searchText.replace(/\u00A0/g, " ");
-
-            const res = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`, {
-
-            });
-            return res.data;
+            const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData-tableView`, {
+                params: { currentPage, limit: itemsPerPage },
+              });
+              console.log(response.data);
+              return response.data;
         },
+        
         keepPreviousData: true,
         refetchOnWindowFocus: false,
-        refetchInterval: 300000,  // Fetch the data after every 5 minutes
-        refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
+        refetchInterval: 300000,
+        refetchIntervalInBackground: true,
     });
 
+    useEffect(() => {
+        setFetchedBookingsData(bookingsData)
+        setDataToFilter(bookingsData)
+        setCompleteBookingsData(bookingsData)
+    }, [bookingsData])
 
+    // Prepare data for rendering
     // Iterate over bookingData
-    bookingsData?.forEach(booking => {
+    fetchedBookingsData?.forEach(booking => {
         // Add services from main booking with booking details
         booking.services.forEach(service => {
             allServicesWithDetails.push({
@@ -122,223 +115,411 @@ function BookingsTableView({
         });
     });
 
-    const handleOpenServices = async (dataToSend) => {
-        try {
-            const response = await axios.post(`${secretKey}/rm-services/post-rmservices-from-listview`, {
-                dataToSend: dataToSend
-            });
-            if (response.status === 200) {
-                // Success response
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    html: 'Bookings Uploaded Successfully.'
-                });
-            } else if (response.status === 400) {
-                // Bad request response
-                Swal.fire({
-                    icon: 'warning', // Exclamation icon
-                    title: 'Warning',
-                    html: response.data.message || 'Service has already been added'
-                });
-            }
-        } catch (error) {
-            // Check if error response is available
-            if (error.response) {
-                if (error.response.status === 500) {
-                    // Internal server error response
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        html: 'Error swapping services'
-                    });
-                } else {
-                    // Other errors
-                    Swal.fire({
-                        icon: 'warning', // Exclamation icon
-                        title: 'Warning',
-                        html: error.response.data.message || 'Failed to upload bookings'
-                    });
-                }
-            } else {
-                // Network or other errors
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    html: 'Failed to upload bookings'
-                });
-            }
+    // Sort data by bookingDate in descending order
+    allServicesWithDetails.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
 
-            console.log("Error sending data", error);
-        }
+    // Filter data based on search input
+    const filteredData = allServicesWithDetails.filter((item) => {
+        return (
+            item["Company Name"].toLowerCase().includes(searchText.toLowerCase()) ||
+            item["Company Number"].toString().includes(searchText) ||
+            item.serviceName.toLowerCase().includes(searchText.toLowerCase())
+        );
+    });
+
+    // Pagination calculations
+    const totalItems = filteredData.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = filteredData.slice(startIndex, endIndex);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
 
+    const renderPagination = () => {
+        const pagination = [];
+        const maxPageButtons = 3;
 
+        if (totalPages <= maxPageButtons) {
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.push(
+                    <li
+                        key={i}
+                        className={`page-item ${currentPage === i ? "active" : ""}`}
+                        onClick={() => handlePageChange(i)}
+                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
+                    >
+                        {i}
+                    </li>
+                );
+            }
+        } else {
+            if (currentPage > 1) {
+                pagination.push(
+                    <li
+                        key="prev"
+                        className="page-item"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
+                    >
+                        &lt;
+                    </li>
+                );
+            }
 
-    console.log(allServicesWithDetails);
-    console.log(bookingsData)
+            if (currentPage > 2) {
+                pagination.push(
+                    <li
+                        key={1}
+                        className="page-item"
+                        onClick={() => handlePageChange(1)}
+                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
+                    >
+                        1
+                    </li>
+                );
 
+                if (currentPage > 3) {
+                    pagination.push(
+                        <li key="dots-prev" style={{ padding: "5px 10px", margin: "0 5px" }}>
+                            ...
+                        </li>
+                    );
+                }
+            }
 
+            const startPage = Math.max(1, currentPage - 1);
+            const endPage = Math.min(totalPages, currentPage + 1);
+
+            for (let i = startPage; i <= endPage; i++) {
+                pagination.push(
+                    <li
+                        key={i}
+                        className={`page-item ${currentPage === i ? "active" : ""}`}
+                        onClick={() => handlePageChange(i)}
+                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
+                    >
+                        {i}
+                    </li>
+                );
+            }
+
+            if (currentPage < totalPages - 1) {
+                if (currentPage < totalPages - 2) {
+                    pagination.push(
+                        <li key="dots-next" style={{ padding: "5px 10px", margin: "0 5px" }}>
+                            ...
+                        </li>
+                    );
+                }
+
+                pagination.push(
+                    <li
+                        key={totalPages}
+                        className="page-item"
+                        onClick={() => handlePageChange(totalPages)}
+                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
+                    >
+                        {totalPages}
+                    </li>
+                );
+            }
+
+            if (currentPage < totalPages) {
+                pagination.push(
+                    <li
+                        key="next"
+                        className="page-item"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
+                    >
+                        &gt;
+                    </li>
+                );
+            }
+        }
+
+        return pagination;
+    };
+
+    const handleViewTableView = () => {
+        navigate(`/md/bookings`);
+    }
+
+    // ------------filter functions------------------
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [isScrollLocked, setIsScrollLocked] = useState(false)
+    //const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [error, setError] = useState('');
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+    //const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [openBacdrop, setOpenBacdrop] = useState(false);
+
+    const [filteredDataNew, setFilteredData] = useState([]);
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [activeFilterField, setActiveFilterField] = useState(null);
+
+    const handleFilter = (newData) => {
+        console.log("newData", newData)
+        setFilteredData(newData)
+        setFetchedBookingsData(newData);
+    };
+
+    const handleFilterClick = async (field) => {
+
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+            setIsScrollLocked(!showFilterMenu);
+        } else {
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+            setIsScrollLocked(true);
+
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+                    setIsScrollLocked(false);
+                }
+            };
+
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+
+    console.log("filteredDataNew", bookingsData);
 
     return (
         <div>
-            <>
-                <div className="booking_list_Filter">
-                    <div className="container-xl">
-                        <div className="row justify-content-between">
-                            <div className="col-2">
-                                <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
-                                    <div class="input-icon">
-                                        <span class="input-icon-addon">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="icon"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                stroke-width="2"
-                                                stroke="currentColor"
-                                                fill="none"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            >
-                                                <path
-                                                    stroke="none"
-                                                    d="M0 0h24v24H0z"
-                                                    fill="none"
-                                                ></path>
-                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                                <path d="M21 21l-6 -6"></path>
-                                            </svg>
-                                        </span>
-                                        <input
-                                            type="text"
-                                            //value={searchText}
-                                            class="form-control"
-                                            placeholder="Search Company"
-                                            aria-label="Search in website"
-                                        //onChange={(e) => setSearchText(e.target.value)}
-                                        />
-                                    </div>
-                                </div>
+            <div className="page-header mt-3">
+                <div className="container-xl">
+                    <div className="d-flex align-items-center justify-content-between">
+                        <div className="d-flex align-items-center">
+                            <div class="input-icon ml-1">
+                                <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                </span>
+                                <input
+                                    // value={searchQuery}
+                                    // onChange={(e) => {
+                                    //     setSearchQuery(e.target.value);
+                                    //     handleSearch(e.target.value)
+                                    //     //handleFilterSearch(e.target.value)
+                                    //     //setCurrentPage(0);
+                                    // }}
+                                    className="form-control search-cantrol mybtn"
+                                    placeholder="Search…"
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
                             </div>
-                            <div className="col-6">
-                                <div className="d-flex justify-content-end">
-                                    <button className="btn btn-primary mr-1" onClick={() => handleViewTable()}>
-                                        Grid View
-                                    </button>
-
-                                </div>
+                        </div>
+                        <div className="d-flex align-items-center">
+                            <div className="btn-group" role="group" aria-label="Basic example">
+                                <button type="button" className="btn btn-primary mr-1" onClick={() => handleViewTableView()}>
+                                    Grid View
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="sales-panels-main no-select container-xl mt-2">
-                            <div className="table table-responsive e-Leadtable-style m-0">
-                                <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
-                                    <thead>
-                                        <tr className="tr-sticky">
-                                            {/* <th className="AEP-sticky-left-1">
-                                                <label className="table-check">
-                                                    <input type="checkbox" />
-                                                    <span className="table_checkmark"></span>
-                                                </label>
-                                            </th> */}
-                                            <th className="rm-sticky-left-1">Sr.No</th>
-                                                <th className="rm-sticky-left-2">Company Name</th>
-                                                <th>Company Number</th>
-                                                <th>SERVICE NAME</th>
-                                                {/* <th>Company Email</th> */}
-                                                {/* <th>PAN NUMBER</th> */}
-                                                <th>BDE NAME</th>
-                                                {/* <th>BDE EMAIL</th> */}
-                                                <th>BDM NAME</th>
-                                                <th>BDM TYPE</th>
-                                                <th>BOOKING DATE</th>
-                                                {/* <th>PAYMENT METHOD</th> */}
-                                                <th>CA CASE</th>
-                                                <th>CA NUMBER</th>
-                                                {/* <th>CA EMAIL</th> */}
-                                                <th>WITH GST</th>
-                                                <th>TOTAL PAYMENT WITHOUT GST</th>
-                                                <th>TOTAL PAYMENT WITH GST</th>
-                                        </tr>
-                                    </thead>
-                                    {isBookingDataLoading ? (
-                                            <tbody>
-                                                <tr>
-                                                    <td colSpan="14" >
-                                                        <div className="LoaderTDSatyle">
-                                                            <ClipLoader
-                                                                color="lightgrey"
-                                                                loading
-                                                                size={30}
-                                                                aria-label="Loading Spinner"
-                                                                data-testid="loader"
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        ) : (
-                                            <tbody>
-                                                {allServicesWithDetails.length !== 0 && allServicesWithDetails.map((obj, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        
-                                                        // className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        >
-                                                        <td className='rm-sticky-left-1 '>{index + 1}</td>
-                                                        <td className='rm-sticky-left-2 '>{obj["Company Name"]}</td>
-                                                        <td >{obj["Company Number"]}</td>
-                                                        <td>{obj.serviceName}</td>
-                                                        {/* <td>{obj["Company Email"]}</td> */}
-                                                        {/* <td>{obj.panNumber}</td> */}
-                                                        <td>{obj.bdeName}</td>
-                                                        {/* <td>{obj.bdeEmail}</td> */}
-                                                        <td>{obj.bdmName}</td>
-                                                        <td>{obj.bdmType}</td>
-                                                        <td>{obj.bookingDate}</td>
-                                                        {/* <td>{obj.paymentMethod}</td> */}
-                                                        <td>{obj.caCase}</td>
-                                                        <td>{obj.caNumber}</td>
-                                                        {/* <td>{obj.caEmail}</td> */}
-                                                        <td>{obj.withGST ? 'Yes' : 'No'}</td>
-                                                        <td>{obj.totalPaymentWOGST}</td>
-                                                        <td>{obj.totalPaymentWGST}</td>
-                                                        {/* <td>{obj.firstPayment}</td>
-                                                        <td>{obj.secondPayment}</td>
-                                                        <td>{obj.thirdPayment}</td>
-                                                        <td>{obj.fourthPayment}</td>
-                                                        <td>{obj.secondRemarks}</td>
-                                                        <td>{obj.thirdRemarks}</td>
-                                                        <td>{obj.fourthRemarks}</td> */}
-                                                        <td>
-                                                            <button className='tbl-action-btn'
-                                                                title="Swap Services">
-                                                                <MdOutlineSwapHoriz onClick={() => (
-                                                                    //setOpenServicesPopup(true),
-                                                                    //setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"])),
-                                                                    handleOpenServices(obj)
-                                                                )} />
-                                                            </button></td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
+            </div>
+            <div className="sales-panels-main no-select container-xl mt-2">
+                <div className="table table-responsive e-Leadtable-style m-0">
+                    <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
+                        <thead>
+                            <tr className="tr-sticky">
+                                <th className="rm-sticky-left-1">Sr.No</th>
+                                <th className="rm-sticky-left-2">
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['Company Name'] = el}>
+                                            Company Name
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('Company Name') ? (
+                                                <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'Company Name' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                />
+                                            </div>
                                         )}
-                                  
-                                    
-                                </table>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['Company Number'] = el}>
+                                            Company Number
+                                        </div>
 
-                            </div>
-                           
-                     
-                   
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('Company Number') ? (
+                                                <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'Company Number' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['serviceName'] = el}>
+                                            Service Name
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('serviceName') ? (
+                                                <FaFilter onClick={() => handleFilterClick("serviceName")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("serviceName")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'serviceName' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableComponentEmployee
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={fetchedBookingsData}
+                                                    refetch={refetchBookingData}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>BDE NAME</th>
+                                <th>BDM NAME</th>
+                                <th>BDM TYPE</th>
+                                <th>BOOKING DATE</th>
+                                <th>CA CASE</th>
+                                <th>CA NUMBER</th>
+                                <th>WITH GST</th>
+                                <th>TOTAL PAYMENT WITHOUT GST</th>
+                                <th>TOTAL PAYMENT WITH GST</th>
+                            </tr>
+                        </thead>
+                        {isBookingDataLoading ? (
+                            <tbody>
+                                <tr>
+                                    <td colSpan="14">
+                                        <div className="LoaderTDSatyle">
+                                            <ClipLoader
+                                                color="lightgrey"
+                                                loading
+                                                size={30}
+                                                aria-label="Loading Spinner"
+                                                data-testid="loader"
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        ) : (
+                            <tbody>
+                                {currentItems.map((obj, index) => (
+                                    <tr key={index}>
+                                        <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
+                                        <td className="rm-sticky-left-2">{obj["Company Name"]}</td>
+                                        <td>{obj["Company Number"]}</td>
+                                        <td>{obj.serviceName}</td>
+                                        <td>{obj.bdeName}</td>
+                                        <td>{obj.bdmName}</td>
+                                        <td>{obj.bdmType}</td>
+                                        <td>{obj.bookingDate}</td>
+                                        <td>{obj.caCase ? "Yes" : "No"}</td>
+                                        <td>{obj.caNumber}</td>
+                                        <td>{obj.withGST ? "Yes" : "No"}</td>
+                                        <td>{obj.totalPaymentWOGST}</td>
+                                        <td>{obj.totalPaymentWGST}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        )}
+                    </table>
                 </div>
-
-            </>
+            </div>
+            <div className="pagination-container ">
+                <ul className="pagination align-items-center justify-content-center mt-2">{renderPagination()}</ul>
+            </div>
         </div>
-    )
+    );
 }
 
 export default BookingsTableView;
