@@ -412,7 +412,7 @@ function EmployeeLogin({ setnewToken }) {
         title: "Success",
         html: `A 6-digit OTP has been sent to <b>${email}</b>`,
       });
-      
+
     } catch (error) {
       setErrorMessage(error.response.data.message || "Error sending OTP.");
     } finally {
@@ -614,7 +614,13 @@ function EmployeeLogin({ setnewToken }) {
                             className="btn btn-primary w-100"
                             disabled={isLoading}
                           >
-                            {isLoading ? "Sending OTP..." : "Send OTP"}
+                            {isLoading ? (
+                              <div className="spinner-border text-grey" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                              </div>
+                            ) : (
+                              "Login"
+                            )}
                           </button>
                         </div>
                       </form>
@@ -651,7 +657,13 @@ function EmployeeLogin({ setnewToken }) {
                             className="btn btn-primary w-100"
                             disabled={isLoading}
                           >
-                            {isLoading ? "Verifying OTP..." : "Verify OTP"}
+                            {isLoading ? (
+                              <div className="spinner-border text-grey" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                              </div>
+                            ) : (
+                              "Verify OTP"
+                            )}
                           </button>
                         </div>
                       </form>

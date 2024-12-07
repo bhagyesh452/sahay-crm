@@ -179,7 +179,7 @@ const EmployeeStatusChange = ({
     setStatusClass(statusClass);
     setOpenBacdrop(true);
 
-    const title = `${ename} changed ${companyName} status from ${companyStatus} to ${newStatus}`;
+    const title = `${ename} changed ${companyName} status from ${newStatus} to ${previousStatus}`;
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();

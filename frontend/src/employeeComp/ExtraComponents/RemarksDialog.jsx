@@ -83,7 +83,7 @@ const RemarksDialog = ({
 
       if (response.status === 200) {
         Swal.fire("Remarks updated!");
-        // refetch();
+        refetch();
         fetchRemarksHistory();
         handleCloseModal();
       } else {

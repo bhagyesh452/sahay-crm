@@ -148,184 +148,180 @@ function EmployeePanelCopy({ fordesignation }) {
 
 
 
-    useEffect(() => {
-        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-            secure: true,
-            path: '/socket.io',
-            reconnection: true,
-            transports: ['websocket'],
-        });
+    // useEffect(() => {
+    //     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+    //         secure: true,
+    //         path: '/socket.io',
+    //         reconnection: true,
+    //         transports: ['websocket'],
+    //     });
 
-        const updateDocumentInState = (updatedDocument) => {
-            //console.log("updatedDocument received via socket:", updatedDocument);
+    //     const updateDocumentInState = (updatedDocument) => {
+    //         //console.log("updatedDocument received via socket:", updatedDocument);
 
-            // Helper function to sort an array by `lastAssignDate` in descending order
-            const sortByLastAssignDate = (array) => {
-                return array.sort((a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate));
-            };
+    //         // Helper function to sort an array by `lastAssignDate` in descending order
+    //         const sortByLastAssignDate = (array) => {
+    //             return array.sort((a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate));
+    //         };
 
-            // Function to remove the document from all arrays
-            const removeFromAllArrays = (docId) => {
-                const arraysToUpdate = [
-                    { setter: setGeneralData, countSetter: setGeneralDataCount },
-                    { setter: setCompleteGeneralData, countSetter: () => { } },
-                    { setter: setDataToFilterGeneral, countSetter: () => { } },
+    //         // Function to remove the document from all arrays
+    //         const removeFromAllArrays = (docId) => {
+    //             const arraysToUpdate = [
+    //                 { setter: setGeneralData, countSetter: setGeneralDataCount },
+    //                 { setter: setCompleteGeneralData, countSetter: () => { } },
+    //                 { setter: setDataToFilterGeneral, countSetter: () => { } },
 
-                    { setter: setUnderDocsData, countSetter: setUnderDocsDataCount },
-                    { setter: setCompleteUnderDocsData, countSetter: () => { } },
-                    { setter: setDataToFilterUnderDocs, countSetter: () => { } },
+    //                 { setter: setUnderDocsData, countSetter: setUnderDocsDataCount },
+    //                 { setter: setCompleteUnderDocsData, countSetter: () => { } },
+    //                 { setter: setDataToFilterUnderDocs, countSetter: () => { } },
 
-                    { setter: setInterestedData, countSetter: setInterestedDataCount },
-                    { setter: setCompleteInterestedData, countSetter: () => { } },
-                    { setter: setDataToFilterInterested, countSetter: () => { } },
+    //                 { setter: setInterestedData, countSetter: setInterestedDataCount },
+    //                 { setter: setCompleteInterestedData, countSetter: () => { } },
+    //                 { setter: setDataToFilterInterested, countSetter: () => { } },
 
-                    { setter: setBusyData, countSetter: setBusyDataCount },
-                    { setter: setCompleteBusyData, countSetter: () => { } },
-                    { setter: setDataToFilterBusy, countSetter: () => { } },
+    //                 { setter: setBusyData, countSetter: setBusyDataCount },
+    //                 { setter: setCompleteBusyData, countSetter: () => { } },
+    //                 { setter: setDataToFilterBusy, countSetter: () => { } },
 
-                    { setter: setMaturedData, countSetter: setMaturedDataCount },
-                    { setter: setCompleteMaturedData, countSetter: () => { } },
-                    { setter: setDataToFilterMatured, countSetter: () => { } },
+    //                 { setter: setMaturedData, countSetter: setMaturedDataCount },
+    //                 { setter: setCompleteMaturedData, countSetter: () => { } },
+    //                 { setter: setDataToFilterMatured, countSetter: () => { } },
 
-                    { setter: setNotInterestedData, countSetter: setNotInterestedDataCount },
-                    { setter: setCompleteNotInterestedData, countSetter: () => { } },
-                    { setter: setDataToFilterNotInterested, countSetter: () => { } },
+    //                 { setter: setNotInterestedData, countSetter: setNotInterestedDataCount },
+    //                 { setter: setCompleteNotInterestedData, countSetter: () => { } },
+    //                 { setter: setDataToFilterNotInterested, countSetter: () => { } },
                     
-                    { setter: setForwardedData, countSetter: setForwardedDataCount },
-                    { setter: setCompleteForwardedData, countSetter: () => { } },
-                    { setter: setDataToFilterForwarded, countSetter: () => { } },
-                ];
+    //                 { setter: setForwardedData, countSetter: setForwardedDataCount },
+    //                 { setter: setCompleteForwardedData, countSetter: () => { } },
+    //                 { setter: setDataToFilterForwarded, countSetter: () => { } },
+    //             ];
 
-                arraysToUpdate.forEach(({ setter, countSetter }) => {
-                    setter((prevData) => {
-                        const updatedData = prevData.filter((item) => item._id !== docId);
-                        countSetter(updatedData.length); // Update the count if applicable
-                        return updatedData;
-                    });
-                });
-            };
+    //             arraysToUpdate.forEach(({ setter, countSetter }) => {
+    //                 setter((prevData) => {
+    //                     const updatedData = prevData.filter((item) => item._id !== docId);
+    //                     countSetter(updatedData.length); // Update the count if applicable
+    //                     return updatedData;
+    //                 });
+    //             });
+    //         };
 
-            // Function to update a specific data array and its corresponding count
-            const updateArrayAndCount = (setter, countSetter, updatedDocument) => {
-                setter((prevData) => {
-                    const index = prevData.findIndex((item) => item._id === updatedDocument._id);
-                    let updatedArray;
-                    if (index !== -1) {
-                        prevData[index] = updatedDocument; // Update the document if it exists
-                        updatedArray = [...prevData];
-                    } else {
-                        updatedArray = [...prevData, updatedDocument]; // Add the new document
-                    }
-                    countSetter(updatedArray.length); // Update the count
-                    return sortByLastAssignDate(updatedArray); // Sort by `lastAssignDate`
-                });
-            };
+    //         // Function to update a specific data array and its corresponding count
+    //         const updateArrayAndCount = (setter, countSetter, updatedDocument) => {
+    //             setter((prevData) => {
+    //                 const index = prevData.findIndex((item) => item._id === updatedDocument._id);
+    //                 let updatedArray;
+    //                 if (index !== -1) {
+    //                     prevData[index] = updatedDocument; // Update the document if it exists
+    //                     updatedArray = [...prevData];
+    //                 } else {
+    //                     updatedArray = [...prevData, updatedDocument]; // Add the new document
+    //                 }
+    //                 countSetter(updatedArray.length); // Update the count
+    //                 return sortByLastAssignDate(updatedArray); // Sort by `lastAssignDate`
+    //             });
+    //         };
 
-            // Update data and count based on status
-            const updateDataByStatus = () => {
-                switch (updatedDocument.Status) {
-                    case "Untouched":
-                        updateArrayAndCount(setGeneralData, setGeneralDataCount, updatedDocument);
-                        updateArrayAndCount(setCompleteGeneralData, () => { }, updatedDocument);
-                        updateArrayAndCount(setDataToFilterGeneral, () => { }, updatedDocument);
-                        break;
+    //         // Update data and count based on status
+    //         const updateDataByStatus = () => {
+    //             switch (updatedDocument.Status) {
+    //                 case "Untouched":
+    //                     updateArrayAndCount(setGeneralData, setGeneralDataCount, updatedDocument);
+    //                     updateArrayAndCount(setCompleteGeneralData, () => { }, updatedDocument);
+    //                     updateArrayAndCount(setDataToFilterGeneral, () => { }, updatedDocument);
+    //                     break;
 
-                    case "Interested":
-                    case "FollowUp":
-                        updateArrayAndCount(setInterestedData, setInterestedDataCount, updatedDocument);
-                        updateArrayAndCount(setCompleteInterestedData, () => { }, updatedDocument);
-                        updateArrayAndCount(setDataToFilterInterested, () => { }, updatedDocument);
-                        break;
+    //                 case "Interested":
+    //                 case "FollowUp":
+    //                     updateArrayAndCount(setInterestedData, setInterestedDataCount, updatedDocument);
+    //                     updateArrayAndCount(setCompleteInterestedData, () => { }, updatedDocument);
+    //                     updateArrayAndCount(setDataToFilterInterested, () => { }, updatedDocument);
+    //                     break;
 
-                    case "Busy":
-                    case "Not Picked Up":
-                        updateArrayAndCount(setBusyData, setBusyDataCount, updatedDocument);
-                        updateArrayAndCount(setCompleteBusyData, () => { }, updatedDocument);
-                        updateArrayAndCount(setDataToFilterBusy, () => { }, updatedDocument);
-                        break;
+    //                 case "Busy":
+    //                 case "Not Picked Up":
+    //                     updateArrayAndCount(setBusyData, setBusyDataCount, updatedDocument);
+    //                     updateArrayAndCount(setCompleteBusyData, () => { }, updatedDocument);
+    //                     updateArrayAndCount(setDataToFilterBusy, () => { }, updatedDocument);
+    //                     break;
 
-                    case "Matured":
-                        updateArrayAndCount(setMaturedData, setMaturedDataCount, updatedDocument);
-                        updateArrayAndCount(setCompleteMaturedData, () => { }, updatedDocument);
-                        updateArrayAndCount(setDataToFilterMatured, () => { }, updatedDocument);
-                        break;
+    //                 case "Matured":
+    //                     updateArrayAndCount(setMaturedData, setMaturedDataCount, updatedDocument);
+    //                     updateArrayAndCount(setCompleteMaturedData, () => { }, updatedDocument);
+    //                     updateArrayAndCount(setDataToFilterMatured, () => { }, updatedDocument);
+    //                     break;
 
-                    case "Not Interested":
-                    case "Junk":
-                        updateArrayAndCount(setNotInterestedData, setNotInterestedDataCount, updatedDocument);
-                        updateArrayAndCount(setCompleteNotInterestedData, () => { }, updatedDocument);
-                        updateArrayAndCount(setDataToFilterNotInterested, () => { }, updatedDocument);
-                        break;
+    //                 case "Not Interested":
+    //                 case "Junk":
+    //                     updateArrayAndCount(setNotInterestedData, setNotInterestedDataCount, updatedDocument);
+    //                     updateArrayAndCount(setCompleteNotInterestedData, () => { }, updatedDocument);
+    //                     updateArrayAndCount(setDataToFilterNotInterested, () => { }, updatedDocument);
+    //                     break;
 
-                    case "Forwarded":
-                        updateArrayAndCount(setForwardedData, setForwardedDataCount, updatedDocument);
-                        updateArrayAndCount(setCompleteForwardedData, () => { }, updatedDocument);
-                        updateArrayAndCount(setDataToFilterForwarded, () => { }, updatedDocument);
-                        break;
+    //                 case "Forwarded":
+    //                     updateArrayAndCount(setForwardedData, setForwardedDataCount, updatedDocument);
+    //                     updateArrayAndCount(setCompleteForwardedData, () => { }, updatedDocument);
+    //                     updateArrayAndCount(setDataToFilterForwarded, () => { }, updatedDocument);
+    //                     break;
 
-                    case "Docs/Info Sent (W)":
-                    case "Docs/Info Sent (E)":
-                    case "Docs/Info Sent (W&E)":
-                        updateArrayAndCount(setUnderDocsData, setUnderDocsDataCount, updatedDocument);
-                        updateArrayAndCount(setCompleteUnderDocsData, () => { }, updatedDocument);
-                        updateArrayAndCount(setDataToFilterUnderDocs, () => { }, updatedDocument);
-                        break;
+    //                 case "Docs/Info Sent (W)":
+    //                 case "Docs/Info Sent (E)":
+    //                 case "Docs/Info Sent (W&E)":
+    //                     updateArrayAndCount(setUnderDocsData, setUnderDocsDataCount, updatedDocument);
+    //                     updateArrayAndCount(setCompleteUnderDocsData, () => { }, updatedDocument);
+    //                     updateArrayAndCount(setDataToFilterUnderDocs, () => { }, updatedDocument);
+    //                     break;
 
-                    default:
-                        console.warn(`Unhandled Status: ${updatedDocument.Status}`);
-                }
-            };
+    //                 default:
+    //                     console.warn(`Unhandled Status: ${updatedDocument.Status}`);
+    //             }
+    //         };
 
-            // Workflow: Remove from all arrays, then update relevant arrays
-            removeFromAllArrays(updatedDocument._id);
-            updateDataByStatus();
-        };
+    //         // Workflow: Remove from all arrays, then update relevant arrays
+    //         removeFromAllArrays(updatedDocument._id);
+    //         updateDataByStatus();
+    //     };
 
-        // socket.on("employee_lead_status_successfull_update", (res) => {
-        //     //console.log("socket response:", res);
+    //     // socket.on("employee_lead_status_successfull_update", (res) => {
+    //     //     //console.log("socket response:", res);
 
-        //     // Safely extract and compare `ename` fields
-        //     const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
-        //     const dataEname = (data.ename || "").toString().trim().toLowerCase();
+    //     //     // Safely extract and compare `ename` fields
+    //     //     const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
+    //     //     const dataEname = (data.ename || "").toString().trim().toLowerCase();
 
-        //     if (updatedEname === dataEname) {
-        //         //console.log("Updating document in state:", res.updatedDocument);
-        //         updateDocumentInState(res.updatedDocument);
-        //     }
-        // });
+    //     //     if (updatedEname === dataEname) {
+    //     //         //console.log("Updating document in state:", res.updatedDocument);
+    //     //         updateDocumentInState(res.updatedDocument);
+    //     //     }
+    //     // });
 
-        socket.on("employee__nextfollowupdate_successfull_update", (res) => {
-            //console.log("socket response:", res);
+    //     socket.on("employee__nextfollowupdate_successfull_update", (res) => {
+    //         //console.log("socket response:", res);
 
-            // Safely extract and normalize `ename` for comparison
-            const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
-            const dataEname = (data.ename || "").toString().trim().toLowerCase();
+    //         // Safely extract and normalize `ename` for comparison
+    //         const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
+    //         const dataEname = (data.ename || "").toString().trim().toLowerCase();
 
-            if (updatedEname === dataEname) {
-                //console.log("Updating document in state:", res.updatedDocument);
-                updateDocumentInState(res.updatedDocument);
-            }
-        });
+    //         if (updatedEname === dataEname) {
+    //             //console.log("Updating document in state:", res.updatedDocument);
+    //             updateDocumentInState(res.updatedDocument);
+    //         }
+    //     });
 
-        socket.on("employee__remarks_successfull_update", (res) => {
-            const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
-            const dataEname = (data.ename || "").toString().trim().toLowerCase();
+    //     socket.on("employee__remarks_successfull_update", (res) => {
+    //         const updatedEname = (res.updatedDocument?.ename || "").toString().trim().toLowerCase();
+    //         const dataEname = (data.ename || "").toString().trim().toLowerCase();
 
-            if (updatedEname === dataEname) {
-                // console.log("Match found. Updating document in state:", res.updatedDocument);
-                updateDocumentInState(res.updatedDocument);
-            }
-        });
-
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [data.ename]);
+    //         if (updatedEname === dataEname) {
+    //             // console.log("Match found. Updating document in state:", res.updatedDocument);
+    //             updateDocumentInState(res.updatedDocument);
+    //         }
+    //     });
 
 
-
-
+    //     return () => {
+    //         socket.disconnect();
+    //     };
+    // }, [data.ename]);
 
     const formatBdeForwardDate = (dateString) => {
         if (!dateString) return "";
