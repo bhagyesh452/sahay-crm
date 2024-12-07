@@ -389,14 +389,17 @@ app.post("/api/sendOtp/admin", async (req, res) => {
 
 // Verify email and password before sending OTP
 app.post("/api/verifyCredentials", async (req, res) => {
-  const { email, password } = req.body;
-console.log(email,password)
+  const { email, password , designations } = req.body;
+console.log(email,password,designations)
 
   try {
-    const user = await adminModel.findOne({ email, password }).lean().select('email password ');
+    const user = await adminModel
+      .findOne({ email, password, designation: { $in: designations } }) // Use $in for multiple designations
+      .lean()
+      .select("email password designation");
     console.log("user", user)
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password or designation" });
     } else {
       res.status(200).json({ message: "Credentials verified" });
     }

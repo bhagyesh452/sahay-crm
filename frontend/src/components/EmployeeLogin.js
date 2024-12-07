@@ -389,12 +389,15 @@ function EmployeeLogin({ setnewToken }) {
       return;
     }
 
+    const allowedDesignations = ["Sales Executive"]; // Allowed designations
+
     setIsLoading(true);
     try {
       // Verify email and password first
       const response = await axios.post(`${secretKey}/verifyCredentials`, {
         email,
         password,
+        designations: allowedDesignations, // Send array of designations
       });
 
       // If credentials are valid, send OTP
@@ -682,7 +685,13 @@ function EmployeeLogin({ setnewToken }) {
                           <span>{errorMessage}</span>
                         </div>
                         <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
-                          {isLoading ? "Submitting..." : "Submit"}
+                          {isLoading ? (
+                            <div className="spinner-border text-grey" role="status">
+                              <span className="visually-hidden">Loading...</span>
+                            </div>
+                          ) : (
+                            "Submit"
+                          )}
                         </button>
                       </form>
                     )}
