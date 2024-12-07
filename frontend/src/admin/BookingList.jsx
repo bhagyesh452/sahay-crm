@@ -37,6 +37,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { FaCircleChevronLeft } from "react-icons/fa6";
 import { FaCircleChevronRight } from "react-icons/fa6";
 import BookingsTableView from "./BookingsTableView.jsx";
+import { useNavigate } from "react-router-dom";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -66,6 +67,7 @@ function BookingList() {
   const [totalPages, setTotalPages] = useState(1); // Track total pages from backend
   const [leadFormData, setLeadFormData] = useState([]);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
+  const navigate = useNavigate();
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
@@ -85,26 +87,26 @@ function BookingList() {
     return strTime;
   };
   const fetchDatadebounce = async () => {
-    try {
-      // Set isLoading to true while fetching data
-      //setIsLoading(true);
-      //setCurrentDataLoading(true)
+    // try {
+    //   // Set isLoading to true while fetching data
+    //   //setIsLoading(true);
+    //   //setCurrentDataLoading(true)
 
-      const response = await axios.get(`${secretKey}/company-data/leads`);
+    //   const response = await axios.get(`${secretKey}/company-data/leads`);
 
-      // Set the retrieved data in the state
-      setData(response.data);
-      //setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
+    //   // Set the retrieved data in the state
+    //   setData(response.data);
+    //   //setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
 
-      // Set isLoading back to false after data is fetched
-      //setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-      // Set isLoading back to false if an error occurs
-      //setIsLoading(false);
-    } finally {
-      setCurrentDataLoading(false);
-    }
+    //   // Set isLoading back to false after data is fetched
+    //   //setIsLoading(false);
+    // } catch (error) {
+    //   console.error("Error fetching data:", error.message);
+    //   // Set isLoading back to false if an error occurs
+    //   //setIsLoading(false);
+    // } finally {
+    //   setCurrentDataLoading(false);
+    // }
   };
 
   useEffect(() => {
@@ -136,28 +138,7 @@ function BookingList() {
   //   }
   // };
 
-  // useEffect(() => {
-  //   console.log("Current Company Name:", currentCompanyName);
-
-  //   if (currentCompanyName === "") {
-  //     setCurrentLeadform(leadFormData[0]);
-  //     if (leadFormData.length !== 0) {
-  //       setisDeletedStatus(leadFormData[0].isDeletedEmployeeCompany);
-  //       setCurrentBdeName(leadFormData[0].bdeName);
-  //       functionToGetBdeName(leadFormData[0]["Company Name"]);
-  //     }
-  //   } else {
-  //     const foundLeadForm = leadFormData.find(obj => obj["Company Name"] === currentCompanyName);
-  //     if (foundLeadForm) {
-  //       setCurrentLeadform(foundLeadForm);
-  //       setisDeletedStatus(foundLeadForm.isDeletedEmployeeCompany);
-  //       setCurrentBdeName(foundLeadForm.bdeName);
-  //       functionToGetBdeName(foundLeadForm["Company Name"]);
-  //     } else {
-  //       console.log(`Company "${currentCompanyName}" not found in formData.`);
-  //     }
-  //   }
-  // }, [leadFormData, currentCompanyName]);
+ 
 
   // Searching and Pagination from back end :
   const { data: bookingData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
@@ -232,118 +213,7 @@ function BookingList() {
   };
 
 
-  // Searching and Pagination from front end :
-  // const { data: bookingData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
-  //   queryKey: ["bookingData"],
-  //   queryFn: async () => {
-  //     const res = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
-  //     return res.data;
-  //   },
-  //   keepPreviousData: true,
-  //   refetchOnWindowFocus: false,
-  //   refetchInterval: 300000,  // Fetch the data after every 5 minutes
-  //   refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
-  // });
-
-  // console.log("Booking data is :", data);
-
-  // const fetchRedesignedFormData = useCallback(() => {
-  //   // setOpenBacdrop(true);
-  //   // try {
-  //   //   const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
-  //   //   const sortedData = response.data.sort((a, b) => {
-  //   //     const dateA = new Date(a.lastActionDate);
-  //   //     const dateB = new Date(b.lastActionDate);
-  //   //     return dateB - dateA; // Sort in descending order
-  //   //   });
-  //   //   setInfiniteBooking(sortedData);
-  //   //   setLeadFormData(sortedData); // Set both states with the sorted data
-  //   // } catch (error) {
-  //   //   console.error("Error fetching data:", error.message);
-  //   // } finally {
-  //   //   setOpenBacdrop(false);
-  //   // }
-
-  //   // Set backdrop loader based on loading state
-  //   if (isBookingDataLoading) {
-  //     setOpenBacdrop(true);
-  //   } else {
-  //     setOpenBacdrop(false);
-  //   }
-
-  //   // Log error if there’s an issue fetching data
-  //   if (isBookingDataError) {
-  //     console.log("Error fetching data:", isBookingDataError);
-  //     setOpenBacdrop(false);
-  //   }
-
-  //   // Check if bookingData and bookingData.data are defined before proceeding
-  //   // if (bookingData) {
-  //   //   const sortedData = bookingData.sort((a, b) => {
-  //   //     const dateA = new Date(a.lastActionDate);
-  //   //     const dateB = new Date(b.lastActionDate);
-  //   //     return dateB - dateA; // Sort in descending order
-  //   //   });
-
-  //   //   // Paginate the sorted data
-  //   //   const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
-
-  //   //   setLeadFormData(paginatedData); // Update state with paginated data
-  //   //   setInfiniteBooking(bookingData); // Set only the current page data
-
-  //   if (bookingData) {
-  //     // Filter data based on search text if available
-  //     const filteredData = searchText
-  //       ? bookingData.filter((obj) => obj["Company Name"].toLowerCase().includes(searchText.toLowerCase()))
-  //       : bookingData;
-
-  //     // Sort filtered data
-  //     const sortedData = filteredData.sort((a, b) => {
-  //       const dateA = new Date(a.lastActionDate);
-  //       const dateB = new Date(b.lastActionDate);
-  //       return dateB - dateA;
-  //     });
-
-  //     // Paginate sorted data
-  //     const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
-
-  //     setLeadFormData(paginatedData); // Update state with paginated data
-  //     setInfiniteBooking(sortedData); // Store all filtered data in infiniteBooking for reference
-  //   } else {
-  //     setLeadFormData([]); // Set to an empty array if no data
-  //     setInfiniteBooking([]);
-  //   }
-  // }, [bookingData, searchText, page, isBookingDataLoading, isBookingDataError]);
-
-  // useEffect(() => {
-  //   // fetchRedesignedFormData();
-  // }, [nowToFetch, bookingData, searchText, page, isBookingDataLoading, isBookingDataError]);
-
-  // useEffect(() => {
-  //   // if (data.companyName) {
-  //   //   console.log("Company Found");
-  //   fetchDatadebounce();
-  //   // fetchRedesignedFormData();
-  //   // } else {
-  //   //   console.log("No Company Found");
-  //   // }
-  // }, []);
-
-  // useEffect(() => {
-  //   setLeadFormData(infiniteBooking.filter((obj) => obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())));
-  // }, [searchText]);
-
-  // const handleNext = () => {
-  //   if (page < Math.ceil((searchText ? infiniteBooking?.length : bookingData?.length || 0) / pageSize)) {
-  //     setPage(prev => prev + 1);
-  //   }
-  // };
-
-  // const handlePrev = () => {
-  //   if (page > 1) {
-  //     setPage(prev => prev - 1);
-  //   }
-  // };
+  
 
   const functionOpenBookingForm = () => {
     setBookingFormOpen(true);
@@ -814,23 +684,15 @@ function BookingList() {
   };
 
   // ------------------------for list view and table view---------------------
-  const [openTableView, setOpenTableView] = useState(false)
-  const [openListView, setOpenListView] = useState(true)
   const handleViewTableView = () => {
-    setOpenTableView(true)
-    setOpenListView(false)
-  }
-
-  const handleViewListView = () => {
-    setOpenListView(true)
-    setOpenTableView(false)
+    navigate(`/md/bookings/tabelView`);
   }
 
   //console.log(leadFormData);
 
   return (
     <div>
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !openTableView && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
@@ -3706,20 +3568,7 @@ function BookingList() {
           </div>
         </div>
       )}
-
-
-      {/* ---------------openListView---------------------------- */}
-      {openTableView && (
-        <>
-          <BookingsTableView
-            tabelViewState={setOpenTableView}
-            listViewState={setOpenListView}
-            listViewOpen={openListView}
-            tableViewOpen={openTableView} />
-        </>
-
-      )}
-
+      
       {/* --------------------------------backedrop------------------------- */}
       {openBacdrop && (
         <Backdrop

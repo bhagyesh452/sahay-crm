@@ -151,6 +151,7 @@ import MaterialUIPickers from "./components/MaterialUIPickers.js";
 import "../src/assets/v2_style.css"
 import "../src/assets/hover.css"
 import "../src/assets/sales_new_style.css"
+import BookingsTableView from "./admin/BookingsTableView.jsx";
 
 function App() {
 
@@ -300,6 +301,7 @@ function App() {
             <Route path="/md/leads" element={<TestLeads />} />
             <Route path="/md/leads/:companyId" element={<CompanyParticular />} />
             <Route path="/md/bookings" element={<BookingList />} />
+            <Route path="/md/bookings/tabelView" element={<BookingsTableView />} />
             <Route path="/md/notification" element={<ShowNotification />} />
             <Route path="/md/bookings/Addbookings" element={<RedesignedForm />} />
             {/* <Route path="/md/servicesandschemes" element={<Services />} /> */}
