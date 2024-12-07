@@ -36,6 +36,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { FaCircleChevronLeft } from "react-icons/fa6";
 import { FaCircleChevronRight } from "react-icons/fa6";
+import BookingsTableView from "./BookingsTableView.jsx";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -812,11 +813,24 @@ function BookingList() {
     }
   };
 
+  // ------------------------for list view and table view---------------------
+  const [openTableView, setOpenTableView] = useState(false)
+  const [openListView, setOpenListView] = useState(true)
+  const handleViewTableView = () => {
+    setOpenTableView(true)
+    setOpenListView(false)
+  }
+
+  const handleViewListView = () => {
+    setOpenListView(true)
+    setOpenTableView(false)
+  }
+
   //console.log(leadFormData);
 
   return (
     <div>
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !openTableView && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
@@ -860,6 +874,9 @@ function BookingList() {
                 </div>
                 <div className="col-6">
                   <div className="d-flex justify-content-end">
+                    <button className="btn btn-primary mr-1" onClick={() => handleViewTableView()}>
+                      List View
+                    </button>
                     <button
                       className="btn btn-primary mr-1"
                       onClick={functionopenpopup}
@@ -3688,6 +3705,19 @@ function BookingList() {
             </div>
           </div>
         </div>
+      )}
+
+
+      {/* ---------------openListView---------------------------- */}
+      {openTableView && (
+        <>
+          <BookingsTableView
+            tabelViewState={setOpenTableView}
+            listViewState={setOpenListView}
+            listViewOpen={openListView}
+            tableViewOpen={openTableView} />
+        </>
+
       )}
 
       {/* --------------------------------backedrop------------------------- */}
