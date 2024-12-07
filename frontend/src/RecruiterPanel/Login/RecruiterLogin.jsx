@@ -276,6 +276,7 @@ function RecruiterLogin({ setRecruiterToken }) {
             const response = await axios.post(`${secretKey}/verifyCredentials`, {
                 email,
                 password,
+                designations: ["HR Recruiter"]
             });
 
             // If credentials are valid, send OTP
@@ -288,7 +289,7 @@ function RecruiterLogin({ setRecruiterToken }) {
                 icon: "success",
                 title: "Success",
                 html: `A 6-digit OTP has been sent to <b>${email}</b>`,
-              });
+            });
         } catch (error) {
             setErrorMessage(error.response.data.message || "Error sending OTP.");
         } finally {
@@ -459,7 +460,13 @@ function RecruiterLogin({ setRecruiterToken }) {
                                                         className="btn btn-primary w-100"
                                                         disabled={isLoading}
                                                     >
-                                                        {isLoading ? "Sending OTP..." : "Send OTP"}
+                                                        {isLoading ? (
+                                                            <div className="spinner-border text-grey" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            "Login"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </form>
@@ -496,7 +503,13 @@ function RecruiterLogin({ setRecruiterToken }) {
                                                         className="btn btn-primary w-100"
                                                         disabled={isLoading}
                                                     >
-                                                        {isLoading ? "Verifying OTP..." : "Verify OTP"}
+                                                        {isLoading ? (
+                                                            <div className="spinner-border text-grey" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            "Verify OTP"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </form>
@@ -515,7 +528,13 @@ function RecruiterLogin({ setRecruiterToken }) {
                                                     <span>{errorMessage}</span>
                                                 </div>
                                                 <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
-                                                    {isLoading ? "Submitting..." : "Submit"}
+                                                    {isLoading ? (
+                                                        <div className="spinner-border text-grey" role="status">
+                                                            <span className="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    ) : (
+                                                        "Submit"
+                                                    )}
                                                 </button>
                                             </form>
                                         )}
