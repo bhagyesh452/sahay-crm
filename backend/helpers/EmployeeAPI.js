@@ -3569,4 +3569,62 @@ router.get("/currentMonthLeadsReport/:employeeName", async (req, res) => {
   }
 });
 
+router.get("/monthWisePerformanceReport", async (req, res) => {
+  const { branch, months, year, employees } = req.query;
+
+  // Get current month and year by default
+  const currentDate = new Date();
+  const currentMonth = currentDate.toLocaleString("default", { month: "long" });
+  const currentYear = currentDate.getFullYear();
+
+  try {
+    const data = await adminModel.find();
+
+    // Filter for relevant designations
+    let employeesPerformanceData = data
+      .filter(employee => 
+        employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
+      )
+      .map(employee => ({
+        name: employee.ename,
+        branch: employee.branchOffice,
+        performance: employee.targetDetails,
+      }));
+
+    // Apply filters based on query parameters
+    if (branch) {
+      employeesPerformanceData = employeesPerformanceData.filter(employee => 
+        employee.branch === branch
+      );
+    }
+
+    if (months || year) {
+      const filterMonths = Array.isArray(months) ? months : [months || currentMonth]; // Handle single or multiple months;
+      const filterYear = year ? year : currentYear;
+
+      employeesPerformanceData = employeesPerformanceData.map(employee => ({
+        ...employee,
+        performance: employee.performance.filter(perf => 
+          filterMonths.includes(perf.month) && perf.year === filterYear
+        ),
+      })).filter(employee => employee.performance.length > 0); // Remove employees with no performance data
+    }
+
+    if (employees) {
+      const selectedEmployeeNames = Array.isArray(employees) 
+        ? employees 
+        : [employees]; // Handle single or multiple employees in query
+
+      employeesPerformanceData = employeesPerformanceData.filter(employee => 
+        selectedEmployeeNames.includes(employee.name)
+      );
+    }
+
+    res.status(200).json({ result: true, message: "Performance report fetched successfully", data: employeesPerformanceData });
+  } catch (error) {
+    console.error("Error fetching month-wise performance report:", error);
+    res.status(500).json({result: false, message: "Error fetching month-wise performance report", error: error.message});
+  }
+});
+
 module.exports = router;

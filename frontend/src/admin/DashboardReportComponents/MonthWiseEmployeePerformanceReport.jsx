@@ -12,25 +12,29 @@ import FormControl from '@mui/material/FormControl';
 function MonthWiseEmployeePerformanceReport() {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    
+
     const monthsArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
+
     // Get the current month as the default
     const currentMonth = new Date().toLocaleString("default", { month: "long" });
 
     const [employeeData, setEmployeeData] = useState([]);
     const [selectedEmployees, setSelectedEmployees] = useState([]);
-    const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [selectedMonths, setSelectedMonths] = useState([currentMonth]);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [selectedBranch, setSelectedBranch] = useState("");
     const [empPerformanceData, setEmpPerformanceData] = useState([]);
-    const [currentDataLoading, setCurrentDataLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const yearsArray = [];
     for (let i = 2023; i <= new Date().getFullYear(); i++) {
         yearsArray.push(i);
     }
+
+    const formatAmount = (amount) => {
+        return new Intl.NumberFormat('en-IN').format(amount);
+    };
 
     const theme = useTheme();
     const ITEM_HEIGHT = 48;
@@ -69,6 +73,27 @@ function MonthWiseEmployeePerformanceReport() {
         fetchEmployeeData();
     }, []);
 
+    const fetchEmployeePerformanceReport = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/employee/monthWisePerformanceReport`, {
+                params: {
+                    branch: selectedBranch,
+                    months: selectedMonths,
+                    year: selectedYear,
+                    employees: selectedEmployees
+                }
+            });
+            console.log("Performance data is :", res.data.data);
+            setEmpPerformanceData(res.data.data);
+        } catch (error) {
+            console.log("Error fetching performance data", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchEmployeePerformanceReport();
+    }, [selectedBranch, selectedMonths, selectedYear, selectedEmployees]);
+
     return (
 
         <div className="mt-3">
@@ -83,9 +108,6 @@ function MonthWiseEmployeePerformanceReport() {
 
                     <div className="d-flex align-items-center pr-1">
                         <div className="filter-booking mr-1 d-flex align-items-center">
-                            <div className="filter-title mr-1">
-                                <h2 className="m-0">Filter Branch :</h2>
-                            </div>
                             <div className="filter-main">
                                 <select
                                     className="form-select"
@@ -96,7 +118,7 @@ function MonthWiseEmployeePerformanceReport() {
                                     <option value="" disabled selected>Select Branch</option>
                                     <option value={"Gota"}>Gota</option>
                                     <option value={"Sindhu Bhawan"}>Sindhu Bhawan</option>
-                                    <option value={"none"}>None</option>
+                                    <option value="">None</option>
                                 </select>
                             </div>
                         </div>
@@ -106,16 +128,29 @@ function MonthWiseEmployeePerformanceReport() {
                                 <h2 className="m-0">Select Month :</h2>
                             </div>
                             <div className="filter-main">
-                                <select
-                                    className="form-select"
-                                    id={`branch-filter`}
-                                    value={selectedMonth}
-                                    onChange={(e) => setSelectedMonth(e.target.value)}
-                                >
-                                    {monthsArray.map((month, index) => (
-                                        <option key={index} value={month}>{month}</option>
-                                    ))}
-                                </select>
+                                <FormControl sx={{ ml: 1, minWidth: 200 }}>
+                                    <InputLabel id="demo-select-small-label">Select Month</InputLabel>
+                                    <Select
+                                        className="form-control my-date-picker my-mul-select form-control-sm p-0"
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        multiple
+                                        value={selectedMonths}
+                                        onChange={(e) => setSelectedMonths(e.target.value)}
+                                        input={<OutlinedInput label="Name" />}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {monthsArray.map((month) => (
+                                            <MenuItem
+                                                key={month}
+                                                value={month}
+                                                style={getStyles(month, selectedMonths, theme)}
+                                            >
+                                                {month}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </div>
                         </div>
 
@@ -178,7 +213,9 @@ function MonthWiseEmployeePerformanceReport() {
                                 <tr>
                                     <th>Sr. No</th>
                                     <th>Name</th>
+                                    <th>Branch</th>
                                     <th>Month</th>
+                                    <th>Year</th>
                                     <th>Target</th>
                                     <th>Achievement</th>
                                     <th>Ratio</th>
@@ -186,14 +223,14 @@ function MonthWiseEmployeePerformanceReport() {
                                 </tr>
                             </thead>
 
-                            {currentDataLoading ? (
-                                <tbody>
+                            <tbody>
+                                {isLoading ? (
                                     <tr>
-                                        <td colSpan="7" >
-                                            <div className="LoaderTDSatyle w-100" >
+                                        <td colSpan="9">
+                                            <div className="LoaderTDSatyle w-100">
                                                 <ClipLoader
                                                     color="lightgrey"
-                                                    currentDataLoading
+                                                    isLoading
                                                     size={30}
                                                     aria-label="Loading Spinner"
                                                     data-testid="loader"
@@ -201,82 +238,68 @@ function MonthWiseEmployeePerformanceReport() {
                                             </div>
                                         </td>
                                     </tr>
-                                </tbody>
-                            ) : (
-                                <>
-                                    {/* <tbody>
-                      {filteredData.length > 0 ? (
-                        filteredData.map((employee, index) => {
-                          const filteredTargetDetails = employee.targetDetails.filter((perData) => {
-    
-                            const monthYear = new Date(perData.year, new Date(Date.parse(perData.month + " 1, 2020")).getMonth(), 1);
-                            const currentMonthYear = new Date(currentYear, new Date(Date.parse(currentMonth + " 1, 2020")).getMonth(), 1);
-                            return monthYear <= currentMonthYear;
-                          }).sort((a, b) => {
-                            // Sort by year first, then by month in descending order
-                            if (b.year !== a.year) {
-                              return b.year - a.year;
-                            } else {
-                              return new Date(Date.parse(b.month + " 1, 2020")) - new Date(Date.parse(a.month + " 1, 2020"));
-                            }
-                          });
-    
-                          if (filteredTargetDetails.length === 0) return null;
-    
-                          return (
-                            <React.Fragment key={employee._id}>
-                              <tr onClick={() => toggleEmployeeDetails(employee._id)} style={{ cursor: 'pointer' }}>
-                                <td>{index + 1}</td>
-    
-                                <td>{employee.ename}</td>
-    
-                                <td>{filteredTargetDetails.length}</td>
-    
-                                <td>₹ {new Intl.NumberFormat('en-IN').format(
-                                  targetAmount = filteredTargetDetails.reduce((total, obj) => total + parseFloat(obj.amount || 0), 0)
-                                )}</td>
-    
-                                <td>₹ {new Intl.NumberFormat('en-IN').format(
-                                  achievedAmount = Math.floor(filteredTargetDetails.reduce((achieved, obj) => achieved + parseFloat(obj.achievedAmount || 0), 0))
-                                )}</td>
-    
-                                <td>{Math.round((achievedAmount / targetAmount) * 100)}%</td>
-    
-                                <td>{(() => {
-                                //   const ratio = Math.round((achievedAmount / targetAmount) * 100);
-                                //   if (ratio >= 250) return "Exceptional";
-                                //   if (ratio >= 200) return "Outstanding";
-                                //   if (ratio >= 150) return "Extraordinary";
-                                //   if (ratio >= 100) return "Excellent";
-                                //   if (ratio >= 75) return "Good";
-                                //   if (ratio >= 61) return "Average";
-                                //   if (ratio >= 41) return "Below Average";
-                                //   return "Poor";
-                                })()}</td>
-                              </tr>
-                            </React.Fragment>
-                          );
-                        })
-                      ) : (
-                        <tr>
-                          <td colSpan="7" className="text-center"><Nodata /></td>
-                        </tr>
-                      )}
-                    </tbody> */}
+                                ) : empPerformanceData.length > 0 ? (
+                                    empPerformanceData.map((employee, empIndex) => (
+                                        employee.performance.map((performance, perfIndex) => (
+                                            <tr key={`${empIndex}-${perfIndex}`}>
+                                                <td>{empIndex + 1}</td>
+                                                <td>{employee.name}</td>
+                                                <td>{employee.branch}</td>
+                                                <td>{performance.month}</td>
+                                                <td>{performance.year}</td>
+                                                <td>₹ {formatAmount(performance.amount)}</td>
+                                                <td>₹ {formatAmount(performance.achievedAmount)}</td>
+                                                <td>{Math.round(performance.ratio)}%</td>
+                                                <td>{performance.result}</td>
+                                            </tr>
+                                        ))
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="9" className="text-center"><Nodata /></td>
+                                    </tr>
+                                )}
+                            </tbody>
 
+                            {empPerformanceData.length > 0 && (() => {
+                                // Calculate total target, achievement, and ratio
+                                const totalTarget = empPerformanceData.reduce(
+                                    (total, employee) => total + employee.performance.reduce((sum, perf) => sum + Number(perf.amount || 0), 0),
+                                    0
+                                );
+                                
+                                const totalAchievement = empPerformanceData.reduce(
+                                    (total, employee) => total + employee.performance.reduce((sum, perf) => sum + Number(perf.achievedAmount || 0), 0),
+                                    0
+                                );
+
+                                const avgRatio = (totalAchievement / totalTarget) * 100;
+
+                                // Determine result based on the average ratio
+                                const result = (() => {
+                                    if (avgRatio >= 250) return "Exceptional";
+                                    if (avgRatio >= 200) return "Outstanding";
+                                    if (avgRatio >= 150) return "Extraordinary";
+                                    if (avgRatio >= 100) return "Excellent";
+                                    if (avgRatio >= 75) return "Good";
+                                    if (avgRatio >= 61) return "Average";
+                                    if (avgRatio >= 41) return "Below Average";
+                                    return "Poor";
+                                })();
+
+                                // Render the table footer
+                                return (
                                     <tfoot className="admin-dash-tbl-tfoot">
                                         <tr style={{ fontWeight: 500 }}>
-                                            <td colSpan="1">Total</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                            <td>-</td>
+                                            <td colSpan="5">Total</td>
+                                            <td>₹ {formatAmount(totalTarget)}</td>
+                                            <td>₹ {formatAmount(totalAchievement)}</td>
+                                            <td>{Math.round(avgRatio)}%</td>
+                                            <td>{result}</td>
                                         </tr>
                                     </tfoot>
-                                </>
-                            )}
+                                );
+                            })()}
 
                         </table>
                     </div>
