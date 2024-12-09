@@ -25,7 +25,7 @@
 // const fetchData = async () => {
 //     try {
 //       const response = await axios.get(`${secretKey}/employee/einfo/${email}/${password}`);
-      
+
 //       setData(response.data);
 //       setRmCertificationUserId(response.data._id)
 //       setDesignation(response.data.designation)
@@ -102,7 +102,7 @@
 //                                         <input
 //                                             onChange={(e)=>{
 //                                                 setEmail(e.target.value)
-                                                
+
 //                                             }}
 //                                             type="email"
 //                                             className="form-control"
@@ -317,6 +317,7 @@ function RMofCertification({ setrmofcertificationToken }) {
             const response = await axios.post(`${secretKey}/verifyCredentials`, {
                 email,
                 password,
+                designations: ["RM-Certification"]
             });
 
             // If credentials are valid, send OTP
@@ -329,7 +330,7 @@ function RMofCertification({ setrmofcertificationToken }) {
                 icon: "success",
                 title: "Success",
                 html: `A 6-digit OTP has been sent to <b>${email}</b>`,
-              });
+            });
         } catch (error) {
             setErrorMessage(error.response.data.message || "Error sending OTP.");
         } finally {
@@ -386,8 +387,8 @@ function RMofCertification({ setrmofcertificationToken }) {
                 designation
             })
 
-            const { rmofcertificationToken ,rmCertificationUserId , ename } = response.data
-            console.log(rmofcertificationToken ,rmCertificationUserId , ename)
+            const { rmofcertificationToken, rmCertificationUserId, ename } = response.data
+            console.log(rmofcertificationToken, rmCertificationUserId, ename)
             setrmofcertificationToken(rmofcertificationToken)
             localStorage.setItem("RMOfCertificationName", ename)
             localStorage.setItem("rmofcertificationToken", rmofcertificationToken)
@@ -500,7 +501,13 @@ function RMofCertification({ setrmofcertificationToken }) {
                                                         className="btn btn-primary w-100"
                                                         disabled={isLoading}
                                                     >
-                                                        {isLoading ? "Sending OTP..." : "Send OTP"}
+                                                        {isLoading ? (
+                                                            <div className="spinner-border text-grey" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            "Login"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </form>
@@ -537,7 +544,13 @@ function RMofCertification({ setrmofcertificationToken }) {
                                                         className="btn btn-primary w-100"
                                                         disabled={isLoading}
                                                     >
-                                                        {isLoading ? "Verifying OTP..." : "Verify OTP"}
+                                                        {isLoading ? (
+                                                            <div className="spinner-border text-grey" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            "Verify OTP"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </form>
@@ -556,7 +569,13 @@ function RMofCertification({ setrmofcertificationToken }) {
                                                     <span>{errorMessage}</span>
                                                 </div>
                                                 <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
-                                                    {isLoading ? "Submitting..." : "Submit"}
+                                                    {isLoading ? (
+                                                        <div className="spinner-border text-grey" role="status">
+                                                            <span className="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    ) : (
+                                                        "Submit"
+                                                    )}
                                                 </button>
                                             </form>
                                         )}

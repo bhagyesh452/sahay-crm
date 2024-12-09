@@ -4837,3 +4837,9 @@ div#table-default td {
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+.spinner-border {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 2px;
+}

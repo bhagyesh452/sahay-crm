@@ -51,7 +51,7 @@ function EmployeeUnderDocsLeads({
     filteredData,
     //handleFilter,
     completeUnderDocsData,
-    // dataToFilter,
+    dataToFilter,
     setUnderDocsData,
     setFilteredData,
     activeFilterField,
@@ -87,7 +87,7 @@ function EmployeeUnderDocsLeads({
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
     const [openBacdrop, setOpenBacdrop] = useState(false);
-    const [dataToFilter, setDataToFilter] = useState([]);
+    //const [dataToFilter, setDataToFilter] = useState([]);
 
     //const [filteredData, setFilteredData] = useState([]);
     const nextPage = () => {
@@ -114,28 +114,28 @@ function EmployeeUnderDocsLeads({
 
 
     const handleFilterClick = async(field) => {
-        if (filteredData.length === 0) {
-            try {
-                const response = await axios.get(
-                    `${secretKey}/company-data/employees-underdocs/${cleanString(ename)}`, // Backend API endpoint
-                    {
-                        params: {
-                            limit: 500, // Adjust the limit as required
-                            // search: searchQuery, // Pass the search query if applicable
-                        },
-                    }
-                );
+        // if (filteredData.length === 0) {
+        //     try {
+        //         const response = await axios.get(
+        //             `${secretKey}/company-data/employees-underdocs/${cleanString(ename)}`, // Backend API endpoint
+        //             {
+        //                 params: {
+        //                     limit: 500, // Adjust the limit as required
+        //                     // search: searchQuery, // Pass the search query if applicable
+        //                 },
+        //             }
+        //         );
 
-                const { underdocsData } = response.data;
-                console.log("interestedData", underdocsData)
-                // setDataToFilter(underdocsData);
-                setDataToFilter(underdocsData); // Update data based on the response
-            } catch (error) {
-                console.error("Error fetching Interested data:", error);
-                // Handle error appropriately
-            }
+        //         const { underdocsData } = response.data;
+        //         console.log("interestedData", underdocsData)
+        //         // setDataToFilter(underdocsData);
+        //         setDataToFilter(underdocsData); // Update data based on the response
+        //     } catch (error) {
+        //         console.error("Error fetching Interested data:", error);
+        //         // Handle error appropriately
+        //     }
 
-        }
+        // }
         if (activeFilterField === field) {
             setShowFilterMenu(!showFilterMenu);
             setIsScrollLocked(!showFilterMenu);
@@ -186,110 +186,110 @@ function EmployeeUnderDocsLeads({
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
-    useEffect(() => {
-        const fetchAndSaveCallHistory = async () => {
-          console.log("Fetching and processing call history...");
+    // useEffect(() => {
+    //     const fetchAndSaveCallHistory = async () => {
+    //       console.log("Fetching and processing call history...");
     
-          try {
-            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-            const url = "https://api1.callyzer.co/v2/call-log/history";
+    //       try {
+    //         const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+    //         const url = "https://api1.callyzer.co/v2/call-log/history";
     
-            // Extract company numbers from generalData
-            const companyNumbers = underDocsData?.map((company) => String(company["Company Number"]));
+    //         // Extract company numbers from generalData
+    //         const companyNumbers = underDocsData?.map((company) => String(company["Company Number"]));
     
-            if (!companyNumbers || companyNumbers.length === 0) {
-              console.warn("No company numbers available for fetching call history.");
-              return;
-            }
+    //         if (!companyNumbers || companyNumbers.length === 0) {
+    //           console.warn("No company numbers available for fetching call history.");
+    //           return;
+    //         }
     
-            const body = {
-              call_from: startTimestamp,
-              call_to: endTimestamp,
-              call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
-              client_numbers: companyNumbers,
-            };
+    //         const body = {
+    //           call_from: startTimestamp,
+    //           call_to: endTimestamp,
+    //           call_types: ["Missed", "Rejected", "Incoming", "Outgoing"],
+    //           client_numbers: companyNumbers,
+    //         };
     
-            // Fetch call history from the API
-            const response = await fetch(url, {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${apiKey}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(body),
-            });
+    //         // Fetch call history from the API
+    //         const response = await fetch(url, {
+    //           method: "POST",
+    //           headers: {
+    //             Authorization: `Bearer ${apiKey}`,
+    //             "Content-Type": "application/json",
+    //           },
+    //           body: JSON.stringify(body),
+    //         });
     
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-            }
+    //         if (!response.ok) {
+    //           const errorData = await response.json();
+    //           throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+    //         }
     
-            const callHistoryData = await response.json();
-            console.log("Fetched call history data:", callHistoryData.result);
+    //         const callHistoryData = await response.json();
+    //         console.log("Fetched call history data:", callHistoryData.result);
     
-            // Match call history with companies
-            const callHistoryMap = {};
-            callHistoryData?.result.forEach((call) => {
-              const number = call.client_number;
+    //         // Match call history with companies
+    //         const callHistoryMap = {};
+    //         callHistoryData?.result.forEach((call) => {
+    //           const number = call.client_number;
     
-              console.log("Processing call for client_number:", number);
+    //           console.log("Processing call for client_number:", number);
     
-              const matchedCompany = underDocsData?.find((company) => {
-                const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
-                const clientNumber = String(number || "").trim().toLowerCase();
-                return companyNumber === clientNumber;
-              });
+    //           const matchedCompany = underDocsData?.find((company) => {
+    //             const companyNumber = String(company["Company Number"] || "").trim().toLowerCase();
+    //             const clientNumber = String(number || "").trim().toLowerCase();
+    //             return companyNumber === clientNumber;
+    //           });
     
-              if (matchedCompany) {
-                if (!callHistoryMap[number]) {
-                  callHistoryMap[number] = [];
-                }
-                callHistoryMap[number].push(call);
-              }
-            });
+    //           if (matchedCompany) {
+    //             if (!callHistoryMap[number]) {
+    //               callHistoryMap[number] = [];
+    //             }
+    //             callHistoryMap[number].push(call);
+    //           }
+    //         });
     
-            console.log("callHistoryMap:", callHistoryMap);
+    //         console.log("callHistoryMap:", callHistoryMap);
     
-            // Save matched call history to database
-            const updatedGeneralData = await Promise.all(
-                underDocsData.map(async (company) => {
-                    const companyNumber = String(company["Company Number"]);
-                    const callHistoryForCompany = callHistoryMap[companyNumber] || [];
+    //         // Save matched call history to database
+    //         const updatedGeneralData = await Promise.all(
+    //             underDocsData.map(async (company) => {
+    //                 const companyNumber = String(company["Company Number"]);
+    //                 const callHistoryForCompany = callHistoryMap[companyNumber] || [];
 
-                    // Save to the database if there is call history
-                    if (callHistoryForCompany.length > 0) {
-                        try {
-                            await axios.post(`${secretKey}/remarks/save-client-call-history`, {
-                                client_number: companyNumber,
-                                callHistoryData: callHistoryForCompany,
-                            });
-                            console.log(`Call history for company ${companyNumber} saved successfully.`);
-                        } catch (err) {
-                            console.error(`Error saving call history for ${companyNumber}:`, err.response?.data || err.message);
-                        }
-                    } else {
-                        console.log(`No call history to save for company ${companyNumber}.`);
-                    }
+    //                 // Save to the database if there is call history
+    //                 if (callHistoryForCompany.length > 0) {
+    //                     try {
+    //                         await axios.post(`${secretKey}/remarks/save-client-call-history`, {
+    //                             client_number: companyNumber,
+    //                             callHistoryData: callHistoryForCompany,
+    //                         });
+    //                         console.log(`Call history for company ${companyNumber} saved successfully.`);
+    //                     } catch (err) {
+    //                         console.error(`Error saving call history for ${companyNumber}:`, err.response?.data || err.message);
+    //                     }
+    //                 } else {
+    //                     console.log(`No call history to save for company ${companyNumber}.`);
+    //                 }
 
-                    // Update local busyData with call history
-                    return {
-                        ...company,
-                        callHistoryData: callHistoryForCompany,
-                    };
-                })
-            );
+    //                 // Update local busyData with call history
+    //                 return {
+    //                     ...company,
+    //                     callHistoryData: callHistoryForCompany,
+    //                 };
+    //             })
+    //         );
 
-            // Update the generalData state with enriched data
-            setUnderDocsData(updatedGeneralData);
+    //         // Update the generalData state with enriched data
+    //         setUnderDocsData(updatedGeneralData);
     
-            console.log("All call history saved successfully.");
-          } catch (err) {
-            console.error("Error fetching and saving call history:", err);
-          }
-        };
+    //         console.log("All call history saved successfully.");
+    //       } catch (err) {
+    //         console.error("Error fetching and saving call history:", err);
+    //       }
+    //     };
     
-        fetchAndSaveCallHistory();
-      }, [underDocsData]);
+    //     fetchAndSaveCallHistory();
+    //   }, [underDocsData]);
 
     // console.log("activeFilterFieldsUnderDocs", activeFilterFields)
     // console.log("underDocsData" , underDocsData)

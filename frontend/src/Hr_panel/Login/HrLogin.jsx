@@ -21,7 +21,7 @@
 // //     const[errorMessage , setErrorMessage] = useState("")
 // //     const [ename , setEname] = useState("")
 // //     const [hrUserId, setHrUserId] = useState(null)
-   
+
 // //     useEffect(() => {
 // //         document.title = `HR-Sahay-CRM`;
 // //       }, []);
@@ -48,7 +48,7 @@
 // //       }, [email, password]);
 
 
-    
+
 
 // //     const handleSubmit = async(e) => {
 // //         e.preventDefault()
@@ -231,8 +231,8 @@ function HrLogin({ setHrToken }) {
     const [captchaText, setCaptchaText] = useState("");
     const [userInput, setUserInput] = useState("");
     const canvasRef = useRef(null);
-    
-   
+
+
     const intervalRef = useRef(null); // Ref to store the timer interval
     const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
     const [timeLeft, setTimeLeft] = useState(60); // Timer starts at 180 seconds (3 minutes)
@@ -319,6 +319,7 @@ function HrLogin({ setHrToken }) {
             const response = await axios.post(`${secretKey}/verifyCredentials`, {
                 email,
                 password,
+                designations: ["HR"],
             });
 
             // If credentials are valid, send OTP
@@ -331,7 +332,7 @@ function HrLogin({ setHrToken }) {
                 icon: "success",
                 title: "Success",
                 html: `A 6-digit OTP has been sent to <b>${email}</b>`,
-              });
+            });
         } catch (error) {
             setErrorMessage(error.response.data.message || "Error sending OTP.");
         } finally {
@@ -387,8 +388,8 @@ function HrLogin({ setHrToken }) {
                 designation
             })
 
-            const { hrToken, userId , ename } = response.data
-            console.log(hrToken, userId , ename)
+            const { hrToken, userId, ename } = response.data
+            console.log(hrToken, userId, ename)
             setHrToken(hrToken);
             localStorage.setItem("hrName", ename)
             localStorage.setItem("hrToken", hrToken)
@@ -500,7 +501,13 @@ function HrLogin({ setHrToken }) {
                                                         className="btn btn-primary w-100"
                                                         disabled={isLoading}
                                                     >
-                                                        {isLoading ? "Sending OTP..." : "Send OTP"}
+                                                        {isLoading ? (
+                                                            <div className="spinner-border text-grey" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            "Login"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </form>
@@ -537,7 +544,13 @@ function HrLogin({ setHrToken }) {
                                                         className="btn btn-primary w-100"
                                                         disabled={isLoading}
                                                     >
-                                                        {isLoading ? "Verifying OTP..." : "Verify OTP"}
+                                                        {isLoading ? (
+                                                            <div className="spinner-border text-grey" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            "Verify OTP"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </form>
@@ -556,7 +569,13 @@ function HrLogin({ setHrToken }) {
                                                     <span>{errorMessage}</span>
                                                 </div>
                                                 <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
-                                                    {isLoading ? "Submitting..." : "Submit"}
+                                                    {isLoading ? (
+                                                        <div className="spinner-border text-grey" role="status">
+                                                            <span className="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    ) : (
+                                                        "Submit"
+                                                    )}
                                                 </button>
                                             </form>
                                         )}

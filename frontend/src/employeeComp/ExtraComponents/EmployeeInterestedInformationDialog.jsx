@@ -253,7 +253,7 @@ function EmployeeInterestedInformationDialog({
                 // document.body.style.removeProperty("padding-right");
 
                 handleClearInterestedInformation();
-                // refetch();
+                refetch();
             }
         } catch (error) {
             console.error("Error saving data:", error);

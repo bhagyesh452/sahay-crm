@@ -38,6 +38,7 @@ const yourSchema = new mongoose.Schema({
   },
   "Company Name": {
     type: String,
+    unique: false, // Ensure there's no unique: true
   },
   ename:{
     type:String

@@ -419,10 +419,6 @@ function EmployeesThisMonthBooking() {
 
         return maturedCount;
     };
-
-
-
-
     const functionOnlyCalculateMatured = (bdeName) => {
         const cleanString = (str) => {
             return str.replace(/\u00A0/g, ' ').trim();

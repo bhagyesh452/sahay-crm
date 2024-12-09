@@ -329,7 +329,7 @@ function HrEmployees() {
         await Promise.all(
           filteredCompanyData.map(async (item) => {
             // if (item.Status === 'Matured') {
-            if (item.Status) {
+            if (item.Status === "Matured") {
               await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
             } else {
               await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);

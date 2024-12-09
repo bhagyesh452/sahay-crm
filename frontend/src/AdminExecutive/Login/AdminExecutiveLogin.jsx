@@ -453,12 +453,12 @@ function AdminExecutiveLogin({ setAdminExecutiveToken }) {
     const [adminExecutiveUserId, setAdminExecutiveUserId] = useState(null);
     const [designation, setDesignation] = useState("");
 
-    
+
 
 
     const [userId, setUserId] = useState(null);
     const [address1, setAddress] = useState("");
-    
+
     const [isOtpSent, setIsOtpSent] = useState(false);
     const [isOtpVerified, setIsOtpVerified] = useState(false);
 
@@ -471,155 +471,156 @@ function AdminExecutiveLogin({ setAdminExecutiveToken }) {
     const [timeLeft, setTimeLeft] = useState(60); // Timer starts at 180 seconds (3 minutes)
     const [ename, setEname] = useState("")
     const intervalRef = useRef(null); // Ref to store the timer interval
-  
+
     useEffect(() => {
         document.title = `AdminExecutive-Sahay-CRM`;
     }, []);
 
- // Start the OTP expiry timer
- const startTimer = (otpExpiry) => {
-    const expiryTime = new Date(otpExpiry).getTime();
-    // console.log("Starting timer. Expiry Time:", expiryTime);
+    // Start the OTP expiry timer
+    const startTimer = (otpExpiry) => {
+        const expiryTime = new Date(otpExpiry).getTime();
+        // console.log("Starting timer. Expiry Time:", expiryTime);
 
-    intervalRef.current = setInterval(() => {
-        const currentTime = new Date().getTime();
-        const timeLeft = Math.max(0, expiryTime - currentTime);
+        intervalRef.current = setInterval(() => {
+            const currentTime = new Date().getTime();
+            const timeLeft = Math.max(0, expiryTime - currentTime);
 
-        // console.log("Timer running. Time left (seconds):", Math.floor(timeLeft / 1000));
-        setTimeLeft(Math.floor(timeLeft / 1000)); // Update time left in seconds
+            // console.log("Timer running. Time left (seconds):", Math.floor(timeLeft / 1000));
+            setTimeLeft(Math.floor(timeLeft / 1000)); // Update time left in seconds
 
-        if (timeLeft <= 0) {
-            // console.log("Time is up. Clearing timer.");
-            clearInterval(intervalRef.current);
-            intervalRef.current = null; // Reset interval reference
-            if (!isOtpVerified) {
-                setIsOtpSent(false); // Reset OTP sent state
-                setErrorMessage("OTP has expired. Please request a new OTP.");
-                // console.log("OTP expired. Resetting states.");
+            if (timeLeft <= 0) {
+                // console.log("Time is up. Clearing timer.");
+                clearInterval(intervalRef.current);
+                intervalRef.current = null; // Reset interval reference
+                if (!isOtpVerified) {
+                    setIsOtpSent(false); // Reset OTP sent state
+                    setErrorMessage("OTP has expired. Please request a new OTP.");
+                    // console.log("OTP expired. Resetting states.");
+                }
             }
-        }
-    }, 1000);
-};
+        }, 1000);
+    };
 
-const stopTimer = () => {
-    // console.log("Stopping timer manually.");
-    clearInterval(intervalRef.current);
-    intervalRef.current = null; // Reset interval reference
-};
+    const stopTimer = () => {
+        // console.log("Stopping timer manually.");
+        clearInterval(intervalRef.current);
+        intervalRef.current = null; // Reset interval reference
+    };
 
-// Handle OTP sending
-const handleSendOtp = async (e) => {
-    e.preventDefault();
-    setErrorMessage("");
-    if (!email || !password) {
-        setErrorMessage("Please enter email and password.");
-        return;
-    }
-
-    setIsLoading(true);
-    try {
-        // Verify email and password first
-        const response = await axios.post(`${secretKey}/verifyCredentials`, {
-            email,
-            password,
-        });
-
-        // If credentials are valid, send OTP
-        const otpResponse = await axios.post(`${secretKey}/sendOtp`, { email });
-        const { otpExpiry } = response.data;
-        setIsOtpSent(true);
-        const expiryTime = otpExpiry || Date.now() + 1 * 60 * 1000; // Use current time + 3 mins if backend doesn't send `otpExpiry`
-        startTimer(expiryTime);
-        Swal.fire({
-            icon: "success",
-            title: "Success",
-            html: `A 6-digit OTP has been sent to <b>${email}</b>`,
-          });
-    } catch (error) {
-        setErrorMessage(error.response.data.message || "Error sending OTP.");
-    } finally {
-        setIsLoading(false);
-    }
-};
-
-// Handle OTP verification
-const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setErrorMessage("");
-    if (!otp) {
-        setErrorMessage("Please enter the OTP.");
-        return;
-    }
-
-    setIsLoading(true);
-    try {
-        const response = await axios.post(`${secretKey}/verifyOtp`, {
-            email,
-            otp,
-        });
-        setIsOtpVerified(true);
-        //console.log("Calling stopTimer after OTP verification.");
-        stopTimer(); // Stop the timer upon successful OTP verification
-    } catch (error) {
-        setErrorMessage(error.response.data.message || "Invalid OTP.");
-    } finally {
-        setIsLoading(false);
-    }
-};
-
-
-
-const handleSubmit = async (e) => {
-    e.preventDefault()
-    setErrorMessage("");
-    if (!captchaToken) {
-        setErrorMessage("Please complete the CAPTCHA.");
-        return;
-    }
-    setIsLoading(true);
-    try {
-        // Step 1: Verify CAPTCHA
-        const captchaResponse = await axios.post(`${secretKey}/verifyCaptcha`, {
-            token: captchaToken,
-        });
-
-        if (captchaResponse.status !== 200) {
-            setErrorMessage("CAPTCHA verification failed. Please try again.");
+    // Handle OTP sending
+    const handleSendOtp = async (e) => {
+        e.preventDefault();
+        setErrorMessage("");
+        if (!email || !password) {
+            setErrorMessage("Please enter email and password.");
             return;
         }
-        const response = await axios.post(`${secretKey}/adminexecutivelogin` , {
-            email,
-            password,
-            designation
-        })
 
-        const { adminExecutiveToken, adminExecutiveUserId } = response.data
-        console.log(adminExecutiveToken, adminExecutiveUserId)
-        console.log(adminExecutiveToken)
-        setAdminExecutiveToken(adminExecutiveToken)
-        localStorage.setItem("AdminExecutiveName" , data.ename)
-        localStorage.setItem("adminExecutiveToken" , adminExecutiveToken)
-        localStorage.setItem("adminExecutiveUserId" , adminExecutiveUserId)
-        navigate(`/adminexecutive/dashboard/${adminExecutiveUserId}`)
+        setIsLoading(true);
+        try {
+            // Verify email and password first
+            const response = await axios.post(`${secretKey}/verifyCredentials`, {
+                email,
+                password,
+                designations: ["Admin Executive"],
+            });
 
-    } catch (error) {
-        console.error("Login Failed", error);
-        if (error.response.status === 401) {
-            if (error.response.data.message === "Invalid email or password") {
-                setErrorMessage("Invalid Credentials");
-            } else if (error.response.data.message === "Designation id incorrect") {
-                setErrorMessage("Only Authorized for Recruiter!")
+            // If credentials are valid, send OTP
+            const otpResponse = await axios.post(`${secretKey}/sendOtp`, { email });
+            const { otpExpiry } = response.data;
+            setIsOtpSent(true);
+            const expiryTime = otpExpiry || Date.now() + 1 * 60 * 1000; // Use current time + 3 mins if backend doesn't send `otpExpiry`
+            startTimer(expiryTime);
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                html: `A 6-digit OTP has been sent to <b>${email}</b>`,
+            });
+        } catch (error) {
+            setErrorMessage(error.response.data.message || "Error sending OTP.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Handle OTP verification
+    const handleVerifyOtp = async (e) => {
+        e.preventDefault();
+        setErrorMessage("");
+        if (!otp) {
+            setErrorMessage("Please enter the OTP.");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await axios.post(`${secretKey}/verifyOtp`, {
+                email,
+                otp,
+            });
+            setIsOtpVerified(true);
+            //console.log("Calling stopTimer after OTP verification.");
+            stopTimer(); // Stop the timer upon successful OTP verification
+        } catch (error) {
+            setErrorMessage(error.response.data.message || "Invalid OTP.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setErrorMessage("");
+        if (!captchaToken) {
+            setErrorMessage("Please complete the CAPTCHA.");
+            return;
+        }
+        setIsLoading(true);
+        try {
+            // Step 1: Verify CAPTCHA
+            const captchaResponse = await axios.post(`${secretKey}/verifyCaptcha`, {
+                token: captchaToken,
+            });
+
+            if (captchaResponse.status !== 200) {
+                setErrorMessage("CAPTCHA verification failed. Please try again.");
+                return;
+            }
+            const response = await axios.post(`${secretKey}/adminexecutivelogin`, {
+                email,
+                password,
+                designation
+            })
+
+            const { adminExecutiveToken, adminExecutiveUserId } = response.data
+            console.log(adminExecutiveToken, adminExecutiveUserId)
+            console.log(adminExecutiveToken)
+            setAdminExecutiveToken(adminExecutiveToken)
+            localStorage.setItem("AdminExecutiveName", data.ename)
+            localStorage.setItem("adminExecutiveToken", adminExecutiveToken)
+            localStorage.setItem("adminExecutiveUserId", adminExecutiveUserId)
+            navigate(`/adminexecutive/dashboard/${adminExecutiveUserId}`)
+
+        } catch (error) {
+            console.error("Login Failed", error);
+            if (error.response.status === 401) {
+                if (error.response.data.message === "Invalid email or password") {
+                    setErrorMessage("Invalid Credentials");
+                } else if (error.response.data.message === "Designation id incorrect") {
+                    setErrorMessage("Only Authorized for Recruiter!")
+                } else {
+                    setErrorMessage("Unknown Error Occured")
+                }
             } else {
                 setErrorMessage("Unknown Error Occured")
             }
-        } else {
-            setErrorMessage("Unknown Error Occured")
         }
     }
-}
-const onCaptchaChange = (token) => {
-    setCaptchaToken(token); // Store the CAPTCHA token
-};
+    const onCaptchaChange = (token) => {
+        setCaptchaToken(token); // Store the CAPTCHA token
+    };
 
 
     // const handleSubmit = async (e) => {
@@ -655,7 +656,7 @@ const onCaptchaChange = (token) => {
     //     }
     // }
 
-    
+
 
     return (
         <div>
@@ -742,7 +743,13 @@ const onCaptchaChange = (token) => {
                                                         className="btn btn-primary w-100"
                                                         disabled={isLoading}
                                                     >
-                                                        {isLoading ? "Sending OTP..." : "Send OTP"}
+                                                        {isLoading ? (
+                                                            <div className="spinner-border text-grey" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            "Login"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </form>
@@ -779,7 +786,13 @@ const onCaptchaChange = (token) => {
                                                         className="btn btn-primary w-100"
                                                         disabled={isLoading}
                                                     >
-                                                        {isLoading ? "Verifying OTP..." : "Verify OTP"}
+                                                        {isLoading ? (
+                                                            <div className="spinner-border text-grey" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            "Verify OTP"
+                                                        )}
                                                     </button>
                                                 </div>
                                             </form>
@@ -798,7 +811,13 @@ const onCaptchaChange = (token) => {
                                                     <span>{errorMessage}</span>
                                                 </div>
                                                 <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
-                                                    {isLoading ? "Submitting..." : "Submit"}
+                                                    {isLoading ? (
+                                                        <div className="spinner-border text-grey" role="status">
+                                                            <span className="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    ) : (
+                                                        "Submit"
+                                                    )}
                                                 </button>
                                             </form>
                                         )}
