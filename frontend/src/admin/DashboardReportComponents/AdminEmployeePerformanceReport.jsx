@@ -4,6 +4,7 @@ import Nodata from '../../components/Nodata';
 import ClipLoader from "react-spinners/ClipLoader";
 
 function AdminEmployeePerformanceReport() {
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [empPerformanceData, setEmpPerformanceData] = useState([]);
   const [expandedEmployee, setExpandedEmployee] = useState(null);
@@ -50,7 +51,7 @@ function AdminEmployeePerformanceReport() {
       }).sort((a, b) => b.yearlyRatio - a.yearlyRatio); // Sort by yearly ratio in descending order
   
       
-      console.log("soreteddata" , sortedData)
+      // console.log("soreteddata" , sortedData)
       setEmpPerformanceData(sortedData);
       setFilteredData(sortedData.filter(emp=>emp.newDesignation === "Business Development Executive" || emp.newDesignation === "Business Development Manager" || emp.newDesignation === "Floor Manager"));
     } catch (error) {
@@ -84,12 +85,12 @@ function AdminEmployeePerformanceReport() {
   let achievedAmount = 0;
 
   const handleFilterBranchOffice = (branch) => {
-    console.log("Employee data in handle filter :", empPerformanceData);
+    // console.log("Employee data in handle filter :", empPerformanceData);
     if (branch === "none") {
       setFilteredData(empPerformanceData);
     } else {
       const filtered = empPerformanceData.filter(emp => emp.branchOffice === branch);
-      console.log("Filtered data is :", filtered);
+      // console.log("Filtered data is :", filtered);
       setFilteredData(filtered);
     }
   };
@@ -98,8 +99,8 @@ function AdminEmployeePerformanceReport() {
     fetchEmployeePerformance();
   }, []);
 
-  console.log("filtered" , filteredData)
-  console.log("empperformancedata" , empPerformanceData)
+  // console.log("filtered" , filteredData)
+  // console.log("empperformancedata" , empPerformanceData)
 
   return (
     <div className="card">
