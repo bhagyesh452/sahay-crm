@@ -281,8 +281,8 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           thirdPaymentRemarks: service.thirdPaymentRemarks || "",
           fourthPaymentRemarks: service.fourthPaymentRemarks || "",
           bookingPublishDate: booking.bookingPublishDate || "",
-          pendingReceivedAmount: pendingReceivedAmount,
-          remainingAmount: remainingAmount,
+          pendingReceivedAmount: pendingReceivedAmount || 0,
+          remainingAmount: remainingAmount || 0,
         };
 
         // Log data for the specific company
@@ -352,8 +352,8 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             thirdPaymentRemarks: service.thirdPaymentRemarks || "",
             fourthPaymentRemarks: service.fourthPaymentRemarks || "",
             bookingPublishDate: moreBooking.bookingPublishDate || "",
-            pendingReceivedAmount: pendingReceivedAmount,
-            remainingAmount: remainingAmount,
+            pendingReceivedAmount: pendingReceivedAmount || 0,
+            remainingAmount: remainingAmount || 0,
           };
 
           // Log data for the specific company
@@ -389,11 +389,6 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 });
-
-
-
-
-
 
 router.get("/admin-redesigned-final-leadData", async (req, res) => {
   try {
