@@ -102,7 +102,7 @@ function Dashboard() {
 
     return (
         <div>
-            
+
             <div className="page-wrapper">
                 <div className="container-xl">
                     <div className="card mt-3">
@@ -180,12 +180,12 @@ function Dashboard() {
                             <EmployeesForwardedDataReportFromBackend />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
-                           <EmployeesTodayProjectionSummary/>
-                            <EmployeesNewProjectionSummary/>
+                            <EmployeesTodayProjectionSummary />
+                            <EmployeesNewProjectionSummary />
                             {/* <EmployeesProjectionSummary /> */}
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
-                            {adminName === "Ronak Kumar" && <MonthWiseEmployeePerformanceReport />}
+                            {(adminName === "Ronak Kumar" || adminName === "Nimesh") && <MonthWiseEmployeePerformanceReport />}
                             <AdminEmployeePerformanceReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={5} className="mat-tab-inner">
