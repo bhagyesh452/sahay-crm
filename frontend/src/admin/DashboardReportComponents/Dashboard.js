@@ -46,7 +46,9 @@ import MonthWiseEmployeePerformanceReport from "./MonthWiseEmployeePerformanceRe
 
 
 function Dashboard() {
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const adminName = localStorage.getItem('adminName');
 
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
@@ -183,8 +185,8 @@ function Dashboard() {
                             {/* <EmployeesProjectionSummary /> */}
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
+                            {adminName === "Ronak Kumar" && <MonthWiseEmployeePerformanceReport />}
                             <AdminEmployeePerformanceReport />
-                            <MonthWiseEmployeePerformanceReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={5} className="mat-tab-inner">
                             <ServiceAnalysis />
