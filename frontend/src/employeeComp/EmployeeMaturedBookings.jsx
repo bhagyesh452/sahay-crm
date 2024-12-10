@@ -2526,7 +2526,7 @@ function EmployeeMaturedBookings() {
                                                 handleViewPdfReciepts(objMain.paymentReceipt[0].filename, currentLeadform["Company Name"])
                                               }
                                             >
-                                              {((objMain.paymentReceipt[0].filename).toLowerCase()).endsWith(".pdf") ? (
+                                              {((objMain.paymentReceipt[0].filename)?.toLowerCase())?.endsWith(".pdf") ? (
                                                 <PdfImageViewerAdmin
                                                   type="paymentrecieptpdf"
                                                   path={objMain.paymentReceipt[0].filename}

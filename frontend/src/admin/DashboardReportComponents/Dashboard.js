@@ -37,6 +37,7 @@ import EmployeesForwardedDataReportFromBackend from "./EmployeesForwardedDataRep
 import EmployeesNewProjectionSummary from "./EmployeesNewProjectionSummary.jsx";
 import EmployeesTodayProjectionSummary from "./EmployeesTodayProjectionSummary.jsx";
 import FloorManagerLeadsReport from "../../BDM/Dashboard/FloorManagerLeadsReport.jsx";
+import MonthWiseEmployeePerformanceReport from "./MonthWiseEmployeePerformanceReport.jsx";
 
 
 
@@ -183,6 +184,7 @@ function Dashboard() {
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
                             <AdminEmployeePerformanceReport />
+                            <MonthWiseEmployeePerformanceReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={5} className="mat-tab-inner">
                             <ServiceAnalysis />

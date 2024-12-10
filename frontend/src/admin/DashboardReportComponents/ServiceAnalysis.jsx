@@ -155,6 +155,7 @@ function ServiceAnalysis() {
         const serviceAnalysis = {};
 
         const processServiceData = (booking, service) => {
+
             const serviceNameKey = service.serviceName.startsWith("ISO Certificate")
                 ? "ISO Certificate"
                 : service.serviceName;
@@ -166,6 +167,7 @@ function ServiceAnalysis() {
                     advancePayment: 0,
                     remainingPaymentsArray: [],
                     serviceBriefDetails: [],
+                    // companiesSoldTo: [], // Track companies buying the service
                 };
             }
 
@@ -178,6 +180,11 @@ function ServiceAnalysis() {
 
             // Add the advance amount to the total advance payment for this service
             serviceAnalysis[serviceNameKey].advancePayment += advanceAmount;
+
+            // Add the company name to the companiesSoldTo array
+            // if (!serviceAnalysis[serviceNameKey].companiesSoldTo.includes(booking["Company Name"])) {
+            //     serviceAnalysis[serviceNameKey].companiesSoldTo.push(booking["Company Name"]);
+            // }
 
             // Process BDE data
             let existingEmployee = serviceAnalysis[serviceNameKey].serviceBriefDetails.find(
@@ -192,6 +199,7 @@ function ServiceAnalysis() {
                     advance: 0,
                     remaining: 0,
                     average: 0,
+                    companyDetails: [], // Track companies and BDE responsible for sales
                 };
                 serviceAnalysis[serviceNameKey].serviceBriefDetails.push(existingEmployee);
             }
@@ -225,13 +233,18 @@ function ServiceAnalysis() {
                 const thirdPayment = service.withGST ? service.thirdPayment / 1.18 : service.thirdPayment;
                 const fourthPayment = service.withGST ? service.fourthPayment / 1.18 : service.fourthPayment;
 
-                const remainingPayment = (secondPayment + thirdPayment + fourthPayment) *
-                    (isSameName ? 1 : isCloseBy ? 0.5 : 1);
+                const remainingPayment = (secondPayment + thirdPayment + fourthPayment) * (isSameName ? 1 : isCloseBy ? 0.5 : 1);
                 existingEmployee.remaining += remainingPayment;
                 serviceAnalysis[serviceNameKey].remainingPaymentsArray.push(remainingPayment);
             }
 
             existingEmployee.average = existingEmployee.totalAmount / existingEmployee.timesSold || 0;
+
+            // Add company and BDE details to companyDetails array
+            existingEmployee.companyDetails.push({
+                companyName: booking["Company Name"], // Add company name from booking
+                bdeName: booking.bdeName,        // Add BDE name
+            });
 
             // Process BDM data only for Close-by type (skip Supported-by type)
             if (!isSameName && isCloseBy) {
@@ -247,6 +260,7 @@ function ServiceAnalysis() {
                         advance: 0,
                         remaining: 0,
                         average: 0,
+                        companyDetails: [],
                     };
                     serviceAnalysis[serviceNameKey].serviceBriefDetails.push(existingBDM);
                 }
@@ -269,6 +283,12 @@ function ServiceAnalysis() {
                 }
 
                 existingBDM.average = existingBDM.totalAmount / existingBDM.timesSold || 0;
+
+                // Add company and BDE details to companyDetails array
+                existingBDM.companyDetails.push({
+                    companyName: booking["Company Name"],
+                    bdeName: booking.bdeName,
+                });
             }
         };
 
@@ -301,6 +321,7 @@ function ServiceAnalysis() {
                 remainingPayment: totalRemainingPayment,
                 averageSellingPrice: data.totalPayment / data.timesSold || 0,
                 serviceBriefDetails: data.serviceBriefDetails,
+                companiesSoldTo: data.companiesSoldTo, // Include company names in the final result
             };
         });
     };
