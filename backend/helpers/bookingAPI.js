@@ -211,13 +211,13 @@ router.get("/redesigned-final-leadData", async (req, res) => {
 router.get("/redesigned-final-leadData-tableView", async (req, res) => {
   try {
     const { page = 1, limit = 500 } = req.query; // Default page is 1, limit is 500
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit; // Calculate number of documents to skip
 
     // Fetch raw data with pagination
     const bookingsData = await RedesignedLeadformModel.find()
-      .sort({ lastActionDate: -1 }) // Sort by lastActionDate (assumes it exists in the model)
-      .skip(skip)
-      .limit(parseInt(limit));
+      .sort({ lastActionDate: -1 }) // Sort by lastActionDate
+      .skip(skip) // Skip documents based on the page
+      .limit(parseInt(limit)); // Limit the number of results
 
     const allServicesWithDetails = [];
 
@@ -287,9 +287,6 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
       });
     });
 
-    // Sort the processed data by bookingDate in descending order
-    allServicesWithDetails.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
-
     const totalCount = await RedesignedLeadformModel.countDocuments(); // Total number of documents for pagination
 
     res.status(200).json({
@@ -301,6 +298,7 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     res.status(500).send("Error fetching data");
   }
 });
+
 
 
 router.get("/admin-redesigned-final-leadData", async (req, res) => {
