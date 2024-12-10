@@ -254,7 +254,7 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           thirdPaymentRemarks: service.thirdPaymentRemarks || "",
           fourthPaymentRemarks: service.fourthPaymentRemarks || "",
           bookingPublishDate: booking.bookingPublishDate || "",
-          pendingRecievedAmount: service.pendingRecievedAmount || service.totalPaymentWGST,
+          pendingRecievedAmount: service.totalPaymentWGST - (service.remainingAmount || 0),
           remainingAmount: service.remainingAmount || 0,
         });
       });
@@ -288,7 +288,7 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             thirdPaymentRemarks: service.thirdPaymentRemarks || "",
             fourthPaymentRemarks: service.fourthPaymentRemarks || "",
             bookingPublishDate: moreBooking.bookingPublishDate || "",
-            pendingRecievedAmount: service.pendingRecievedAmount || service.totalPaymentWGST,
+            pendingRecievedAmount: service.totalPaymentWGST - (service.remainingAmount || 0),
             remainingAmount: service.remainingAmount || 0,
           });
         });
