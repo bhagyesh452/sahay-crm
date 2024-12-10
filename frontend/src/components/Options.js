@@ -91,6 +91,7 @@ export const options = [
     value: "Web Application Development",
     label: "Web Application Development",
   },
+  { value: "Website Plan", label: "Website Plan" },
   { value: "Software Development", label: "Software Development" },
   { value: "CRM Development", label: "CRM Development" },
   { value: "ERP Development", label: "ERP Development" },
