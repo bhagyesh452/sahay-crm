@@ -208,37 +208,41 @@ router.get("/redesigned-final-leadData", async (req, res) => {
   }
 });
 
+
+
 router.get("/redesigned-final-leadData-tableView", async (req, res) => {
   try {
-    const { page = 1, limit = 500 } = req.query; // Default page is 1, limit is 500
-    const skip = (page - 1) * limit; // Calculate number of documents to skip
+    const { page = 1, limit = 500, searchText = "" } = req.query; // Extract page, limit, and searchText
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + parseInt(limit);
 
-    // Fetch raw data with pagination
-    const bookingsData = await RedesignedLeadformModel.find()
-      .sort({ lastActionDate: -1 }) // Sort by lastActionDate
-      .skip(skip) // Skip documents based on the page
-      .limit(parseInt(limit)); // Limit the number of results
+    // Fetch all records from the database
+    
+    const bookingsData = await RedesignedLeadformModel.find().sort({ bookingDate: -1 });
 
+    // Process and flatten the data
     const allServicesWithDetails = [];
-
     bookingsData.forEach((booking) => {
+      const services = booking.services || [];
+      const moreBookings = booking.moreBookings || [];
+
       // Process main booking services
-      booking.services.forEach((service) => {
+      services.forEach((service) => {
         allServicesWithDetails.push({
-          "Company Name": booking["Company Name"],
-          "Company Number": booking["Company Number"],
-          "Company Email": booking["Company Email"],
-          panNumber: booking.panNumber,
-          bdeName: booking.bdeName,
-          bdeEmail: booking.bdeEmail || '',
-          bdmName: booking.bdmName,
-          bdmType: booking.bdmType || 'Close-by',
-          bookingDate: booking.bookingDate,
-          paymentMethod: booking.paymentMethod || '',
-          caCase: booking.caCase || false,
+          "Company Name": booking["Company Name"] || "",
+          "Company Number": booking["Company Number"] || "",
+          "Company Email": booking["Company Email"] || "",
+          panNumber: booking.panNumber || "",
+          bdeName: booking.bdeName || "",
+          bdeEmail: booking.bdeEmail || "",
+          bdmName: booking.bdmName || "",
+          bdmType: booking.bdmType || "Close-by",
+          bookingDate: booking.bookingDate || "",
+          paymentMethod: booking.paymentMethod || "",
+          caCase: booking.caCase || "Not Applicable",
           caNumber: booking.caNumber || 0,
-          caEmail: booking.caEmail || '',
-          serviceName: service.serviceName || '',
+          caEmail: booking.caEmail || "",
+          serviceName: service.serviceName || "",
           totalPaymentWOGST: service.totalPaymentWOGST || 0,
           totalPaymentWGST: service.totalPaymentWGST || 0,
           withGST: service.withGST || false,
@@ -246,31 +250,33 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           secondPayment: service.secondPayment || 0,
           thirdPayment: service.thirdPayment || 0,
           fourthPayment: service.fourthPayment || 0,
-          secondPaymentRemarks: service.secondPaymentRemarks || '',
-          thirdPaymentRemarks: service.thirdPaymentRemarks || '',
-          fourthPaymentRemarks: service.fourthPaymentRemarks || '',
-          bookingPublishDate: booking.bookingPublishDate || '',
+          secondPaymentRemarks: service.secondPaymentRemarks || "",
+          thirdPaymentRemarks: service.thirdPaymentRemarks || "",
+          fourthPaymentRemarks: service.fourthPaymentRemarks || "",
+          bookingPublishDate: booking.bookingPublishDate || "",
+          pendingRecievedAmount: service.pendingRecievedAmount || 0,
+          remainingAmount: service.remainingAmount || 0,
         });
       });
 
       // Process moreBookings services
-      booking.moreBookings.forEach((moreBooking) => {
+      moreBookings.forEach((moreBooking) => {
         moreBooking.services.forEach((service) => {
           allServicesWithDetails.push({
-            "Company Name": booking["Company Name"],
-            "Company Number": booking["Company Number"],
-            "Company Email": booking["Company Email"],
-            panNumber: booking.panNumber,
-            bdeName: moreBooking.bdeName,
-            bdeEmail: moreBooking.bdeEmail || '',
-            bdmName: moreBooking.bdmName,
-            bdmType: moreBooking.bdmType || 'Close-by',
-            bookingDate: moreBooking.bookingDate,
-            paymentMethod: moreBooking.paymentMethod || '',
-            caCase: moreBooking.caCase || false,
+            "Company Name": booking["Company Name"] || "",
+            "Company Number": booking["Company Number"] || "",
+            "Company Email": booking["Company Email"] || "",
+            panNumber: booking.panNumber || "",
+            bdeName: moreBooking.bdeName || "",
+            bdeEmail: moreBooking.bdeEmail || "",
+            bdmName: moreBooking.bdmName || "",
+            bdmType: moreBooking.bdmType || "Close-by",
+            bookingDate: moreBooking.bookingDate || "",
+            paymentMethod: moreBooking.paymentMethod || "",
+            caCase: moreBooking.caCase || "",
             caNumber: moreBooking.caNumber || 0,
-            caEmail: moreBooking.caEmail || '',
-            serviceName: service.serviceName || '',
+            caEmail: moreBooking.caEmail || "",
+            serviceName: service.serviceName || "",
             totalPaymentWOGST: service.totalPaymentWOGST || 0,
             totalPaymentWGST: service.totalPaymentWGST || 0,
             withGST: service.withGST || false,
@@ -278,27 +284,40 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             secondPayment: service.secondPayment || 0,
             thirdPayment: service.thirdPayment || 0,
             fourthPayment: service.fourthPayment || 0,
-            secondPaymentRemarks: service.secondPaymentRemarks || '',
-            thirdPaymentRemarks: service.thirdPaymentRemarks || '',
-            fourthPaymentRemarks: service.fourthPaymentRemarks || '',
-            bookingPublishDate: moreBooking.bookingPublishDate || '',
+            secondPaymentRemarks: service.secondPaymentRemarks || "",
+            thirdPaymentRemarks: service.thirdPaymentRemarks || "",
+            fourthPaymentRemarks: service.fourthPaymentRemarks || "",
+            bookingPublishDate: moreBooking.bookingPublishDate || "",
+            pendingRecievedAmount: service.pendingRecievedAmount || 0,
+            remainingAmount: service.remainingAmount || 0,
           });
         });
       });
     });
 
-    const totalCount = await RedesignedLeadformModel.countDocuments(); // Total number of documents for pagination
+    // Apply search filter
+    const filteredData = allServicesWithDetails.filter((item) => {
+      const normalizedSearchText = searchText.toLowerCase();
+      return (
+        item["Company Name"].toLowerCase().includes(normalizedSearchText) ||
+        item["Company Number"].toString().includes(normalizedSearchText) ||
+        item["Company Email"].toLowerCase().includes(normalizedSearchText)
+      );
+    });
 
+    // Apply pagination to filtered data
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+
+    // Respond with paginated data and total count
     res.status(200).json({
-      totalCount,
-      data: allServicesWithDetails,
+      totalCount: filteredData.length, // Total number of filtered services
+      data: paginatedData, // Current page data
     });
   } catch (error) {
     console.error("Error fetching data:", error);
-    res.status(500).send("Error fetching data");
+    res.status(500).json({ error: "Error fetching data" });
   }
 });
-
 
 
 router.get("/admin-redesigned-final-leadData", async (req, res) => {

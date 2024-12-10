@@ -4834,6 +4834,7 @@ cron.schedule('45 23 * * *', async () => {
             bdmAcceptStatus: 'NotForwarded',
             lastAssignedEmployee: lead.ename,
             extractedDate: currentDate,
+            bdmName:"",
           },
         },
         // { upsert: true }

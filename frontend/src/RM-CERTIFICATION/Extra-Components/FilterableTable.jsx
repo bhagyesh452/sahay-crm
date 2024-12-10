@@ -15,7 +15,9 @@ const FilterableTable = ({
     activeFilters,
     allFilterFields,
     noofItems,
-    showingMenu }) => {
+    showingMenu,
+    isComingFromAdmin,
+    refetch }) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -186,10 +188,10 @@ const FilterableTable = ({
                             return columnFilters.includes(item.withDSC ? 'Yes' : 'No');
                         }
                         // For 'submittedOn', only compare date without time
-                    if (column === 'submittedOn') {
-                        const submittedDate = new Date(item.submittedOn).toLocaleDateString('en-IN');
-                        return columnFilters.includes(submittedDate);
-                    }
+                        if (column === 'submittedOn') {
+                            const submittedDate = new Date(item.submittedOn).toLocaleDateString('en-IN');
+                            return columnFilters.includes(submittedDate);
+                        }
                         return columnFilters.includes(String(item[column]));
                     });
 
@@ -356,14 +358,6 @@ const FilterableTable = ({
     // Example of logging the length of the selected filters for a specific field
     console.log(selectedFilters[filterField]?.length, columnValues.length);
 
-    // const handleClearAll = async() => {
-    //     setSelectedFilters(prevFilters => ({
-    //         ...prevFilters,
-    //         [filterField]: []
-    //     }));
-    //     allFilterFields([])
-    //     onFilter(completeData)
-    // };
 
     const handleClearAll = async () => {
         setSelectedFilters(prevFilters => ({
@@ -372,18 +366,23 @@ const FilterableTable = ({
         }));
 
         try {
+            if (isComingFromAdmin) {
+                onFilter(completeData);
+                // refetch()
+            } else {
+                const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest-complete`, {
+                    params: {
+                        search: "",           // Clear search query
+                        page: 1,              // Reset to first page
+                        limit: 50,            // Adjust limit as needed
+                        activeTab: activeTab  // Adjust as needed
+                    }
+                });
+                const { data, totalPages } = response.data;
+                onFilter(data);
+            }
             // Fetch the complete dataset from the API
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest-complete`, {
-                params: {
-                    search: "",           // Clear search query
-                    page: 1,              // Reset to first page
-                    limit: 50,            // Adjust limit as needed
-                    activeTab: activeTab  // Adjust as needed
-                }
-            });
 
-            const { data, totalPages } = response.data;
-            onFilter(data);
             allFilterFields([])
             showingMenu(false)
             noofItems(0)
@@ -403,13 +402,13 @@ const FilterableTable = ({
     function formatDate(dateString) {
         // Split the date string based on '/' (assuming input is '20/7/2024')
         const [day, month, year] = dateString.split('/');
-    
+
         // Array of month names to convert the numerical month to name
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    
+
         // Parse the month from the array (subtract 1 because month is zero-indexed in arrays)
         const monthName = monthNames[parseInt(month) - 1];
-    
+
         // Return the formatted date as '20July,2024'
         return `${day}${monthName},${year}`;
     }
@@ -475,8 +474,8 @@ const FilterableTable = ({
                                 />
                             </div>
                             <label className="filter-val p-2" for={value}>
-                                {filterField === "bookingDate"  ? formatDatePro(value) 
-                                :filterField === "submittedOn" ? formatDate(value) : value}
+                                {filterField === "bookingDate" ? formatDatePro(value)
+                                    : filterField === "submittedOn" ? formatDate(value) : value}
                             </label>
                         </div>
                     ))}
