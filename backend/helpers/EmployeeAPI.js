@@ -1026,10 +1026,24 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
       // Fetch the team leads data
       const teamLeadsData = await TeamLeadsModel.find({
         bdmName: emp.ename,
-      }).select("ename").lean();
-
-      // Check the length of teamLeadsData and set isVisibleTeamLeads accordingly
-      isVisibleTeamLeads = teamLeadsData.length > 0;
+      })
+        .select("ename")
+        .lean();
+    
+      // Check the length of teamLeadsData
+      if (teamLeadsData.length > 0) {
+        isVisibleTeamLeads = true;
+      } else {
+        // If no teamLeadsData found, check in CompanyModel for bdmName
+        const companyData = await CompanyModel.find({
+          bdmName: emp.ename,
+        })
+          .select("bdmName")
+          .lean();
+    
+        // Set isVisibleTeamLeads based on companyData length
+        isVisibleTeamLeads = companyData.length > 0;
+      }
     }
 
     // If employee is still not found, return an error message
