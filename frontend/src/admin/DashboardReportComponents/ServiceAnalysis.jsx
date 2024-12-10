@@ -167,7 +167,6 @@ function ServiceAnalysis() {
                     advancePayment: 0,
                     remainingPaymentsArray: [],
                     serviceBriefDetails: [],
-                    // companiesSoldTo: [], // Track companies buying the service
                 };
             }
 
@@ -180,11 +179,6 @@ function ServiceAnalysis() {
 
             // Add the advance amount to the total advance payment for this service
             serviceAnalysis[serviceNameKey].advancePayment += advanceAmount;
-
-            // Add the company name to the companiesSoldTo array
-            // if (!serviceAnalysis[serviceNameKey].companiesSoldTo.includes(booking["Company Name"])) {
-            //     serviceAnalysis[serviceNameKey].companiesSoldTo.push(booking["Company Name"]);
-            // }
 
             // Process BDE data
             let existingEmployee = serviceAnalysis[serviceNameKey].serviceBriefDetails.find(
@@ -321,7 +315,6 @@ function ServiceAnalysis() {
                 remainingPayment: totalRemainingPayment,
                 averageSellingPrice: data.totalPayment / data.timesSold || 0,
                 serviceBriefDetails: data.serviceBriefDetails,
-                companiesSoldTo: data.companiesSoldTo, // Include company names in the final result
             };
         });
     };
