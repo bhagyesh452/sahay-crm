@@ -9,8 +9,7 @@ import FilterableComponentEmployee from "../employeeComp/ExtraComponents/Filtera
 import { GoArrowLeft } from "react-icons/go";
 import { GoArrowRight } from "react-icons/go";
 import FilterableTable from "../RM-CERTIFICATION/Extra-Components/FilterableTable.jsx";
-import { HiInformationCircle } from "react-icons/hi2";
-
+import { FaRegEye } from "react-icons/fa";
 
 function BookingsTableView({ tableViewOpen }) {
     const [currentPage, setCurrentPage] = useState(1);
@@ -512,45 +511,7 @@ function BookingsTableView({ tableViewOpen }) {
                                         </div>
                                     )}
                                 </div></th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['caNumber'] = el}>
-                                            CA Number
-                                        </div>
-
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('caNumber') ? (
-                                                <FaFilter onClick={() => handleFilterClick("caNumber")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("caNumber")} />
-                                            )}
-                                        </div>
-
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'caNumber' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                </th>
+                             
                                 <th>
                                     <div className='d-flex align-items-center justify-content-center position-relative'>
                                         <div ref={el => fieldRefs.current['withGST'] = el}>
@@ -590,47 +551,7 @@ function BookingsTableView({ tableViewOpen }) {
                                         )}
                                     </div>
                                 </th>
-                                <th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['totalPaymentWOGST'] = el}>
-                                                Total Payment Without GST
-                                            </div>
-
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('totalPaymentWOGST') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("totalPaymentWOGST")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("totalPaymentWOGST")} />
-                                                )}
-                                            </div>
-
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'totalPaymentWOGST' && (
-                                                <div
-                                                    ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        noofItems={setnoOfAvailableData}
-                                                        allFilterFields={setActiveFilterFields}
-                                                        filteredData={filteredDataNew}
-                                                        activeTab={"General"}
-                                                        data={fetchedBookingsData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeBookingsData}
-                                                        showingMenu={setShowFilterMenu}
-                                                        dataForFilter={dataToFilter}
-                                                        refetch={refetchBookingData}
-                                                        isComingFromAdmin={true}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                </th>
+                               
                                 <th>
                                     <div className='d-flex align-items-center justify-content-center position-relative'>
                                         <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
@@ -781,20 +702,19 @@ function BookingsTableView({ tableViewOpen }) {
                                         <td>{obj.bdmName}</td>
                                         <td>{obj.bdmType}</td>
                                         <td>{formatDatePro(obj.bookingDate)}</td>
-                                        <td>{obj.caCase ? "Yes" : "No"}</td>
-                                        <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
+                                        <td>{obj.caCase}</td>
+                                        
                                         <td>{obj.withGST ? "Yes" : "No"}</td>
-                                        <td>₹{(obj.totalPaymentWOGST)?.toLocaleString('en-IN')}</td>
+                                        
                                         <td>₹{(obj.totalPaymentWGST)?.toLocaleString('en-IN')}</td>
                                         <td>₹{(obj.remainingAmount)?.toLocaleString('en-IN')}</td>
                                         <td>₹{(obj.pendingReceivedAmount)?.toLocaleString('en-IN')}</td>
                                         <td>
-                                            <HiInformationCircle
+                                            <FaRegEye
                                                 style={{
                                                     cursor: "pointer",
-                                                    width: "19px",
-                                                    height: "20px",
-                                                    color: "#95abb3",
+                                                    
+                                                    color: "#fbb900",
                                                 }}
                                                 onClick={() => handleInformationClick(obj["Company Name"])}
                                             />
