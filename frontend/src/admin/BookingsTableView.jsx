@@ -784,10 +784,10 @@ function BookingsTableView({ tableViewOpen }) {
                                         <td>{obj.caCase ? "Yes" : "No"}</td>
                                         <td>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</td>
                                         <td>{obj.withGST ? "Yes" : "No"}</td>
-                                        <td>₹{(obj.totalPaymentWOGST.toLocaleString('en-IN'))}</td>
-                                        <td>₹{(obj.totalPaymentWGST).toLocaleString('en-IN')}</td>
-                                        <td>₹{(obj.remainingAmount).toLocaleString('en-IN')}</td>
-                                        <td>₹{(obj.pendingRecievedAmount).toLocaleString('en-IN')}</td>
+                                        <td>₹{(obj.totalPaymentWOGST)?.toLocaleString('en-IN')}</td>
+                                        <td>₹{(obj.totalPaymentWGST)?.toLocaleString('en-IN')}</td>
+                                        <td>₹{(obj.remainingAmount)?.toLocaleString('en-IN')}</td>
+                                        <td>₹{(obj.pendingReceivedAmount)?.toLocaleString('en-IN')}</td>
                                         <td>
                                             <HiInformationCircle
                                                 style={{
