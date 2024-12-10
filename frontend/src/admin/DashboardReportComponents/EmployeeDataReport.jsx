@@ -2421,7 +2421,7 @@ function EmployeeDataReport() {
                                 {loading ?
                                     (<tbody>
                                         <tr>
-                                            <td colSpan="12">
+                                            <td colSpan="14">
                                                 <div className="LoaderTDSatyle">
                                                     <ClipLoader
                                                         color="lightgrey"
@@ -3025,11 +3025,13 @@ function EmployeeDataReport() {
                                     <th style={{ lineHeight: "32px" }}>Sr. No</th>
                                     <th>Lead Assign Date</th>
                                     <th>Untouched</th>
+                                    <th>Under Docs</th>
                                     <th>Busy</th>
                                     <th>Not Picked Up</th>
                                     <th>Junk</th>
                                     <th>Follow Up</th>
                                     <th>Interested</th>
+                                    <th>Forwarded</th>
                                     <th>Not Interested</th>
                                     <th>Matured</th>
                                     <th>Total Leads</th>
@@ -3139,6 +3141,9 @@ function EmployeeDataReport() {
                                                 {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
                                             </td>
                                             <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Under Docs")?.count || 0}
+                                            </td>
+                                            <td>
                                                 {obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}
                                             </td>
                                             <td>
@@ -3152,6 +3157,9 @@ function EmployeeDataReport() {
                                             </td>
                                             <td>
                                                 {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Forwarded")?.count || 0}
                                             </td>
                                             <td>
                                                 {obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}
@@ -3233,6 +3241,9 @@ function EmployeeDataReport() {
                                                 {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
                                             </td>
                                             <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Under Docs")?.count || 0}
+                                            </td>
+                                            <td>
                                                 {obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}
                                             </td>
                                             <td>
@@ -3246,6 +3257,9 @@ function EmployeeDataReport() {
                                             </td>
                                             <td>
                                                 {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Forwarded")?.count || 0}
                                             </td>
                                             <td>
                                                 {obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}

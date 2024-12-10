@@ -4809,9 +4809,9 @@ const fetchLeads = async () => {
   }
 };
 
-// Schedule the Task to Run Automatically at 12 PM
+
 // cron.schedule('0 10 * * *', async () => {
-cron.schedule('45 23 * * *', async () => { // (11:45 PM)
+cron.schedule('45 23 * * *', async () => { 
   console.log('Running scheduled task at 11:45 PM');
   const currentDate = new Date();
 
