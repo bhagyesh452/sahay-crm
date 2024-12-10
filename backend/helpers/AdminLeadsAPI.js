@@ -19,6 +19,7 @@ const multer = require('multer');
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+const CompleteRemarksHistoryLeads = require('../models/CompleteRemarksHistoryLeads.js');
 
 // Ensure the upload directory exists
 const deletedLeadsDir = path.join(__dirname, "..", "deletedLeads");
@@ -191,27 +192,27 @@ router.post('/update-ename', async (req, res) => {
             isUploadedManually: true,
             UploadedBy: "Ronak Kumar",
             //isDeletedEmployeeCompany: true,
-            maturedCaseUploaded:true
+            //maturedCaseUploaded:false
           },
         },
         { upsert: true, new: true }
       );
 
-      // Insert remarks history
-      const newRemark = new RemarksHistory({
-        time: new Date().toLocaleTimeString(),
-        date: new Date().toISOString().split('T')[0],
-        companyID: updateResult._id,
-        companyName: companyName,
-        remarks: item["Remarks"] || '',
-        bdmName: item["bdmName"] || '',
-        bdmRemarks: item["bdmRemarks"] || '',
-        bdeName: item["ename"] || '',
-      });
+      // // Insert remarks history
+      // const newRemark = new RemarksHistory({
+      //   time: new Date().toLocaleTimeString(),
+      //   date: new Date().toISOString().split('T')[0],
+      //   companyID: updateResult._id,
+      //   companyName: companyName,
+      //   remarks: item["Remarks"] || '',
+      //   bdmName: item["bdmName"] || '',
+      //   bdmRemarks: item["bdmRemarks"] || '',
+      //   bdeName: item["ename"] || '',
+      // });
 
-      await newRemark.save();
+      // await newRemark.save();
 
-      // Insert or update CompleteRemarksHistoryLeads
+      // // Insert or update CompleteRemarksHistoryLeads
       const newCompleteRemark = {
         companyID: updateResult._id,
         "Company Name": companyName,
