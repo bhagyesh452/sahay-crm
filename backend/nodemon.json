@@ -1,5 +1,0 @@
-{
-    "watch": ["src", "index.js"],
-    "ignore": ["batch_progress.json", "node_modules", "*.log"],
-    "ext": "js,json"
-  }

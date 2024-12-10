@@ -254,7 +254,7 @@ function EmployeeGeneralLeads({
     //                 generalData.map(async (company) => {
     //                     const companyNumber = String(company["Company Number"]);
     //                     const callHistoryForCompany = callHistoryMap[companyNumber] || [];
-    
+
     //                     // Save to the database if there is call history
     //                     if (callHistoryForCompany.length > 0) {
     //                         try {
@@ -269,7 +269,7 @@ function EmployeeGeneralLeads({
     //                     } else {
     //                         console.log(`No call history to save for company ${companyNumber}.`);
     //                     }
-    
+
     //                     // Update local generalData with call history
     //                     return {
     //                         ...company,
@@ -277,7 +277,7 @@ function EmployeeGeneralLeads({
     //                     };
     //                 })
     //             );
-    
+
     //             // Update the generalData state with enriched data
     //             setGeneralData(updatedGeneralData);
 

@@ -307,34 +307,34 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
   const [dataToDelete, setDataToDelete] = useState([]);
 
-  const handledeletefromcompany = async (filteredCompanyData , ename) => {
-    if (filteredCompanyData && filteredCompanyData.length !== 0) {
-      // console.log("Filtered company data is :", filteredCompanyData);
-      try {
-        // Update companyData in the second database
-        await Promise.all(
-          filteredCompanyData.map(async (item) => {
-            // if (item.Status === 'Matured') {
-            if (item.Status === "Matured") {
-              await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
-            } else {
-              await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${ename}`);
-            }
-          })
-        );
-        Swal.fire({
-          title: "Data Deleted!",
-          text: "You have successfully Deleted the data!",
-          icon: "success",
-        });
-        //console.log("All ename updates completed successfully");
-      } catch (error) {
-        console.error("Error updating enames:", error.message);
-        Swal.fire("Error deleting the employee");
-        // Handle the error as needed
-      }
-    }
-  };
+  // const handledeletefromcompany = async (filteredCompanyData , ename) => {
+  //   if (filteredCompanyData && filteredCompanyData.length !== 0) {
+  //     // console.log("Filtered company data is :", filteredCompanyData);
+  //     try {
+  //       // Update companyData in the second database
+  //       await Promise.all(
+  //         filteredCompanyData.map(async (item) => {
+  //           // if (item.Status === 'Matured') {
+  //           if (item.Status === "Matured") {
+  //             await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
+  //           } else {
+  //             await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${ename}`);
+  //           }
+  //         })
+  //       );
+  //       Swal.fire({
+  //         title: "Data Deleted!",
+  //         text: "You have successfully Deleted the data!",
+  //         icon: "success",
+  //       });
+  //       //console.log("All ename updates completed successfully");
+  //     } catch (error) {
+  //       console.error("Error updating enames:", error.message);
+  //       Swal.fire("Error deleting the employee");
+  //       // Handle the error as needed
+  //     }
+  //   }
+  // };
 
   const handleDeleteClick = async (itemId, nametochange, dataToDelete, filteredCompanyData) => {
     // Open the confirm delete modal
@@ -373,7 +373,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
 
           // Refresh the data after successful deletion
-          handledeletefromcompany(filteredCompanyData , nametochange);
+          //handledeletefromcompany(filteredCompanyData , nametochange);
           //fetchData();
           refetchActive();
           refetchDeleted();

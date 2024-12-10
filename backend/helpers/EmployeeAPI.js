@@ -1062,6 +1062,7 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: employeeData });
     }
   } catch (error) {
+    console.log(error)
     // Return an error if something goes wrong
     return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
   }
