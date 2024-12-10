@@ -24,6 +24,7 @@ const { sendMailEmployees } = require("./sendMailEmployees");
 const LeadsModel = require("../models/Leads.js");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const mongoose = require('mongoose');
+const CompanyModel = require("../models/Leads");
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -1043,6 +1044,7 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
     
         // Set isVisibleTeamLeads based on companyData length
         isVisibleTeamLeads = companyData.length > 0;
+        console.log("isVisibleTeamLeads", isVisibleTeamLeads)
       }
     }
 
