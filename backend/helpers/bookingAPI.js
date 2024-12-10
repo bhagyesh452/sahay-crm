@@ -208,8 +208,6 @@ router.get("/redesigned-final-leadData", async (req, res) => {
   }
 });
 
-
-
 router.get("/redesigned-final-leadData-tableView", async (req, res) => {
   try {
     const { page = 1, limit = 500, searchText = "" } = req.query; // Extract page, limit, and searchText
@@ -217,7 +215,6 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     const endIndex = startIndex + parseInt(limit);
 
     // Fetch all records from the database
-    
     const bookingsData = await RedesignedLeadformModel.find().sort({ bookingDate: -1 });
 
     // Process and flatten the data
@@ -228,7 +225,37 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
 
       // Process main booking services
       services.forEach((service) => {
-        allServicesWithDetails.push({
+        let remainingAmount = 0;
+        let pendingReceivedAmount = 0;
+
+        if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
+          // Full Advanced payment terms
+          remainingAmount = 0;
+          pendingReceivedAmount = service.totalPaymentWGST;
+        } else {
+          // Calculate remaining amount as totalPaymentWGST - firstPayment
+          remainingAmount = service.totalPaymentWGST - (service.firstPayment || 0);
+
+          // Calculate total received amount from remainingPayments
+          let totalReceivedAmount = 0;
+          booking.remainingPayments?.forEach((payment) => {
+            if (payment.serviceName === service.serviceName) {
+              totalReceivedAmount += payment.receivedPayment || 0;
+            }
+          });
+
+          // Adjust remainingAmount based on received payments
+          if (totalReceivedAmount >= remainingAmount) {
+            remainingAmount = 0;
+          } else {
+            remainingAmount -= totalReceivedAmount;
+          }
+
+          // Calculate pendingReceivedAmount
+          pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
+        }
+
+        const processedData = {
           "Company Name": booking["Company Name"] || "",
           "Company Number": booking["Company Number"] || "",
           "Company Email": booking["Company Email"] || "",
@@ -254,15 +281,52 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           thirdPaymentRemarks: service.thirdPaymentRemarks || "",
           fourthPaymentRemarks: service.fourthPaymentRemarks || "",
           bookingPublishDate: booking.bookingPublishDate || "",
-          pendingRecievedAmount: service.totalPaymentWGST - (service.remainingAmount || 0),
-          remainingAmount: service.remainingAmount || 0,
-        });
+          pendingReceivedAmount: pendingReceivedAmount,
+          remainingAmount: remainingAmount,
+        };
+
+        // Log data for the specific company
+        if (booking["Company Name"] === "SENGAL PRASHANT TESTING NOW") {
+          console.log("Processed Data for SENGAL PRASHANT TESTING NOW:", processedData);
+        }
+
+        allServicesWithDetails.push(processedData);
       });
 
       // Process moreBookings services
       moreBookings.forEach((moreBooking) => {
         moreBooking.services.forEach((service) => {
-          allServicesWithDetails.push({
+          let remainingAmount = 0;
+          let pendingReceivedAmount = 0;
+
+          if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
+            // Full Advanced payment terms
+            remainingAmount = 0;
+            pendingReceivedAmount = service.totalPaymentWGST;
+          } else {
+            // Calculate remaining amount as totalPaymentWGST - firstPayment
+            remainingAmount = service.totalPaymentWGST - (service.firstPayment || 0);
+
+            // Calculate total received amount from remainingPayments
+            let totalReceivedAmount = 0;
+            booking.remainingPayments?.forEach((payment) => {
+              if (payment.serviceName === service.serviceName) {
+                totalReceivedAmount += payment.receivedPayment || 0;
+              }
+            });
+
+            // Adjust remainingAmount based on received payments
+            if (totalReceivedAmount >= remainingAmount) {
+              remainingAmount = 0;
+            } else {
+              remainingAmount -= totalReceivedAmount;
+            }
+
+            // Calculate pendingReceivedAmount
+            pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
+          }
+
+          const processedData = {
             "Company Name": booking["Company Name"] || "",
             "Company Number": booking["Company Number"] || "",
             "Company Email": booking["Company Email"] || "",
@@ -288,9 +352,16 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             thirdPaymentRemarks: service.thirdPaymentRemarks || "",
             fourthPaymentRemarks: service.fourthPaymentRemarks || "",
             bookingPublishDate: moreBooking.bookingPublishDate || "",
-            pendingRecievedAmount: service.totalPaymentWGST - (service.remainingAmount || 0),
-            remainingAmount: service.remainingAmount || 0,
-          });
+            pendingReceivedAmount: pendingReceivedAmount,
+            remainingAmount: remainingAmount,
+          };
+
+          // Log data for the specific company
+          if (booking["Company Name"] === "SENGAL PRASHANT TESTING NOW") {
+            console.log("Processed Data for SENGAL PRASHANT TESTING NOW (More Bookings):", processedData);
+          }
+
+          allServicesWithDetails.push(processedData);
         });
       });
     });
@@ -318,6 +389,10 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 });
+
+
+
+
 
 
 router.get("/admin-redesigned-final-leadData", async (req, res) => {
