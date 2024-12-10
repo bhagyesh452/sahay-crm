@@ -214,8 +214,7 @@ function MonthWiseEmployeePerformanceReport() {
                                     <th>Sr. No</th>
                                     <th>Name</th>
                                     <th>Branch</th>
-                                    <th>Month</th>
-                                    <th>Year</th>
+                                    <th>Month-Year</th>
                                     <th>Target</th>
                                     <th>Achievement</th>
                                     <th>Ratio</th>
@@ -226,7 +225,7 @@ function MonthWiseEmployeePerformanceReport() {
                             <tbody>
                                 {isLoading ? (
                                     <tr>
-                                        <td colSpan="9">
+                                        <td colSpan="8">
                                             <div className="LoaderTDSatyle w-100">
                                                 <ClipLoader
                                                     color="lightgrey"
@@ -245,8 +244,7 @@ function MonthWiseEmployeePerformanceReport() {
                                                 <td>{empIndex + 1}</td>
                                                 <td>{employee.name}</td>
                                                 <td>{employee.branch}</td>
-                                                <td>{performance.month}</td>
-                                                <td>{performance.year}</td>
+                                                <td>{performance.month}-{performance.year}</td>
                                                 <td>₹ {formatAmount(performance.amount)}</td>
                                                 <td>₹ {formatAmount(performance.achievedAmount)}</td>
                                                 <td>{Math.round(performance.ratio)}%</td>
@@ -256,7 +254,7 @@ function MonthWiseEmployeePerformanceReport() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="9" className="text-center"><Nodata /></td>
+                                        <td colSpan="8" className="text-center"><Nodata /></td>
                                     </tr>
                                 )}
                             </tbody>
@@ -291,7 +289,7 @@ function MonthWiseEmployeePerformanceReport() {
                                 return (
                                     <tfoot className="admin-dash-tbl-tfoot">
                                         <tr style={{ fontWeight: 500 }}>
-                                            <td colSpan="5">Total</td>
+                                            <td colSpan="4">Total</td>
                                             <td>₹ {formatAmount(totalTarget)}</td>
                                             <td>₹ {formatAmount(totalAchievement)}</td>
                                             <td>{Math.round(avgRatio)}%</td>
