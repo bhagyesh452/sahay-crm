@@ -571,10 +571,19 @@ router.get("/admin-redesigned-final-leadData", async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 50;
     const searchText = req.query.searchText || "";
+    console.log(searchText)
 
-    const matchStage = searchText
-      ? { "Company Name": { $regex: searchText, $options: "i" } }
+    // Escape special characters in the search text for regex
+    const escapeRegex = (text) =>
+      text.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+
+    const sanitizedSearchText = escapeRegex(searchText);
+    console.log("sanitiyedSearchText", sanitizedSearchText)
+
+    const matchStage = sanitizedSearchText
+      ? { "Company Name": { $regex: sanitizedSearchText, $options: "i" } }
       : {};
+
 
     // Fetch data without date conversion and pagination
     const allData = await RedesignedLeadformModel.aggregate([
