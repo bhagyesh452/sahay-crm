@@ -152,8 +152,8 @@ const FilterableTableEmployeeDataReport = ({
             [filterField]: []
         }));
         onFilter(completeData);
-        allFilterFields([])
-        showingMenu(false)
+        allFilterFields([]);
+        showingMenu(false);
     };
 
     return (
@@ -209,8 +209,8 @@ const FilterableTableEmployeeDataReport = ({
                     <div className='w-50'>
                         <button className='filter-footer-btn btn-yellow' style={{ backgroundColor: "#e7e5e0" }}
                             onClick={() => {
-                                applyFilters(selectedFilters, filterField)
-                                showingMenu(false)
+                                applyFilters(selectedFilters, filterField);
+                                showingMenu(false);
                             }}
                         >
                             Apply Filters
