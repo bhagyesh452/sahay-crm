@@ -703,9 +703,7 @@ function BookingsTableView({ tableViewOpen }) {
                                         <td>{obj.bdmType}</td>
                                         <td>{formatDatePro(obj.bookingDate)}</td>
                                         <td>{obj.caCase}</td>
-                                        
                                         <td>{obj.withGST ? "Yes" : "No"}</td>
-                                        
                                         <td>₹{(obj.totalPaymentWGST)?.toLocaleString('en-IN')}</td>
                                         <td>₹{(obj.remainingAmount)?.toLocaleString('en-IN')}</td>
                                         <td>₹{(obj.pendingReceivedAmount)?.toLocaleString('en-IN')}</td>
