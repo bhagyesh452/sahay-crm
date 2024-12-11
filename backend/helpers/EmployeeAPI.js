@@ -1030,7 +1030,7 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
       })
         .select("ename")
         .lean();
-    
+
       // Check the length of teamLeadsData
       if (teamLeadsData.length > 0) {
         isVisibleTeamLeads = true;
@@ -1041,7 +1041,7 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
         })
           .select("bdmName")
           .lean();
-    
+
         // Set isVisibleTeamLeads based on companyData length
         isVisibleTeamLeads = companyData.length > 0;
         console.log("isVisibleTeamLeads", isVisibleTeamLeads)
@@ -3587,7 +3587,7 @@ router.get("/currentMonthLeadsReport/:employeeName", async (req, res) => {
 });
 
 router.get("/monthWisePerformanceReport", async (req, res) => {
-  const { branch, months, years, employees } = req.query;
+  const { branch, months, years, employees, employee } = req.query;
 
   // Get current month and year by default
   const currentDate = new Date();
@@ -3599,7 +3599,7 @@ router.get("/monthWisePerformanceReport", async (req, res) => {
 
     // Filter for relevant designations
     let employeesPerformanceData = data
-      .filter(employee => 
+      .filter(employee =>
         employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
       )
       .map(employee => ({
@@ -3610,7 +3610,7 @@ router.get("/monthWisePerformanceReport", async (req, res) => {
 
     // Apply filters based on query parameters
     if (branch) {
-      employeesPerformanceData = employeesPerformanceData.filter(employee => 
+      employeesPerformanceData = employeesPerformanceData.filter(employee =>
         employee.branch === branch
       );
     }
@@ -3621,26 +3621,33 @@ router.get("/monthWisePerformanceReport", async (req, res) => {
 
       employeesPerformanceData = employeesPerformanceData.map(employee => ({
         ...employee,
-        performance: employee.performance.filter(perf => 
+        performance: employee.performance.filter(perf =>
           filterMonths.includes(perf.month) && filterYears.includes(perf.year)
         ),
       })).filter(employee => employee.performance.length > 0); // Remove employees with no performance data
     }
 
     if (employees) {
-      const selectedEmployeeNames = Array.isArray(employees) 
-        ? employees 
+      const selectedEmployeeNames = Array.isArray(employees)
+        ? employees
         : [employees]; // Handle single or multiple employees in query
 
-      employeesPerformanceData = employeesPerformanceData.filter(employee => 
+      employeesPerformanceData = employeesPerformanceData.filter(employee =>
         selectedEmployeeNames.includes(employee.name)
+      );
+    }
+
+    // Filter by single employee name (if `employee` parameter is provided)
+    if (employee) {
+      employeesPerformanceData = employeesPerformanceData.filter(emp =>
+        emp.name.toLowerCase().includes(employee.toLowerCase())
       );
     }
 
     res.status(200).json({ result: true, message: "Performance report fetched successfully", data: employeesPerformanceData });
   } catch (error) {
     console.error("Error fetching month-wise performance report:", error);
-    res.status(500).json({result: false, message: "Error fetching month-wise performance report", error: error.message});
+    res.status(500).json({ result: false, message: "Error fetching month-wise performance report", error: error.message });
   }
 });
 
