@@ -10,6 +10,8 @@ import { GoArrowLeft } from "react-icons/go";
 import { GoArrowRight } from "react-icons/go";
 import FilterableTable from "../RM-CERTIFICATION/Extra-Components/FilterableTable.jsx";
 import { FaRegEye } from "react-icons/fa";
+import MaleEmployee from "../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../static/EmployeeImg/woman.png";
 
 
 function BookingsTableView({ tableViewOpen }) {
@@ -111,9 +113,9 @@ function BookingsTableView({ tableViewOpen }) {
 
                 // Update the state with the complete data
                 const completeData = response.data?.data || [];
-                
+
                 setDataToFilter(completeData); // Set it as filteredDataNew to work with filters
-               
+
             } catch (error) {
                 console.error("Error fetching complete data:", error);
             }
@@ -187,7 +189,7 @@ function BookingsTableView({ tableViewOpen }) {
     // console.log("filteredDataNew", allServicesWithDetails);
 
     console.log("data", bookingsData);
-    console.log("filteredDataNew" , filteredDataNew)
+    console.log("filteredDataNew", filteredDataNew)
     // console.log("dataToFilter", dataToFilter);
 
     return (
@@ -217,14 +219,14 @@ function BookingsTableView({ tableViewOpen }) {
                             </div>
                         </div>
                         <div className="d-flex align-items-center mr-1">
-                            {filteredDataNew && filteredDataNew.length !==0 &&
+                            {filteredDataNew && filteredDataNew.length !== 0 &&
                                 (<>
                                     <div className="selection-data mr-1">No of Bookings: {stats.noOfBookings}</div>
                                     <div className="selection-data mr-1">No of Companies: {stats.noOfCompanies}</div>
                                     <div className="selection-data mr-1">No of Services: {stats.noOfServices}</div>
-                                    <div className="selection-data mr-1">Total Payment: ₹{(parseInt(stats.totalPayment || 0,10)).toLocaleString('en-IN')}</div>
-                                    <div className="selection-data mr-1">Received Payment: ₹{(parseInt(stats.totalReceivedPayment || 0,10)).toLocaleString('en-IN')}</div>
-                                    <div className="selection-data mr-1">Remaining Payment: ₹{(parseInt(stats.totalRemainingPayment || 0,10)).toLocaleString('en-IN')}</div>
+                                    <div className="selection-data mr-1">Total Payment: ₹{(parseInt(stats.totalPayment || 0, 10)).toLocaleString('en-IN')}</div>
+                                    <div className="selection-data mr-1">Received Payment: ₹{(parseInt(stats.totalReceivedPayment || 0, 10)).toLocaleString('en-IN')}</div>
+                                    <div className="selection-data mr-1">Remaining Payment: ₹{(parseInt(stats.totalRemainingPayment || 0, 10)).toLocaleString('en-IN')}</div>
                                 </>)
                             }
 
@@ -741,62 +743,71 @@ function BookingsTableView({ tableViewOpen }) {
                                     </tbody>
                                 ) : (
                                     <tbody>
-                                        {fetchedBookingsData?.map((obj, index) => (
-                                            <tr key={index}>
-                                                <td className="rm-sticky-left-1">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                                                <td className="rm-sticky-left-2">{obj["Company Name"]}</td>
-                                                <td>{obj["Company Number"]}</td>
-                                                <td>{obj.serviceName}</td>
-                                                <td>
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
-                                                            <img src="" className="profile-photo"></img>
-                                                        </div>
-                                                        <div>
-                                                            {obj.bdeName}
-                                                        </div>
-                                                    </div>
+                                        {fetchedBookingsData?.map((obj, index) => {
+                                            const bdeProfilePhotoUrl = obj.bdeProfilePhoto?.length !== 0
+                                            ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdeEmpId}/${obj.bdeProfilePhoto?.[0]?.filename}`
+                                            : MaleEmployee ;
+                                            const bdmProfilePhotoUrl = obj.bdmProfilePhoto?.length !== 0
+                                            ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdmEmpId}/${obj.bdmProfilePhoto?.[0]?.filename}`
+                                            : MaleEmployee;
 
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
-                                                            <img src="" className="profile-photo"></img>
+                                            return (
+                                                < tr key={index} >
+                                                    <td className="rm-sticky-left-1">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                                                    <td className="rm-sticky-left-2">{obj["Company Name"]}</td>
+                                                    <td>{obj["Company Number"]}</td>
+                                                    <td>{obj.serviceName}</td>
+                                                    <td>
+                                                        <div className="d-flex align-items-center">
+                                                            <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
+                                                                <img src={bdeProfilePhotoUrl} className="profile-photo"></img>
+                                                            </div>
+                                                            <div>
+                                                                {obj.bdeName}
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            {obj.bdmName}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>{obj.bdmType}</td>
-                                                <td>{formatDatePro(obj.bookingDate)}</td>
-                                                <td>{obj.caCase}</td>
-                                                <td>{obj.withGST ? "Yes" : "No"}</td>
-                                                <td>
-                                                    <div className="bknglistviewtotalpayment">
-                                                        ₹{(obj.totalPaymentWGST)?.toLocaleString('en-IN')}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="bknglistviewreceivepayment">
-                                                        ₹{(obj.pendingReceivedAmount)?.toLocaleString('en-IN')}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="bknglistviewpendingpayment">
-                                                        ₹{(obj.remainingAmount)?.toLocaleString('en-IN')}
-                                                    </div>
-                                                </td>
-                                                <td className="rm-sticky-action">
-                                                    <button className="action-btn action-btn-alert ml-1">
-                                                        <FaRegEye
 
-                                                            onClick={() => handleInformationClick(obj["Company Name"])}
-                                                        />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                    <td>
+                                                        <div className="d-flex align-items-center">
+                                                            <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
+                                                                <img src={bdmProfilePhotoUrl} className="profile-photo"></img>
+                                                            </div>
+                                                            <div>
+                                                                {obj.bdmName}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{obj.bdmType}</td>
+                                                    <td>{formatDatePro(obj.bookingDate)}</td>
+                                                    <td>{obj.caCase}</td>
+                                                    <td>{obj.withGST ? "Yes" : "No"}</td>
+                                                    <td>
+                                                        <div className="bknglistviewtotalpayment">
+                                                            ₹{(parseInt(obj.totalPaymentWGST || 0, 10))?.toLocaleString('en-IN')}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="bknglistviewreceivepayment">
+                                                            ₹{(parseInt(obj.pendingReceivedAmount || 0, 10))?.toLocaleString('en-IN')}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="bknglistviewpendingpayment">
+                                                            ₹{(parseInt(obj.remainingAmount || 0, 10))?.toLocaleString('en-IN')}
+                                                        </div>
+                                                    </td>
+                                                    <td className="rm-sticky-action">
+                                                        <button className="action-btn action-btn-alert ml-1">
+                                                            <FaRegEye
+
+                                                                onClick={() => handleInformationClick(obj["Company Name"])}
+                                                            />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
                                     </tbody>
                                 )}
                             </table>
@@ -830,7 +841,7 @@ function BookingsTableView({ tableViewOpen }) {
                 </div>
             </div>
 
-        </div>
+        </div >
     );
 }
 
