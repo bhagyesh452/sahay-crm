@@ -282,22 +282,7 @@ function RmofCertificationMyBookings() {
                                         </b>
                                     </div>
                                 )}
-                                {/* <div className="d-flex align-item-center justify-content-between">
-                                    <div>
-                                        <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
-                                        <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
-                                            <LiaPagerSolid className="mr-1" />
-                                            Upload Approved Leads
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <input type="file" accept=".xlsx, .xls,.csv" style={{ display: 'none' }} id="fileInput" />
-                                        <button type="button" className="btn mybtn" onClick={handleDeleteFile}>
-                                            <LiaPagerSolid className="mr-1" />
-                                            Delete Approved Leads
-                                        </button>
-                                    </div>
-                                </div> */}
+                                
                             </div>
                         </div>
                     </div>

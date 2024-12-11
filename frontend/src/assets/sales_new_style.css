@@ -174,7 +174,7 @@
 .CompanyProfileMain
 {
     height: calc(100vh - 114px);
-    background: #fff;
+    background: #fafafa;
     overflow: auto;
 }
 .CompanyProfileHead
@@ -232,8 +232,9 @@
 .CompanyProfileAccordi .accordion-item
 {
     margin: 10px 0px;
-    border-radius: 5px;
+    border-radius: 15px;
     border: 1px solid #eee !important;
+    background: #fff;
 }
 .CompanyProfileAccordi .accordion-button
 {
@@ -265,7 +266,7 @@
     border-bottom: 1px solid #eee !important;
     width: 100%;
     font-size: 13px;
-    margin: 10px 0 0 0;
+    margin: 0 0 0 0;
 }
 .cmpnyP_nav_tabs .nav-item .nav-link
 {
@@ -284,7 +285,7 @@
 }
 .History_Timeline_Main
 {
-    height: calc(100vh - 270px);
+    height: calc(100vh - 285px);
     background: #fafafa;
     padding: 10px;
     border-radius: 5px;
@@ -293,7 +294,7 @@
 }
 .Overview_Main
 {
-    height: calc(100vh - 300px);
+    height: calc(100vh - 316px);
     background: #f6f6f6;
     padding: 10px;
     border-radius: 5px;
@@ -394,4 +395,148 @@
     font-weight: 500 !IMPORTANT;
     background: #ffdb6e !important;
     color: #30343b;
+}
+.cmpnyP_nav_main
+{
+    padding: 5px;
+    border: 1px solid #eeee;
+    border-radius: 15px;
+    background: #fff;
+    margin-top: 10px;
+}
+.cmpny-docs-card
+{
+    border: 1px solid #eeee;
+    border-radius: 15px;
+    background: #fff;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.cmpny-docs-card-head
+{
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+}
+.cmpny-docs-card-body 
+{
+    padding: 12px;
+}
+
+.q-modal
+{
+    background: #ffc107 !important;
+    padding: 30px 0px;
+}
+.que-main
+{
+    background-color: white;
+    width: 80%;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    position: relative;
+    rotate: -2deg;
+    z-index: 2;
+}
+.question-number {
+    position: absolute;
+    top: 0px;
+    background-color: #7258d1;
+    color: white;
+    font-size: 23px;
+    font-weight: bold;
+    padding: 5px 16px;
+    border-radius: 4px;
+    width: 84px;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    rotate: 2deg;
+  }
+  
+  .question-text {
+    font-size: 1.5em;
+    color: #7258d1; /* Dark gray text */
+    margin: 14px 10px;
+    font-weight: bold;
+    rotate: 2deg;
+  }
+
+.que-main::before
+{
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    content: "";
+    background: #30343b00;
+    border-top: 3px solid #7258d1;
+    border-right: 3px solid #7258d1;
+    border-radius: 0 10px 0 0;
+    right: -10px;
+    top: -9px;
+}
+.que-main::after
+{
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    content: "";
+    background: #30343b00;
+    border-bottom: 3px solid #7258d1;
+    border-left: 3px solid #7258d1;
+    border-radius: 0 0 0 10px;
+    left: -10px;
+    bottom: -12px;
+}
+.option-main
+{
+    width: 80%;
+    background: #7258d1;
+    padding: 16px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #fff;
+    rotate: -2deg;
+    position: relative;
+}
+.option-text
+{
+    letter-spacing: 1px;
+    rotate: 2deg;
+}
+.opt-row
+{
+    margin: 60px auto 0;
+    width: 80%;
+}
+.option-main::before
+{
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    content: "";
+    background: #30343b00;
+    border-top: 3px solid #fff;
+    border-right: 3px solid #fff;
+    border-radius: 0 6px 0 0;
+    right: -9px;
+    top: -10px;
+}
+
+.option-main::after
+{
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    content: "";
+    background: #30343b00;
+    border-left: 3px solid #fff;
+    border-bottom: 3px solid #fff;
+    border-radius: 0 0 0 6px;
+    left: -9px;
+    bottom: -10px;
 }

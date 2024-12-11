@@ -26,6 +26,7 @@ const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryFor
 const ObjectId = mongoose.Types.ObjectId;
 const ExpenseReportModel = require("../models/ExpenseReportModel");
 const ProjectionModel = require("../models/NewProjections.js");
+const adminModel = require('../models/Admin.js');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -208,14 +209,202 @@ router.get("/redesigned-final-leadData", async (req, res) => {
   }
 });
 
+// router.get("/redesigned-final-leadData-tableView", async (req, res) => {
+//   try {
+//     const { page = 1, limit = 500, searchText = "" } = req.query; // Extract page, limit, and searchText
+//     const startIndex = (page - 1) * limit;
+//     const endIndex = startIndex + parseInt(limit);
+
+//     // Fetch all records from the database
+//     const bookingsData = await RedesignedLeadformModel.find().sort({ bookingDate: -1 });
+
+//     // Process and flatten the data
+//     const allServicesWithDetails = [];
+//     bookingsData.forEach((booking) => {
+//       const services = booking.services || [];
+//       const moreBookings = booking.moreBookings || [];
+
+//       // Process main booking services
+//       services.forEach((service) => {
+//         let remainingAmount = 0;
+//         let pendingReceivedAmount = 0;
+
+//         if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
+//           // Full Advanced payment terms
+//           remainingAmount = 0;
+//           pendingReceivedAmount = service.totalPaymentWGST;
+//         } else {
+//           // Calculate remaining amount as totalPaymentWGST - firstPayment
+//           remainingAmount = service.totalPaymentWGST - (service.firstPayment || 0);
+
+//           // Calculate total received amount from remainingPayments
+//           let totalReceivedAmount = 0;
+//           booking.remainingPayments?.forEach((payment) => {
+//             if (payment.serviceName === service.serviceName) {
+//               totalReceivedAmount += payment.receivedPayment || 0;
+//             }
+//           });
+
+//           // Adjust remainingAmount based on received payments
+//           if (totalReceivedAmount >= remainingAmount) {
+//             remainingAmount = 0;
+//           } else {
+//             remainingAmount -= totalReceivedAmount;
+//           }
+
+//           // Calculate pendingReceivedAmount
+//           pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
+//         }
+
+//         const processedData = {
+//           "Company Name": booking["Company Name"] || "",
+//           "Company Number": booking["Company Number"] || "",
+//           "Company Email": booking["Company Email"] || "",
+//           panNumber: booking.panNumber || "",
+//           bdeName: booking.bdeName || "",
+//           bdeEmail: booking.bdeEmail || "",
+//           bdmName: booking.bdmName || "",
+//           bdmType: booking.bdmType || "Close-by",
+//           bookingDate: booking.bookingDate || "",
+//           paymentMethod: booking.paymentMethod || "",
+//           caCase: booking.caCase || "Not Applicable",
+//           caNumber: booking.caNumber || 0,
+//           caEmail: booking.caEmail || "",
+//           serviceName: service.serviceName || "",
+//           totalPaymentWOGST: service.totalPaymentWOGST || 0,
+//           totalPaymentWGST: service.totalPaymentWGST || 0,
+//           withGST: service.withGST || false,
+//           firstPayment: service.firstPayment || 0,
+//           secondPayment: service.secondPayment || 0,
+//           thirdPayment: service.thirdPayment || 0,
+//           fourthPayment: service.fourthPayment || 0,
+//           secondPaymentRemarks: service.secondPaymentRemarks || "",
+//           thirdPaymentRemarks: service.thirdPaymentRemarks || "",
+//           fourthPaymentRemarks: service.fourthPaymentRemarks || "",
+//           bookingPublishDate: booking.bookingPublishDate || "",
+//           pendingReceivedAmount: pendingReceivedAmount || 0,
+//           remainingAmount: remainingAmount || 0,
+//         };
+
+//         // Log data for the specific company
+//         if (booking["Company Name"] === "SENGAL PRASHANT TESTING NOW") {
+//           console.log("Processed Data for SENGAL PRASHANT TESTING NOW:", processedData);
+//         }
+
+//         allServicesWithDetails.push(processedData);
+//       });
+
+//       // Process moreBookings services
+//       moreBookings.forEach((moreBooking) => {
+//         moreBooking.services.forEach((service) => {
+//           let remainingAmount = 0;
+//           let pendingReceivedAmount = 0;
+
+//           if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
+//             // Full Advanced payment terms
+//             remainingAmount = 0;
+//             pendingReceivedAmount = service.totalPaymentWGST;
+//           } else {
+//             // Calculate remaining amount as totalPaymentWGST - firstPayment
+//             remainingAmount = service.totalPaymentWGST - (service.firstPayment || 0);
+
+//             // Calculate total received amount from remainingPayments
+//             let totalReceivedAmount = 0;
+//             booking.remainingPayments?.forEach((payment) => {
+//               if (payment.serviceName === service.serviceName) {
+//                 totalReceivedAmount += payment.receivedPayment || 0;
+//               }
+//             });
+
+//             // Adjust remainingAmount based on received payments
+//             if (totalReceivedAmount >= remainingAmount) {
+//               remainingAmount = 0;
+//             } else {
+//               remainingAmount -= totalReceivedAmount;
+//             }
+
+//             // Calculate pendingReceivedAmount
+//             pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
+//           }
+
+//           const processedData = {
+//             "Company Name": booking["Company Name"] || "",
+//             "Company Number": booking["Company Number"] || "",
+//             "Company Email": booking["Company Email"] || "",
+//             panNumber: booking.panNumber || "",
+//             bdeName: moreBooking.bdeName || "",
+//             bdeEmail: moreBooking.bdeEmail || "",
+//             bdmName: moreBooking.bdmName || "",
+//             bdmType: moreBooking.bdmType || "Close-by",
+//             bookingDate: moreBooking.bookingDate || "",
+//             paymentMethod: moreBooking.paymentMethod || "",
+//             caCase: moreBooking.caCase || "",
+//             caNumber: moreBooking.caNumber || 0,
+//             caEmail: moreBooking.caEmail || "",
+//             serviceName: service.serviceName || "",
+//             totalPaymentWOGST: service.totalPaymentWOGST || 0,
+//             totalPaymentWGST: service.totalPaymentWGST || 0,
+//             withGST: service.withGST || false,
+//             firstPayment: service.firstPayment || 0,
+//             secondPayment: service.secondPayment || 0,
+//             thirdPayment: service.thirdPayment || 0,
+//             fourthPayment: service.fourthPayment || 0,
+//             secondPaymentRemarks: service.secondPaymentRemarks || "",
+//             thirdPaymentRemarks: service.thirdPaymentRemarks || "",
+//             fourthPaymentRemarks: service.fourthPaymentRemarks || "",
+//             bookingPublishDate: moreBooking.bookingPublishDate || "",
+//             pendingReceivedAmount: pendingReceivedAmount || 0,
+//             remainingAmount: remainingAmount || 0,
+//           };
+//           allServicesWithDetails.push(processedData);
+//         });
+//       });
+//     });
+
+//     // Apply search filter
+//     const filteredData = allServicesWithDetails.filter((item) => {
+//       const normalizedSearchText = searchText.toLowerCase();
+//       return (
+//         item["Company Name"].toLowerCase().includes(normalizedSearchText) ||
+//         item["Company Number"].toString().includes(normalizedSearchText) ||
+//         item["Company Email"].toLowerCase().includes(normalizedSearchText)
+//       );
+//     });
+
+//     // Apply pagination to filtered data
+//     const paginatedData = filteredData.slice(startIndex, endIndex);
+
+//     // Respond with paginated data and total count
+//     res.status(200).json({
+//       totalCount: filteredData.length, // Total number of filtered services
+//       data: paginatedData, // Current page data
+//     });
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     res.status(500).json({ error: "Error fetching data" });
+//   }
+// });
+
 router.get("/redesigned-final-leadData-tableView", async (req, res) => {
   try {
-    const { page = 1, limit = 500, searchText = "" } = req.query; // Extract page, limit, and searchText
+    const { page = 1, limit = 500, searchText = "" } = req.query;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + parseInt(limit);
 
     // Fetch all records from the database
     const bookingsData = await RedesignedLeadformModel.find().sort({ bookingDate: -1 });
+
+    // Fetch employee details from adminModel
+    const adminData = await adminModel.find({}, { ename: 1, profilePhoto: 1, _id: 1 });
+
+    // Map adminData to a lookup object for quick access
+    const employeeProfileMap = adminData.reduce((map, employee) => {
+      map[employee.ename] = {
+        empId: employee._id, // Employee ID
+        profilePhoto: employee.profilePhoto || null, // Profile Photo
+      }; // Assign profile photo or null if not available
+      return map;
+    }, {});
 
     // Process and flatten the data
     const allServicesWithDetails = [];
@@ -229,14 +418,11 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
         let pendingReceivedAmount = 0;
 
         if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
-          // Full Advanced payment terms
           remainingAmount = 0;
           pendingReceivedAmount = service.totalPaymentWGST;
         } else {
-          // Calculate remaining amount as totalPaymentWGST - firstPayment
           remainingAmount = service.totalPaymentWGST - (service.firstPayment || 0);
 
-          // Calculate total received amount from remainingPayments
           let totalReceivedAmount = 0;
           booking.remainingPayments?.forEach((payment) => {
             if (payment.serviceName === service.serviceName) {
@@ -244,14 +430,12 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             }
           });
 
-          // Adjust remainingAmount based on received payments
           if (totalReceivedAmount >= remainingAmount) {
             remainingAmount = 0;
           } else {
             remainingAmount -= totalReceivedAmount;
           }
 
-          // Calculate pendingReceivedAmount
           pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
         }
 
@@ -264,6 +448,10 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           bdeEmail: booking.bdeEmail || "",
           bdmName: booking.bdmName || "",
           bdmType: booking.bdmType || "Close-by",
+          bdeEmpId: employeeProfileMap[booking.bdeName]?.empId || null, // BDE Employee ID
+          bdeProfilePhoto: employeeProfileMap[booking.bdeName]?.profilePhoto || null, // BDE Profile Photo
+          bdmEmpId: employeeProfileMap[booking.bdmName]?.empId || null, // BDM Employee ID
+          bdmProfilePhoto: employeeProfileMap[booking.bdmName]?.profilePhoto || null, // BDM Profile Photo
           bookingDate: booking.bookingDate || "",
           paymentMethod: booking.paymentMethod || "",
           caCase: booking.caCase || "Not Applicable",
@@ -285,11 +473,6 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           remainingAmount: remainingAmount || 0,
         };
 
-        // Log data for the specific company
-        if (booking["Company Name"] === "SENGAL PRASHANT TESTING NOW") {
-          console.log("Processed Data for SENGAL PRASHANT TESTING NOW:", processedData);
-        }
-
         allServicesWithDetails.push(processedData);
       });
 
@@ -300,14 +483,11 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           let pendingReceivedAmount = 0;
 
           if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
-            // Full Advanced payment terms
             remainingAmount = 0;
             pendingReceivedAmount = service.totalPaymentWGST;
           } else {
-            // Calculate remaining amount as totalPaymentWGST - firstPayment
             remainingAmount = service.totalPaymentWGST - (service.firstPayment || 0);
 
-            // Calculate total received amount from remainingPayments
             let totalReceivedAmount = 0;
             booking.remainingPayments?.forEach((payment) => {
               if (payment.serviceName === service.serviceName) {
@@ -315,14 +495,12 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
               }
             });
 
-            // Adjust remainingAmount based on received payments
             if (totalReceivedAmount >= remainingAmount) {
               remainingAmount = 0;
             } else {
               remainingAmount -= totalReceivedAmount;
             }
 
-            // Calculate pendingReceivedAmount
             pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
           }
 
@@ -335,6 +513,10 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             bdeEmail: moreBooking.bdeEmail || "",
             bdmName: moreBooking.bdmName || "",
             bdmType: moreBooking.bdmType || "Close-by",
+            bdeEmpId: employeeProfileMap[booking.bdeName]?.empId || null, // BDE Employee ID
+            bdeProfilePhoto: employeeProfileMap[booking.bdeName]?.profilePhoto || null, // BDE Profile Photo
+            bdmEmpId: employeeProfileMap[booking.bdmName]?.empId || null, // BDM Employee ID
+            bdmProfilePhoto: employeeProfileMap[booking.bdmName]?.profilePhoto || null, // BDM Profile Photo
             bookingDate: moreBooking.bookingDate || "",
             paymentMethod: moreBooking.paymentMethod || "",
             caCase: moreBooking.caCase || "",
@@ -356,11 +538,6 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             remainingAmount: remainingAmount || 0,
           };
 
-          // Log data for the specific company
-          if (booking["Company Name"] === "SENGAL PRASHANT TESTING NOW") {
-            console.log("Processed Data for SENGAL PRASHANT TESTING NOW (More Bookings):", processedData);
-          }
-
           allServicesWithDetails.push(processedData);
         });
       });
@@ -379,10 +556,9 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     // Apply pagination to filtered data
     const paginatedData = filteredData.slice(startIndex, endIndex);
 
-    // Respond with paginated data and total count
     res.status(200).json({
-      totalCount: filteredData.length, // Total number of filtered services
-      data: paginatedData, // Current page data
+      totalCount: filteredData.length,
+      data: paginatedData,
     });
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -395,10 +571,19 @@ router.get("/admin-redesigned-final-leadData", async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 50;
     const searchText = req.query.searchText || "";
+    console.log(searchText)
 
-    const matchStage = searchText
-      ? { "Company Name": { $regex: searchText, $options: "i" } }
+    // Escape special characters in the search text for regex
+    const escapeRegex = (text) =>
+      text.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+
+    const sanitizedSearchText = escapeRegex(searchText);
+    console.log("sanitiyedSearchText", sanitizedSearchText)
+
+    const matchStage = sanitizedSearchText
+      ? { "Company Name": { $regex: sanitizedSearchText, $options: "i" } }
       : {};
+
 
     // Fetch data without date conversion and pagination
     const allData = await RedesignedLeadformModel.aggregate([

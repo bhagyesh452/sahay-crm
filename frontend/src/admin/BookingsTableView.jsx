@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +10,9 @@ import { GoArrowLeft } from "react-icons/go";
 import { GoArrowRight } from "react-icons/go";
 import FilterableTable from "../RM-CERTIFICATION/Extra-Components/FilterableTable.jsx";
 import { FaRegEye } from "react-icons/fa";
+import MaleEmployee from "../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../static/EmployeeImg/woman.png";
+
 
 function BookingsTableView({ tableViewOpen }) {
     const [currentPage, setCurrentPage] = useState(1);
@@ -36,10 +39,10 @@ function BookingsTableView({ tableViewOpen }) {
 
 
     const { data: bookingsData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
-        queryKey: ["bookingsData", currentPage , searchText],
+        queryKey: ["bookingsData", currentPage, searchText],
         queryFn: async () => {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData-tableView`, {
-                params: { page: currentPage, limit: itemsPerPage ,searchText}, // Pass currentPage and limit to the backend
+                params: { page: currentPage, limit: itemsPerPage, searchText }, // Pass currentPage and limit to the backend
             });
             return response.data; // Return the fetched data
         },
@@ -110,9 +113,9 @@ function BookingsTableView({ tableViewOpen }) {
 
                 // Update the state with the complete data
                 const completeData = response.data?.data || [];
-                //setCompleteBookingsData(completeData);
+
                 setDataToFilter(completeData); // Set it as filteredDataNew to work with filters
-                //setFetchedBookingsData(completeData); // Update main data source
+
             } catch (error) {
                 console.error("Error fetching complete data:", error);
             }
@@ -154,10 +157,40 @@ function BookingsTableView({ tableViewOpen }) {
         navigate(`/md/bookings`, { state: { searchText: companyName } });
     };
 
+    const stats = useMemo(() => {
+        // Track unique bookings using a Set
+        const uniqueBookings = new Set();
+
+        // Iterate through the filtered data
+        filteredDataNew.forEach((item) => {
+            const bookingIdentifier = `${item["Company Name"]}-${item.bookingDate}`;
+            uniqueBookings.add(bookingIdentifier); // Add unique Company Name + bookingDate combination
+        });
+
+        const noOfBookings = uniqueBookings.size; // Count unique bookings
+        const uniqueCompanies = new Set(filteredDataNew.map((data) => data["Company Name"]));
+        const noOfCompanies = uniqueCompanies.size;
+        const noOfServices = filteredDataNew.length;
+        const totalPayment = filteredDataNew.reduce((sum, item) => sum + (item.totalPaymentWGST || 0), 0);
+        const totalReceivedPayment = filteredDataNew.reduce((sum, item) => sum + (item.pendingReceivedAmount || 0), 0);
+        const totalRemainingPayment = filteredDataNew.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
+        console.log("no of bookings", noOfBookings)
+        return {
+            noOfBookings,
+            noOfCompanies,
+            noOfServices,
+            totalPayment,
+            totalReceivedPayment,
+            totalRemainingPayment,
+        };
+    }, [filteredDataNew]);
+
+
     // console.log("filteredDataNew", allServicesWithDetails);
 
     console.log("data", bookingsData);
-    console.log("dataToFilter", dataToFilter);
+    console.log("filteredDataNew", filteredDataNew)
+    // console.log("dataToFilter", dataToFilter);
 
     return (
         <div>
@@ -165,7 +198,7 @@ function BookingsTableView({ tableViewOpen }) {
                 <div className="container-xl">
                     <div className="d-flex align-items-center justify-content-between">
                         <div className="d-flex align-items-center">
-                            <div class="input-icon ml-1">
+                            <div class="input-icon">
                                 <span class="input-icon-addon">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -185,572 +218,630 @@ function BookingsTableView({ tableViewOpen }) {
                                 />
                             </div>
                         </div>
-                        <div className="d-flex align-items-center">
-                            <div className="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" className="btn btn-primary mr-1" onClick={() => handleViewTableView()}>
-                                    Grid View
-                                </button>
+                        <div className="d-flex align-items-center mr-1">
+                            {filteredDataNew && filteredDataNew.length !== 0 &&
+                                (<>
+                                    <div className="selection-data mr-1">No of Bookings: {stats.noOfBookings}</div>
+                                    <div className="selection-data mr-1">No of Companies: {stats.noOfCompanies}</div>
+                                    <div className="selection-data mr-1">No of Services: {stats.noOfServices}</div>
+                                    <div className="selection-data mr-1">Total Payment: ₹{(parseInt(stats.totalPayment || 0, 10)).toLocaleString('en-IN')}</div>
+                                    <div className="selection-data mr-1">Received Payment: ₹{(parseInt(stats.totalReceivedPayment || 0, 10)).toLocaleString('en-IN')}</div>
+                                    <div className="selection-data mr-1">Remaining Payment: ₹{(parseInt(stats.totalRemainingPayment || 0, 10)).toLocaleString('en-IN')}</div>
+                                </>)
+                            }
+
+                            <div className="d-flex align-items-center">
+                                <div className="btn-group" role="group" aria-label="Basic example">
+                                    <button type="button" className="btn action-btn-primary" onClick={() => handleViewTableView()}>
+                                        Grid View
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="sales-panels-main no-select container-xl mt-2">
-                <div className="table table-responsive e-Leadtable-style m-0">
-                    <table className="table table-vcenter table-nowrap" style={{ width: "1800px" }}>
-                        <thead>
-                            <tr className="tr-sticky">
-                                <th className="rm-sticky-left-1">Sr.No</th>
-                                <th className="rm-sticky-left-2">
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['Company Name'] = el}>
-                                            Company Name
-                                        </div>
+            <div className="page-body">
+                <div className="sales-panels-main no-select">
+                    <div className="container-xl mt-2">
+                        <div className="table table-responsive e-Leadtable-style m-0" id="bknglisth" style={{ borderRadius: "6px", border: "1px solid #ccc" }}>
+                            <table className="table table-vcenter table-nowrap" style={{ width: "max-content" }}>
+                                <thead>
+                                    <tr className="tr-sticky">
+                                        <th className="rm-sticky-left-1">Sr.No</th>
+                                        <th className="rm-sticky-left-2">
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['Company Name'] = el}>
+                                                    Company Name
+                                                </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('Company Name') ? (
-                                                <FaFilter onClick={() => handleFilterClick("Company Name")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("Company Name")} />
-                                            )}
-                                        </div>
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('Company Name') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                                                    )}
+                                                </div>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'Company Name' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'Company Name' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['Company Number'] = el}>
-                                            Company Number
-                                        </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['Company Number'] = el}>
+                                                    Company Number
+                                                </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('Company Number') ? (
-                                                <FaFilter onClick={() => handleFilterClick("Company Number")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("Company Number")} />
-                                            )}
-                                        </div>
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('Company Number') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                                                    )}
+                                                </div>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'Company Number' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'Company Number' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['serviceName'] = el}>
-                                            Service Name
-                                        </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['serviceName'] = el}>
+                                                    Service Name
+                                                </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('serviceName') ? (
-                                                <FaFilter onClick={() => handleFilterClick("serviceName")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("serviceName")} />
-                                            )}
-                                        </div>
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('serviceName') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("serviceName")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("serviceName")} />
+                                                    )}
+                                                </div>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'serviceName' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={fetchedBookingsData}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'serviceName' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={fetchedBookingsData}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['bdeName'] = el}>
-                                            BDE Name
-                                        </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['bdeName'] = el}>
+                                                    BDE Name
+                                                </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('bdeName') ? (
-                                                <FaFilter onClick={() => handleFilterClick("bdeName")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("bdeName")} />
-                                            )}
-                                        </div>
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('bdeName') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                    )}
+                                                </div>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'bdeName' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['bdmName'] = el}>
-                                            BDM Name
-                                        </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['bdmName'] = el}>
+                                                    BDM Name
+                                                </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('bdmName') ? (
-                                                <FaFilter onClick={() => handleFilterClick("bdmName")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("bdmName")} />
-                                            )}
-                                        </div>
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('bdmName') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("bdmName")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("bdmName")} />
+                                                    )}
+                                                </div>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'bdmName' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'bdmName' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['bdmType'] = el}>
-                                            bdmType
-                                        </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['bdmType'] = el}>
+                                                    bdmType
+                                                </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('bdmType') ? (
-                                                <FaFilter onClick={() => handleFilterClick("bdmType")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("bdmType")} />
-                                            )}
-                                        </div>
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('bdmType') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("bdmType")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("bdmType")} />
+                                                    )}
+                                                </div>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'bdmType' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'bdmType' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['Booking Date'] = el}>
-                                            Booking Date
-                                        </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['bookingDate'] = el}>
+                                                    Booking Date
+                                                </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('Booking Date') ? (
-                                                <FaFilter onClick={() => handleFilterClick("Booking Date")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("Booking Date")} />
-                                            )}
-                                        </div>
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('bookingDate') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                    )}
+                                                </div>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'Booking Date' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'bookingDate' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th> <div className='d-flex align-items-center justify-content-center position-relative'>
-                                    <div ref={el => fieldRefs.current['caCase'] = el}>
-                                        CA Case
-                                    </div>
-
-                                    <div className='RM_filter_icon'>
-                                        {isActiveField('caCase') ? (
-                                            <FaFilter onClick={() => handleFilterClick("caCase")} />
-                                        ) : (
-                                            <BsFilter onClick={() => handleFilterClick("caCase")} />
-                                        )}
-                                    </div>
-
-                                    {/* ---------------------filter component--------------------------- */}
-                                    {showFilterMenu && activeFilterField === 'caCase' && (
-                                        <div
-                                            ref={filterMenuRef}
-                                            className="filter-menu"
-                                            style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                        >
-                                            <FilterableTable
-                                                noofItems={setnoOfAvailableData}
-                                                allFilterFields={setActiveFilterFields}
-                                                filteredData={filteredDataNew}
-                                                activeTab={"General"}
-                                                data={fetchedBookingsData}
-                                                filterField={activeFilterField}
-                                                onFilter={handleFilter}
-                                                completeData={completeBookingsData}
-                                                showingMenu={setShowFilterMenu}
-                                                dataForFilter={dataToFilter}
-                                                refetch={refetchBookingData}
-                                                isComingFromAdmin={true}
-                                            />
-                                        </div>
-                                    )}
-                                </div></th>
-                             
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['withGST'] = el}>
-                                            With GST
-                                        </div>
-
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('withGST') ? (
-                                                <FaFilter onClick={() => handleFilterClick("withGST")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("withGST")} />
-                                            )}
-                                        </div>
-
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'withGST' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                        </th>
+                                        <th> <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['caCase'] = el}>
+                                                CA Case
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                               
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
-                                            Total Payment With GST
-                                        </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('totalPaymentWGST') ? (
-                                                <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
-                                            )}
-                                        </div>
-
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('caCase') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("caCase")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("caCase")} />
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['remainingAmount'] = el}>
-                                            Pending Amount
-                                        </div>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('remainingAmount') ? (
-                                                <FaFilter onClick={() => handleFilterClick("remainingAmount")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("remainingAmount")} />
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'caCase' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredDataNew}
+                                                        activeTab={"General"}
+                                                        data={fetchedBookingsData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeBookingsData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                        refetch={refetchBookingData}
+                                                        isComingFromAdmin={true}
+                                                    />
+                                                </div>
                                             )}
-                                        </div>
+                                        </div></th>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'remainingAmount' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['withGST'] = el}>
+                                                    With GST
+                                                </div>
+
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('withGST') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("withGST")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("withGST")} />
+                                                    )}
+                                                </div>
+
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'withGST' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                                        <div ref={el => fieldRefs.current['pendingRecievedAmount'] = el}>
-                                            Recieved Amount
-                                        </div>
+                                        </th>
 
-                                        <div className='RM_filter_icon'>
-                                            {isActiveField('pendingRecievedAmount') ? (
-                                                <FaFilter onClick={() => handleFilterClick("pendingRecievedAmount")} />
-                                            ) : (
-                                                <BsFilter onClick={() => handleFilterClick("pendingRecievedAmount")} />
-                                            )}
-                                        </div>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
+                                                    Total Payment With GST
+                                                </div>
 
-                                        {/* ---------------------filter component--------------------------- */}
-                                        {showFilterMenu && activeFilterField === 'pendingRecievedAmount' && (
-                                            <div
-                                                ref={filterMenuRef}
-                                                className="filter-menu"
-                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                            >
-                                                <FilterableTable
-                                                    noofItems={setnoOfAvailableData}
-                                                    allFilterFields={setActiveFilterFields}
-                                                    filteredData={filteredDataNew}
-                                                    activeTab={"General"}
-                                                    data={fetchedBookingsData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeBookingsData}
-                                                    showingMenu={setShowFilterMenu}
-                                                    dataForFilter={dataToFilter}
-                                                    refetch={refetchBookingData}
-                                                    isComingFromAdmin={true}
-                                                />
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('totalPaymentWGST') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                                                    )}
+                                                </div>
+
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </th>
-                                <th>
-                                    Booking
-                                </th>
-                            </tr>
-                        </thead>
-                        {isBookingDataLoading ? (
-                            <tbody>
-                                <tr>
-                                    <td colSpan="14">
-                                        <div className="LoaderTDSatyle">
-                                            <ClipLoader
-                                                color="lightgrey"
-                                                loading
-                                                size={30}
-                                                aria-label="Loading Spinner"
-                                                data-testid="loader"
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        ) : (
-                            <tbody>
-                                {fetchedBookingsData?.map((obj, index) => (
-                                    <tr key={index}>
-                                        <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                                        <td className="rm-sticky-left-2">{obj["Company Name"]}</td>
-                                        <td>{obj["Company Number"]}</td>
-                                        <td>{obj.serviceName}</td>
-                                        <td>{obj.bdeName}</td>
-                                        <td>{obj.bdmName}</td>
-                                        <td>{obj.bdmType}</td>
-                                        <td>{formatDatePro(obj.bookingDate)}</td>
-                                        <td>{obj.caCase}</td>
-                                        <td>{obj.withGST ? "Yes" : "No"}</td>
-                                        <td>₹{(obj.totalPaymentWGST)?.toLocaleString('en-IN')}</td>
-                                        <td>₹{(obj.remainingAmount)?.toLocaleString('en-IN')}</td>
-                                        <td>₹{(obj.pendingReceivedAmount)?.toLocaleString('en-IN')}</td>
-                                        <td>
-                                            <FaRegEye
-                                                style={{
-                                                    cursor: "pointer",
-                                                    
-                                                    color: "#fbb900",
-                                                }}
-                                                onClick={() => handleInformationClick(obj["Company Name"])}
-                                            />
-                                        </td>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['pendingReceivedAmount'] = el}>
+                                                    Recieved Amount
+                                                </div>
+
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('pendingReceivedAmount') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("pendingReceivedAmount")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("pendingReceivedAmount")} />
+                                                    )}
+                                                </div>
+
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'pendingReceivedAmount' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['remainingAmount'] = el}>
+                                                    Pending Amount
+                                                </div>
+
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('remainingAmount') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("remainingAmount")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("remainingAmount")} />
+                                                    )}
+                                                </div>
+
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'remainingAmount' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredDataNew}
+                                                            activeTab={"General"}
+                                                            data={fetchedBookingsData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeBookingsData}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={dataToFilter}
+                                                            refetch={refetchBookingData}
+                                                            isComingFromAdmin={true}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+
+                                        <th className="rm-sticky-action">
+                                            Action
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
+                                </thead>
+                                {isBookingDataLoading ? (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="14">
+                                                <div className="LoaderTDSatyle">
+                                                    <ClipLoader
+                                                        color="lightgrey"
+                                                        loading
+                                                        size={30}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        {fetchedBookingsData?.map((obj, index) => {
+                                            const bdeProfilePhotoUrl = obj.bdeProfilePhoto?.length !== 0
+                                            ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdeEmpId}/${obj.bdeProfilePhoto?.[0]?.filename}`
+                                            : MaleEmployee ;
+                                            const bdmProfilePhotoUrl = obj.bdmProfilePhoto?.length !== 0
+                                            ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdmEmpId}/${obj.bdmProfilePhoto?.[0]?.filename}`
+                                            : MaleEmployee;
+
+                                            return (
+                                                < tr key={index} >
+                                                    <td className="rm-sticky-left-1">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                                                    <td className="rm-sticky-left-2">{obj["Company Name"]}</td>
+                                                    <td>{obj["Company Number"]}</td>
+                                                    <td>{obj.serviceName}</td>
+                                                    <td>
+                                                        <div className="d-flex align-items-center">
+                                                            <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
+                                                                <img src={bdeProfilePhotoUrl} className="profile-photo"></img>
+                                                            </div>
+                                                            <div>
+                                                                {obj.bdeName}
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+                                                    <td>
+                                                        <div className="d-flex align-items-center">
+                                                            <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
+                                                                <img src={bdmProfilePhotoUrl} className="profile-photo"></img>
+                                                            </div>
+                                                            <div>
+                                                                {obj.bdmName}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{obj.bdmType}</td>
+                                                    <td>{formatDatePro(obj.bookingDate)}</td>
+                                                    <td>{obj.caCase}</td>
+                                                    <td>{obj.withGST ? "Yes" : "No"}</td>
+                                                    <td>
+                                                        <div className="bknglistviewtotalpayment">
+                                                            ₹{(parseInt(obj.totalPaymentWGST || 0, 10))?.toLocaleString('en-IN')}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="bknglistviewreceivepayment">
+                                                            ₹{(parseInt(obj.pendingReceivedAmount || 0, 10))?.toLocaleString('en-IN')}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="bknglistviewpendingpayment">
+                                                            ₹{(parseInt(obj.remainingAmount || 0, 10))?.toLocaleString('en-IN')}
+                                                        </div>
+                                                    </td>
+                                                    <td className="rm-sticky-action">
+                                                        <button className="action-btn action-btn-alert ml-1">
+                                                            <FaRegEye
+
+                                                                onClick={() => handleInformationClick(obj["Company Name"])}
+                                                            />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                )}
+                            </table>
+                        </div>
+                        {data && data.length !== 0 && (
+                            <div className="pagination d-flex align-items-center justify-content-center w-100">
+                                <div>
+                                    <button
+                                        className="btn-pagination"
+                                        onClick={handlePrevPage}
+                                        disabled={currentPage === 1}
+                                    >
+                                        <GoArrowLeft />
+                                    </button>
+                                </div>
+                                <div className="ml-3 mr-3">
+                                    Page {currentPage} of {totalPages}
+                                </div>
+                                <div>
+                                    <button
+                                        className="btn-pagination"
+                                        onClick={handleNextPage}
+                                        disabled={currentPage >= totalPages}
+                                    >
+                                        <GoArrowRight />
+                                    </button>
+                                </div>
+                            </div>
                         )}
-                    </table>
-                </div>
-                {data && data.length !== 0 && (
-                    <div className="pagination d-flex align-items-center justify-content-center w-100">
-                        <div>
-                            <button
-                                className="btn-pagination"
-                                onClick={handlePrevPage}
-                                disabled={currentPage === 1}
-                            >
-                                <GoArrowLeft />
-                            </button>
-                        </div>
-                        <div className="ml-3 mr-3">
-                            Page {currentPage} of {totalPages}
-                        </div>
-                        <div>
-                            <button
-                                className="btn-pagination"
-                                onClick={handleNextPage}
-                                disabled={currentPage >= totalPages}
-                            >
-                                <GoArrowRight />
-                            </button>
-                        </div>
                     </div>
-                )}
+                </div>
             </div>
 
-        </div>
+        </div >
     );
 }
 
