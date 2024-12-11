@@ -355,12 +355,6 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             pendingReceivedAmount: pendingReceivedAmount || 0,
             remainingAmount: remainingAmount || 0,
           };
-
-          // Log data for the specific company
-          if (booking["Company Name"] === "SENGAL PRASHANT TESTING NOW") {
-            console.log("Processed Data for SENGAL PRASHANT TESTING NOW (More Bookings):", processedData);
-          }
-
           allServicesWithDetails.push(processedData);
         });
       });

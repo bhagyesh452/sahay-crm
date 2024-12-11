@@ -690,7 +690,6 @@ export default function BDMLogin({ setBdmToken }) {
                                                 <div style={{ textAlign: "center", color: "red" }}>
                                                     <span>{errorMessage}</span>
                                                 </div>
-
                                                 <div className="form-footer">
                                                     <button
                                                         type="submit"

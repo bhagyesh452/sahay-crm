@@ -17,7 +17,8 @@ const FilterableTable = ({
     noofItems,
     showingMenu,
     isComingFromAdmin,
-    refetch }) => {
+    refetch,
+    setFilteredData }) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -29,12 +30,13 @@ const FilterableTable = ({
             applyFilters(selectedFilters, filterField); // Reapply filters without sorting
         } else {
             setSortOrder(order);
+            applyFilters(selectedFilters, filterField); // Reapply filters without sorting
         }
     };
 
-    useEffect(() => {
-        applyFilters(selectedFilters, filterField);
-    }, [sortOrder]);
+    // useEffect(() => {
+    //     applyFilters(selectedFilters, filterField);
+    // }, [sortOrder]);
 
 
     useEffect(() => {
@@ -368,6 +370,9 @@ const FilterableTable = ({
         try {
             if (isComingFromAdmin) {
                 onFilter(completeData);
+                setFilteredData([]);
+                allFilterFields([])
+                showingMenu(false)
                 // refetch()
             } else {
                 const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest-complete`, {
@@ -380,12 +385,13 @@ const FilterableTable = ({
                 });
                 const { data, totalPages } = response.data;
                 onFilter(data);
+                allFilterFields([])
+                showingMenu(false)
+                noofItems(0)
             }
             // Fetch the complete dataset from the API
 
-            allFilterFields([])
-            showingMenu(false)
-            noofItems(0)
+
         } catch (error) {
             console.error("Error fetching complete data", error.message);
         }
