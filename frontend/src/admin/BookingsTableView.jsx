@@ -12,10 +12,12 @@ import FilterableTable from "../RM-CERTIFICATION/Extra-Components/FilterableTabl
 import { FaRegEye } from "react-icons/fa";
 import MaleEmployee from "../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../static/EmployeeImg/woman.png";
+import RemainingAmnt from "../static/my-images/money.png";
 
 
 function BookingsTableView({ tableViewOpen }) {
     const [currentPage, setCurrentPage] = useState(1);
+    const [filteredDataNew, setFilteredData] = useState([]);
     const [fetchedBookingsData, setFetchedBookingsData] = useState([]);
     const [dataToFilter, setDataToFilter] = useState([]);
     const [completeBookingsData, setCompleteBookingsData] = useState([]);
@@ -23,6 +25,20 @@ function BookingsTableView({ tableViewOpen }) {
     const [searchText, setSearchText] = useState(""); // State for search input
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const navigate = useNavigate();
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [isScrollLocked, setIsScrollLocked] = useState(false)
+    //const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [error, setError] = useState('');
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+    //const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [openBacdrop, setOpenBacdrop] = useState(false);
+
+
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [activeFilterField, setActiveFilterField] = useState(null);
 
     useEffect(() => {
         document.title = `AdminHead-Sahay-CRM`;
@@ -53,10 +69,20 @@ function BookingsTableView({ tableViewOpen }) {
     });
 
     useEffect(() => {
-        setFetchedBookingsData(bookingsData?.data)
-        setDataToFilter(bookingsData?.data)
-        setCompleteBookingsData(bookingsData?.data)
-    }, [bookingsData, refetchBookingData])
+        if (bookingsData) {
+            // Always set other data states
+            setFetchedBookingsData(bookingsData?.data || []);
+            setDataToFilter(bookingsData?.data || []);
+            setCompleteBookingsData(bookingsData?.data || []);
+
+            // Only set filteredData when there is a search
+            if (searchText && searchText.trim() !== "") {
+                setFilteredData(bookingsData?.data || []);
+            } else {
+                setFilteredData([]);
+            }
+        }
+    }, [bookingsData, searchText]);
 
 
 
@@ -82,20 +108,7 @@ function BookingsTableView({ tableViewOpen }) {
     }
 
     // ------------filter functions------------------
-    const [showFilterMenu, setShowFilterMenu] = useState(false);
-    const [isScrollLocked, setIsScrollLocked] = useState(false)
-    //const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
-    const [error, setError] = useState('');
-    const [noOfAvailableData, setnoOfAvailableData] = useState(0);
-    //const [activeFilterField, setActiveFilterField] = useState(null);
-    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-    const fieldRefs = useRef({});
-    const filterMenuRef = useRef(null); // Ref for the filter menu container
-    const [openBacdrop, setOpenBacdrop] = useState(false);
 
-    const [filteredDataNew, setFilteredData] = useState([]);
-    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
-    const [activeFilterField, setActiveFilterField] = useState(null);
 
     const handleFilter = (newData) => {
         console.log("newData", newData)
@@ -156,34 +169,49 @@ function BookingsTableView({ tableViewOpen }) {
         // Redirect to BookingListView with the company name as a query parameter
         navigate(`/md/bookings`, { state: { searchText: companyName } });
     };
-
     const stats = useMemo(() => {
+        // Use filteredData if a search is active, otherwise use all data
+        const activeData = searchText && searchText.trim() !== "" ? filteredDataNew : fetchedBookingsData;
+
+        if (!activeData || activeData.length === 0) {
+            return {
+                noOfBookings: 0,
+                noOfCompanies: 0,
+                noOfServices: 0,
+                totalPayment: 0,
+                totalFullAdvanceRecieved: 0,
+                totalRemainingPaymentReceived: 0,
+                totalRemainingPayment: 0,
+            };
+        }
+
         // Track unique bookings using a Set
         const uniqueBookings = new Set();
 
-        // Iterate through the filtered data
-        filteredDataNew.forEach((item) => {
+        activeData.forEach((item) => {
             const bookingIdentifier = `${item["Company Name"]}-${item.bookingDate}`;
             uniqueBookings.add(bookingIdentifier); // Add unique Company Name + bookingDate combination
         });
 
-        const noOfBookings = uniqueBookings.size; // Count unique bookings
-        const uniqueCompanies = new Set(filteredDataNew.map((data) => data["Company Name"]));
+        const noOfBookings = uniqueBookings.size;
+        const uniqueCompanies = new Set(activeData.map((data) => data["Company Name"]));
         const noOfCompanies = uniqueCompanies.size;
-        const noOfServices = filteredDataNew.length;
-        const totalPayment = filteredDataNew.reduce((sum, item) => sum + (item.totalPaymentWGST || 0), 0);
-        const totalReceivedPayment = filteredDataNew.reduce((sum, item) => sum + (item.pendingReceivedAmount || 0), 0);
-        const totalRemainingPayment = filteredDataNew.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
-        console.log("no of bookings", noOfBookings)
+        const noOfServices = activeData.length;
+        const totalPayment = activeData.reduce((sum, item) => sum + (item.totalPaymentWGST || 0), 0);
+        const totalFullAdvanceRecieved = activeData.reduce((sum, item) => sum + (item.receivedAsFullAdvance || 0), 0);
+        const totalRemainingPaymentReceived = activeData.reduce((sum, item) => sum + (item.receivedAsRemaining || 0), 0);
+        const totalRemainingPayment = activeData.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
+
         return {
             noOfBookings,
             noOfCompanies,
             noOfServices,
             totalPayment,
-            totalReceivedPayment,
+            totalFullAdvanceRecieved,
+            totalRemainingPaymentReceived,
             totalRemainingPayment,
         };
-    }, [filteredDataNew]);
+    }, [filteredDataNew, fetchedBookingsData, searchText]);
 
 
     // console.log("filteredDataNew", allServicesWithDetails);
@@ -225,8 +253,15 @@ function BookingsTableView({ tableViewOpen }) {
                                     <div className="selection-data mr-1">No of Companies: {stats.noOfCompanies}</div>
                                     <div className="selection-data mr-1">No of Services: {stats.noOfServices}</div>
                                     <div className="selection-data mr-1">Total Payment: ₹{(parseInt(stats.totalPayment || 0, 10)).toLocaleString('en-IN')}</div>
-                                    <div className="selection-data mr-1">Received Payment: ₹{(parseInt(stats.totalReceivedPayment || 0, 10)).toLocaleString('en-IN')}</div>
-                                    <div className="selection-data mr-1">Remaining Payment: ₹{(parseInt(stats.totalRemainingPayment || 0, 10)).toLocaleString('en-IN')}</div>
+                                    <div className="selection-data mr-1">Full Advance: ₹{(parseInt(stats.totalFullAdvanceRecieved || 0, 10)).toLocaleString('en-IN')}</div>
+                                    <div className="selection-data mr-1">
+                                      
+                                            Remaining Received: ₹{(parseInt(stats.totalRemainingPaymentReceived || 0, 10)).toLocaleString('en-IN')}
+                                      
+
+                                        
+                                    </div>
+                                    <div className="selection-data mr-1">Pending Payment: ₹{(parseInt(stats.totalRemainingPayment || 0, 10)).toLocaleString('en-IN')}</div>
                                 </>)
                             }
 
@@ -363,6 +398,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                             dataForFilter={fetchedBookingsData}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
                                                         />
                                                     </div>
                                                 )}
@@ -402,6 +438,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                             dataForFilter={dataToFilter}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
                                                         />
                                                     </div>
                                                 )}
@@ -441,6 +478,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                             dataForFilter={dataToFilter}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
                                                         />
                                                     </div>
                                                 )}
@@ -480,6 +518,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                             dataForFilter={dataToFilter}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
                                                         />
                                                     </div>
                                                 )}
@@ -519,49 +558,12 @@ function BookingsTableView({ tableViewOpen }) {
                                                             dataForFilter={dataToFilter}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
                                                         />
                                                     </div>
                                                 )}
                                             </div>
                                         </th>
-                                        <th> <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['caCase'] = el}>
-                                                CA Case
-                                            </div>
-
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('caCase') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("caCase")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("caCase")} />
-                                                )}
-                                            </div>
-
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'caCase' && (
-                                                <div
-                                                    ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        noofItems={setnoOfAvailableData}
-                                                        allFilterFields={setActiveFilterFields}
-                                                        filteredData={filteredDataNew}
-                                                        activeTab={"General"}
-                                                        data={fetchedBookingsData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeBookingsData}
-                                                        showingMenu={setShowFilterMenu}
-                                                        dataForFilter={dataToFilter}
-                                                        refetch={refetchBookingData}
-                                                        isComingFromAdmin={true}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div></th>
-
                                         <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['withGST'] = el}>
@@ -596,12 +598,12 @@ function BookingsTableView({ tableViewOpen }) {
                                                             dataForFilter={dataToFilter}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
                                                         />
                                                     </div>
                                                 )}
                                             </div>
                                         </th>
-
                                         <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
@@ -636,6 +638,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                             dataForFilter={dataToFilter}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
                                                         />
                                                     </div>
                                                 )}
@@ -675,6 +678,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                             dataForFilter={dataToFilter}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
+                                                            setFilteredData={setFilteredData}
                                                         />
                                                     </div>
                                                 )}
@@ -745,11 +749,11 @@ function BookingsTableView({ tableViewOpen }) {
                                     <tbody>
                                         {fetchedBookingsData?.map((obj, index) => {
                                             const bdeProfilePhotoUrl = obj.bdeProfilePhoto?.length !== 0
-                                            ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdeEmpId}/${obj.bdeProfilePhoto?.[0]?.filename}`
-                                            : MaleEmployee ;
+                                                ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdeEmpId}/${obj.bdeProfilePhoto?.[0]?.filename}`
+                                                : MaleEmployee;
                                             const bdmProfilePhotoUrl = obj.bdmProfilePhoto?.length !== 0
-                                            ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdmEmpId}/${obj.bdmProfilePhoto?.[0]?.filename}`
-                                            : MaleEmployee;
+                                                ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdmEmpId}/${obj.bdmProfilePhoto?.[0]?.filename}`
+                                                : MaleEmployee;
 
                                             return (
                                                 < tr key={index} >
@@ -780,17 +784,25 @@ function BookingsTableView({ tableViewOpen }) {
                                                     </td>
                                                     <td>{obj.bdmType}</td>
                                                     <td>{formatDatePro(obj.bookingDate)}</td>
-                                                    <td>{obj.caCase}</td>
+
                                                     <td>{obj.withGST ? "Yes" : "No"}</td>
                                                     <td>
                                                         <div className="bknglistviewtotalpayment">
                                                             ₹{(parseInt(obj.totalPaymentWGST || 0, 10))?.toLocaleString('en-IN')}
                                                         </div>
                                                     </td>
-                                                    <td>
+                                                    <td className="d-flex align-items-center">
                                                         <div className="bknglistviewreceivepayment">
                                                             ₹{(parseInt(obj.pendingReceivedAmount || 0, 10))?.toLocaleString('en-IN')}
                                                         </div>
+                                                        {obj.receivedAsRemaining > 0 && (
+                                                            <div
+                                                                className="b_Service_remaining_receive"
+                                                                title="Remaining Payment Received"
+                                                            >
+                                                                <img src={RemainingAmnt} alt="Remaining Amount Icon" />
+                                                            </div>
+                                                        )}
                                                     </td>
                                                     <td>
                                                         <div className="bknglistviewpendingpayment">
@@ -800,7 +812,6 @@ function BookingsTableView({ tableViewOpen }) {
                                                     <td className="rm-sticky-action">
                                                         <button className="action-btn action-btn-alert ml-1">
                                                             <FaRegEye
-
                                                                 onClick={() => handleInformationClick(obj["Company Name"])}
                                                             />
                                                         </button>

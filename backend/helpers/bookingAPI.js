@@ -417,10 +417,14 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
       services.forEach((service) => {
         let remainingAmount = 0;
         let pendingReceivedAmount = 0;
+        let receivedAsFullAdvance = 0;
+        let receivedAsRemaining = 0;
 
         if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
           remainingAmount = 0;
           pendingReceivedAmount = service.totalPaymentWGST;
+          receivedAsFullAdvance = service.totalPaymentWGST; // Full payment goes to receivedFullAdvance
+          receivedAsRemaining = 0; // No remaining paymen
         } else {
           remainingAmount = service.totalPaymentWGST - (service.firstPayment || 0);
 
@@ -438,6 +442,8 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           }
 
           pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
+          receivedAsFullAdvance = service.firstPayment || 0; // First payment as receivedFullAdvance
+          receivedAsRemaining = totalReceivedAmount; // Remaining payments as receivedRemaining
         }
 
         const processedData = {
@@ -472,6 +478,8 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           bookingPublishDate: booking.bookingPublishDate || "",
           pendingReceivedAmount: pendingReceivedAmount || 0,
           remainingAmount: remainingAmount || 0,
+          receivedAsFullAdvance: receivedAsFullAdvance || 0, // New field
+          receivedAsRemaining: receivedAsRemaining || 0, // New field
         };
 
         allServicesWithDetails.push(processedData);
@@ -482,15 +490,19 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
         moreBooking.services.forEach((service) => {
           let remainingAmount = 0;
           let pendingReceivedAmount = 0;
+          let receivedAsFullAdvance = 0;
+          let receivedAsRemaining = 0;
 
           if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
             remainingAmount = 0;
             pendingReceivedAmount = service.totalPaymentWGST;
+            receivedAsFullAdvance = service.totalPaymentWGST; // Full payment goes to receivedFullAdvance
+            receivedAsRemaining = 0; // No remaining paymen
           } else {
             remainingAmount = service.totalPaymentWGST - (service.firstPayment || 0);
 
             let totalReceivedAmount = 0;
-            booking.remainingPayments?.forEach((payment) => {
+            moreBooking.remainingPayments?.forEach((payment) => {
               if (payment.serviceName === service.serviceName) {
                 totalReceivedAmount += payment.receivedPayment || 0;
               }
@@ -503,6 +515,8 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             }
 
             pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
+            receivedAsFullAdvance = service.firstPayment || 0; // First payment as receivedFullAdvance
+            receivedAsRemaining = totalReceivedAmount;
           }
 
           const processedData = {
@@ -537,6 +551,8 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             bookingPublishDate: moreBooking.bookingPublishDate || "",
             pendingReceivedAmount: pendingReceivedAmount || 0,
             remainingAmount: remainingAmount || 0,
+            receivedAsFullAdvance : receivedAsFullAdvance || 0, // First payment as receivedFullAdvance
+            receivedAsRemaining : receivedAsRemaining || 0
           };
 
           allServicesWithDetails.push(processedData);
@@ -584,7 +600,7 @@ router.get("/admin-redesigned-final-leadData", async (req, res) => {
       text.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 
     const sanitizedSearchText = escapeRegex(searchText);
-    // console.log("sanitiyedSearchText", sanitizedSearchText)
+    console.log("sanitiyedSearchText", sanitizedSearchText)
 
     const matchStage = sanitizedSearchText
       ? { "Company Name": { $regex: sanitizedSearchText, $options: "i" } }
