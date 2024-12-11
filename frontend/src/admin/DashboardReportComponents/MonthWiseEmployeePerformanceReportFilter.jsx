@@ -11,6 +11,10 @@ const MonthWiseEmployeePerformanceReportFilter = ({
     dataForFilter,
     allFilterFields,
     showingMenu,
+    selectedYears,
+    setSelectedMonths,
+    selectedMonths,
+    setSelectedYears
 }) => {
 
     // console.log("Filter field is :", filterField);
@@ -30,9 +34,6 @@ const MonthWiseEmployeePerformanceReportFilter = ({
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
-    const [performanceData, setPerformanceData] = useState([]);
-    const [selectedMonths, setSelectedMonths] = useState([currentMonth]);
-    const [selectedYears, setSelectedYears] = useState([currentYear]);
 
     const handleMonthsAndYearsCheckbox = (e, type) => {
         const value = type === "year" ? parseInt(e.target.value, 10) : e.target.value; // Ensure correct type
@@ -55,11 +56,11 @@ const MonthWiseEmployeePerformanceReportFilter = ({
                 params: {
                     months: selectedMonths,
                     years: selectedYears,
+                    employees: filteredData.map((employee) => employee.name),
                 }
             });
 
             // console.log("Performance data is :", res.data.data);
-            setPerformanceData(res.data.data);
             onFilter(res.data.data);
         } catch (error) {
             console.log("Error fetching performance data", error);
@@ -190,8 +191,10 @@ const MonthWiseEmployeePerformanceReportFilter = ({
             ...prevFilters,
             [filterField]: []
         }));
-        onFilter(completeData);
         allFilterFields([]);
+        setSelectedYears([currentYear]);
+        setSelectedMonths([currentMonth]);
+        onFilter(completeData);
         showingMenu(false);
     };
 

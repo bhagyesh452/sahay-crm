@@ -22,11 +22,21 @@ function MonthWiseEmployeePerformanceReport() {
     const currentMonth = new Date().toLocaleString("default", { month: "long" });
     const currentYear = new Date().getFullYear();
 
+    const yearsArray = [];
+    for (let i = 2023; i <= new Date().getFullYear(); i++) {
+        yearsArray.push(i);
+    }
+
+    const formatAmount = (amount) => {
+        return new Intl.NumberFormat('en-IN').format(amount);
+    };
+
     // const [employeeData, setEmployeeData] = useState([]);
     // const [selectedEmployees, setSelectedEmployees] = useState([]);
     const [selectedMonths, setSelectedMonths] = useState([currentMonth]);
     const [selectedYears, setSelectedYears] = useState([currentYear]);
     // const [selectedBranch, setSelectedBranch] = useState("");
+    const [searchedEmployee, setSearchedEmployee] = useState("");
     const [empPerformanceData, setEmpPerformanceData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -35,10 +45,8 @@ function MonthWiseEmployeePerformanceReport() {
     const filterMenuRef = useRef(null); // Ref for the filter menu container
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [filteredData, setFilteredData] = useState(empPerformanceData);
-    const [filterField, setFilterField] = useState("");
     const [activeFilterField, setActiveFilterField] = useState(null);
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-    const [noOfAvailableData, setnoOfAvailableData] = useState(0);
     const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
     const [completeMergedData, setCompleteMergedData] = useState([]);
     const [mergedDataForFilter, setMergedDataForFilter] = useState([]);
@@ -76,15 +84,6 @@ function MonthWiseEmployeePerformanceReport() {
             };
         }
     }, []);
-
-    const yearsArray = [];
-    for (let i = 2023; i <= new Date().getFullYear(); i++) {
-        yearsArray.push(i);
-    }
-
-    const formatAmount = (amount) => {
-        return new Intl.NumberFormat('en-IN').format(amount);
-    };
 
     const theme = useTheme();
     const ITEM_HEIGHT = 48;
@@ -125,12 +124,14 @@ function MonthWiseEmployeePerformanceReport() {
 
     const fetchEmployeePerformanceReport = async () => {
         try {
+            setIsLoading(true);
             const res = await axios.get(`${secretKey}/employee/monthWisePerformanceReport`, {
                 params: {
                     // branch: selectedBranch,
                     months: selectedMonths,
                     years: selectedYears,
                     // employees: selectedEmployees
+                    employee: searchedEmployee
                 }
             });
 
@@ -139,13 +140,16 @@ function MonthWiseEmployeePerformanceReport() {
             setCompleteMergedData(res.data.data);
             setMergedDataForFilter(res.data.data);
         } catch (error) {
+            setIsLoading(false);
             console.log("Error fetching performance data", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchEmployeePerformanceReport();
-    }, [selectedMonths, selectedYears]);
+    }, [searchedEmployee]);
 
     return (
         <div>
@@ -255,6 +259,25 @@ function MonthWiseEmployeePerformanceReport() {
                                     </FormControl>
                                 </div>
                             </div> */}
+
+                            <div class="input-icon mr-1">
+                                <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                </span>
+                                <input
+                                    value={searchedEmployee}
+                                    onChange={(e) => setSearchedEmployee(e.target.value)}
+                                    className="form-control"
+                                    placeholder="Enter Employee Name..."
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -294,6 +317,10 @@ function MonthWiseEmployeePerformanceReport() {
                                                             dataForFilter={mergedDataForFilter}
                                                             allFilterFields={setActiveFilterFields}
                                                             showingMenu={setShowFilterMenu}
+                                                            selectedYears={selectedYears}
+                                                            setSelectedMonths={setSelectedMonths}
+                                                            selectedMonths={selectedMonths}
+                                                            setSelectedYears={setSelectedYears}
                                                         />
                                                     </div>
                                                 )}
@@ -328,6 +355,10 @@ function MonthWiseEmployeePerformanceReport() {
                                                             dataForFilter={mergedDataForFilter}
                                                             allFilterFields={setActiveFilterFields}
                                                             showingMenu={setShowFilterMenu}
+                                                            selectedYears={selectedYears}
+                                                            setSelectedMonths={setSelectedMonths}
+                                                            selectedMonths={selectedMonths}
+                                                            setSelectedYears={setSelectedYears}
                                                         />
                                                     </div>
                                                 )}
@@ -362,6 +393,10 @@ function MonthWiseEmployeePerformanceReport() {
                                                             dataForFilter={mergedDataForFilter}
                                                             allFilterFields={setActiveFilterFields}
                                                             showingMenu={setShowFilterMenu}
+                                                            selectedYears={selectedYears}
+                                                            setSelectedMonths={setSelectedMonths}
+                                                            selectedMonths={selectedMonths}
+                                                            setSelectedYears={setSelectedYears}
                                                         />
                                                     </div>
                                                 )}
@@ -396,6 +431,10 @@ function MonthWiseEmployeePerformanceReport() {
                                                             dataForFilter={mergedDataForFilter}
                                                             allFilterFields={setActiveFilterFields}
                                                             showingMenu={setShowFilterMenu}
+                                                            selectedYears={selectedYears}
+                                                            setSelectedMonths={setSelectedMonths}
+                                                            selectedMonths={selectedMonths}
+                                                            setSelectedYears={setSelectedYears}
                                                         />
                                                     </div>
                                                 )}
@@ -430,6 +469,10 @@ function MonthWiseEmployeePerformanceReport() {
                                                             dataForFilter={mergedDataForFilter}
                                                             allFilterFields={setActiveFilterFields}
                                                             showingMenu={setShowFilterMenu}
+                                                            selectedYears={selectedYears}
+                                                            setSelectedMonths={setSelectedMonths}
+                                                            selectedMonths={selectedMonths}
+                                                            setSelectedYears={setSelectedYears}
                                                         />
                                                     </div>
                                                 )}
@@ -464,6 +507,10 @@ function MonthWiseEmployeePerformanceReport() {
                                                             dataForFilter={mergedDataForFilter}
                                                             allFilterFields={setActiveFilterFields}
                                                             showingMenu={setShowFilterMenu}
+                                                            selectedYears={selectedYears}
+                                                            setSelectedMonths={setSelectedMonths}
+                                                            selectedMonths={selectedMonths}
+                                                            setSelectedYears={setSelectedYears}
                                                         />
                                                     </div>
                                                 )}
@@ -498,6 +545,10 @@ function MonthWiseEmployeePerformanceReport() {
                                                             dataForFilter={mergedDataForFilter}
                                                             allFilterFields={setActiveFilterFields}
                                                             showingMenu={setShowFilterMenu}
+                                                            selectedYears={selectedYears}
+                                                            setSelectedMonths={setSelectedMonths}
+                                                            selectedMonths={selectedMonths}
+                                                            setSelectedYears={setSelectedYears}
                                                         />
                                                     </div>
                                                 )}
@@ -530,7 +581,7 @@ function MonthWiseEmployeePerformanceReport() {
                                                     <td>{employee.branch}</td>
                                                     <td>{performance.month}-{performance.year}</td>
                                                     <td>₹ {formatAmount(performance.amount)}</td>
-                                                    <td>₹ {formatAmount(performance.achievedAmount)}</td>
+                                                    <td>₹ {formatAmount(Math.round(performance.achievedAmount))}</td>
                                                     <td>{Math.round(performance.ratio)}%</td>
                                                     <td>{performance.result}</td>
                                                 </tr>
@@ -575,7 +626,7 @@ function MonthWiseEmployeePerformanceReport() {
                                             <tr style={{ fontWeight: 500 }}>
                                                 <td colSpan="4">Total</td>
                                                 <td>₹ {formatAmount(totalTarget)}</td>
-                                                <td>₹ {formatAmount(totalAchievement)}</td>
+                                                <td>₹ {formatAmount(Math.round(totalAchievement))}</td>
                                                 <td>{Math.round(avgRatio)}%</td>
                                                 <td>{result}</td>
                                             </tr>
