@@ -462,6 +462,7 @@ app.post('/api/verifyOtp', (req, res) => {
   const { email, otp } = req.body;
   console.log("otpstore", otpStore)
   if (!otpStore.has(email)) {
+    console.log("here in email")
     return res.status(404).json({ message: "OTP not found" });
   }
 
@@ -470,6 +471,7 @@ app.post('/api/verifyOtp', (req, res) => {
   console.log("storedotp", storedOtp)
 
   if (storedOtp.otp !== parseInt(otp) || storedOtp.expiry < Date.now()) {
+    console.log("here in otp")
     return res.status(400).json({ message: "Invalid or expired OTP" });
   }
 

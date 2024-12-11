@@ -423,35 +423,40 @@ function EmployeeLogin({ setnewToken }) {
     }
   };
 
-  // Handle OTP verification
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setErrorMessage("");
-    if (!otp) {
-      setErrorMessage("Please enter the OTP.");
-      return;
-    }
+  // // Handle OTP verification
+  // const handleVerifyOtp = async (e) => {
+  //   e.preventDefault();
+  //   setErrorMessage("");
+  //   if (!otp) {
+  //     setErrorMessage("Please enter the OTP.");
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    try {
-      const response = await axios.post(`${secretKey}/verifyOtp`, {
-        email,
-        otp,
-      });
-      setIsOtpVerified(true);
-      // console.log("Calling stopTimer after OTP verification.");
-      stopTimer(); // Stop the timer upon successful OTP verification
-    } catch (error) {
-      setErrorMessage(error.response.data.message || "Invalid OTP.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axios.post(`${secretKey}/verifyOtp`, {
+  //       email,
+  //       otp,
+  //     });
+  //     setIsOtpVerified(true);
+  //     // console.log("Calling stopTimer after OTP verification.");
+  //     stopTimer(); // Stop the timer upon successful OTP verification
+  //   } catch (error) {
+  //     setErrorMessage(error.response.data.message || "Invalid OTP.");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // Handle final login with CAPTCHA
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+
+    if (!otp) {
+      setErrorMessage("Please enter the OTP.");
+      return;
+    }
 
     if (!captchaToken) {
       setErrorMessage("Please complete the CAPTCHA.");
@@ -460,8 +465,20 @@ function EmployeeLogin({ setnewToken }) {
 
     setIsLoading(true);
     try {
+      // Step 1: Verify OTP
+      const otpResponse = await axios.post(`${secretKey}/verifyOtp`, {
+        email,
+        otp,
+      });
 
-      // Step 1: Verify CAPTCHA
+      if (otpResponse.status !== 200) {
+        setErrorMessage("Invalid or expired OTP.");
+        return;
+      } else {
+        stopTimer();
+      }
+
+      // Step 2: Verify CAPTCHA
       const captchaResponse = await axios.post(`${secretKey}/verifyCaptcha`, {
         token: captchaToken,
       });
@@ -470,26 +487,20 @@ function EmployeeLogin({ setnewToken }) {
         setErrorMessage("CAPTCHA verification failed. Please try again.");
         return;
       }
-      // Log login details
+
+      // Step 3: Proceed to Employee Login
       const date = getCurrentDate();
       const time = getCurrentTime();
       const address = address1 !== "" ? address1 : "No Location Found";
       const ename = email;
 
-      const response = await axios.post(`${secretKey}/employeelogin`, {
+      const loginResponse = await axios.post(`${secretKey}/employeelogin`, {
         email,
         password,
         designation,
       });
-      console.log("respojse", response)
-      const response2 = await axios.post(`${secretKey}/loginDetails`, {
-        ename,
-        date,
-        time,
-        address,
-      });
 
-      const { newtoken, userId } = response.data;
+      const { newtoken, userId } = loginResponse.data;
       setnewToken(newtoken);
       setUserId(userId);
       localStorage.setItem("newtoken", newtoken);
@@ -498,10 +509,7 @@ function EmployeeLogin({ setnewToken }) {
       // Store designation, login time, and date in localStorage
       localStorage.setItem("designation", designation);
       localStorage.setItem("loginTime", new Date().toISOString());
-      localStorage.setItem(
-        "loginDate",
-        new Date().toISOString().substr(0, 10)
-      );
+      localStorage.setItem("loginDate", new Date().toISOString().substr(0, 10));
 
       navigate(`/employee-dashboard/${userId}`);
     } catch (error) {
@@ -510,6 +518,7 @@ function EmployeeLogin({ setnewToken }) {
       setIsLoading(false);
     }
   };
+
 
   // Get current date and time functions (unchanged)
   const getCurrentTime = () => {
@@ -629,15 +638,12 @@ function EmployeeLogin({ setnewToken }) {
                       </form>
                     )}
 
-                    {isOtpSent && !isOtpVerified && (
-                      // Step 2: Enter OTP
-                      <form action="#" method="get" autoComplete="off" noValidate>
+                    {isOtpSent && (
+                      <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                           <label className="form-label">Enter OTP</label>
                           <input
-                            onChange={(e) => {
-                              setOtp(e.target.value);
-                            }}
+                            onChange={(e) => setOtp(e.target.value)}
                             type="text"
                             className="form-control"
                             placeholder="OTP"
@@ -650,31 +656,6 @@ function EmployeeLogin({ setnewToken }) {
                             {timeLeft % 60 < 10 ? `0${timeLeft % 60}` : timeLeft % 60}
                           </span>
                         </div>
-                        <div style={{ textAlign: "center", color: "red" }}>
-                          <span>{errorMessage}</span>
-                        </div>
-                        <div className="form-footer">
-                          <button
-                            type="submit"
-                            onClick={handleVerifyOtp}
-                            className="btn btn-primary w-100"
-                            disabled={isLoading}
-                          >
-                            {isLoading ? (
-                              <div className="spinner-border text-grey" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                              </div>
-                            ) : (
-                              "Verify OTP"
-                            )}
-                          </button>
-                        </div>
-                      </form>
-                    )}
-
-                    {isOtpVerified && (
-                      // Step 3: CAPTCHA and Final Submit
-                      <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                           <ReCAPTCHA
                             sitekey={captchaKey} // Replace with your Google ReCAPTCHA site key

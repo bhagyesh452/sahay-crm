@@ -9,7 +9,7 @@
 
 
 // function DataManagerLogin({ setManagerToken}) {
-  
+
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [data, setData] = useState([]);
@@ -25,7 +25,7 @@
 //   useEffect(() => {
 //     document.title = `Dataanalyst-Sahay-CRM`;
 //   }, []);
-  
+
 //   const fetchData = async () => {
 //     try {
 //       const response = await axios.get(`${secretKey}/employee/einfo`);
@@ -51,11 +51,11 @@
 //   };
 //   //console.log(userId)
 // console.log(designation , userId , data)
-  
+
 // useEffect(() => {
 //     fetchData();
 //   }, []);
-  
+
 // //   async function getLocationInfo(latitude, longitude) {
 // //     try {
 // //       const response = await fetch(
@@ -83,7 +83,7 @@
 // //   }
 
 // //   const [locationAccess, setLocationAccess] = useState(false);
-  
+
 // //   useEffect(() => {
 // //     let watchId;
 // //     const successCallback = (position) => {
@@ -144,15 +144,15 @@
 //     // const time = getCurrentTime();
 //     // const address = address1 !== "" ? address1 : "No Location Found";
 //     //const ename = email;
-   
-  
+
+
 //     try {
 //       const response = await axios.post(`${secretKey}/datamanagerlogin`, {
 //         email,
 //         password,
 //         designation,
 //       });
-  
+
 //       const { newtoken } = response.data;
 //       setManagerToken(newtoken);
 //       localStorage.setItem("dataManagerName" , ename )
@@ -174,7 +174,7 @@
 //       }
 //     }
 //   };
-  
+
 //   //console.log(email)
 //   //console.log(password)
 
@@ -388,7 +388,7 @@ function DataManagerLogin({ setManagerToken }) {
       const response = await axios.post(`${secretKey}/verifyCredentials`, {
         email,
         password,
-        designations : ["Data Manager"],
+        designations: ["Data Manager"],
       });
 
       // If credentials are valid, send OTP
@@ -410,42 +410,60 @@ function DataManagerLogin({ setManagerToken }) {
   };
 
   // Handle OTP verification
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setErrorMessage("");
-    if (!otp) {
-      setErrorMessage("Please enter the OTP.");
-      return;
-    }
+  // const handleVerifyOtp = async (e) => {
+  //   e.preventDefault();
+  //   setErrorMessage("");
+  //   if (!otp) {
+  //     setErrorMessage("Please enter the OTP.");
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    try {
-      const response = await axios.post(`${secretKey}/verifyOtp`, {
-        email,
-        otp,
-      });
-      setIsOtpVerified(true);
-      //console.log("Calling stopTimer after OTP verification.");
-      stopTimer(); // Stop the timer upon successful OTP verification
-    } catch (error) {
-      setErrorMessage(error.response.data.message || "Invalid OTP.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axios.post(`${secretKey}/verifyOtp`, {
+  //       email,
+  //       otp,
+  //     });
+  //     setIsOtpVerified(true);
+  //     //console.log("Calling stopTimer after OTP verification.");
+  //     stopTimer(); // Stop the timer upon successful OTP verification
+  //   } catch (error) {
+  //     setErrorMessage(error.response.data.message || "Invalid OTP.");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
 
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrorMessage("");
+    if (!otp) {
+      setErrorMessage("Please enter the OTP.");
+      return;
+    }
+
     if (!captchaToken) {
       setErrorMessage("Please complete the CAPTCHA.");
       return;
     }
     setIsLoading(true);
     try {
-      // Step 1: Verify CAPTCHA
+      // Step 1: Verify OTP
+      const otpResponse = await axios.post(`${secretKey}/verifyOtp`, {
+        email,
+        otp,
+      });
+
+      if (otpResponse.status !== 200) {
+        setErrorMessage("Invalid or expired OTP.");
+        return;
+      } else {
+        stopTimer();
+      }
+
+      // Step 2: Verify CAPTCHA
       const captchaResponse = await axios.post(`${secretKey}/verifyCaptcha`, {
         token: captchaToken,
       });
@@ -461,7 +479,7 @@ function DataManagerLogin({ setManagerToken }) {
       })
 
       const { newtoken, dataManagerUserId } = response.data
-      console.log(newtoken , dataManagerUserId)
+      console.log(newtoken, dataManagerUserId)
       setManagerToken(newtoken);
       localStorage.setItem("dataManagerName", ename)
       localStorage.setItem("managerToken", newtoken);
@@ -469,18 +487,9 @@ function DataManagerLogin({ setManagerToken }) {
       window.location.replace(`/dataanalyst/dashboard/${dataManagerUserId}`);
 
     } catch (error) {
-      console.error("Login Failed", error);
-      if (error.response.status === 401) {
-        if (error.response.data.message === "Invalid email or password") {
-          setErrorMessage("Invalid Credentials");
-        } else if (error.response.data.message === "Designation id incorrect") {
-          setErrorMessage("Only Authorized for Recruiter!")
-        } else {
-          setErrorMessage("Unknown Error Occured")
-        }
-      } else {
-        setErrorMessage("Unknown Error Occured")
-      }
+      setErrorMessage(error.response?.data?.message || "Login failed.");
+    }finally{
+      setIsLoading(false);
     }
   }
   const onCaptchaChange = (token) => {
@@ -586,15 +595,12 @@ function DataManagerLogin({ setManagerToken }) {
                       </form>
                     )}
 
-                    {isOtpSent && !isOtpVerified && (
-                      // Step 2: Enter OTP
-                      <form action="#" method="get" autoComplete="off" noValidate>
+                    {isOtpSent && (
+                      <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                           <label className="form-label">Enter OTP</label>
                           <input
-                            onChange={(e) => {
-                              setOtp(e.target.value);
-                            }}
+                            onChange={(e) => setOtp(e.target.value)}
                             type="text"
                             className="form-control"
                             placeholder="OTP"
@@ -607,31 +613,6 @@ function DataManagerLogin({ setManagerToken }) {
                             {timeLeft % 60 < 10 ? `0${timeLeft % 60}` : timeLeft % 60}
                           </span>
                         </div>
-                        <div style={{ textAlign: "center", color: "red" }}>
-                          <span>{errorMessage}</span>
-                        </div>
-                        <div className="form-footer">
-                          <button
-                            type="submit"
-                            onClick={handleVerifyOtp}
-                            className="btn btn-primary w-100"
-                            disabled={isLoading}
-                          >
-                            {isLoading ? (
-                              <div className="spinner-border text-grey" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                              </div>
-                            ) : (
-                              "Verify OTP"
-                            )}
-                          </button>
-                        </div>
-                      </form>
-                    )}
-
-                    {isOtpVerified && (
-                      // Step 3: CAPTCHA and Final Submit
-                      <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                           <ReCAPTCHA
                             sitekey={captchaKey} // Replace with your Google ReCAPTCHA site key
@@ -642,7 +623,7 @@ function DataManagerLogin({ setManagerToken }) {
                           <span>{errorMessage}</span>
                         </div>
                         <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
-                        {isLoading ? (
+                          {isLoading ? (
                             <div className="spinner-border text-grey" role="status">
                               <span className="visually-hidden">Loading...</span>
                             </div>
