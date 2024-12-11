@@ -392,7 +392,8 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     const endIndex = startIndex + parseInt(limit);
 
     // Fetch all records from the database
-    const bookingsData = await RedesignedLeadformModel.find().sort({ bookingDate: -1 });
+    const bookingsData = await RedesignedLeadformModel.find()
+
 
     // Fetch employee details from adminModel
     const adminData = await adminModel.find({}, { ename: 1, profilePhoto: 1, _id: 1 });
@@ -543,8 +544,13 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
       });
     });
 
+    // Sort the combined data by bookingDate in descending order
+    const sortedServices = allServicesWithDetails.sort((a, b) => {
+      return new Date(b.bookingDate) - new Date(a.bookingDate); // Sort by date descending
+    });
+
     // Apply search filter
-    const filteredData = allServicesWithDetails.filter((item) => {
+    const filteredData = sortedServices.filter((item) => {
       const normalizedSearchText = searchText.toLowerCase();
       return (
         item["Company Name"].toLowerCase().includes(normalizedSearchText) ||
@@ -578,7 +584,7 @@ router.get("/admin-redesigned-final-leadData", async (req, res) => {
       text.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 
     const sanitizedSearchText = escapeRegex(searchText);
-    console.log("sanitiyedSearchText", sanitizedSearchText)
+    // console.log("sanitiyedSearchText", sanitizedSearchText)
 
     const matchStage = sanitizedSearchText
       ? { "Company Name": { $regex: sanitizedSearchText, $options: "i" } }
