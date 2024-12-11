@@ -148,22 +148,10 @@ function CompanyProfile() {
                     </div>
                   </div>
                 </div>
-                <div className="accordion-item">
-                  <h2 className="accordion-header" id="panelsStayOpen-headingThree">
-                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                      Documents
-                    </button>
-                  </h2>
-                  <div id="panelsStayOpen-collapseThree" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
-                    <div className="accordion-body">
-                    
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
             <div className='col-lg-6 col-md-8'>
-              <div>
+              <div className='cmpnyP_nav_main'>
                 <ul className="nav nav-tabs cmpnyP_nav_tabs" id="Cmpny_P_Main_tab" role="tablist">
                   <li className="nav-item" role="presentation">
                     <button className="nav-link active" id="History-tab" data-bs-toggle="tab" data-bs-target="#Overview" type="button" role="tab" aria-controls="Overview" aria-selected="true">
@@ -812,6 +800,27 @@ function CompanyProfile() {
                               </div>
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className='col-lg-3 col-md-4'>
+              <div className='cmpny-docs-card'>
+                <div className='cmpny-docs-card-head'>
+                  Documents
+                </div>
+                <div className='cmpny-docs-card-body'>
+                  <div className='row'>
+                    <div className='col-4'>
+                      <div className='doc-inner-card'>
+                        <div className='doc-inner-card-body'>
+                          <img src={CmpnyPHlogo}></img>
+                        </div>
+                        <div className='doc-inner-card-footer'>
+                          Startup.pdf
                         </div>
                       </div>
                     </div>
