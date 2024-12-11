@@ -1592,12 +1592,35 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   };
 
   // Helper function to determine incentive percentage
-  const getIncentivePercentage = (currentMonthYear) => {
-    const targetMonth = new Date(2024, 11); // December 2024 (Months are zero-based)
-    const currentMonth = new Date(currentMonthYear);
+  const getIncentivePercentage = (filterby) => {
+    const targetDate = new Date(2024, 11, 1); // December 2024 (1st day of December)
+    const currentDate = new Date(); // Today's date
+    let filterDate;
 
-    return currentMonth >= targetMonth ? 15 : 10; // Return 15% for Dec 2024 and beyond, 10% for earlier months
+    if (filterby === "This Month") {
+      // Set filterDate to the start of the current month
+      filterDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    } else if (filterby === "Last Month") {
+      // Set filterDate to the start of the last month
+      filterDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    } else if (filterby === "Today") {
+      // Set filterDate to today
+      filterDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    } else {
+      // Default to current date if filterby is unrecognized
+      filterDate = currentDate;
+    }
+
+    console.log("Filter Date:", filterDate, "Target Date:", targetDate);
+
+    // Check if the filterDate is December 2024 or later
+    if (filterDate >= targetDate) {
+      return 15; // 15% incentive for December 2024 and beyond
+    } else {
+      return 10; // 10% incentive for months before December 2024
+    }
   };
+
 
   const { improvement, arrowImprovement } = calculateImprovement(Filterby);
 
@@ -1664,14 +1687,23 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
                           {showData
                             ? (hasCompletedThreeMonths(data.jdate)
                               ? (functionGetAmount() < functionCalculateAchievedRevenue(Filterby)
-                                ? parseInt(
-                                  (functionCalculateAchievedRevenue(Filterby) -
-                                    functionGetAmount()) *
-                                  (getIncentivePercentage(new Date().toISOString()) / 100)
-                                ).toLocaleString()
+                                ? (() => {
+                                  const achievedRevenue = functionCalculateAchievedRevenue(Filterby);
+                                  const targetAmount = functionGetAmount();
+                                  const incentiveRate = getIncentivePercentage(Filterby) / 100; // Pass filterby directly
+                                  const incentiveAmount = (achievedRevenue - targetAmount) * incentiveRate;
+
+                                  // Debugging logs
+                                  console.log("Achieved Revenue:", achievedRevenue);
+                                  console.log("Target Amount:", targetAmount);
+                                  console.log("Incentive Rate:", incentiveRate);
+                                  console.log("Incentive Amount:", incentiveAmount);
+
+                                  return parseInt(incentiveAmount).toLocaleString();
+                                })()
                                 : 0)
                               : 0)
-                            : "XXXXX"}y
+                            : "XXXXX"}
                         </b>
                       </div>
                     </div>
