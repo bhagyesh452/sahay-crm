@@ -103,7 +103,7 @@ function AdminEmployeePerformanceReport() {
   // console.log("empperformancedata" , empPerformanceData)
 
   return (
-    <div className="card">
+    <div className="card mt-3">
       <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
         <div className="dashboard-title pl-1"  >
           <h2 className="m-0">
@@ -322,7 +322,7 @@ function AdminEmployeePerformanceReport() {
             {currentDataLoading ? (
               <tbody>
                 <tr>
-                  <td colSpan="11" >
+                  <td colSpan="7" >
                     <div className="LoaderTDSatyle w-100" >
                       <ClipLoader
                         color="lightgrey"
@@ -426,7 +426,7 @@ function AdminEmployeePerformanceReport() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="6" className="text-center"><Nodata /></td>
+                      <td colSpan="7" className="text-center"><Nodata /></td>
                     </tr>
                   )}
                 </tbody>

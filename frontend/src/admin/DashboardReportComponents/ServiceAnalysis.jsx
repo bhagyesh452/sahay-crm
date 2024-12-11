@@ -153,12 +153,12 @@ function ServiceAnalysis() {
 
     const getServiceAnalysisData = () => {
         const serviceAnalysis = {};
-
+    
         const processServiceData = (booking, service) => {
             const serviceNameKey = service.serviceName.startsWith("ISO Certificate")
                 ? "ISO Certificate"
                 : service.serviceName;
-
+    
             if (!serviceAnalysis[serviceNameKey]) {
                 serviceAnalysis[serviceNameKey] = {
                     timesSold: 0,
@@ -168,21 +168,21 @@ function ServiceAnalysis() {
                     serviceBriefDetails: [],
                 };
             }
-
+    
             serviceAnalysis[serviceNameKey].timesSold += 1;
-            serviceAnalysis[serviceNameKey].totalPayment += service.totalPaymentWOGST;
-
+            serviceAnalysis[serviceNameKey].totalPayment += Math.round(service.totalPaymentWOGST);
+    
             const advanceAmount = service.paymentTerms === "Full Advanced"
-                ? service.totalPaymentWOGST
-                : (service.withGST ? (service.firstPayment / 1.18) : (service.firstPayment)) || 0;
-
+                ? Math.round(service.totalPaymentWOGST)
+                : (service.withGST ? Math.round(service.firstPayment / 1.18) : Math.round(service.firstPayment)) || 0;
+    
             serviceAnalysis[serviceNameKey].advancePayment += advanceAmount;
-
+    
             const distributeAmount = (employeeName, factor) => {
                 let existingEmployee = serviceAnalysis[serviceNameKey].serviceBriefDetails.find(
                     detail => detail.employeeName === employeeName
                 );
-
+    
                 if (!existingEmployee) {
                     existingEmployee = {
                         employeeName,
@@ -195,32 +195,32 @@ function ServiceAnalysis() {
                     };
                     serviceAnalysis[serviceNameKey].serviceBriefDetails.push(existingEmployee);
                 }
-
+    
                 existingEmployee.timesSold += factor;
-                existingEmployee.totalAmount += service.totalPaymentWOGST * factor;
-                existingEmployee.advance += advanceAmount * factor;
-
+                existingEmployee.totalAmount += Math.round(service.totalPaymentWOGST * factor);
+                existingEmployee.advance += Math.round(advanceAmount * factor);
+    
                 if (service.paymentTerms === "two-part") {
-                    const secondPayment = service.withGST ? service.secondPayment / 1.18 : service.secondPayment;
-                    const thirdPayment = service.withGST ? service.thirdPayment / 1.18 : service.thirdPayment;
-                    const fourthPayment = service.withGST ? service.fourthPayment / 1.18 : service.fourthPayment;
-
-                    const remainingPayment = (secondPayment + thirdPayment + fourthPayment) * factor;
+                    const secondPayment = service.withGST ? Math.round(service.secondPayment / 1.18) : Math.round(service.secondPayment);
+                    const thirdPayment = service.withGST ? Math.round(service.thirdPayment / 1.18) : Math.round(service.thirdPayment);
+                    const fourthPayment = service.withGST ? Math.round(service.fourthPayment / 1.18) : Math.round(service.fourthPayment);
+    
+                    const remainingPayment = Math.round((secondPayment + thirdPayment + fourthPayment) * factor);
                     existingEmployee.remaining += remainingPayment;
                     serviceAnalysis[serviceNameKey].remainingPaymentsArray.push(remainingPayment);
                 }
-
-                existingEmployee.average = existingEmployee.totalAmount / existingEmployee.timesSold || 0;
+    
+                existingEmployee.average = Math.round(existingEmployee.totalAmount / existingEmployee.timesSold) || 0;
                 existingEmployee.companyDetails.push({
                     companyName: booking["Company Name"],
                     bdeName: booking.bdeName,
                 });
             };
-
+    
             const isSameName = booking.bdeName === booking.bdmName;
             const isCloseBy = booking.bdmType === "Close-by";
             const isSupportedBy = booking.bdmType === "Supported-by";
-
+    
             if (isSameName) {
                 distributeAmount(booking.bdeName, 1);
             } else if (isCloseBy) {
@@ -230,40 +230,40 @@ function ServiceAnalysis() {
                 distributeAmount(booking.bdeName, 1);
             }
         };
-
+    
         const processBooking = (booking) => {
             const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
             const bookingYear = new Date(booking.bookingDate).getFullYear();
-
+    
             if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
                 booking.services.forEach(service => processServiceData(booking, service));
             }
         };
-
+    
         bookingData.forEach(booking => {
             processBooking(booking);
-
+    
             booking.moreBookings.forEach(moreBooking => {
                 processBooking(moreBooking);
             });
         });
-
+    
         return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
             const totalRemainingPayment = data.remainingPaymentsArray.reduce((sum, payment) => sum + payment, 0);
-
+    
             return {
                 id: index + 1,
                 serviceName,
                 timesSold: data.timesSold,
-                totalPayment: data.totalPayment,
-                advancePayment: data.advancePayment,
-                remainingPayment: totalRemainingPayment,
-                averageSellingPrice: data.totalPayment / data.timesSold || 0,
+                totalPayment: Math.round(data.totalPayment),
+                advancePayment: Math.round(data.advancePayment),
+                remainingPayment: Math.round(totalRemainingPayment),
+                averageSellingPrice: Math.round(data.totalPayment / data.timesSold) || 0,
                 serviceBriefDetails: data.serviceBriefDetails,
             };
         });
     };
-
+    
 
     const serviceAnalysisData = getServiceAnalysisData();
 
@@ -353,10 +353,10 @@ function ServiceAnalysis() {
                                                     <td>{service.id}</td>
                                                     <td>{service.serviceName}</td>
                                                     <td>{service.timesSold}</td>
-                                                    <td>₹ {formatSalary(service.totalPayment.toFixed(2))}</td>
-                                                    <td>₹ {formatSalary(service.advancePayment.toFixed(2))}</td>
-                                                    <td>₹ {formatSalary(service.remainingPayment.toFixed(2))}</td>
-                                                    <td>₹ {formatSalary(service.averageSellingPrice.toFixed(2))}</td>
+                                                    <td>₹ {formatSalary(service.totalPayment)}</td>
+                                                    <td>₹ {formatSalary(service.advancePayment)}</td>
+                                                    <td>₹ {formatSalary(service.remainingPayment)}</td>
+                                                    <td>₹ {formatSalary(service.averageSellingPrice)}</td>
                                                 </tr>
 
                                                 {expandedService === service.serviceName && (
@@ -382,10 +382,10 @@ function ServiceAnalysis() {
                                                                                 <td>{detailIndex + 1}</td>
                                                                                 <td>{detail.employeeName}</td>
                                                                                 <td>{detail.timesSold}</td>
-                                                                                <td>₹ {formatSalary(detail.totalAmount.toFixed(2))}</td>
-                                                                                <td>₹ {formatSalary(detail.advance.toFixed(2))}</td>
-                                                                                <td>₹ {formatSalary(detail.remaining.toFixed(2))}</td>
-                                                                                <td>₹ {formatSalary(detail.average.toFixed(2))}</td>
+                                                                                <td>₹ {formatSalary(detail.totalAmount)}</td>
+                                                                                <td>₹ {formatSalary(detail.advance)}</td>
+                                                                                <td>₹ {formatSalary(detail.remaining)}</td>
+                                                                                <td>₹ {formatSalary(detail.average)}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
@@ -403,10 +403,10 @@ function ServiceAnalysis() {
                                             <td>Total</td>
                                             <td>{serviceAnalysisData.length}</td>
                                             <td>{totalTimesSold}</td>
-                                            <td>₹ {formatSalary(totalTotalPayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalAdvancePayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalRemainingPayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalAverageSellingPrice.toFixed(2))}</td>
+                                            <td>₹ {formatSalary(totalTotalPayment)}</td>
+                                            <td>₹ {formatSalary(totalAdvancePayment)}</td>
+                                            <td>₹ {formatSalary(totalRemainingPayment)}</td>
+                                            <td>₹ {formatSalary(totalAverageSellingPrice)}</td>
                                         </tr>
                                     </tfoot>
                                 </>

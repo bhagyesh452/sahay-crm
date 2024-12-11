@@ -3587,7 +3587,7 @@ router.get("/currentMonthLeadsReport/:employeeName", async (req, res) => {
 });
 
 router.get("/monthWisePerformanceReport", async (req, res) => {
-  const { branch, months, year, employees } = req.query;
+  const { branch, months, years, employees } = req.query;
 
   // Get current month and year by default
   const currentDate = new Date();
@@ -3615,14 +3615,14 @@ router.get("/monthWisePerformanceReport", async (req, res) => {
       );
     }
 
-    if (months || year) {
-      const filterMonths = Array.isArray(months) ? months : [months || currentMonth]; // Handle single or multiple months;
-      const filterYear = year ? year : currentYear;
+    if (months || years) {
+      const filterMonths = Array.isArray(months) ? months : [months || currentMonth]; // Handle single or multiple months
+      const filterYears = Array.isArray(years) ? years : [years || currentYear]; // Handle single or multiple years
 
       employeesPerformanceData = employeesPerformanceData.map(employee => ({
         ...employee,
         performance: employee.performance.filter(perf => 
-          filterMonths.includes(perf.month) && perf.year === filterYear
+          filterMonths.includes(perf.month) && filterYears.includes(perf.year)
         ),
       })).filter(employee => employee.performance.length > 0); // Remove employees with no performance data
     }
