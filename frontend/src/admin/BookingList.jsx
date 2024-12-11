@@ -37,7 +37,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { FaCircleChevronLeft } from "react-icons/fa6";
 import { FaCircleChevronRight } from "react-icons/fa6";
 import BookingsTableView from "./BookingsTableView.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation } from "react-router-dom";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -68,6 +68,17 @@ function BookingList() {
   const [leadFormData, setLeadFormData] = useState([]);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  
+  
+  useEffect(() => {
+    // Check if searchText is passed in location state
+    if (location.state?.searchText) {
+      setSearchText(location.state.searchText);
+      setPage(1); // Reset to the first page
+    }
+  }, [location.state]);
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;

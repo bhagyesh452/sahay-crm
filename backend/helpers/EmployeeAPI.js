@@ -24,6 +24,7 @@ const { sendMailEmployees } = require("./sendMailEmployees");
 const LeadsModel = require("../models/Leads.js");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const mongoose = require('mongoose');
+const CompanyModel = require("../models/Leads");
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -1026,10 +1027,25 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
       // Fetch the team leads data
       const teamLeadsData = await TeamLeadsModel.find({
         bdmName: emp.ename,
-      }).select("ename").lean();
-
-      // Check the length of teamLeadsData and set isVisibleTeamLeads accordingly
-      isVisibleTeamLeads = teamLeadsData.length > 0;
+      })
+        .select("ename")
+        .lean();
+    
+      // Check the length of teamLeadsData
+      if (teamLeadsData.length > 0) {
+        isVisibleTeamLeads = true;
+      } else {
+        // If no teamLeadsData found, check in CompanyModel for bdmName
+        const companyData = await CompanyModel.find({
+          bdmName: emp.ename,
+        })
+          .select("bdmName")
+          .lean();
+    
+        // Set isVisibleTeamLeads based on companyData length
+        isVisibleTeamLeads = companyData.length > 0;
+        console.log("isVisibleTeamLeads", isVisibleTeamLeads)
+      }
     }
 
     // If employee is still not found, return an error message
@@ -1046,6 +1062,7 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
       return res.status(200).json({ result: true, message: "Employee fetched successfully", data: employeeData });
     }
   } catch (error) {
+    console.log(error)
     // Return an error if something goes wrong
     return res.status(500).json({ result: false, message: "Error fetching employee", error: error.message });
   }

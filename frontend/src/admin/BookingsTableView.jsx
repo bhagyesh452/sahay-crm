@@ -6,14 +6,17 @@ import { useNavigate } from "react-router-dom";
 import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
 import FilterableComponentEmployee from "../employeeComp/ExtraComponents/FilterableComponentEmployee";
+import { GoArrowLeft } from "react-icons/go";
+import { GoArrowRight } from "react-icons/go";
+import FilterableTable from "../RM-CERTIFICATION/Extra-Components/FilterableTable.jsx";
+import { FaRegEye } from "react-icons/fa";
 
 function BookingsTableView({ tableViewOpen }) {
     const [currentPage, setCurrentPage] = useState(1);
-    
     const [fetchedBookingsData, setFetchedBookingsData] = useState([]);
     const [dataToFilter, setDataToFilter] = useState([]);
     const [completeBookingsData, setCompleteBookingsData] = useState([]);
-    const [itemsPerPage, setItemsPerPage] = useState(500);
+    const itemsPerPage = 500;
     const [searchText, setSearchText] = useState(""); // State for search input
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const navigate = useNavigate();
@@ -22,227 +25,54 @@ function BookingsTableView({ tableViewOpen }) {
         document.title = `AdminHead-Sahay-CRM`;
     }, []);
 
-    const allServicesWithDetails = [];
+
+    const formatDatePro = (inputDate) => {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    };
+
 
     const { data: bookingsData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
-        queryKey: ["bookingsData"],
+        queryKey: ["bookingsData", currentPage , searchText],
         queryFn: async () => {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData-tableView`, {
-                params: { currentPage, limit: itemsPerPage },
-              });
-              console.log(response.data);
-              return response.data;
+                params: { page: currentPage, limit: itemsPerPage ,searchText}, // Pass currentPage and limit to the backend
+            });
+            return response.data; // Return the fetched data
         },
-        
         keepPreviousData: true,
         refetchOnWindowFocus: false,
-        refetchInterval: 300000,
-        refetchIntervalInBackground: true,
+        refetchInterval: 300000,  // Fetch the data after every 5 minutes
+        refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
     });
 
     useEffect(() => {
-        setFetchedBookingsData(bookingsData)
-        setDataToFilter(bookingsData)
-        setCompleteBookingsData(bookingsData)
-    }, [bookingsData])
+        setFetchedBookingsData(bookingsData?.data)
+        setDataToFilter(bookingsData?.data)
+        setCompleteBookingsData(bookingsData?.data)
+    }, [bookingsData, refetchBookingData])
 
-    // Prepare data for rendering
-    // Iterate over bookingData
-    fetchedBookingsData?.forEach(booking => {
-        // Add services from main booking with booking details
-        booking.services.forEach(service => {
-            allServicesWithDetails.push({
-                "Company Name": booking["Company Name"],
-                "Company Number": booking["Company Number"],
-                "Company Email": booking["Company Email"],
-                panNumber: booking.panNumber,
-                bdeName: booking.bdeName,
-                bdeEmail: booking.bdeEmail || '', // Make sure to handle optional fields if they are not always provided
-                bdmName: booking.bdmName,
-                bdmType: booking.bdmType || 'Close-by', // Default value if not provided
-                bookingDate: booking.bookingDate,
-                paymentMethod: booking.paymentMethod || '', // Make sure to handle optional fields if they are not always provided
-                caCase: booking.caCase || false, // Default to false if not provided
-                caNumber: booking.caNumber || 0, // Default to 0 if not provided
-                caEmail: booking.caEmail || '', // Make sure to handle optional fields if they are not always provided
-                serviceName: service.serviceName || '',
-                totalPaymentWOGST: service.totalPaymentWOGST || 0, // Default to 0 if not provided
-                totalPaymentWGST: service.totalPaymentWGST || 0,
-                withGST: service.withGST, // Default to 0 if not provided
-                firstPayment: service.firstPayment || 0, // Default to 0 if not provided
-                secondPayment: service.secondPayment || 0, // Default to 0 if not provided
-                thirdPayment: service.thirdPayment || 0, // Default to 0 if not provided
-                fourthPayment: service.fourthPayment || 0,
-                secondPaymentRemarks: service.secondPaymentRemarks || "",
-                thirdPaymentRemarks: service.thirdPaymentRemarks || "",
-                fourthPaymentRemarks: service.fourthPaymentRemarks || "", // Default to 0 if not provided
-                bookingPublishDate: booking.bookingPublishDate || '', // Placeholder for bookingPublishDate, can be set if available
-            });
-        });
 
-        // Iterate over moreBookings in each booking
-        booking.moreBookings.forEach(moreBooking => {
-            // Add services from moreBookings with booking and moreBooking details
-            moreBooking.services.forEach(service => {
-                allServicesWithDetails.push({
-                    "Company Name": booking["Company Name"],
-                    "Company Number": booking["Company Number"],
-                    "Company Email": booking["Company Email"],
-                    panNumber: booking.panNumber,
-                    bdeName: moreBooking.bdeName,
-                    bdeEmail: moreBooking.bdeEmail || '', // Make sure to handle optional fields if they are not always provided
-                    bdmName: moreBooking.bdmName,
-                    bdmType: moreBooking.bdmType || 'Close-by', // Default value if not provided
-                    bookingDate: moreBooking.bookingDate,
-                    paymentMethod: moreBooking.paymentMethod || '', // Make sure to handle optional fields if they are not always provided
-                    caCase: moreBooking.caCase || false, // Default to false if not provided
-                    caNumber: moreBooking.caNumber || 0, // Default to 0 if not provided
-                    caEmail: moreBooking.caEmail || '', // Make sure to handle optional fields if they are not always provided
-                    serviceName: service.serviceName || '',
-                    totalPaymentWOGST: service.totalPaymentWOGST || 0, // Default to 0 if not provided
-                    totalPaymentWGST: service.totalPaymentWGST || 0,
-                    withGST: service.withGST, // Default to 0 if not provided
-                    firstPayment: service.firstPayment || 0, // Default to 0 if not provided
-                    secondPayment: service.secondPayment || 0, // Default to 0 if not provided
-                    thirdPayment: service.thirdPayment || 0, // Default to 0 if not provided
-                    fourthPayment: service.fourthPayment || 0,
-                    secondPaymentRemarks: service.secondPaymentRemarks || "",
-                    thirdPaymentRemarks: service.thirdPaymentRemarks || "",
-                    fourthPaymentRemarks: service.fourthPaymentRemarks || "", // Default to 0 if not provided
-                    bookingPublishDate: moreBooking.bookingPublishDate || '', // Placeholder for bookingPublishDate, can be set if available
-                });
-            });
-        });
-    });
 
-    // Sort data by bookingDate in descending order
-    allServicesWithDetails.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+    const totalCount = bookingsData?.totalCount || 0;
+    const data = bookingsData?.data || [];
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-    // Filter data based on search input
-    const filteredData = allServicesWithDetails.filter((item) => {
-        return (
-            item["Company Name"].toLowerCase().includes(searchText.toLowerCase()) ||
-            item["Company Number"].toString().includes(searchText) ||
-            item.serviceName.toLowerCase().includes(searchText.toLowerCase())
-        );
-    });
-
-    // Pagination calculations
-    const totalItems = filteredData.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentItems = filteredData.slice(startIndex, endIndex);
-
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
-    };
-
-    const renderPagination = () => {
-        const pagination = [];
-        const maxPageButtons = 3;
-
-        if (totalPages <= maxPageButtons) {
-            for (let i = 1; i <= totalPages; i++) {
-                pagination.push(
-                    <li
-                        key={i}
-                        className={`page-item ${currentPage === i ? "active" : ""}`}
-                        onClick={() => handlePageChange(i)}
-                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
-                    >
-                        {i}
-                    </li>
-                );
-            }
-        } else {
-            if (currentPage > 1) {
-                pagination.push(
-                    <li
-                        key="prev"
-                        className="page-item"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
-                    >
-                        &lt;
-                    </li>
-                );
-            }
-
-            if (currentPage > 2) {
-                pagination.push(
-                    <li
-                        key={1}
-                        className="page-item"
-                        onClick={() => handlePageChange(1)}
-                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
-                    >
-                        1
-                    </li>
-                );
-
-                if (currentPage > 3) {
-                    pagination.push(
-                        <li key="dots-prev" style={{ padding: "5px 10px", margin: "0 5px" }}>
-                            ...
-                        </li>
-                    );
-                }
-            }
-
-            const startPage = Math.max(1, currentPage - 1);
-            const endPage = Math.min(totalPages, currentPage + 1);
-
-            for (let i = startPage; i <= endPage; i++) {
-                pagination.push(
-                    <li
-                        key={i}
-                        className={`page-item ${currentPage === i ? "active" : ""}`}
-                        onClick={() => handlePageChange(i)}
-                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
-                    >
-                        {i}
-                    </li>
-                );
-            }
-
-            if (currentPage < totalPages - 1) {
-                if (currentPage < totalPages - 2) {
-                    pagination.push(
-                        <li key="dots-next" style={{ padding: "5px 10px", margin: "0 5px" }}>
-                            ...
-                        </li>
-                    );
-                }
-
-                pagination.push(
-                    <li
-                        key={totalPages}
-                        className="page-item"
-                        onClick={() => handlePageChange(totalPages)}
-                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
-                    >
-                        {totalPages}
-                    </li>
-                );
-            }
-
-            if (currentPage < totalPages) {
-                pagination.push(
-                    <li
-                        key="next"
-                        className="page-item"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        style={{ cursor: "pointer", padding: "5px 10px", margin: "0 5px", border: "1px solid #ddd" }}
-                    >
-                        &gt;
-                    </li>
-                );
-            }
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage((prevPage) => prevPage + 1);
         }
-
-        return pagination;
     };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prevPage) => prevPage - 1);
+        }
+    };
+
 
     const handleViewTableView = () => {
         navigate(`/md/bookings`);
@@ -271,7 +101,22 @@ function BookingsTableView({ tableViewOpen }) {
     };
 
     const handleFilterClick = async (field) => {
+        if (filteredDataNew.length === 0) {
+            try {
+                // Fetch complete data without pagination
+                const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData-tableView`, {
+                    params: { page: 1, limit: 1000000 }, // Set a very high limit to fetch all data
+                });
 
+                // Update the state with the complete data
+                const completeData = response.data?.data || [];
+                //setCompleteBookingsData(completeData);
+                setDataToFilter(completeData); // Set it as filteredDataNew to work with filters
+                //setFetchedBookingsData(completeData); // Update main data source
+            } catch (error) {
+                console.error("Error fetching complete data:", error);
+            }
+        }
         if (activeFilterField === field) {
             setShowFilterMenu(!showFilterMenu);
             setIsScrollLocked(!showFilterMenu);
@@ -284,6 +129,7 @@ function BookingsTableView({ tableViewOpen }) {
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
     };
+
     const isActiveField = (field) => activeFilterFields.includes(field);
 
     useEffect(() => {
@@ -303,7 +149,15 @@ function BookingsTableView({ tableViewOpen }) {
         }
     }, []);
 
-    console.log("filteredDataNew", bookingsData);
+    const handleInformationClick = (companyName) => {
+        // Redirect to BookingListView with the company name as a query parameter
+        navigate(`/md/bookings`, { state: { searchText: companyName } });
+    };
+
+    // console.log("filteredDataNew", allServicesWithDetails);
+
+    console.log("data", bookingsData);
+    console.log("dataToFilter", dataToFilter);
 
     return (
         <div>
@@ -320,18 +174,15 @@ function BookingsTableView({ tableViewOpen }) {
                                     </svg>
                                 </span>
                                 <input
-                                    // value={searchQuery}
-                                    // onChange={(e) => {
-                                    //     setSearchQuery(e.target.value);
-                                    //     handleSearch(e.target.value)
-                                    //     //handleFilterSearch(e.target.value)
-                                    //     //setCurrentPage(0);
-                                    // }}
+                                    value={searchText}
+                                    onChange={(e) => {
+                                        setSearchText(e.target.value);
+                                        setCurrentPage(1); // Reset to first page when search text changes
+                                    }}
                                     className="form-control search-cantrol mybtn"
-                                    placeholder="Search…"
+                                    placeholder="Search by Company Name, Number, or Email"
                                     type="text"
-                                    name="bdeName-search"
-                                    id="bdeName-search" />
+                                />
                             </div>
                         </div>
                         <div className="d-flex align-items-center">
@@ -371,7 +222,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableComponentEmployee
+                                                <FilterableTable
                                                     noofItems={setnoOfAvailableData}
                                                     allFilterFields={setActiveFilterFields}
                                                     filteredData={filteredDataNew}
@@ -383,6 +234,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                     showingMenu={setShowFilterMenu}
                                                     dataForFilter={dataToFilter}
                                                     refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
                                                 />
                                             </div>
                                         )}
@@ -409,7 +261,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableComponentEmployee
+                                                <FilterableTable
                                                     noofItems={setnoOfAvailableData}
                                                     allFilterFields={setActiveFilterFields}
                                                     filteredData={filteredDataNew}
@@ -421,13 +273,14 @@ function BookingsTableView({ tableViewOpen }) {
                                                     showingMenu={setShowFilterMenu}
                                                     dataForFilter={dataToFilter}
                                                     refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
                                                 />
                                             </div>
                                         )}
                                     </div>
                                 </th>
                                 <th>
-                                <div className='d-flex align-items-center justify-content-center position-relative'>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
                                         <div ref={el => fieldRefs.current['serviceName'] = el}>
                                             Service Name
                                         </div>
@@ -447,7 +300,7 @@ function BookingsTableView({ tableViewOpen }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableComponentEmployee
+                                                <FilterableTable
                                                     noofItems={setnoOfAvailableData}
                                                     allFilterFields={setActiveFilterFields}
                                                     filteredData={filteredDataNew}
@@ -459,20 +312,366 @@ function BookingsTableView({ tableViewOpen }) {
                                                     showingMenu={setShowFilterMenu}
                                                     dataForFilter={fetchedBookingsData}
                                                     refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
                                                 />
                                             </div>
                                         )}
                                     </div>
                                 </th>
-                                <th>BDE NAME</th>
-                                <th>BDM NAME</th>
-                                <th>BDM TYPE</th>
-                                <th>BOOKING DATE</th>
-                                <th>CA CASE</th>
-                                <th>CA NUMBER</th>
-                                <th>WITH GST</th>
-                                <th>TOTAL PAYMENT WITHOUT GST</th>
-                                <th>TOTAL PAYMENT WITH GST</th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['bdeName'] = el}>
+                                            BDE Name
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('bdeName') ? (
+                                                <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'bdeName' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['bdmName'] = el}>
+                                            BDM Name
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('bdmName') ? (
+                                                <FaFilter onClick={() => handleFilterClick("bdmName")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("bdmName")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'bdmName' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['bdmType'] = el}>
+                                            bdmType
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('bdmType') ? (
+                                                <FaFilter onClick={() => handleFilterClick("bdmType")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("bdmType")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'bdmType' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['Booking Date'] = el}>
+                                            Booking Date
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('Booking Date') ? (
+                                                <FaFilter onClick={() => handleFilterClick("Booking Date")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("Booking Date")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'Booking Date' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th> <div className='d-flex align-items-center justify-content-center position-relative'>
+                                    <div ref={el => fieldRefs.current['caCase'] = el}>
+                                        CA Case
+                                    </div>
+
+                                    <div className='RM_filter_icon'>
+                                        {isActiveField('caCase') ? (
+                                            <FaFilter onClick={() => handleFilterClick("caCase")} />
+                                        ) : (
+                                            <BsFilter onClick={() => handleFilterClick("caCase")} />
+                                        )}
+                                    </div>
+
+                                    {/* ---------------------filter component--------------------------- */}
+                                    {showFilterMenu && activeFilterField === 'caCase' && (
+                                        <div
+                                            ref={filterMenuRef}
+                                            className="filter-menu"
+                                            style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                        >
+                                            <FilterableTable
+                                                noofItems={setnoOfAvailableData}
+                                                allFilterFields={setActiveFilterFields}
+                                                filteredData={filteredDataNew}
+                                                activeTab={"General"}
+                                                data={fetchedBookingsData}
+                                                filterField={activeFilterField}
+                                                onFilter={handleFilter}
+                                                completeData={completeBookingsData}
+                                                showingMenu={setShowFilterMenu}
+                                                dataForFilter={dataToFilter}
+                                                refetch={refetchBookingData}
+                                                isComingFromAdmin={true}
+                                            />
+                                        </div>
+                                    )}
+                                </div></th>
+                             
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['withGST'] = el}>
+                                            With GST
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('withGST') ? (
+                                                <FaFilter onClick={() => handleFilterClick("withGST")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("withGST")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'withGST' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                               
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
+                                            Total Payment With GST
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('totalPaymentWGST') ? (
+                                                <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['remainingAmount'] = el}>
+                                            Pending Amount
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('remainingAmount') ? (
+                                                <FaFilter onClick={() => handleFilterClick("remainingAmount")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("remainingAmount")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'remainingAmount' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                                        <div ref={el => fieldRefs.current['pendingRecievedAmount'] = el}>
+                                            Recieved Amount
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            {isActiveField('pendingRecievedAmount') ? (
+                                                <FaFilter onClick={() => handleFilterClick("pendingRecievedAmount")} />
+                                            ) : (
+                                                <BsFilter onClick={() => handleFilterClick("pendingRecievedAmount")} />
+                                            )}
+                                        </div>
+
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'pendingRecievedAmount' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    noofItems={setnoOfAvailableData}
+                                                    allFilterFields={setActiveFilterFields}
+                                                    filteredData={filteredDataNew}
+                                                    activeTab={"General"}
+                                                    data={fetchedBookingsData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeBookingsData}
+                                                    showingMenu={setShowFilterMenu}
+                                                    dataForFilter={dataToFilter}
+                                                    refetch={refetchBookingData}
+                                                    isComingFromAdmin={true}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    Booking
+                                </th>
                             </tr>
                         </thead>
                         {isBookingDataLoading ? (
@@ -493,31 +692,64 @@ function BookingsTableView({ tableViewOpen }) {
                             </tbody>
                         ) : (
                             <tbody>
-                                {currentItems.map((obj, index) => (
+                                {fetchedBookingsData?.map((obj, index) => (
                                     <tr key={index}>
-                                        <td className="rm-sticky-left-1">{startIndex + index + 1}</td>
+                                        <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
                                         <td className="rm-sticky-left-2">{obj["Company Name"]}</td>
                                         <td>{obj["Company Number"]}</td>
                                         <td>{obj.serviceName}</td>
                                         <td>{obj.bdeName}</td>
                                         <td>{obj.bdmName}</td>
                                         <td>{obj.bdmType}</td>
-                                        <td>{obj.bookingDate}</td>
-                                        <td>{obj.caCase ? "Yes" : "No"}</td>
-                                        <td>{obj.caNumber}</td>
+                                        <td>{formatDatePro(obj.bookingDate)}</td>
+                                        <td>{obj.caCase}</td>
                                         <td>{obj.withGST ? "Yes" : "No"}</td>
-                                        <td>{obj.totalPaymentWOGST}</td>
-                                        <td>{obj.totalPaymentWGST}</td>
+                                        <td>₹{(obj.totalPaymentWGST)?.toLocaleString('en-IN')}</td>
+                                        <td>₹{(obj.remainingAmount)?.toLocaleString('en-IN')}</td>
+                                        <td>₹{(obj.pendingReceivedAmount)?.toLocaleString('en-IN')}</td>
+                                        <td>
+                                            <FaRegEye
+                                                style={{
+                                                    cursor: "pointer",
+                                                    
+                                                    color: "#fbb900",
+                                                }}
+                                                onClick={() => handleInformationClick(obj["Company Name"])}
+                                            />
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         )}
                     </table>
                 </div>
+                {data && data.length !== 0 && (
+                    <div className="pagination d-flex align-items-center justify-content-center w-100">
+                        <div>
+                            <button
+                                className="btn-pagination"
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                            >
+                                <GoArrowLeft />
+                            </button>
+                        </div>
+                        <div className="ml-3 mr-3">
+                            Page {currentPage} of {totalPages}
+                        </div>
+                        <div>
+                            <button
+                                className="btn-pagination"
+                                onClick={handleNextPage}
+                                disabled={currentPage >= totalPages}
+                            >
+                                <GoArrowRight />
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
-            <div className="pagination-container ">
-                <ul className="pagination align-items-center justify-content-center mt-2">{renderPagination()}</ul>
-            </div>
+
         </div>
     );
 }
