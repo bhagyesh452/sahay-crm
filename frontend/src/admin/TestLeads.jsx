@@ -1826,13 +1826,13 @@ function TestLeads() {
                                         <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
                                             <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
                                         </button>
-                                        <div>
+                                        {/* <div>
                                             <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
                                             <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
                                                 <LiaPagerSolid className="mr-1" />
                                                 Update Leads
                                             </button>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center">

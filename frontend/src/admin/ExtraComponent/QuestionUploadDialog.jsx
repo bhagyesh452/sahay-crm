@@ -80,7 +80,7 @@ function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
                 await axios.post("/api/questions/upload-excel", excelData);
             }
             alert("Questions uploaded successfully!");
-            setDialogOpen(false);
+            handleDialogToggle();
         } catch (error) {
             alert("Error uploading questions");
         }
