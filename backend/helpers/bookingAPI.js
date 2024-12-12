@@ -27,6 +27,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const ExpenseReportModel = require("../models/ExpenseReportModel");
 const ProjectionModel = require("../models/NewProjections.js");
 const adminModel = require('../models/Admin.js');
+const deletedEmployeeModel = require("../models/DeletedEmployee.js");
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -408,11 +410,18 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     }, {});
 
     // Process and flatten the data
+    const companyBookingIndexMap = {};
     const allServicesWithDetails = [];
     bookingsData.forEach((booking) => {
       const services = booking.services || [];
       const moreBookings = booking.moreBookings || [];
-
+      const companyName = booking["Company Name"] || "Unknown";
+      if (!companyBookingIndexMap[companyName]) {
+        companyBookingIndexMap[companyName] = 0;
+      }
+      // Increment booking index for main booking
+      companyBookingIndexMap[companyName] += 1;
+      const mainBookingIndex = companyBookingIndexMap[companyName];
       // Process main booking services
       services.forEach((service) => {
         let remainingAmount = 0;
@@ -480,6 +489,7 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           remainingAmount: remainingAmount || 0,
           receivedAsFullAdvance: receivedAsFullAdvance || 0, // New field
           receivedAsRemaining: receivedAsRemaining || 0, // New field
+          bookingIndex: mainBookingIndex,
         };
 
         allServicesWithDetails.push(processedData);
@@ -487,11 +497,14 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
 
       // Process moreBookings services
       moreBookings.forEach((moreBooking) => {
+        companyBookingIndexMap[companyName] += 1;
+        const moreBookingIndex = companyBookingIndexMap[companyName];
         moreBooking.services.forEach((service) => {
           let remainingAmount = 0;
           let pendingReceivedAmount = 0;
           let receivedAsFullAdvance = 0;
           let receivedAsRemaining = 0;
+
 
           if (service.paymentTerms && service.paymentTerms.toLowerCase() === "full advanced") {
             remainingAmount = 0;
@@ -551,8 +564,9 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             bookingPublishDate: moreBooking.bookingPublishDate || "",
             pendingReceivedAmount: pendingReceivedAmount || 0,
             remainingAmount: remainingAmount || 0,
-            receivedAsFullAdvance : receivedAsFullAdvance || 0, // First payment as receivedFullAdvance
-            receivedAsRemaining : receivedAsRemaining || 0
+            receivedAsFullAdvance: receivedAsFullAdvance || 0, // First payment as receivedFullAdvance
+            receivedAsRemaining: receivedAsRemaining || 0,
+            bookingIndex: moreBookingIndex,
           };
 
           allServicesWithDetails.push(processedData);
