@@ -528,10 +528,10 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
             bdeEmail: moreBooking.bdeEmail || "",
             bdmName: moreBooking.bdmName || "",
             bdmType: moreBooking.bdmType || "Close-by",
-            bdeEmpId: employeeProfileMap[booking.bdeName]?.empId || null, // BDE Employee ID
-            bdeProfilePhoto: employeeProfileMap[booking.bdeName]?.profilePhoto || null, // BDE Profile Photo
-            bdmEmpId: employeeProfileMap[booking.bdmName]?.empId || null, // BDM Employee ID
-            bdmProfilePhoto: employeeProfileMap[booking.bdmName]?.profilePhoto || null, // BDM Profile Photo
+            bdeEmpId: employeeProfileMap[moreBooking.bdeName]?.empId || null, // BDE Employee ID
+            bdeProfilePhoto: employeeProfileMap[moreBooking.bdeName]?.profilePhoto || null, // BDE Profile Photo
+            bdmEmpId: employeeProfileMap[moreBooking.bdmName]?.empId || null, // BDM Employee ID
+            bdmProfilePhoto: employeeProfileMap[moreBooking.bdmName]?.profilePhoto || null, // BDM Profile Photo
             bookingDate: moreBooking.bookingDate || "",
             paymentMethod: moreBooking.paymentMethod || "",
             caCase: moreBooking.caCase || "",

@@ -41,7 +41,7 @@ function BookingsTableView({ tableViewOpen }) {
     const [activeFilterField, setActiveFilterField] = useState(null);
 
     useEffect(() => {
-        document.title = `AdminHead-Sahay-CRM`;
+        document.title = `Admin-Sahay-CRM`;
     }, []);
 
 
