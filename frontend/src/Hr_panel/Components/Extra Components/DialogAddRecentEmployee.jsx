@@ -946,23 +946,6 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                                                     />
                                                 </div>
                                             </div>
-                                            {/* <div className="col-lg-2">
-                                                <div>
-                                                    <input
-                                                        placeholder="ADD achieved amount"
-                                                        type="number"
-                                                        className="form-control"
-                                                        value={obj.achievedAmount}
-                                                        onChange={(e) => {
-                                                            setTargetObjects(prevState => {
-                                                                const updatedTargets = [...prevState];
-                                                                updatedTargets[index] = { ...updatedTargets[index], achievedAmount: e.target.value };
-                                                                return updatedTargets;
-                                                            });
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div> */}
                                             <div className="col-lg-2 d-flex align-items-center justify-content-end">
                                                 <button className="btn" onClick={() => handleAddTarget(index)}>
                                                     <MdOutlineAddCircle
@@ -982,26 +965,6 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                             ) : (
                                 <>
                                     {/* Field for Bulk Upload */}
-                                    {/* <div className="row mb-3">
-                                        <label className="form-label">Upload Employee Data</label>
-                                        <div className="col-lg-12">
-                                            <input type="file" className="form-control" onChange={handleFileChange} />
-                                        </div>
-                                        <a
-                                            href={`${process.env.PUBLIC_URL}/AddNewEmployeeFormat.xlsx`}
-                                            download={"AddNewEmployeeFormat.xlsx"}
-                                        >
-                                            <div className='d-flex align-items-center justify-content-end' style={{ marginTop: "10px", textDecoration: "none" }}>
-                                                <div style={{ marginRight: "5px" }}>
-                                                    <AiOutlineDownload />
-                                                </div>
-                                                <div>
-                                                    Download Sample
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </div> */}
                                     <div>
                                         <div className={`drag-file-area ${isDragging ? 'dragging' : ''}`} // Add 'dragging' class to change style during drag
                                             onDragOver={handleDragOver}

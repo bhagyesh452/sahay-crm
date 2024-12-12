@@ -399,9 +399,12 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
 
     // Fetch employee details from adminModel
     const adminData = await adminModel.find({}, { ename: 1, profilePhoto: 1, _id: 1 });
+    const deletedEmployeeData = await deletedEmployeeModel.find({}, { ename: 1, profilePhoto: 1, _id: 1 });
+
+    const completeEmployeeData = [...adminData , deletedEmployeeData]
 
     // Map adminData to a lookup object for quick access
-    const employeeProfileMap = adminData.reduce((map, employee) => {
+    const employeeProfileMap = completeEmployeeData.reduce((map, employee) => {
       map[employee.ename] = {
         empId: employee._id, // Employee ID
         profilePhoto: employee.profilePhoto || null, // Profile Photo
@@ -453,6 +456,10 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           pendingReceivedAmount = service.totalPaymentWGST - remainingAmount;
           receivedAsFullAdvance = service.firstPayment || 0; // First payment as receivedFullAdvance
           receivedAsRemaining = totalReceivedAmount; // Remaining payments as receivedRemaining
+        }
+        if(booking["Company Name"] === "ARLG TECHNOLOGY  LLP"){
+          console.log(booking["Company Name"] ,employeeProfileMap[booking.bdmName]?.empId , employeeProfileMap)
+
         }
 
         const processedData = {

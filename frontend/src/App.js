@@ -152,6 +152,8 @@ import "../src/assets/v2_style.css"
 import "../src/assets/hover.css"
 import "../src/assets/sales_new_style.css"
 import BookingsTableView from "./admin/BookingsTableView.jsx";
+import AdminUploadQuestions from "./admin/AdminUploadQuestions.jsx";
+import AdminReportPanel from "./admin/AdminReportPanel.jsx";
 
 function App() {
 
@@ -302,8 +304,10 @@ function App() {
             <Route path="/md/leads/:companyId" element={<CompanyParticular />} />
             <Route path="/md/bookings" element={<BookingList />} />
             <Route path="/md/bookings/tabelView" element={<BookingsTableView />} />
+            <Route path="/md/uploadQuestions" element={<AdminUploadQuestions />} />
             <Route path="/md/notification" element={<ShowNotification />} />
             <Route path="/md/bookings/Addbookings" element={<RedesignedForm />} />
+            <Route path="/md/reportPanel" element={<AdminReportPanel />} />
             {/* <Route path="/md/servicesandschemes" element={<Services />} /> */}
             <Route path="/md/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
             <Route path="/md/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />

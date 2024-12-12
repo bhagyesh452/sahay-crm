@@ -76,25 +76,26 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                {(adminName === "Krunal Pithadia" || adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <li
-                  className={
-                    location.pathname === "/md/leads"
-                      ? "nav-item active"
-                      : "nav-item"
-                  }
-                >
-                  <Link
-                    style={{ textDecoration: "none", color: "black" }}
-                    to="/md/leads"
+                {(adminName === "Krunal Pithadia" || adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") &&
+                  <li
+                    className={
+                      location.pathname === "/md/leads"
+                        ? "nav-item active"
+                        : "nav-item"
+                    }
                   >
-                    <a className="nav-link" href="./">
-                      <span className="nav-link-icon d-md-none d-lg-inline-block">
-                        <GrDocumentStore style={{ height: "22px", width: "15px" }} />
-                      </span>
-                      <span className="nav-link-title"> Leads</span>
-                    </a>
-                  </Link>
-                </li>}
+                    <Link
+                      style={{ textDecoration: "none", color: "black" }}
+                      to="/md/leads"
+                    >
+                      <a className="nav-link" href="./">
+                        <span className="nav-link-icon d-md-none d-lg-inline-block">
+                          <GrDocumentStore style={{ height: "22px", width: "15px" }} />
+                        </span>
+                        <span className="nav-link-title"> Leads</span>
+                      </a>
+                    </Link>
+                  </li>}
                 <li
                   className={
                     location.pathname === "/md/bookings"
@@ -114,6 +115,44 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
+                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && <li
+                  className={
+                    location.pathname === "/md/uploadQuestions"
+                      ? "nav-item active"
+                      : "nav-item"
+                  }
+                >
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    to="/md/uploadQuestions"
+                  >
+                    <a className="nav-link" href="./">
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                        <GrDocumentStore style={{ height: "22px", width: "15px" }} />
+                      </span>
+                      <span className="nav-link-title">Questions</span>
+                    </a>
+                  </Link>
+                </li>}
+                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && <li
+                  className={
+                    location.pathname === "/md/reportPanel"
+                      ? "nav-item active"
+                      : "nav-item"
+                  }
+                >
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    to="/md/reportPanel"
+                  >
+                    <a className="nav-link" href="./">
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                        <GrDocumentStore style={{ height: "22px", width: "15px" }} />
+                      </span>
+                      <span className="nav-link-title">Reports</span>
+                    </a>
+                  </Link>
+                </li>}
                 <li
                   className={
                     location.pathname === "/md/servicesandschemes"
@@ -121,17 +160,6 @@ function Navbar() {
                       : "nav-item"
                   }
                 >
-                  {/* <Link
-                    style={{ textDecoration: "none", color: "black" }}
-                    to="/md/servicesandschemes"
-                  >
-                    <a className="nav-link" href="./">
-                      <span className="nav-link-icon d-md-none d-lg-inline-block">
-                        <MdOutlineMedicalServices  style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                      </span>
-                      <span className="nav-link-title">Schemes & Services</span>
-                    </a>
-                  </Link> */}
                 </li>
               </ul>
 

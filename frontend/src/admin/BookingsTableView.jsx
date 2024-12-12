@@ -936,7 +936,7 @@ function BookingsTableView({ tableViewOpen }) {
                 </div>
             </div>
 
-        </div >
+        </div>
     );
 }
 
