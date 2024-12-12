@@ -16,7 +16,7 @@ import RemainingAmnt from "../static/my-images/money.png";
 import { width } from "@mui/system";
 
 
-function BookingsTableView({ tableViewOpen }) {
+function BookingsTableView({ isComingFromDataManager }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [filteredDataNew, setFilteredData] = useState([]);
     const [fetchedBookingsData, setFetchedBookingsData] = useState([]);
@@ -105,7 +105,12 @@ function BookingsTableView({ tableViewOpen }) {
 
 
     const handleViewTableView = () => {
-        navigate(`/md/bookings`);
+        if(isComingFromDataManager) {
+            navigate(`/dataanalyst/bookings`)
+        }else{
+            navigate(`/md/bookings`);
+        }
+        
     }
 
     // ------------filter functions------------------

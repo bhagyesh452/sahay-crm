@@ -11,6 +11,10 @@ import {
     FormControlLabel,
     Typography,
     Grid,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
 } from "@mui/material";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { SiGoogledocs } from "react-icons/si";
@@ -19,7 +23,7 @@ import { AiOutlineDownload } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
 
-function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
+function QuestionUploadDialog({ dialogOpen, handleDialogToggle }) {
     const [uploadMethod, setUploadMethod] = useState("form");
     const [formData, setFormData] = useState({
         question: "",
@@ -72,6 +76,11 @@ function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
 
     const handleSubmit = async () => {
         try {
+            if (!formData.slot) {
+                alert("Please select a slot before submitting.");
+                return;
+            }
+
             if (uploadMethod === "form") {
                 await axios.post("/api/questions", formData);
             } else if (uploadMethod === "excel") {
@@ -116,8 +125,8 @@ function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
                 </div>
             </DialogTitle>
             <DialogContent style={{ flex: "1 1 auto", overflowY: "auto" }}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={6}>
                         <RadioGroup
                             row
                             value={uploadMethod}
@@ -134,6 +143,20 @@ function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
                                 label="Excel"
                             />
                         </RadioGroup>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <FormControl fullWidth size="small">
+                            {/* <InputLabel>Select Slot</InputLabel> */}
+                            <Select
+                                name="slot"
+                                value={formData.slot}
+                                onChange={handleFormChange}
+                                required
+                            >
+                                <MenuItem value="current">Current Slot</MenuItem>
+                                <MenuItem value="next">Next Slot</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
 
                     {uploadMethod === "form" && (
@@ -252,8 +275,7 @@ function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
                     {uploadMethod === "excel" && (
                         <Grid item xs={12}>
                             <div
-                                className={`drag-file-area ${isDragging ? "dragging" : ""
-                                    }`}
+                                className={`drag-file-area ${isDragging ? "dragging" : ""}`}
                                 onDragOver={handleDragOver}
                                 onDragEnter={handleDragEnter}
                                 onDragLeave={handleDragLeave}
@@ -262,9 +284,7 @@ function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
                                 <div className="upload-icon">
                                     <MdOutlineFileUpload />
                                 </div>
-                                <h3 className="dynamic-message">
-                                    Drag & drop any file here
-                                </h3>
+                                <h3 className="dynamic-message">Drag & drop any file here</h3>
                                 <label className="browse-files-text">
                                     Browse Files Here
                                     <input
@@ -308,12 +328,10 @@ function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
                     )}
                 </Grid>
             </DialogContent>
-            <DialogActions
-                className='d-flex w-100 m-0 mt-1'
-            >
+            <DialogActions className="d-flex w-100 m-0 mt-1">
                 <Button
                     style={{ border: "none", borderRadius: "0px" }}
-                    className='btn btn-danger w-50 m-0'
+                    className="btn btn-danger w-50 m-0"
                     color="error"
                     variant="contained"
                     onClick={handleDialogToggle}
@@ -322,7 +340,7 @@ function QuestionUploadDialog({ dialogOpen,handleDialogToggle }) {
                 </Button>
                 <Button
                     style={{ border: "none", borderRadius: "0px" }}
-                    className='btn btn-danger w-50 m-0'
+                    className="btn btn-primary w-50 m-0"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}

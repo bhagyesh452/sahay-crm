@@ -401,7 +401,7 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     const adminData = await adminModel.find({}, { ename: 1, profilePhoto: 1, _id: 1 });
     const deletedEmployeeData = await deletedEmployeeModel.find({}, { ename: 1, profilePhoto: 1, _id: 1 });
 
-    const completeEmployeeData = [...adminData , deletedEmployeeData]
+    const completeEmployeeData = [...adminData, deletedEmployeeData]
 
     // Map adminData to a lookup object for quick access
     const employeeProfileMap = completeEmployeeData.reduce((map, employee) => {
@@ -457,10 +457,7 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
           receivedAsFullAdvance = service.firstPayment || 0; // First payment as receivedFullAdvance
           receivedAsRemaining = totalReceivedAmount; // Remaining payments as receivedRemaining
         }
-        if(booking["Company Name"] === "ARLG TECHNOLOGY  LLP"){
-          console.log(booking["Company Name"] ,employeeProfileMap[booking.bdmName]?.empId , employeeProfileMap)
 
-        }
 
         const processedData = {
           "Company Name": booking["Company Name"] || "",

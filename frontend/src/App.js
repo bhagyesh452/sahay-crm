@@ -167,7 +167,7 @@ function App() {
   const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
   const [hrToken, setHrToken] = useState(localStorage.getItem("hrToken") || null)
   const [recruiterToken, setRecruiterToken] = useState(localStorage.getItem("recruiterToken") || null)
-  console.log("hrToken", hrToken)
+ 
   return (
     <div className="App">
       <BrowserRouter>
@@ -283,6 +283,7 @@ function App() {
             <Route path="/dataanalyst/expensereport" element={<ExpenseReport />} />
             <Route path="/dataanalyst-profile-details/" element={<DataAnalystProfile />} />
             <Route path="/dataanalyst/notification" element={<NotificationDM />} />
+            <Route path="/dataanalyst/tabelView" element={<BookingsTableView isComingFromDataManager={true} />} />
             <Route path="/employeereportdatamanager/:ename/:status" element={<EmployeeStatusInfo />} />
           </Route>
 
@@ -303,7 +304,7 @@ function App() {
             <Route path="/md/leads" element={<TestLeads />} />
             <Route path="/md/leads/:companyId" element={<CompanyParticular />} />
             <Route path="/md/bookings" element={<BookingList />} />
-            <Route path="/md/bookings/tabelView" element={<BookingsTableView />} />
+            <Route path="/md/bookings/tabelView" element={<BookingsTableView isComingFromDataManager={false} />} />
             <Route path="/md/uploadQuestions" element={<AdminUploadQuestions />} />
             <Route path="/md/notification" element={<ShowNotification />} />
             <Route path="/md/bookings/Addbookings" element={<RedesignedForm />} />
