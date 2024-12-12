@@ -13,6 +13,7 @@ import { FaRegEye } from "react-icons/fa";
 import MaleEmployee from "../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import RemainingAmnt from "../static/my-images/money.png";
+import { width } from "@mui/system";
 
 
 function BookingsTableView({ tableViewOpen }) {
@@ -873,18 +874,22 @@ function BookingsTableView({ tableViewOpen }) {
                                                             ₹{(parseInt(obj.totalPaymentWGST || 0, 10))?.toLocaleString('en-IN')}
                                                         </div>
                                                     </td>
-                                                    <td className="d-flex align-items-center">
+                                                    <td>
                                                         <div className="bknglistviewreceivepayment">
-                                                            ₹{(parseInt(obj.pendingReceivedAmount || 0, 10))?.toLocaleString('en-IN')}
-                                                        </div>
-                                                        {obj.receivedAsRemaining > 0 && (
-                                                            <div
-                                                                className="b_Service_remaining_receive"
-                                                                title="Remaining Payment Received"
-                                                            >
-                                                                <img src={RemainingAmnt} alt="Remaining Amount Icon" />
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                <div>
+                                                                    ₹{(parseInt(obj.pendingReceivedAmount || 0, 10))?.toLocaleString('en-IN')}
+                                                                </div>
+                                                                {obj.receivedAsRemaining > 0 && (
+                                                                    <div
+                                                                        className="ml-1"
+                                                                        title="Remaining Payment Received" style={{width:'20px'}}
+                                                                    >
+                                                                        <img src={RemainingAmnt} alt="Remaining Amount Icon" style={{width:'60%'}}/>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <div className="bknglistviewpendingpayment">
