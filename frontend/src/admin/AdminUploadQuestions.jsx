@@ -19,10 +19,27 @@ import QuestionUploadDialog from "./ExtraComponent/QuestionUploadDialog.jsx";
 function AdminUploadQuestions() {
     const [isBookingDataLoading, setIsBookingDataLoading] = useState(false)
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [completeData, setCompleteData] = useState([])
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const handleDialogToggle = () => {
         setDialogOpen(!dialogOpen);
-      };
+    };
+
+    const fetchingData = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/question_related_api/gets_all_questionData`)
+            setCompleteData(response.data)
+            console.log("response", response)
+        } catch (error) {
+            console.log("Error fetching data", error)
+        }
+    }
+
+    useEffect(()=>{
+        fetchingData()
+
+    },[])
     return (
         <div>
             <div className="page-header mt-3">
@@ -88,18 +105,18 @@ function AdminUploadQuestions() {
                                             Right Option Response
                                         </th>
                                         <th>
-                                          Wrong Option Response
+                                            Wrong Option Response
                                         </th>
                                         <th>
-                                           Uploaded Date
+                                            Uploaded Date
                                         </th>
                                         <th>
                                             Slot Number
                                         </th>
                                         <th>
-                                           Action
+                                            Action
                                         </th>
-                                        
+
                                     </tr>
                                 </thead>
                                 {isBookingDataLoading ? (
@@ -120,20 +137,21 @@ function AdminUploadQuestions() {
                                     </tbody>
                                 ) : (
                                     <tbody>
-                                     
+
                                     </tbody>
                                 )}
                             </table>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
             {
                 dialogOpen && (
-                    <QuestionUploadDialog 
-                    dialogOpen ={dialogOpen} 
-                    handleDialogToggle={handleDialogToggle}
+                    <QuestionUploadDialog
+                        dialogOpen={dialogOpen}
+                        handleDialogToggle={handleDialogToggle}
+                        completeData={completeData}
                     />
                 )
             }

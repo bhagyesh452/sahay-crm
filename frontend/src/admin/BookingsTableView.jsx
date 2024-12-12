@@ -14,6 +14,7 @@ import MaleEmployee from "../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import RemainingAmnt from "../static/my-images/money.png";
 import { width } from "@mui/system";
+import AdminBookingDetailDialog from "./ExtraComponent/AdminBookingDetailDialog.jsx";
 
 
 function BookingsTableView({ isComingFromDataManager }) {
@@ -42,7 +43,12 @@ function BookingsTableView({ isComingFromDataManager }) {
     const [activeFilterField, setActiveFilterField] = useState(null);
 
     useEffect(() => {
-        document.title = `Admin-Sahay-CRM`;
+        if (!isComingFromDataManager) {
+            document.title = `Admin-Sahay-CRM`;
+        } else {
+            document.title = `Datamanager-Sahay-CRM`;
+        }
+
     }, []);
 
 
@@ -105,12 +111,12 @@ function BookingsTableView({ isComingFromDataManager }) {
 
 
     const handleViewTableView = () => {
-        if(isComingFromDataManager) {
+        if (isComingFromDataManager) {
             navigate(`/dataanalyst/bookings`)
-        }else{
+        } else {
             navigate(`/md/bookings`);
         }
-        
+
     }
 
     // ------------filter functions------------------
@@ -170,11 +176,34 @@ function BookingsTableView({ isComingFromDataManager }) {
             };
         }
     }, []);
+    // ==============================to open booking details dialog============================
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedCompanyName, setSelectedCompanyName] = useState(null);
+    const [bookingDetails, setBookingDetails] = useState(null);
+    const [loadingDetails, setLoadingDetails] = useState(false);
+    const handleInformationClick = async (companyName) => {
+        setSelectedCompanyName(companyName);
+        setDialogOpen(true);
+        setLoadingDetails(true);
 
-    const handleInformationClick = (companyName) => {
-        // Redirect to BookingListView with the company name as a query parameter
-        navigate(`/md/bookings`, { state: { searchText: companyName } });
+        try {
+            const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData/${companyName}`);
+            setBookingDetails(response.data);
+        } catch (error) {
+            console.error("Error fetching booking details:", error);
+        } finally {
+            setLoadingDetails(false);
+        }
     };
+
+    const handleCloseDialog = () => {
+        setDialogOpen(false);
+        setSelectedCompanyName(null);
+        setBookingDetails(null);
+    };
+
+
+    // =================================to find no of companies===========================
     const stats = useMemo(() => {
         // Use filteredData if a search is active, otherwise use all data
         const activeData = searchText && searchText.trim() !== "" ? filteredDataNew : fetchedBookingsData;
@@ -222,9 +251,11 @@ function BookingsTableView({ isComingFromDataManager }) {
 
     // console.log("filteredDataNew", allServicesWithDetails);
 
-    console.log("data", bookingsData);
-    console.log("filteredDataNew", filteredDataNew)
+    // console.log("data", bookingsData);
+    // console.log("filteredDataNew", filteredDataNew)
     // console.log("dataToFilter", dataToFilter);
+
+    console.log("bookingDetails", bookingDetails)
 
     return (
         <div>
@@ -833,12 +864,12 @@ function BookingsTableView({ isComingFromDataManager }) {
                                 ) : (
                                     <tbody>
                                         {fetchedBookingsData?.map((obj, index) => {
-                                            const bdeProfilePhotoUrl = obj.bdeProfilePhoto?.length !== 0 && obj.bdeProfilePhoto !== null
-                                                ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdeEmpId}/${obj.bdeProfilePhoto?.[0]?.filename}`
-                                                : MaleEmployee;
-                                            const bdmProfilePhotoUrl = obj.bdmProfilePhoto?.length !== 0 && obj.bdmProfilePhoto !== null
-                                                ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdmEmpId}/${obj.bdmProfilePhoto?.[0]?.filename}`
-                                                : MaleEmployee;
+                                            // const bdeProfilePhotoUrl = obj.bdeProfilePhoto?.length !== 0 && obj.bdeProfilePhoto !== null
+                                            //     ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdeEmpId}/${obj.bdeProfilePhoto?.[0]?.filename}`
+                                            //     : MaleEmployee;
+                                            // const bdmProfilePhotoUrl = obj.bdmProfilePhoto?.length !== 0 && obj.bdmProfilePhoto !== null
+                                            //     ? `${secretKey}/employee/fetchProfilePhoto/${obj.bdmEmpId}/${obj.bdmProfilePhoto?.[0]?.filename}`
+                                            //     : MaleEmployee;
 
                                             return (
                                                 < tr key={index} >
@@ -852,9 +883,9 @@ function BookingsTableView({ isComingFromDataManager }) {
                                                         </div></td>
                                                     <td>
                                                         <div className="d-flex align-items-center">
-                                                            <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
+                                                            {/* <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
                                                                 <img src={bdeProfilePhotoUrl} className="profile-photo"></img>
-                                                            </div>
+                                                            </div> */}
                                                             <div>
                                                                 {obj.bdeName}
                                                             </div>
@@ -863,9 +894,9 @@ function BookingsTableView({ isComingFromDataManager }) {
                                                     </td>
                                                     <td>
                                                         <div className="d-flex align-items-center">
-                                                            <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
+                                                            {/* <div className="tbl-pro-img" style={{ height: '28px', width: '28px' }}>
                                                                 <img src={bdmProfilePhotoUrl} className="profile-photo"></img>
-                                                            </div>
+                                                            </div> */}
                                                             <div>
                                                                 {obj.bdmName}
                                                             </div>
@@ -888,9 +919,9 @@ function BookingsTableView({ isComingFromDataManager }) {
                                                                 {obj.receivedAsRemaining > 0 && (
                                                                     <div
                                                                         className="ml-1"
-                                                                        title="Remaining Payment Received" style={{width:'20px'}}
+                                                                        title="Remaining Payment Received" style={{ width: '20px' }}
                                                                     >
-                                                                        <img src={RemainingAmnt} alt="Remaining Amount Icon" style={{width:'60%'}}/>
+                                                                        <img src={RemainingAmnt} alt="Remaining Amount Icon" style={{ width: '60%' }} />
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -946,6 +977,17 @@ function BookingsTableView({ isComingFromDataManager }) {
                 </div>
             </div>
 
+            {dialogOpen && (
+                <AdminBookingDetailDialog
+                    loadingDetails={loadingDetails}
+                    dialogOpen={dialogOpen}
+                    handleCloseDialog={handleCloseDialog}
+                    selectedCompanyName={selectedCompanyName}
+                    bookingDetails={bookingDetails ? bookingDetails : []}
+                />
+            )
+
+            }
         </div>
     );
 }

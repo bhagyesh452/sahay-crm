@@ -87,6 +87,7 @@ const RecruiterAPI = require("./helpers/recruitmentAPI.js")
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const mime = require('mime-types');
+const QuestionAPI = require("./helpers/questionsAPI")
 
 // Create OAuth2 client
 const oAuth2Client = new google.auth.OAuth2({
@@ -167,6 +168,10 @@ app.use('/api/recruiter', (req, res, next) => {
   req.io = socketIO;
   next();
 }, RecruiterAPI);
+app.use('/api/question_related_api' , (req,res,next)=>{
+  req.io = socketIO;
+  next();
+} , QuestionAPI)
 
 
 const http = require('http').createServer(app)

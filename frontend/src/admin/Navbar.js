@@ -115,7 +115,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                {/* {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && <li
+                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && <li
                   className={
                     location.pathname === "/md/uploadQuestions"
                       ? "nav-item active"
@@ -133,8 +133,8 @@ function Navbar() {
                       <span className="nav-link-title">Questions</span>
                     </a>
                   </Link>
-                </li>} */}
-                {/* {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && <li
+                </li>}
+                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && <li
                   className={
                     location.pathname === "/md/reportPanel"
                       ? "nav-item active"
@@ -152,7 +152,7 @@ function Navbar() {
                       <span className="nav-link-title">Reports</span>
                     </a>
                   </Link>
-                </li>} */}
+                </li>}
                 <li
                   className={
                     location.pathname === "/md/servicesandschemes"

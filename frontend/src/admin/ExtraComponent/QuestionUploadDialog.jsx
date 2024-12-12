@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import {
     Dialog,
     DialogTitle,
@@ -22,8 +22,10 @@ import { MdDelete } from "react-icons/md";
 import { AiOutlineDownload } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
+import Swal from "sweetalert2"
 
-function QuestionUploadDialog({ dialogOpen, handleDialogToggle }) {
+function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) {
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [uploadMethod, setUploadMethod] = useState("form");
     const [formData, setFormData] = useState({
         question: "",
@@ -38,7 +40,17 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle }) {
     });
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
-
+    const [slotOptions, setSlotOptions] = useState(["slot 1", "slot 2"]);
+    useEffect(() => {
+        if (completeData && completeData.length > 0) {
+            // Get the highest slot index
+            const latestSlotIndex = Math.max(...completeData.map((slot) => slot.slotIndex));
+            setSlotOptions([`slot ${latestSlotIndex}`, `slot ${latestSlotIndex + 1}`]);
+        } else {
+            // Default slots
+            setSlotOptions(["slot 1", "slot 2"]);
+        }
+    }, [completeData]);
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -76,24 +88,46 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle }) {
 
     const handleSubmit = async () => {
         try {
-            if (!formData.slot) {
-                alert("Please select a slot before submitting.");
+            if (
+                !formData.slot || // Slot is mandatory
+                !formData.question || // Question is mandatory
+                !formData.option1 || // Option 1 is mandatory
+                !formData.option2 || // Option 2 is mandatory
+                !formData.option3 || // Option 3 is mandatory
+                !formData.option4 || // Option 4 is mandatory
+                formData.correctOption === "" // Correct option is mandatory
+            ) {
+                Swal.fire("Please fill all mandatory fields before submitting.");
                 return;
             }
 
             if (uploadMethod === "form") {
-                await axios.post("/api/questions", formData);
+                // Transforming formData to match backend schema
+                const payload = {
+                    question: formData.question,
+                    options: [formData.option1, formData.option2, formData.option3, formData.option4],
+                    correctOption: parseInt(formData.correctOption, 10), // Ensure correctOption is a number
+                    rightResponse: formData.rightResponse,
+                    wrongResponse: formData.wrongResponse,
+                    slot: formData.slot,
+                };
+
+                await axios.post(`${secretKey}/question_related_api/post_form_data`, payload);
             } else if (uploadMethod === "excel") {
                 const excelData = new FormData();
                 excelData.append("file", file);
-                await axios.post("/api/questions/upload-excel", excelData);
+                excelData.append("slot", formData.slot); // Append slot to the form data
+                await axios.post(`${secretKey}/question_related_api/upload-excel`, excelData);
             }
+
             alert("Questions uploaded successfully!");
             handleDialogToggle();
         } catch (error) {
+            console.error("Error:", error);
             alert("Error uploading questions");
         }
     };
+
 
     return (
         <Dialog
@@ -153,8 +187,11 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle }) {
                                 onChange={handleFormChange}
                                 required
                             >
-                                <MenuItem value="current">Current Slot</MenuItem>
-                                <MenuItem value="next">Next Slot</MenuItem>
+                                {slotOptions.map((slot, index) => (
+                                    <MenuItem key={index} value={slot}>
+                                        {slot}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                     </Grid>
