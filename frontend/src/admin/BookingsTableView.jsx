@@ -79,7 +79,7 @@ function BookingsTableView({ isComingFromDataManager }) {
         if (bookingsData) {
             // Always set other data states
             setFetchedBookingsData(bookingsData?.data || []);
-            setDataToFilter(bookingsData?.data || []);
+            // setDataToFilter(bookingsData?.data || []);
             setCompleteBookingsData(bookingsData?.data || []);
 
             // Only set filteredData when there is a search
@@ -253,9 +253,9 @@ function BookingsTableView({ isComingFromDataManager }) {
 
     // console.log("data", bookingsData);
     // console.log("filteredDataNew", filteredDataNew)
-    // console.log("dataToFilter", dataToFilter);
+    console.log("dataToFilter", dataToFilter);
 
-    console.log("bookingDetails", bookingDetails)
+    // console.log("bookingDetails", bookingDetails)
 
     return (
         <div>

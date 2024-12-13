@@ -358,7 +358,7 @@ const FilterableTable = ({
     };
 
     // Example of logging the length of the selected filters for a specific field
-    console.log(selectedFilters[filterField]?.length, columnValues.length);
+    // console.log(selectedFilters[filterField]?.length, columnValues.length);
 
 
     const handleClearAll = async () => {

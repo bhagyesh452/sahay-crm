@@ -6,75 +6,90 @@ const QuestionModel = require("../models/QuestionModel")
 
 router.post("/post_form_data", async (req, res) => {
     try {
-        const {
-            question,
-            option1,
-            option2,
-            option3,
-            option4,
-            correctOption,
-            rightResponse,
-            wrongResponse,
-            slot,
-        } = req.body;
+        console.log("Received request body:", req.body);
+
+        const { question, options, correctOption, rightResponse, wrongResponse, slot } = req.body;
 
         // Validate input
-        if (
-            !question ||
-            !option1 ||
-            !option2 ||
-            !option3 ||
-            !option4 ||
-            correctOption === undefined ||
-            !slot
-        ) {
-            return res.status(400).json({ message: "Missing required fields" });
+        if (!question || !options || options.length !== 4 || !correctOption || !slot) {
+            console.log("Validation failed: Missing required fields.");
+            return res.status(400).json({ message: "Missing required fields." });
         }
 
-        // Prepare the question object
+        // Validate correctOption
+        if (!options.includes(correctOption)) {
+            console.log(`Validation failed: Correct option '${correctOption}' is not in options`, options);
+            return res.status(400).json({ message: "Correct option must match one of the provided options." });
+        }
+
+        console.log("Validation successful. Checking for existing question...");
+
+        // Check if question already exists in the slot
+        let existingQuestion = await QuestionModel.findOne({
+            slotIndex: slot,
+            "questions.question": question,
+        });
+
+        if (existingQuestion) {
+            console.log(`Duplicate question detected in slot '${slot}':`, question);
+            return res.status(400).json({ message: "This question already exists in the slot." });
+        }
+
+        console.log("Question is unique. Preparing question data...");
+
+        // Prepare question data
         const questionData = {
             question,
-            options: [option1, option2, option3, option4],
-            correctOption: parseInt(correctOption),
+            options,
+            correctOption,
             responses: {
                 right: rightResponse,
                 wrong: wrongResponse,
             },
         };
 
+        console.log("Prepared question data:", questionData);
+
         // Find or create the slot
         let slotDocument = await QuestionModel.findOne({ slotIndex: slot });
+        console.log("Slot document found:", slotDocument);
 
         if (!slotDocument) {
-            // Create a new slot if it doesn't exist
+            console.log(`Slot '${slot}' not found. Creating new slot...`);
             slotDocument = new QuestionModel({
                 slotIndex: slot,
                 questions: [questionData],
             });
         } else {
-            // Add question to the existing slot
+            console.log(`Slot '${slot}' exists. Adding question to slot...`);
             slotDocument.questions.push(questionData);
         }
 
-        // Save the slot document
+        console.log("Saving slot document...");
         await slotDocument.save();
 
+        console.log("Slot document saved successfully:", slotDocument);
+
         res.status(200).json({
-            message: "Question added successfully",
+            message: "Question added successfully.",
             slot: slotDocument,
         });
     } catch (error) {
-        console.error("Error adding question:", error);
-        res.status(500).json({ message: "Internal Server Error", error });
+        console.error("Error during request processing:", error);
+        res.status(500).json({ message: "Internal Server Error.", error: error.message });
     }
 });
 
-router.get("/gets_all_questionData" , async(req,res)=>{
-    try{
+
+
+
+
+router.get("/gets_all_questionData", async (req, res) => {
+    try {
         const response = await QuestionModel.find({});
         res.status(200).json(response)
-    }catch(error){
-        res.status(500).json({message : "Internal Server Error"})
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" })
     }
 })
 
