@@ -42,16 +42,75 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [slotOptions, setSlotOptions] = useState(["slot 1", "slot 2"]);
+    // useEffect(() => {
+    //     if (completeData && completeData.length > 0) {
+    //         // Get the highest slot index
+    //         const latestSlotIndex = Math.max(...completeData.map((slot) => slot.slotIndex));
+    //         setSlotOptions([`slot ${latestSlotIndex}`, `slot ${latestSlotIndex + 1}`]);
+    //     } else {
+    //         // Default slots
+    //         setSlotOptions(["slot 1", "slot 2"]);
+    //     }
+    // }, [completeData]);
+
     useEffect(() => {
         if (completeData && completeData.length > 0) {
-            // Get the highest slot index
-            const latestSlotIndex = Math.max(...completeData.map((slot) => slot.slotIndex));
-            setSlotOptions([`slot ${latestSlotIndex}`, `slot ${latestSlotIndex + 1}`]);
+            // Extract numeric parts from slotIndex and ensure valid numbers
+            const slotIndices = completeData
+                .map((slot) => {
+                    const match = slot.slotIndex.match(/\d+$/); // Extract numeric part
+                    return match ? parseInt(match[0], 10) : NaN;
+                })
+                .filter((index) => !isNaN(index)); // Filter out invalid entries
+
+            let maxSlotIndex = Math.max(...slotIndices);
+            if (isNaN(maxSlotIndex)) {
+                maxSlotIndex = 0; // Default to 0 if no valid slots are found
+            }
+
+            const validSlots = [];
+            completeData.forEach((slot) => {
+                const match = slot.slotIndex.match(/\d+$/);
+                const slotNumber = match ? parseInt(match[0], 10) : NaN;
+                const questionCount = slot.questions?.length || 0;
+
+                if (!isNaN(slotNumber)) {
+                    // Slots with less than 45 questions are enabled
+                    if (questionCount < 45) {
+                        validSlots.push({ label: `slot ${slotNumber}`, disabled: false });
+                    }
+                    // Slots with exactly 45 questions are disabled
+                    if (questionCount === 45) {
+                        validSlots.push({ label: `slot ${slotNumber}`, disabled: true });
+                    }
+                }
+            });
+
+            //console.log("Valid Slots Before Adding New Slots:", validSlots);
+
+            // Add next two slots only if all current slots are full (at 45 questions)
+            if (!validSlots.some((slot) => !slot.disabled)) {
+                validSlots.push(
+                    { label: `slot ${maxSlotIndex + 1}`, disabled: false },
+                    { label: `slot ${maxSlotIndex + 2}`, disabled: false }
+                );
+            }
+
+            setSlotOptions(validSlots);
+            //console.log("Final Slot Options:", validSlots);
         } else {
-            // Default slots
-            setSlotOptions(["slot 1", "slot 2"]);
+            // Default slots if no data is available
+            setSlotOptions([
+                { label: "slot 1", disabled: false },
+                { label: "slot 2", disabled: false },
+            ]);
         }
     }, [completeData]);
+
+
+
+
+
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -167,6 +226,54 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
         }
     };
 
+    const handleSubmitExcel = async () => {
+        if (!file || !formData.slot) {
+            Swal.fire({
+                title: "Incomplete Form",
+                text: "Please upload a file and select a slot.",
+                icon: "warning",
+                confirmButtonText: "Okay",
+            });
+            return;
+        }
+    
+        try {
+            const formDataExcel = new FormData();
+            formDataExcel.append("file", file);
+            formDataExcel.append("slot", formData.slot);
+    
+            const response = await axios.post(
+                `${secretKey}/question_related_api/upload-questions_excel`,
+                formDataExcel,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+    
+            Swal.fire({
+                title: "Success!",
+                text: `${response.data.totalUploaded} questions uploaded successfully. Skipped ${response.data.skippedInvalid} invalid and ${response.data.skippedDuplicates} duplicate entries.`,
+                icon: "success",
+                confirmButtonText: "Great!",
+            });
+    
+            handleDialogToggle();
+            setFile(null); // Clear the file
+            setFormData((prev) => ({ ...prev, slot: "" })); // Reset the slot
+        } catch (error) {
+            console.error("Error uploading Excel:", error);
+            Swal.fire({
+                title: "Error",
+                text: error.response?.data?.message || "Error uploading Excel. Please try again.",
+                icon: "error",
+                confirmButtonText: "Retry",
+            });
+        }
+    };
+    
+
 
     return (
         <Dialog
@@ -217,8 +324,8 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                 onChange={handleFormChange}
                             >
                                 {slotOptions.map((slot, index) => (
-                                    <MenuItem key={index} value={slot}>
-                                        {slot}
+                                    <MenuItem key={index} value={slot.label} disabled={slot.disabled}>
+                                        {slot.label}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -301,6 +408,58 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                             </Grid>
                         </>
                     )}
+                    {uploadMethod === "excel" && (
+                        <Grid item xs={12}>
+                            <div
+                                className={`drag-file-area ${isDragging ? "dragging" : ""}`}
+                                onDragOver={handleDragOver}
+                                onDragEnter={handleDragEnter}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                            >
+                                <div className="upload-icon">
+                                    <MdOutlineFileUpload />
+                                </div>
+                                <h3 className="dynamic-message">Drag & drop any file here</h3>
+                                <label className="browse-files-text">
+                                    Browse Files Here
+                                    <input
+                                        type="file"
+                                        className="default-file-input"
+                                        onChange={handleFileChange}
+                                    />
+                                </label>
+                            </div>
+                            {file && (
+                                <div className="file-block">
+                                    <div className="file-info">
+                                        <span className="material-icons-outlined file-icon">
+                                            <SiGoogledocs />
+                                        </span>
+                                        <span className="file-name">{file.name}</span>
+                                    </div>
+                                    <span
+                                        className="material-icons remove-file-icon"
+                                        onClick={handleRemoveFile}
+                                    >
+                                        <MdDelete />
+                                    </span>
+                                </div>
+                            )}
+                            <a
+                                className="hr_bulk_upload_a"
+                                href={`${process.env.PUBLIC_URL}/QuestionUploadFormat.xlsx`}
+                                download={"QuestionUploadFormat.xlsx"}
+                            >
+                                <div className="hr_bulk_upload">
+                                    <div style={{ marginRight: "5px" }}>
+                                        <AiOutlineDownload />
+                                    </div>
+                                    <div>Download Sample</div>
+                                </div>
+                            </a>
+                        </Grid>
+                    )}
                 </Grid>
             </DialogContent>
             <DialogActions className="d-flex w-100 m-0 mt-1">
@@ -313,15 +472,27 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                 >
                     Cancel
                 </Button>
-                <Button
-                    style={{ border: "none", borderRadius: "0px" }}
-                    className="btn btn-primary w-50 m-0"
-                    color="primary"
-                    variant="contained"
-                    onClick={handleSubmit}
-                >
-                    Submit
-                </Button>
+                {uploadMethod === "form" ?
+                    (
+                        <Button
+                            style={{ border: "none", borderRadius: "0px" }}
+                            className="btn btn-primary w-50 m-0"
+                            color="primary"
+                            variant="contained"
+                            onClick={handleSubmit}
+                        >
+                            Submit
+                        </Button>
+                    ) :
+                    (
+                        <Button
+                            style={{ border: "none", borderRadius: "0px" }}
+                            className="btn btn-primary w-50 m-0"
+                            color="primary"
+                            variant="contained"
+                            onClick={handleSubmitExcel}
+                        >Upload</Button>
+                    )}
             </DialogActions>
         </Dialog>
     );
