@@ -286,18 +286,12 @@ function BookingsTableView({ isComingFromDataManager }) {
                         <div className="d-flex align-items-center mr-1">
                             {filteredDataNew && filteredDataNew.length !== 0 &&
                                 (<>
-                                    <div className="selection-data mr-1">No of Bookings: {stats.noOfBookings}</div>
-                                    <div className="selection-data mr-1">No of Companies: {stats.noOfCompanies}</div>
-                                    <div className="selection-data mr-1">No of Services: {stats.noOfServices}</div>
+                                    <div className="selection-data mr-1">Bookings: {stats.noOfBookings}</div>
+                                    <div className="selection-data mr-1">Companies: {stats.noOfCompanies}</div>
+                                    <div className="selection-data mr-1">Services: {stats.noOfServices}</div>
                                     <div className="selection-data mr-1">Total Payment: ₹{(parseInt(stats.totalPayment || 0, 10)).toLocaleString('en-IN')}</div>
                                     <div className="selection-data mr-1">Full Advance: ₹{(parseInt(stats.totalFullAdvanceRecieved || 0, 10)).toLocaleString('en-IN')}</div>
-                                    <div className="selection-data mr-1">
-
-                                        Remaining Received: ₹{(parseInt(stats.totalRemainingPaymentReceived || 0, 10)).toLocaleString('en-IN')}
-
-
-
-                                    </div>
+                                    <div className="selection-data mr-1">Remaining Received: ₹{(parseInt(stats.totalRemainingPaymentReceived || 0, 10)).toLocaleString('en-IN')}</div>
                                     <div className="selection-data mr-1">Pending Payment: ₹{(parseInt(stats.totalRemainingPayment || 0, 10)).toLocaleString('en-IN')}</div>
                                 </>)
                             }
