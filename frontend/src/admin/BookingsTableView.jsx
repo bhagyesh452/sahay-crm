@@ -75,7 +75,7 @@ function BookingsTableView({ isComingFromDataManager }) {
         refetchInterval: 300000,  // Fetch the data after every 5 minutes
         refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
     });
-    const [completeSeedFundService, setcompleteSeedFundService] = useState([]);
+    
 
     useEffect(() => {
         if (bookingsData) {
@@ -83,7 +83,6 @@ function BookingsTableView({ isComingFromDataManager }) {
             setFetchedBookingsData(bookingsData?.data || []);
             // setDataToFilter(bookingsData?.completeData || []);
             setCompleteBookingsData(bookingsData?.data || []);
-            setcompleteSeedFundService(bookingsData?.completeData.filter(service => service.serviceName === "Seed Funding Support") || []);
             // Only set filteredData when there is a search
             if (searchText && searchText.trim() !== "") {
                 setFilteredData(bookingsData?.data || []);

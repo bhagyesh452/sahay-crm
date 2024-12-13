@@ -26,15 +26,31 @@ function AdminUploadQuestions() {
         setDialogOpen(!dialogOpen);
     };
 
+    // const { data: questionData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
+    //     queryKey: ["bookingsData", currentPage, searchText],
+    //     queryFn: async () => {
+    //         const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData-tableView`, {
+    //             params: { page: currentPage, limit: itemsPerPage, searchText }, // Pass currentPage and limit to the backend
+    //         });
+    //         // console.log("bookingData", response)
+    //         return response.data; // Return the fetched data
+    //     },
+    //     keepPreviousData: true,
+    //     refetchOnWindowFocus: false,
+    //     refetchInterval: 300000,  // Fetch the data after every 5 minutes
+    //     refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
+    // });
+
     const fetchingData = async () => {
         try {
             const response = await axios.get(`${secretKey}/question_related_api/gets_all_questionData`)
             setCompleteData(response.data)
-            console.log("response", response)
+            //console.log("response", response)
         } catch (error) {
             console.log("Error fetching data", error)
         }
     }
+    console.log(completeData)
 
     useEffect(() => {
         fetchingData()
@@ -137,7 +153,7 @@ function AdminUploadQuestions() {
                                     </tbody>
                                 ) : (
                                     <tbody>
-                                        {completeData && completeData.length !== 0 && completeData.questions.map((obj , index) => {
+                                        {completeData && completeData.length !== 0 && completeData?.questions?.map((obj , index) => {
                                             return (
                                                 <tr key={index}>
                                                      <td className="rm-sticky-left-1">{index + 1}</td>
