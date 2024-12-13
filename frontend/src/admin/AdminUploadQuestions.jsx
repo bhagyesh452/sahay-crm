@@ -36,10 +36,10 @@ function AdminUploadQuestions() {
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchingData()
 
-    },[])
+    }, [])
     return (
         <div>
             <div className="page-header mt-3">
@@ -137,6 +137,14 @@ function AdminUploadQuestions() {
                                     </tbody>
                                 ) : (
                                     <tbody>
+                                        {completeData && completeData.length !== 0 && completeData.questions.map((obj , index) => {
+                                            return (
+                                                <tr key={index}>
+                                                     <td className="rm-sticky-left-1">{index + 1}</td>
+                                                     <td className="rm-sticky-left-2">{obj.question}</td>
+                                                </tr>)
+                                        }
+                                       )})
 
                                     </tbody>
                                 )}

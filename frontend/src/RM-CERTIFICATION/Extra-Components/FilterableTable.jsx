@@ -33,6 +33,7 @@ const FilterableTable = ({
             applyFilters(selectedFilters, filterField); // Reapply filters without sorting
         }
     };
+    // console.log("dataFoFilterhere" , dataForFilter);
 
     // useEffect(() => {
     //     applyFilters(selectedFilters, filterField);
@@ -244,6 +245,7 @@ const FilterableTable = ({
             }
         } else {
             dataToSort = dataForFilter.map(item => {
+                // console.log("dataForFilter", dataForFilter)
                 // Update the active filter fields arra
                 // Add numeric fields for sorting
                 const receivedPayment = (
@@ -342,6 +344,7 @@ const FilterableTable = ({
                 });
             }
         }
+        // console.log("dataToSort" , dataToSort)
 
         onFilter(dataToSort);
     };

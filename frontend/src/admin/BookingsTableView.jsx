@@ -67,6 +67,7 @@ function BookingsTableView({ isComingFromDataManager }) {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData-tableView`, {
                 params: { page: currentPage, limit: itemsPerPage, searchText }, // Pass currentPage and limit to the backend
             });
+            // console.log("bookingData", response)
             return response.data; // Return the fetched data
         },
         keepPreviousData: true,
@@ -74,14 +75,15 @@ function BookingsTableView({ isComingFromDataManager }) {
         refetchInterval: 300000,  // Fetch the data after every 5 minutes
         refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
     });
+    const [completeSeedFundService, setcompleteSeedFundService] = useState([]);
 
     useEffect(() => {
         if (bookingsData) {
             // Always set other data states
             setFetchedBookingsData(bookingsData?.data || []);
-            // setDataToFilter(bookingsData?.data || []);
+            // setDataToFilter(bookingsData?.completeData || []);
             setCompleteBookingsData(bookingsData?.data || []);
-
+            setcompleteSeedFundService(bookingsData?.completeData.filter(service => service.serviceName === "Seed Funding Support") || []);
             // Only set filteredData when there is a search
             if (searchText && searchText.trim() !== "") {
                 setFilteredData(bookingsData?.data || []);
@@ -90,6 +92,7 @@ function BookingsTableView({ isComingFromDataManager }) {
             }
         }
     }, [bookingsData, searchText]);
+
 
 
 
@@ -123,28 +126,13 @@ function BookingsTableView({ isComingFromDataManager }) {
 
 
     const handleFilter = (newData) => {
-        console.log("newData", newData)
+        // console.log("newData", newData)
         setFilteredData(newData)
         setFetchedBookingsData(newData);
     };
 
     const handleFilterClick = async (field) => {
-        if (filteredDataNew.length === 0) {
-            try {
-                // Fetch complete data without pagination
-                const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData-tableView`, {
-                    params: { page: 1, limit: 1000000 }, // Set a very high limit to fetch all data
-                });
-
-                // Update the state with the complete data
-                const completeData = response.data?.data || [];
-
-                setDataToFilter(completeData); // Set it as filteredDataNew to work with filters
-
-            } catch (error) {
-                console.error("Error fetching complete data:", error);
-            }
-        }
+        setDataToFilter(bookingsData?.completeData || []);
         if (activeFilterField === field) {
             setShowFilterMenu(!showFilterMenu);
             setIsScrollLocked(!showFilterMenu);
@@ -253,9 +241,10 @@ function BookingsTableView({ isComingFromDataManager }) {
 
     // console.log("data", bookingsData);
     // console.log("filteredDataNew", filteredDataNew)
-    console.log("dataToFilter", dataToFilter);
-
+    // console.log("dataToFilter", dataToFilter);
+    // console.log("totalseedfunc", completeSeedFundService)
     // console.log("bookingDetails", bookingDetails)
+    console.log("fetchedBookingsData",fetchedBookingsData)
 
     return (
         <div>
@@ -466,7 +455,7 @@ function BookingsTableView({ isComingFromDataManager }) {
                                                             onFilter={handleFilter}
                                                             completeData={completeBookingsData}
                                                             showingMenu={setShowFilterMenu}
-                                                            dataForFilter={fetchedBookingsData}
+                                                            dataForFilter={dataToFilter}
                                                             refetch={refetchBookingData}
                                                             isComingFromAdmin={true}
                                                             setFilteredData={setFilteredData}
@@ -954,13 +943,19 @@ function BookingsTableView({ isComingFromDataManager }) {
                                     </button>
                                 </div>
                                 <div className="ml-3 mr-3">
-                                    Page {currentPage} of {totalPages}
+                                    {filteredDataNew && filteredDataNew.length > 0 ?
+                                    `Page 1 of 1` : 
+                                   `Page ${currentPage} of ${totalPages}` }
                                 </div>
                                 <div>
                                     <button
                                         className="btn-pagination"
                                         onClick={handleNextPage}
-                                        disabled={currentPage >= totalPages}
+                                        disabled={
+                                            filteredDataNew && filteredDataNew.length > 0
+                                                ? filteredDataNew.length === fetchedBookingsData.length 
+                                                : currentPage >= totalPages
+                                        }
                                     >
                                         <GoArrowRight />
                                     </button>
