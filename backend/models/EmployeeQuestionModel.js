@@ -1,0 +1,20 @@
+const mongoose = require("mongoose");
+
+const employeeQuestionSchema = new mongoose.Schema({
+    name: { type: String, required: true }, // Employee Name
+    email: { type: String, unique: true, required: true }, // Employee Email (unique identifier)
+    assignedQuestions: [
+        {
+            slotIndex: { type: String, required: true }, // The slot from which the question was assigned
+            slotId: { type: mongoose.Schema.Types.ObjectId, ref: "AdminExcerciseQuestion" }, // Reference to the question
+            questionId: { type: mongoose.Schema.Types.ObjectId, ref: "AdminExcerciseQuestion.questions" }, // Reference to the question
+            dateAssigned: { type: Date, required: true }, // Date the question was assigned
+            answerGiven: { type: String }, // Employee's answer
+            isCorrect: { type: Boolean }, // Whether the answer was correct
+        },
+    ],
+    createdAt: { type: Date, default: Date.now }, // Record creation timestamp
+});
+
+const EmployeeQuestionModel = mongoose.model("employeeQuestionModel", employeeQuestionSchema);
+module.exports = EmployeeQuestionModel;

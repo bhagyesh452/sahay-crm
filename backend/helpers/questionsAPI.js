@@ -4,6 +4,7 @@ var router = express.Router();
 const QuestionModel = require("../models/QuestionModel");
 const multer = require("multer");
 const xlsx = require("xlsx");
+const EmployeeQuestionModel = require("../models/EmployeeQuestionModel")
 
 // Middleware for handling Excel uploads
 const upload = multer({ storage: multer.memoryStorage() });
