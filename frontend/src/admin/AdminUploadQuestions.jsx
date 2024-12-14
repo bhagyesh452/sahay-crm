@@ -17,6 +17,7 @@ import QuestionUploadDialog from "./ExtraComponent/QuestionUploadDialog.jsx";
 import { MdOutlineEdit } from "react-icons/md";
 import EmployeeQuestionModal from "./ExtraComponent/EmployeeQuestionModal.jsx";
 import SlotSelectionDialog from "./ExtraComponent/SlotSelectionDialog.jsx";
+import Swal from "sweetalert2";
 
 
 function AdminUploadQuestions() {
@@ -60,7 +61,7 @@ function AdminUploadQuestions() {
         try {
             const response = await axios.get(`${secretKey}/question_related_api/gets_all_questionData`)
             const response2 = await axios.get(`${secretKey}/employee/einfo`)
-            setEmployees(response2.data.filter((employee)=>employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+            setEmployees(response2.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
             setCompleteData(response.data)
             //console.log("response", response)
         } catch (error) {
@@ -81,6 +82,32 @@ function AdminUploadQuestions() {
         return `${day} ${month}, ${year}`;
     }
     const modalId = `modal-employeeQuestion`; // Generate a sanitized modal ID
+
+    // =================available slots======================
+    const [availableSlots, setAvailableSlots] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState(null);
+
+    // Fetch available slots
+    const fetchAvailableSlots = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/question_related_api/available-slots`);
+            setAvailableSlots(response.data.availableSlots);
+        } catch (error) {
+            console.error("Error fetching available slots:", error);
+            Swal.fire({
+                title: "Error",
+                text: "Could not fetch available slots.",
+                icon: "error",
+                confirmButtonText: "Retry",
+            });
+        }
+    };
+
+    console.log("availableslots" , availableSlots)
+
+    useEffect(() => {
+        fetchAvailableSlots();
+    }, []);
 
     return (
         <div>
@@ -115,10 +142,14 @@ function AdminUploadQuestions() {
                                 </div>
                                 <SlotSelectionDialog
                                     open={slotDialogOpen}
-                                    onClose={handleSlotDialogToggle}
-                                    completeData={completeData}
-                                    employees={employees}
-                                    onSelectSlot={handleSelectSlot}
+                                    onClose={() => setSlotDialogOpen(false)}
+                                    completeData={availableSlots}
+                                    onSelectSlot={(slotId) => {
+                                        setSelectedSlot(slotId);
+                                    }}
+                                    selectedSlotId={selectedSlot}
+                                    availableSlots={availableSlots}
+                                    setSelectedSlotId={setSelectedSlot}
                                 />
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" className="btn action-btn-primary" onClick={handleDialogToggle}>

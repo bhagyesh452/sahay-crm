@@ -216,6 +216,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       // "Sales Manager",
       "Team Leader",
       "Floor Manager",
+      // "Vice President"
     ],
     Others: ["Receptionist"],
   };

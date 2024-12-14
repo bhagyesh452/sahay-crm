@@ -5,6 +5,7 @@ const QuestionModel = require("../models/QuestionModel");
 const multer = require("multer");
 const xlsx = require("xlsx");
 const EmployeeQuestionModel = require("../models/EmployeeQuestionModel")
+const adminModel = require("../models/Admin");
 
 // Middleware for handling Excel uploads
 const upload = multer({ storage: multer.memoryStorage() });
@@ -197,7 +198,6 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
     }
 });
 
-
 router.get("/gets_all_questionData", async (req, res) => {
     try {
         const response = await QuestionModel.find({});
@@ -206,6 +206,143 @@ router.get("/gets_all_questionData", async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" })
     }
 })
+
+// Fetch available slots
+router.get("/available-slots", async (req, res) => {
+    try {
+        const slots = await QuestionModel.find({});
+        const employees = await adminModel.find({}).select("ename email newDesignation _id number").lean();
+
+        if (employees.length === 0) {
+            return res.status(400).json({ message: "No employees found. Add employees to proceed." });
+        }
+
+        // Ensure all employees are initialized in EmployeeQuestionModel without duplicates
+        const bulkOperations = [];
+        for (const employee of employees) {
+            bulkOperations.push({
+                updateOne: {
+                    filter: { email: employee.email }, // Match by email
+                    update: {
+                        $setOnInsert: {
+                            name: employee.ename,
+                            email: employee.email,
+                            number:employee.number,
+                            empId:employee._id,
+                            assignedQuestions: [],
+                        },
+                    },
+                    upsert: true, // Insert only if the document does not exist
+                },
+            });
+        }
+
+        // Perform bulk write operation to avoid duplicate entries
+        await EmployeeQuestionModel.bulkWrite(bulkOperations);
+
+        // Filter slots for availability
+        const availableSlots = await Promise.all(
+            slots.map(async (slot) => {
+                const questionIds = slot.questions.map((q) => q._id.toString());
+
+                const isAvailable = await Promise.all(
+                    employees.map(async (employee) => {
+                        const employeeData = await EmployeeQuestionModel.findOne({ email: employee.email });
+
+                        const askedQuestions = employeeData?.assignedQuestions
+                            .filter((q) => q.slotId.toString() === slot._id.toString())
+                            .map((q) => q.questionId.toString()) || [];
+
+                        const unaskedQuestions = questionIds.filter(
+                            (qId) => !askedQuestions.includes(qId)
+                        );
+
+                        return unaskedQuestions.length > 0;
+                    })
+                );
+
+                return isAvailable.every((status) => status)
+                    ? { label: slot.slotIndex.toUpperCase(), id: slot._id }
+                    : null;
+            })
+        );
+
+        // Remove null values from the final list of available slots
+        const filteredSlots = availableSlots.filter((slot) => slot !== null);
+
+        res.status(200).json({ availableSlots: filteredSlots });
+    } catch (error) {
+        console.error("Error fetching available slots:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+});
+
+
+
+// Push questions to employees
+router.post("/push-questions", async (req, res) => {
+    try {
+        const { slotId } = req.body;
+
+        if (!slotId) {
+            return res.status(400).json({ message: "Slot ID is required." });
+        }
+
+        const slot = await QuestionModel.findById(slotId);
+        if (!slot) {
+            return res.status(404).json({ message: "Slot not found." });
+        }
+
+        const employees = await adminModel.find({});
+        const questionIds = slot.questions.map((q) => q._id.toString());
+
+        let allQuestionsAssigned = true;
+
+        for (const employee of employees) {
+            const employeeData = await EmployeeQuestionModel.findOne({ email: employee.email });
+
+            const askedQuestions = employeeData.assignedQuestions
+                .filter((q) => q.slotId.toString() === slotId.toString())
+                .map((q) => q.questionId.toString());
+
+            const unaskedQuestions = questionIds.filter(
+                (qId) => !askedQuestions.includes(qId)
+            );
+
+            if (unaskedQuestions.length === 0) {
+                allQuestionsAssigned = false;
+                continue;
+            }
+
+            // Assign a new question to the employee
+            const questionToAssign = unaskedQuestions[0];
+            employeeData.assignedQuestions.push({
+                slotIndex: slot.slotIndex,
+                slotId: slot._id,
+                questionId: questionToAssign,
+                question: slot.questions.find((q) => q._id.toString() === questionToAssign).question,
+                options: slot.questions.find((q) => q._id.toString() === questionToAssign).options,
+                correctOption: slot.questions.find((q) => q._id.toString() === questionToAssign).correctOption,
+                responses: slot.questions.find((q) => q._id.toString() === questionToAssign).responses,
+                dateAssigned: new Date(),
+            });
+
+            await employeeData.save();
+        }
+
+        if (!allQuestionsAssigned) {
+            return res.status(400).json({
+                message:
+                    "Some employees have exhausted all questions in this slot. Slot is no longer available.",
+            });
+        }
+
+        res.status(200).json({ message: "Questions successfully pushed to employees." });
+    } catch (error) {
+        console.error("Error pushing questions:", error);
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+});
 
 
 module.exports = router;
