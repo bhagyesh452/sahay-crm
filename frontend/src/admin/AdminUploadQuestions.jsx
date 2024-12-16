@@ -18,6 +18,24 @@ import { MdOutlineEdit } from "react-icons/md";
 import EmployeeQuestionModal from "./ExtraComponent/EmployeeQuestionModal.jsx";
 import SlotSelectionDialog from "./ExtraComponent/SlotSelectionDialog.jsx";
 import Swal from "sweetalert2";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TableContainer,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    Select,
+    MenuItem,
+    Typography,
+    Checkbox,
+    FormControlLabel,
+} from "@mui/material";
 
 
 function AdminUploadQuestions() {
@@ -25,8 +43,14 @@ function AdminUploadQuestions() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [completeData, setCompleteData] = useState([]);
     const [slotDialogOpen, setSlotDialogOpen] = useState(false);
-    const [employees, setEmployees] = useState([])
+    const [employees, setEmployees] = useState([]);
+    const [availableSlots, setAvailableSlots] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState(null);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [selectedQuestion, setSelectedQuestion] = useState(null);
+    const [questionDetails, setQuestionDetails] = useState([]);
+    const [employeesAnswered, setEmployeesAnswered] = useState([]);
+    const [employeeAnsDialog, setEmployeeAnsDialog] = useState(false);
 
     const handleDialogToggle = () => {
         setDialogOpen(!dialogOpen);
@@ -41,21 +65,6 @@ function AdminUploadQuestions() {
         console.log("Selected Slot ID:", slotId);
         // Call an API to activate the selected slot if needed
     };
-
-    // const { data: questionData, isLoading: isBookingDataLoading, isError: isBookingDataError, refetch: refetchBookingData } = useQuery({
-    //     queryKey: ["bookingsData", currentPage, searchText],
-    //     queryFn: async () => {
-    //         const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData-tableView`, {
-    //             params: { page: currentPage, limit: itemsPerPage, searchText }, // Pass currentPage and limit to the backend
-    //         });
-    //         // console.log("bookingData", response)
-    //         return response.data; // Return the fetched data
-    //     },
-    //     keepPreviousData: true,
-    //     refetchOnWindowFocus: false,
-    //     refetchInterval: 300000,  // Fetch the data after every 5 minutes
-    //     refetchIntervalInBackground: true,  // Fetching the data in the background even the tab is not opened
-    // });
 
     const fetchingData = async () => {
         try {
@@ -84,14 +93,11 @@ function AdminUploadQuestions() {
     const modalId = `modal-employeeQuestion`; // Generate a sanitized modal ID
 
     // =================available slots======================
-    const [availableSlots, setAvailableSlots] = useState([]);
-    const [selectedSlot, setSelectedSlot] = useState(null);
-
     // Fetch available slots
     const fetchAvailableSlots = async () => {
         try {
             const response = await axios.get(`${secretKey}/question_related_api/available-slots`);
-            console.log("response" , response.data)
+            console.log("response", response.data)
             setAvailableSlots(response.data.slotAvailability); // Store slot availability data
         } catch (error) {
             console.error("Error fetching available slots:", error);
@@ -103,13 +109,37 @@ function AdminUploadQuestions() {
             });
         }
     };
-    
 
-    console.log("availableslots" , availableSlots)
+
+    console.log("availableslots", availableSlots)
 
     useEffect(() => {
         fetchAvailableSlots();
     }, []);
+
+    // Function to handle Question Click
+    const [selectedQuestionFull, setSelectedQuestionFull] = useState("")
+    const handleQuestionClick = async (questionId , questionfull) => {
+        setEmployeeAnsDialog(true);
+        setSelectedQuestion(questionId);
+        setSelectedQuestionFull(questionfull);
+
+        try {
+            const response = await axios.get(
+                `${secretKey}/question_related_api/question-responses/${questionId}`
+            );
+
+            setEmployeesAnswered(response.data);
+        } catch (error) {
+            console.error("Error fetching question details", error);
+            Swal.fire({
+                title: "Error",
+                text: "Could not fetch question responses.",
+                icon: "error",
+                confirmButtonText: "Retry",
+            });
+        }
+    };
 
     return (
         <div>
@@ -231,7 +261,7 @@ function AdminUploadQuestions() {
                                             return (
                                                 <tr key={index}>
                                                     <td className="rm-sticky-left-1">{index + 1}</td>
-                                                    <td className="rm-sticky-left-2">{obj.question}</td>
+                                                    <td className="rm-sticky-left-2" onClick={() => handleQuestionClick(obj._id , obj.question)}>{obj.question}</td>
                                                     <td>
                                                         <div className="ellipsis-cell" title={obj.options[0]}>
                                                             {obj.options[0]}
@@ -302,6 +332,44 @@ function AdminUploadQuestions() {
             <EmployeeQuestionModal
                 modalId={modalId}
             />
+
+            {/* Popup to Show Question Details */}
+            <Dialog open={employeeAnsDialog} onClose={() => setEmployeeAnsDialog(false)} maxWidth="sm" fullWidth className="MY_MAT_DIALOG">
+                <DialogTitle>
+                    <h4>
+                    Employees Responses for Question :
+                    </h4>
+                    <h3>
+                        {selectedQuestionFull}
+                    </h3>
+                </DialogTitle>
+                <DialogContent>
+                    {employeesAnswered.length > 0 ? (
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Employee Name</th>
+                                    <th>Answer Given</th>
+                                    <th>Is Correct</th>
+                                    <th>Date Answered</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {employeesAnswered.map((employee, index) => (
+                                    <tr key={index}>
+                                        <td>{employee.employeeName}</td>
+                                        <td>{employee.answerGiven}</td>
+                                        <td>{employee.isCorrect}</td>
+                                        <td>{formatDatePro(employee.dateAnswered)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <Typography>No responses available for this question.</Typography>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

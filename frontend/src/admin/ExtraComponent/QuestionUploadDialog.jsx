@@ -42,17 +42,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [slotOptions, setSlotOptions] = useState(["slot 1", "slot 2"]);
-    // useEffect(() => {
-    //     if (completeData && completeData.length > 0) {
-    //         // Get the highest slot index
-    //         const latestSlotIndex = Math.max(...completeData.map((slot) => slot.slotIndex));
-    //         setSlotOptions([`slot ${latestSlotIndex}`, `slot ${latestSlotIndex + 1}`]);
-    //     } else {
-    //         // Default slots
-    //         setSlotOptions(["slot 1", "slot 2"]);
-    //     }
-    // }, [completeData]);
-
+    
     useEffect(() => {
         if (completeData && completeData.length > 0) {
             // Extract numeric parts from slotIndex and ensure valid numbers

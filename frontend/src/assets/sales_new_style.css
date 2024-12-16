@@ -493,6 +493,26 @@
 .feedback-dialog.wrong {
     background-color: #f44336;
 }
+@keyframes fall {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+.falling-emoji {
+    position: fixed;
+    top: -10%; /* Start from above the viewport */
+    font-size: 2rem; /* Adjust size */
+    animation: fall linear infinite;
+    pointer-events: none;
+    z-index: 9999;
+}
+
 .question-text {
     font-size: 1.5em;
     color: #7258d1; /* Dark gray text */

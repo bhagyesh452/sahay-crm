@@ -3528,10 +3528,6 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           }
         }).join(" , ");
 
-        // Generate the conditional page content
-        const isMsmeHackathonOnly = newData.services.length === 1 && extraServiceName.has("MSME Hackathon 4.0 Application");
-        const isMsmeHackathonIncluded = extraServiceName.has("MSME Hackathon 4.0 Application");
-
         let seedConditionalPage = ""; // Initialize as a string
 
         // Add logic to determine the content of seedConditionalPage
@@ -3645,7 +3641,6 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           }
         }
 
-
         const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
         const filledHtml = htmlNewTemplate
           .replace("{{Company Name}}", newData["Company Name"])
@@ -3687,15 +3682,6 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
               service.serviceName !== "OPC Private Limited Company Incorporation" &&
               service.serviceName !== "LLP Company Incorporation";
           })) ? 2 : tempPageLength;
-
-
-
-        // const latestPageLength = (extraServiceName === "Seed Fund Application" ||
-        //   extraServiceName === "Income Tax Exemption Application" ||
-        //   extraServiceName === "GST Registration Application Support" ||
-        //   extraServiceName === "I-Create Application" ||
-        //   extraServiceName === "DBS Grant Application") ? pagelength + 1 : pagelength
-
         const relevantServices = [
           "Seed Fund Application",
           "Income Tax Exemption Application",
@@ -3740,9 +3726,8 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
             },
           },
         };
-        const clientMail = newData.caCase == "Yes" ?
-          newData.caEmail :
-          newData["Company Email"]
+        const clientMail = newData.caCase == "No" ?
+          newData["Company Email"] : ""
         const mainClientMail = isAdmin ?
           ["nimesh@incscale.in", "bookings@startupsahay.com"] :
           [clientMail, "admin@startupsahay.com"]
@@ -3754,6 +3739,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                   <li>After entering the email ID, an OTP will be sent to you, which you will need to enter to access and fill the business input form.</li>
               </ol>
           <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
+
         pdf
           .create(filledHtml, options)
           .toFile(pdfFilePath, async (err, response) => {
@@ -3798,8 +3784,95 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
               }
             }
           });
+        const options2 = {
+          format: "A4", // Set the page format to A4 size
+          orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+          border: "10mm", // Set the page border size (e.g., 10mm)
+          header: {
+            height: "70px",
+            contents: ``, // Customize the header content
+          },
+          paginationOffset: 1,       // Override the initial pagination number
+          "footer": {
+            "height": "100px",
+            "contents": {
+              first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/1</p></div>`,
+            }
+          },
+          childProcessOptions: {
+            env: {
+              OPENSSL_CONF: "./dev/null",
+            },
+          },
+        };
+        if (newData.caCase === "Yes" && newData.services.some((service) => service.serviceName === "Seed Funding Support")) {
+          const currentDate = new Date();
+          const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
+          const caHtml = fs.readFileSync("./helpers/caHtml.html", "utf-8")
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{todaysDate}}", todaysDate)
+          // console.log("caHtml", caHtml)
+          // Adjust other replacements as needed
 
-
+          const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
+          pdf
+            .create(caHtml, options2)
+            .toFile(caFilePath, async (err, response) => {
+              if (err) {
+                console.error("Error generating PDF:", err);
+                res.status(500).send("Error generating PDF");
+              } else {
+                try {
+                  setTimeout(() => {
+                    const caBuffer = fs.readFileSync(caFilePath);
+                    sendMail2(
+                      [newData.caEmail],
+                      `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+                      ``,
+                      `
+                    <div class="container">
+                      <p>Hello,</p>
+                      <p style="margin-top:20px;">We are thrilled to welcome you as a valued Channel Partner of <b>Start-Up Sahay Private Limited</b>!</p>
+                      <p>Following your discussion with <b>${bdNames}</b>, we understand that you have opted for <b>Seed Funding Support</b> for your client <b>${newData["Company Name"]}</b>. We are delighted to collaborate with you and are committed to providing excellent service and support to ensure a smooth process for your client.</p>
+                      <p class="Declaration_text_head mt-2">
+                        <b>Attached Document:</b>
+                      </p>
+                      <p>In the attachment, you will find the <b>Self-Declaration</b> document containing key details, including your client’s company details, chosen services, and payment terms and conditions. This document must be:</p>
+                      <ul>
+                      <li>Printed on your client’s <b>company letterhead</b>.</li>
+                      <li>Signed and stamped to confirm agreement.</li>
+                      </ul>
+                      <p>If you notice any discrepancies or incorrect details kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                      <p class="Declaration_text_head mt-2">
+                        <b>Important Instructions:</b>
+                      </p>
+                      <ol>
+                      <li><b>No Modifications: </b>The Self-Declaration must be signed and stamped by you without any modifications. Any alterations made will be considered invalid, and the original terms shared by Start-Up Sahay Private Limited will remain applicable.</li>
+                      <li><b>Authorized Signatory Details:</b>As a Channel Partner, please ensure that your name and designation are clearly mentioned in the authorized signatory section of the document. You may write these details manually using a pen if required.</li>
+                      </ol>
+                     <p class="Declaration_text_head mt-2">
+                        <b>Next Steps:</b>
+                      </p>
+                      <ol>
+                      <li><b>Signed and Stamped Document: </b>Kindly share a scanned copy of the signed and stamped Self-Declaration document with us.</li>
+                      <li><b>Initiation Process: </b>Once we receive the signed document, we will proceed with the next steps of the <b>Seed Funding Support</b> process for your client.</li>
+                      <li><b>Business Details: </b>If required, our team will directly coordinate with your client for gathering the basic business details and relevant inputs. This will help us prepare the required documents for submission in the relevant scheme.</li>
+                      </ol>
+                      <p><b>Note:</b> If you prefer that our team does not connect directly with your client, kindly inform us at the earliest upon receiving this email. This will help us ensure a smooth workflow without any confusion.</p>
+                      <p>If you encounter any difficulties or have any questions, please do not hesitate to reach out. Our team is always available to assist you!.</p>
+                  </div>
+                `,
+                      caBuffer
+                    );
+                  }, 4000);
+                } catch (emailError) {
+                  console.error("Error sending email:", emailError);
+                  res.status(500).send("Error sending email with PDF attachment");
+                }
+              }
+            });
+        }
         // Send success response
         res.status(201).send("Data sent");
       } else {
@@ -5982,86 +6055,6 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : "rm@startupsahay.com";
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-
-
-    //     let extraServiceName = "";
-    //     newData.services.forEach(service => {
-    //       if (service.serviceName == "Seed Fund Application") {
-    //         extraServiceName = extraServiceName == "" ? "Seed Fund Application" : "Seed Fund Application , Income Tax Exemption Application"
-    //       } else if (service.serviceName === "Income Tax Exemption Application") {
-    //         extraServiceName = extraServiceName == "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
-    //       } else if (service.serviceName === "GST Registration Application Support") {
-    //         extraServiceName = "GST Registration Application Support"
-    //       } else if (service.serviceName === "I-Create Application") {
-    //         extraServiceName = "I-Create Application Support"
-    //       } else if (service.serviceName === "DBS Grant Application") {
-    //         extraServiceName = "DBS Grant Application Support"
-    //       }
-    //     })
-    //     const renamedExtraServiceName = extraServiceName === "Seed Fund Application"
-    //       ? "Seed Fund Application Support"
-    //       : extraServiceName === "Income Tax Exemption Application"
-    //         ? "Income Tax Exemption Application Support"
-    //         : extraServiceName === "I-Create Application Support"
-    //           ? "I-Create Application Support"
-    //           : extraServiceName === "DBS Grant Application Support"
-    //             ? "DBS Grant Application Support"
-    //             : "Seed Fund Application Support, Income Tax Exemption Application Support, I-Create Application Support ,DBS Grant Application Support ";
-
-    //     const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" ||
-    //       obj.serviceName === "Income Tax Exemption Application" ||
-    //       obj.serviceName === "I-Create Application" ||
-    //       obj.serviceName === "DBS Grant Application") ?
-    //       `<div class="PDF_main">
-
-    // <section>
-    //  <div class="date_div">
-    //               <p>Date : ${todaysDate}</p>
-    //             </div>
-    //             <div class="pdf_heading">
-    //               <h3>Self Declaration</h3>
-    //             </div>
-    //   <div class="Declaration_text">
-    //    <p class="Declaration_text_head mt-2">
-    //           <b>
-    //            ${renamedExtraServiceName}   
-    //           </b>
-    //         </p>
-
-    //     <p class="Declaration_text_data">
-    //       I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
-    //     </p>
-    //     <p class="Declaration_text_data">
-    //       I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
-    //     </p>
-    //     <p class="Declaration_text_data">
-    //       <b>Fees:</b>
-    //     </p>
-    //     <div class="Declaration_text_data">
-    //       <ul>
-    //         <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
-    //         <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
-    //       </ul>
-    //     </div>
-    //     <p class="Declaration_text_data">
-    //       <b>Acknowledgements:</b>
-    //     </p>
-    //     <div class="Declaration_text_data">
-    //       <ul>
-    //         <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
-    //         <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
-    //         <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
-    //         <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
-    //       </ul>
-    //     </div>
-
-    //   </div>
-
-
-    // </section>
-
-    // </div>` : '';
-
     let extraServiceName = new Set();
 
     newData.services.forEach(service => {
@@ -6332,7 +6325,9 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
       },
     };
 
-    const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/customer/login" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+    const draftHtml = draftCondition ? `
+    <p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/customer/login" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped 
+    // <b> Self-Declaration </b> copy while filling out the basic information form.</p>
     <p>Upon clicking the link:</p>                
     <ol>
         <li> You will be prompted to enter the registered email ID you provided to Start-Up Sahay (the same email ID on which this email was sent).
@@ -6341,7 +6336,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
     </ol>
     <p>If you face any problem in opening the form link or filling out the form, please get in touch with Nishtha Sharma - Relationship Manager at +919998992601.</p>` : ``;
 
-    const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
+    const clientMail = newData.caCase === "No" ? newData["Company Email"] : ""
     //console.log(clientMail)
     const mainClientMail = isAdmin ? ["nimesh@incscale.in", "bookings@startupsahay.com"] :
       [clientMail, "admin@startupsahay.com"]
@@ -6390,7 +6385,95 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
         }
       });
 
+    const options2 = {
+      format: "A4", // Set the page format to A4 size
+      orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+      border: "10mm", // Set the page border size (e.g., 10mm)
+      header: {
+        height: "70px",
+        contents: ``, // Customize the header content
+      },
+      paginationOffset: 1,       // Override the initial pagination number
+      "footer": {
+        "height": "100px",
+        "contents": {
+          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/1</p></div>`,
+        }
+      },
+      childProcessOptions: {
+        env: {
+          OPENSSL_CONF: "./dev/null",
+        },
+      },
+    };
+    if (newData.caCase === "Yes" && newData.services.some((service) => service.serviceName === "Seed Funding Support")) {
+      const currentDate = new Date();
+      const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
+      const caHtml = fs.readFileSync("./helpers/caHtml.html", "utf-8")
+        .replace("{{Company Name}}", newData["Company Name"])
+        .replace("{{Company Name}}", newData["Company Name"])
+        .replace("{{todaysDate}}", todaysDate)
+      // console.log("caHtml", caHtml)
+      // Adjust other replacements as needed
 
+      const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
+      pdf
+        .create(caHtml, options2)
+        .toFile(caFilePath, async (err, response) => {
+          if (err) {
+            console.error("Error generating PDF:", err);
+            res.status(500).send("Error generating PDF");
+          } else {
+            try {
+              setTimeout(() => {
+                const caBuffer = fs.readFileSync(caFilePath);
+                sendMail2(
+                  [newData.caEmail],
+                  `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+                  ``,
+                  `
+                <div class="container">
+                  <p>Hello,</p>
+                  <p style="margin-top:20px;">We are thrilled to welcome you as a valued Channel Partner of <b>Start-Up Sahay Private Limited</b>!</p>
+                  <p>Following your discussion with <b>${bdNames}</b>, we understand that you have opted for <b>Seed Funding Support</b> for your client <b>${newData["Company Name"]}</b>. We are delighted to collaborate with you and are committed to providing excellent service and support to ensure a smooth process for your client.</p>
+                  <p class="Declaration_text_head mt-2">
+                    <b>Attached Document:</b>
+                  </p>
+                  <p>In the attachment, you will find the <b>Self-Declaration</b> document containing key details, including your client’s company details, chosen services, and payment terms and conditions. This document must be:</p>
+                  <ul>
+                  <li>Printed on your client’s <b>company letterhead</b>.</li>
+                  <li>Signed and stamped to confirm agreement.</li>
+                  </ul>
+                  <p>If you notice any discrepancies or incorrect details kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                  <p class="Declaration_text_head mt-2">
+                    <b>Important Instructions:</b>
+                  </p>
+                  <ol>
+                  <li><b>No Modifications: </b>The Self-Declaration must be signed and stamped by you without any modifications. Any alterations made will be considered invalid, and the original terms shared by Start-Up Sahay Private Limited will remain applicable.</li>
+                  <li><b>Authorized Signatory Details:</b>As a Channel Partner, please ensure that your name and designation are clearly mentioned in the authorized signatory section of the document. You may write these details manually using a pen if required.</li>
+                  </ol>
+                 <p class="Declaration_text_head mt-2">
+                    <b>Next Steps:</b>
+                  </p>
+                  <ol>
+                  <li><b>Signed and Stamped Document: </b>Kindly share a scanned copy of the signed and stamped Self-Declaration document with us.</li>
+                  <li><b>Initiation Process: </b>Once we receive the signed document, we will proceed with the next steps of the <b>Seed Funding Support</b> process for your client.</li>
+                  <li><b>Business Details: </b>If required, our team will directly coordinate with your client for gathering the basic business details and relevant inputs. This will help us prepare the required documents for submission in the relevant scheme.</li>
+                  </ol>
+                  <p><b>Note:</b> If you prefer that our team does not connect directly with your client, kindly inform us at the earliest upon receiving this email. This will help us ensure a smooth workflow without any confusion.</p>
+                  <p>If you encounter any difficulties or have any questions, please do not hesitate to reach out. Our team is always available to assist you!.</p>
+              </div>
+            `,
+                  caBuffer
+                );
+              }, 4000);
+            } catch (emailError) {
+              console.error("Error sending email:", emailError);
+              res.status(500).send("Error sending email with PDF attachment");
+            }
+          }
+        });
+    }
     // Send success response
     res.status(201).send("Data sent");
   } catch (error) {
@@ -6399,184 +6482,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
   }
 });
 
-// API to update the "isPreviousMaturedCase" and add "bookingAmount" field for the Projection collection when firsy booking is added :
-// router.put("/update-matured-case-in-projection-for-first-booking/:companyName", async (req, res) => {
-//   const { companyName } = req.params;
 
-//   try {
-//     // Fetch booking data and projection
-//     const bookingData = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
-//     const projection = await ProjectionModel.findOne({ companyName: companyName });
-
-//     if (!bookingData || !projection) {
-//       console.log("no data projection")
-//       // return res.status(404).json({ result: false, message: "Company or Projection not found" });
-//     }
-
-//     // Define service mapping for generalization
-//     const serviceMappings = {
-//       "ISO Certificate": [
-//         "ISO Certificate IAF 9001 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 9001 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 9001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate IAF 14001 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 14001 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 14001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate IAF 45001 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 45001 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 45001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate IAF 22000 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 22000 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 22000 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate IAF 27001 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 27001 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 27001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate IAF 13485 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 13485 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 13485 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate IAF 20000-1 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 20000-1 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 20000-1 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate IAF 50001 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 50001 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 50001 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate IAF 17025-2017 1 YEAR VALIDITY",
-//         "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY",
-//         "ISO Certificate IAF 17025-2017 3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)",
-//         "ISO Certificate Non IAF 9001",
-//         "ISO Certificate Non IAF 14001",
-//         "ISO Certificate Non IAF 45001",
-//         "ISO Certificate Non IAF 22000",
-//         "ISO Certificate Non IAF 27001",
-//         "ISO Certificate Non IAF 27001",
-//         "ISO Certificate Non IAF 13485",
-//         "ISO Certificate Non IAF 13485",
-//         "ISO Certificate Non IAF 20000-1",
-//         "ISO Certificate Non IAF 50001",
-//         "ISO Certificate Non IAF 21001",
-//         "ISO Certificate Non IAF GMP",
-//         "ISO Certificate Non IAF GAP",
-//         "ISO Certificate Non IAF FDA",
-//         "ISO Certificate Non IAF HALAL",
-//         "ISO Certificate Non IAF ORGANIC",
-//         "ISO Certificate Non IAF FSSC",
-//         "ISO Certificate Non IAF FSC",
-//         "ISO Certificate Non IAF BIFMA",
-//         "ISO Certificate Non IAF CE",
-//         "ISO Certificate Non IAF HACCP",
-//         "ISO Certificate Non IAF GHP",
-//         "ISO Certificate Non IAF AIOTA",
-//         "ISO Certificate Non IAF GREEN GUARD",
-//         "ISO Certificate Non IAF SEDEX",
-//         "ISO Certificate Non IAF WHO-GMP",
-//         "ISO Certificate Non IAF BRC",
-//         "ISO Certificate Non IAF VEGAN",
-//         "ISO Certificate Non IAF SA 8000",
-//         "ISO Certificate Non IAF SA CMMI LEVEL 3",
-//         "ISO Certificate Non IAF SA CMMI LEVEL 5",
-//         "ISO Certificate Non IAF SA GO GREEN",
-//         "ISO Certificate Non IAF SA PCMM 5",
-//         "ISO Certificate Non IAF SA RIOS",
-//         "ISO Certificate Non IAF SA ROHS",
-//         "ISO Certificate Non IAF SA IEC 17020",
-//         "ISO Certificate Non IAF SA GFSI",
-//         "ISO Certificate Non IAF SA GMO",
-//         "ISO Certificate Non IAF SA 17025-2017",
-//         "ISO Certificate Non IAF Others",
-//       ],
-//       "Company Incorporation": [
-//         "OPC Private Limited Company Incorporation",
-//         "Private Limited Company Incorporation",
-//         "LLP Company Incorporation",
-//       ],
-//       "Organization DSC": [
-//         "Organization DSC Only Signature With 1 Year Validity",
-//         "Organization DSC Only Signature With 2 Year Validity",
-//         "Organization DSC Only Signature With 3 Year Validity",
-//         "Organization DSC Only Encryption With 1 Year Validity",
-//         "Organization DSC Only Encryption With 2 Year Validity",
-//         "Organization DSC Only Encryption With 3 Year Validity",
-//         "Organization DSC Combo With 1 Year Validity",
-//         "Organization DSC Combo With 2 Year Validity",
-//         "Organization DSC Combo With 3 Year Validity"
-//       ],
-//       "Director DSC": [
-//         "Director DSC Only Signature With 1 Year Validity",
-//         "Director DSC Only Signature With 2 Year Validity",
-//         "Director DSC Only Signature With 3 Year Validity",
-//         "Director DSC Only Encryption With 1 Year Validity",
-//         "Director DSC Only Encryption With 2 Year Validity",
-//         "Director DSC Only Encryption With 3 Year Validity",
-//         "Director DSC Combo With 1 Year Validity",
-//         "Director DSC Combo With 2 Year Validity",
-//         "Director DSC Combo With 3 Year Validity"
-//       ],
-//     };
-
-//     // Function to find generalized service name
-//     const getGeneralizedServiceName = (serviceName) => {
-//       for (const [generalName, variants] of Object.entries(serviceMappings)) {
-//         if (variants.some((variant) => serviceName.includes(variant))) {
-//           return generalName;
-//         }
-//       }
-//       return serviceName; // Return as-is if no match
-//     };
-
-//     // Flatten the services with their payment amounts and generalize names
-//     const servicesWithAmounts = bookingData.services.map((service) => ({
-//       serviceName: getGeneralizedServiceName(service.serviceName),
-//       totalPaymentWGST: service.totalPaymentWGST,
-//     }));
-
-//     let totalBookingAmount = 0;
-//     let isMatured = false;
-
-//     // Check if any generalized service matches the offeredServices and accumulate booking amounts
-//     servicesWithAmounts.forEach((service) => {
-//       if (projection.offeredServices.includes(service.serviceName)) {
-//         isMatured = true; // Mark as matured if a match is found
-//         totalBookingAmount += service.totalPaymentWGST; // Add to total amount
-//       }
-//     });
-
-//     // Update the main projection document
-//     if (isMatured) {
-//       projection.isPreviousMaturedCase = true;
-//       projection.bookingAmount = totalBookingAmount;
-//     }
-
-//     // Update history entries if applicable
-//     if (projection.history && projection.history.length > 0) {
-//       projection.history.forEach((historyEntry) => {
-//         let historyTotalBookingAmount = 0;
-//         let historyMatured = false;
-
-//         servicesWithAmounts.forEach((service) => {
-//           if (historyEntry.data.offeredServices.includes(service.serviceName)) {
-//             historyMatured = true;
-//             historyTotalBookingAmount += service.totalPaymentWGST;
-//           }
-//         });
-
-//         if (historyMatured) {
-//           historyEntry.data.isPreviousMaturedCase = true;
-//           historyEntry.data.bookingAmount = historyTotalBookingAmount;
-//         }
-//       });
-//     }
-//     await projection.save();
-
-//     res.status(200).json({ result: true, message: "Projection updated successfully" });
-
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({
-//       result: false,
-//       message: "Error updating matured case status",
-//     });
-//   }
-// });
 
 router.put("/update-matured-case-in-projection-for-first-booking/:companyName", async (req, res) => {
   const { companyName } = req.params;
@@ -6759,47 +6665,6 @@ router.put("/update-matured-case-in-projection-for-first-booking/:companyName", 
   }
 });
 
-
-
-//  *****************************************************************  DELETE REQUESTS OF BOOKINGS *****************************************************************
-// Request to Delete a booking
-// router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
-//   try {
-
-//     const companyId = req.params.companyId;
-//     // Find and delete the booking with the given companyId
-//     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
-//       company: companyId,
-//     });
-//     //console.log("deletetesting", deletedBooking)
-//     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
-//       companyId,
-//       { $set: { Status: "Interested" } },
-//       {
-//         $unset: {
-//           maturedBdmName: "",
-//           multiBdmName: []
-//         }
-//       },
-//       { new: true }
-//     );
-
-//     if (deletedBooking) {
-//       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
-//         "Company Name": deletedBooking["Company Name"],
-//       });
-//       //console.log("deleteDraft", deleteDraft)
-//     } 
-
-//     if (updateMainBooking.bdmAcceptStatus !== null && updateMainBooking.bdmAcceptStatus === "Accept") {
-//       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
-//     } 
-//     res.status(200).send("Booking deleted successfully");
-//   } catch (error) {
-//     console.error("Error deleting booking:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
 
 router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
   try {

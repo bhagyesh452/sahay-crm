@@ -649,7 +649,43 @@ router.post("/submit-answer", async (req, res) => {
     }
 });
 
+// GET: Fetch responses for a specific question
+router.get("/question-responses/:questionId", async (req, res) => {
+    const { questionId } = req.params;
 
+    try {
+        // Fetch employees who answered the specific question
+        const employeesWithAnswers = await EmployeeQuestionModel.find({
+            "assignedQuestions.questionId": questionId,
+        }).select("name assignedQuestions");
+
+        // Process data to filter relevant question responses
+        const responseList = [];
+        employeesWithAnswers.forEach((employee) => {
+            const question = employee.assignedQuestions.find(
+                (q) => q.questionId.toString() === questionId
+            );
+            if (question) {
+                responseList.push({
+                    employeeName: employee.name,
+                    answerGiven: question.answerGiven || "No Answer",
+                    dateAnswered: question.dateAssigned,
+                    isCorrect:question.isCorrect
+                });
+            }
+        });
+
+        // Send response
+        if (responseList.length > 0) {
+            res.status(200).json(responseList);
+        } else {
+            res.status(200).json([]); // No responses found
+        }
+    } catch (error) {
+        console.error("Error fetching question responses:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 
 module.exports = router;

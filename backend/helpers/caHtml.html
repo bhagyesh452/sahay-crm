@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Declaration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .PDF_main {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .date_div {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .pdf_heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .pdf_heading h3 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .Declaration_text {
+            margin-bottom: 30px;
+        }
+        .Declaration_text_head {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .Declaration_text_data {
+            margin-top: 10px;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        ul li {
+            margin-bottom: 5px;
+        }
+        .signature {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="PDF_main">
+        <section>
+            <div class="date_div">
+                <p>Date: {{todaysDate}}</p>
+            </div>
+            <div class="pdf_heading">
+                <h3>Self Declaration</h3>
+            </div>
+            <div class="Declaration_text">
+                <p class="Declaration_text_data">
+                    I, <b>______________________________</b>, representing <b>_______________________________</b>, engage Start-Up Sahay Private Limited for Seed Funding Document Support. <b>Start-Up Sahay Private Limited</b> will provide document creation and application support services for my client <b>{{Company Name}}</b>, utilizing their resources and expertise.
+                </p>
+                <p class="Declaration_text_head">
+                    Seed Funding Document Support, Acknowledgement:
+                </p>
+                
+                    <p>I hereby acknowledge and agree to the following terms:</p>
+                    <p>Start-Up Sahay Private Limited will provide document creation and application support.</p>
+                    <p>I understand that there is a fee for these services, which are not government fees. Approval of the application is solely up to the concerned department/authorities. Start-Up Sahay Private Limited has not assured or guaranteed application approval.</p>
+                    <p>I understand that due to government regulations and portals, I have no objections if the process takes longer than initially committed, as it reflects the standard functioning of government schemes.</p>
+                    <p>I acknowledge that Start-Up Sahay Private Limited is a private entity and will communicate directly with the client under its own identity. Start-Up Sahay will not operate anonymously or hide its identity during communications. I am aware that any disputes related to direct communication will not result in refunds. If direct communication is to be avoided, I will inform Start-Up Sahay Private Limited in advance and take responsibility for relaying information to the client.</p>
+                    <p>As me and my client are unfamiliar with the process, I authorize Start-Up Sahay Private Limited to submit the online or offline application in the concerned department on my client's behalf, if required.</p>
+               
+            </div>
+
+            <div class="Declaration_text">
+                <p class="Declaration_text_head">Acknowledgement:</p>
+                <p class="Declaration_text_data">
+                    I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between <b>Start-Up Sahay Private Limited</b> and <b>__________________________</b>. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection. Re-application support will be provided by Start-Up Sahay for 2 times without any extra charges. After that, additional charges will be taken as per mutual agreement.
+                </p>
+                <p class="Declaration_text_data">
+                    This agreement does not create any direct obligations between Start-Up Sahay and My client (<b>{{Company Name}}</b>).
+                </p>
+            </div>
+
+            <!-- <div class="signature">
+                <p>Signature: _____________________________</p>
+                <p>Name: ________________________________</p>
+                <p>Designation: ___________________________</p>
+            </div> -->
+        </section>
+    </div>
+</body>
+</html>
