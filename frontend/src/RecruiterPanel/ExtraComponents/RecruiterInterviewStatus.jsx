@@ -92,6 +92,7 @@ const RecruiterInterviewStatus = ({
         <option value="Didn't Appear">Didn't Appear</option>
         <option value="Canceled">Canceled</option>
         <option value="Taken By Palak">Taken By Palak</option>
+        <option value="Taken By Rinkal">Taken By Rinkal</option>
         <option value="Taken By Hiral">Taken By Hiral</option>
         <option value="Taken By Vaibhav">Taken By Vaibhav</option>
         <option value="Taken By Mr. Saurav">Taken By Mr. Saurav</option>

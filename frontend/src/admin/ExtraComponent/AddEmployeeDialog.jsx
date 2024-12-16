@@ -126,6 +126,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
             // "Sales Manager",
             "Team Leader",
             "Floor Manager",
+            "Vice President"
         ],
         Others: ["Receptionist"],
     };
@@ -168,6 +169,17 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
 
     const renderManagerOptions = () => {
         const managers = departmentManagers[department] || [];
+    
+        // Special case for "Sales" department with "Vice President" designation
+        if (department === "Sales" && newDesignation === "Vice President") {
+            return ["Mr. Ronak Kumar", "Mr. Krunal Pithadia", "Mr. Saurav Mevada"].map((manager, index) => (
+                <option key={index} value={manager}>
+                    {manager}
+                </option>
+            ));
+        }
+    
+        // Default case for other designations or departments
         return managers.map((manager, index) => (
             <option key={index} value={manager}>
                 {manager}

@@ -189,7 +189,7 @@ function Header({ name, designation }) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+        //throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
       }
 
       const data = await response.json();
@@ -201,7 +201,7 @@ function Header({ name, designation }) {
         date: dateString // Add the date field
       }));
     } catch (err) {
-      console.error(err);
+      //console.error(err);
       setError(err.message);
       return null;
     }
@@ -221,12 +221,12 @@ function Header({ name, designation }) {
       });
 
       if (response.status !== 200) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        //throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
 
       // console.log('Previous day data saved successfully');
     } catch (err) {
-      console.error('Error saving data:', err.message);
+      //console.error('Error saving data:', err.message);
     }
   };
 

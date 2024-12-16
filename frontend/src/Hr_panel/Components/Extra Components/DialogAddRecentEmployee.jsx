@@ -156,6 +156,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
             // "Sales Manager",
             "Team Leader",
             "Floor Manager",
+            "Vice President"
         ],
         Others: ["Receptionist"],
     };
@@ -249,6 +250,17 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
 
     const renderManagerOptions = () => {
         const managers = departmentManagers[department] || [];
+    
+        // Special case for "Sales" department with "Vice President" designation
+        if (department === "Sales" && newDesignation === "Vice President") {
+            return ["Mr. Ronak Kumar", "Mr. Krunal Pithadia", "Mr. Saurav Mevada"].map((manager, index) => (
+                <option key={index} value={manager}>
+                    {manager}
+                </option>
+            ));
+        }
+    
+        // Default case for other designations or departments
         return managers.map((manager, index) => (
             <option key={index} value={manager}>
                 {manager}
@@ -501,14 +513,14 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
             });
             return;
         }
-
+    
         const reader = new FileReader();
         reader.onload = async (e) => {
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
             const sheetName = workbook.SheetNames[0];
             const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
+    
             const employeesData = sheetData.map((row) => {
                 const generatedPassword = generateRandomPassword(row["First Name"]);
                 let designation;
@@ -525,100 +537,107 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                 } else {
                     designation = row["Designation"];
                 }
-                // console.log("row", row["Joining Date"])
                 return {
                     firstName: row["First Name"],
                     middleName: row["Middle Name"],
                     lastName: row["Last Name"],
                     email: row["Email  Address"],
-                    number: typeof row["Number"] === "string" ? row["Number"].replace(/\s+/g, '') : String(row["Number"] || '').replace(/\s+/g, ''), // Ensure valid string
+                    number: typeof row["Number"] === "string" ? row["Number"].replace(/\s+/g, '') : String(row["Number"] || '').replace(/\s+/g, ''),
                     ename: `${row["First Name"]} ${row["Last Name"]}`,
                     empFullName: `${row["First Name"]} ${row["Middle Name"]} ${row["Last Name"]}`,
                     department: row["Department"],
-                    designation: designation, // Adjust this mapping as needed
+                    designation: designation,
                     newDesignation: row["Designation"],
                     branchOffice: row["Branch Office"],
                     reportingManager: row["Manager"],
                     password: generatedPassword,
-                    jdate: parseExcelDate(row["Joining Date"]), // Convert to Date object
+                    jdate: parseExcelDate(row["Joining Date"]),
                     AddedOn: new Date().toLocaleDateString(),
                     salary: row["Salary"],
                     gender: row["Gender"],
-                    targetDetails: [], // You can add default target details here if needed
+                    targetDetails: [],
                     bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager" || row["Designation"] === "Business Development Executive" ? true : false,
                 };
             });
-            console.log("employeesDATA", employeesData)
-
-            // Validation logic
-            let hasError = false;
+    
+            const validEmployees = [];
+            const invalidRows = [];
             let errorMessages = "";
-
+    
             employeesData.forEach((employee, index) => {
                 const department = employee.department;
                 const newDesignation = employee.newDesignation;
-                const firstName = employee.firstName;
-                const lastName = employee.lastName;
                 const manager = employee.reportingManager;
-
+    
                 if (departmentValidation[department]) {
                     const validDesignations = departmentValidation[department].designations;
                     const validManagers = departmentValidation[department].managers;
-
-                    // Validate Designation
-                    if (!validDesignations.includes(newDesignation)) {
-                        hasError = true;
-                        errorMessages += `Row ${index + 2} ${firstName} ${lastName}: Invalid Designation "${newDesignation}" for Department "${department}".<br>`;
+    
+                    if (department === "Sales" && newDesignation === "Vice President") {
+                        if (!["Mr. Ronak Kumar", "Mr. Krunal Pithadia", "Mr. Saurav Mevada"].includes(manager)) {
+                            invalidRows.push(index + 2);
+                            errorMessages += `Row ${index + 2}: Invalid Manager "${manager}" for Designation "Vice President" in Sales department.<br>`;
+                            return;
+                        }
+                    } else {
+                        if (!validDesignations.includes(newDesignation)) {
+                            invalidRows.push(index + 2);
+                            errorMessages += `Row ${index + 2}: Invalid Designation "${newDesignation}" for Department "${department}".<br>`;
+                            return;
+                        }
+    
+                        if (!validManagers.includes(manager)) {
+                            invalidRows.push(index + 2);
+                            errorMessages += `Row ${index + 2}: Invalid Manager "${manager}" for Department "${department}".<br>`;
+                            return;
+                        }
                     }
-
-                    // Validate Manager
-                    if (!validManagers.includes(manager)) {
-                        hasError = true;
-                        errorMessages += `Row ${index + 2} ${firstName}  ${lastName}: Invalid Manager "${manager}" for Department "${department}".<br>`;
-                    }
+                    // If valid, add to the validEmployees list
+                    validEmployees.push(employee);
                 } else {
-                    hasError = true;
-                    errorMessages += `Row ${index + 2} ${firstName}  ${lastName}: Unknown Department "${department}".<br>`;
+                    invalidRows.push(index + 2);
+                    errorMessages += `Row ${index + 2}: Unknown Department "${department}".<br>`;
                 }
             });
-
-            if (hasError) {
+    
+            if (invalidRows.length > 0) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
+                    icon: 'warning',
+                    title: 'Some rows were skipped due to errors',
                     html: errorMessages,
                 });
-                return;
             }
-
-            // Proceed with sending the data to the backend if validation passes
-            console.log("employeesDATA", employeesData)
-            try {
-                setOpenBacdrop(true);
-                const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData });
-
-                if (response.status === 200) {
+    
+            // Process only valid rows
+            if (validEmployees.length > 0) {
+                try {
+                    setOpenBacdrop(true);
+                    const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData: validEmployees });
+    
+                    if (response.status === 200) {
+                        Swal.fire({
+                            title: 'Employees Added!',
+                            html: `Successfully added ${response.data.successCount} employees.<br>Skipped Rows: ${invalidRows.join(", ")}`,
+                            icon: 'success',
+                        });
+                        handleCloseDialog();
+                        refetch();
+                    }
+                } catch (error) {
                     Swal.fire({
-                        title: 'Employees Added!',
-                        html: `The employees have been successfully added.<br>Added Employees:${response.data.successCount} Duplicate Data:${response.data.failureCount}</br>`,
-                        icon: 'success',
+                        icon: 'error',
+                        title: 'Bulk Upload Failed',
+                        text: `Error occurred during bulk upload: ${error.message}`,
                     });
-                    handleCloseDialog();
-                    refetch();
+                } finally {
+                    setOpenBacdrop(false);
                 }
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Bulk Upload Failed',
-                    text: `Error occurred during bulk upload: ${error.message}`,
-                });
-            } finally {
-                setOpenBacdrop(false);
             }
         };
-
+    
         reader.readAsArrayBuffer(uploadedFile);
     };
+    
 
 
 
@@ -946,23 +965,6 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                                                     />
                                                 </div>
                                             </div>
-                                            {/* <div className="col-lg-2">
-                                                <div>
-                                                    <input
-                                                        placeholder="ADD achieved amount"
-                                                        type="number"
-                                                        className="form-control"
-                                                        value={obj.achievedAmount}
-                                                        onChange={(e) => {
-                                                            setTargetObjects(prevState => {
-                                                                const updatedTargets = [...prevState];
-                                                                updatedTargets[index] = { ...updatedTargets[index], achievedAmount: e.target.value };
-                                                                return updatedTargets;
-                                                            });
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div> */}
                                             <div className="col-lg-2 d-flex align-items-center justify-content-end">
                                                 <button className="btn" onClick={() => handleAddTarget(index)}>
                                                     <MdOutlineAddCircle
@@ -982,26 +984,6 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                             ) : (
                                 <>
                                     {/* Field for Bulk Upload */}
-                                    {/* <div className="row mb-3">
-                                        <label className="form-label">Upload Employee Data</label>
-                                        <div className="col-lg-12">
-                                            <input type="file" className="form-control" onChange={handleFileChange} />
-                                        </div>
-                                        <a
-                                            href={`${process.env.PUBLIC_URL}/AddNewEmployeeFormat.xlsx`}
-                                            download={"AddNewEmployeeFormat.xlsx"}
-                                        >
-                                            <div className='d-flex align-items-center justify-content-end' style={{ marginTop: "10px", textDecoration: "none" }}>
-                                                <div style={{ marginRight: "5px" }}>
-                                                    <AiOutlineDownload />
-                                                </div>
-                                                <div>
-                                                    Download Sample
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </div> */}
                                     <div>
                                         <div className={`drag-file-area ${isDragging ? 'dragging' : ''}`} // Add 'dragging' class to change style during drag
                                             onDragOver={handleDragOver}

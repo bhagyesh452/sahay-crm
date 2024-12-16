@@ -33,6 +33,7 @@ import {
 import io from "socket.io-client";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router-dom";
 
 function ManagerBookings() {
   const userId = localStorage.getItem("dataManagerUserId");
@@ -66,6 +67,7 @@ function ManagerBookings() {
   const [openBacdrop, setOpenBacdrop] = useState(false);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
+  const navigate = useNavigate();
   const formatTime = (dateString) => {
     //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
     const date = new Date(dateString);
@@ -858,6 +860,9 @@ function ManagerBookings() {
       console.log("Error fetching employee data :", error);
     }
   };
+  const handleViewTableView = () => {
+    navigate(`/dataanalyst/tabelView`);
+  }
 
   useEffect(() => {
     fetchPersonalInfo();
@@ -911,6 +916,9 @@ function ManagerBookings() {
                 </div>
                 <div className="col-6">
                   <div className="d-flex justify-content-end">
+                  <button className="btn btn-primary mr-1" onClick={() => handleViewTableView()}>
+                      List View
+                    </button>
                     <button className="btn btn-primary mr-1" disabled>
                       Import CSV
                     </button>

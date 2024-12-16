@@ -81,6 +81,22 @@ body {
   ;
 }
 
+.ellipsis-cell {
+  white-space: nowrap;
+  /* Prevent text from wrapping */
+  overflow: hidden;
+  /* Hide overflowing content */
+  text-overflow: ellipsis;
+  /* Display ellipsis for overflowing text */
+  max-width: 200px;
+  /* Adjust the width as needed */
+  display: inline-block;
+  /* Ensure proper ellipsis rendering */
+  vertical-align: middle;
+  /* Align text vertically */
+
+}
+
 .btn-primary:hover {
   background-color: #f6df9f !important;
 }
@@ -906,11 +922,16 @@ th.th-sticky1::after {
 .disabled {
   opacity: 0.5;
 }
+
 .no-select {
-  user-select: none; /* Prevents text selection */
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10+ */
-  -moz-user-select: none; /* Firefox */
+  user-select: none;
+  /* Prevents text selection */
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10+ */
+  -moz-user-select: none;
+  /* Firefox */
 }
 
 .space {
@@ -2499,6 +2520,18 @@ td input {
   height: 18px;
   color: #474747;
   width: 18px;
+
+}
+
+.adq_info_icon {
+  font-size: 14px;
+  line-height: 14px;
+  height: 18px;
+  color: #474747;
+  width: 18px;
+  border: 1px solid #13b413;
+  border-radius: 21px;
+  background: #d6f8d6;
 }
 
 .ep_info_h {
@@ -4843,6 +4876,7 @@ div#table-default td {
   height: 1.5rem;
   border-width: 2px;
 }
+
 .bknglistviewtotalpayment {
   background: #d5ebff;
   margin: 0 auto;
@@ -4850,6 +4884,7 @@ div#table-default td {
   border-radius: 4px;
   width: 50%;
 }
+
 .bknglistviewreceivepayment {
   background: #d4ffa2;
   margin: 0 auto;
@@ -4857,6 +4892,7 @@ div#table-default td {
   border-radius: 4px;
   width: 70%;
 }
+
 .bknglistviewpendingpayment {
   background: #fff6aa;
   margin: 0 auto;
@@ -4864,7 +4900,7 @@ div#table-default td {
   border-radius: 4px;
   width: 70%;
 }
-#bknglisth
-{
+
+#bknglisth {
   height: calc(100vh - 220px) !important;
 }
