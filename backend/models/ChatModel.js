@@ -3,11 +3,7 @@ const mongoose = require('mongoose');
 const chatSchema = new mongoose.Schema({
     date: {
         type: Date,
-        default: () => {
-            const now = new Date();
-            now.setHours(0, 0, 0, 0); // Set the time to midnight
-            return now;
-        },
+        default: Date.now
     },
     messageData: [
         {

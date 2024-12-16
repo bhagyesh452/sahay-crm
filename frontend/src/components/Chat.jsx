@@ -171,7 +171,6 @@ function Chat({ name, id, designation, profilePhoto, showChatBox, setShowChatBox
                 <>
                     <div className="messages-container">
                         {messages.map((msg, index) => {
-                            console.log("Socket id is :", socket.id);
                             return (
                                 <>
                                     <div className={`message-header ${msg.sentByMe ? "sender-details" : "receiver-details"}`}>

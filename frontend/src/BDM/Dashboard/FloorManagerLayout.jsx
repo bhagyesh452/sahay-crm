@@ -143,7 +143,7 @@ function FloorManagerLayout() {
             {/* This will render the specific page content */}
             <Outlet />
 
-            <div className="position-fixed bottom-0 end-0 p-3">
+            {/* <div className="position-fixed bottom-0 end-0 p-3">
                 <div style={{ position: "relative" }}>
                     <IoChatboxEllipsesSharp style={{ fontSize: "30px", color: "gray", cursor: "pointer" }} onClick={handleShowChatBox} />
                     {unseenCount > 0 && (
@@ -166,7 +166,7 @@ function FloorManagerLayout() {
                     messages={messages}
                     setMessages={setMessages}
                 />
-            )}
+            )} */}
         </>
     );
 }
