@@ -294,7 +294,7 @@ function BookingsTableView({ isComingFromDataManager }) {
                                     <div className="selection-data mr-1">Remaining Received: ₹{(parseInt(stats.totalRemainingPaymentReceived || 0, 10)).toLocaleString('en-IN')}</div>
                                     <div className="selection-data mr-1">Pending Payment: ₹{(parseInt(stats.totalRemainingPayment || 0, 10)).toLocaleString('en-IN')}</div>
                                 </>)
-                            }
+                            }   
 
                             <div className="d-flex align-items-center">
                                 <div className="btn-group" role="group" aria-label="Basic example">

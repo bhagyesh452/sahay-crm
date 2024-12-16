@@ -544,8 +544,159 @@
 .admin-dash-card
 {
     width: 100%;
-    height: 350px;
     background: #fff;
     border-radius: 30px;
     box-shadow: 1px 1px 14px -10px #ccc;
+    overflow: hidden;
+}
+.admin-dash-card-head
+{
+    padding: 12px 20px;
+}
+.adch-name
+{
+    font-size: 16px;
+    font-weight: 500;
+    color: #373147;
+
+}
+.S-admin-dashboard .dash-select-filter .my-filter-select {
+    font-size: 12px;
+    padding: 3px 3px 3px 10px;
+    border-radius: 22px !important;
+    width: 104px;
+    margin-top: 4px;
+    background-position: right 7px center;
+    background-size: 8px 11px;
+    background-color: #FFF7E5;
+    border: none !important;
+    color: #ffb900;
+}
+.admin-dash-card-body
+{
+    padding: 0px 20px;
+}
+.sadmin-inner-card
+{
+  border: 1px solid #eee;
+  border-radius: 15px;
+  background: #f9f9f9;
+}
+.sadmin-innercard-head
+{
+  padding: 10px 10px 10px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.sadmin-innercard-head p
+{
+    color: #898e94;
+}
+.sadmin-innercard-body
+{
+  padding: 0px 10px 10px 10px;
+  font-size: 18px;
+  font-weight: 500;
+} 
+.sa_inCard_icon
+{
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 100px;
+    font-size: 20px;
+    border: 1px solid #eee;
+}
+.admin-total-bkng-card
+{
+    width: 100%;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 1px 1px 14px -10px #ccc;
+    padding: 6px 0px;
+    border-bottom: 1px solid #eee;
+}
+.admin-total-bkng-card-icon
+{
+    font-size: 16px;
+    line-height: 15px;
+}
+.admin-total-bkng-card-text
+{
+    color: #898e94;
+    font-weight: 500;
+    font-size: 12px;
+    margin-left: 5px;
+}
+.admin-total-bkng-card-data
+{
+    font-size: 18px;
+    font-weight: 500;
+}
+.admin-total-bkng-card:last-child
+{
+    border-bottom: none;
+}
+.admin-dashbanknameh p
+{
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color:#ccc
+}
+.admin-dashbankrevenueh p
+{
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color:#ccc
+}
+.Sadmin_bank_dtl_card
+{
+    margin: 2px 0;
+    padding: 10px 15px;
+    background: #f6f6f6;
+    border-radius: 50px;
+}
+.bankicon
+{
+    width: 16px;
+    line-height: 10px;
+}
+.bankname
+{
+    font-size: 12px;
+    font-weight: 500;
+    color: #43474c; 
+    margin-left: 10px;
+}
+.bankmoney
+{
+    font-weight: 500;
+    color: #5a5a5a;
+}
+.admin-dash-card-footer
+{
+    padding: 10px 20px;
+    border-top: 1px solid #f6ecd6;
+    background: #fff;
+}
+.grand_ttl
+{
+    width: 100%;
+    padding: 0 10px;
+}
+.grand_ttl_text
+{
+    font-size: 13px;
+    font-weight: 500;
+}
+.grand_ttl_no
+{
+    font-size: 16px;
+    font-weight: bold;
+    color: #FF9800;
 }
