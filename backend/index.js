@@ -52,6 +52,7 @@ const axios = require('axios');
 const crypto = require("crypto");
 const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
+const ChatModel = require("./models/ChatModel.js");
 const RequestMaturedModel = require("./models/RequestMatured.js");
 const InformBDEModel = require("./models/InformBDE.js");
 const { dataform_v1beta1, servicecontrol_v2 } = require("googleapis");
@@ -75,6 +76,7 @@ const RalationshipManagerAPI = require("./helpers/RelationshipManagerApi.js");
 const GraphicDesignerAPI = require("./helpers/GraphicDesignerApi.js");
 const FinanceAnalystAPI = require("./helpers/FinanceAnalystApi.js");
 const ContentWriterAPI = require("./helpers/ContentWriterApi.js");
+const ChatAPI = require("./helpers/ChatApi.js");
 const TeamsAPI = require("./helpers/TeamsAPI.js");
 const userModel = require("./models/CompanyBusinessInput.js");
 const processAttachments = require("./helpers/sendMail3.js");
@@ -160,6 +162,7 @@ app.use('/api/relationshipManager', RalationshipManagerAPI);
 app.use('/api/graphicDesigner', GraphicDesignerAPI);
 app.use('/api/financeAnalyst', FinanceAnalystAPI);
 app.use('/api/contentWriter', ContentWriterAPI);
+app.use('/api/chats', ChatAPI);
 app.use('/api/projection', (req, res, next) => {
   req.io = socketIO;
   next();
@@ -168,16 +171,17 @@ app.use('/api/recruiter', (req, res, next) => {
   req.io = socketIO;
   next();
 }, RecruiterAPI);
-app.use('/api/question_related_api' , (req,res,next)=>{
+app.use('/api/question_related_api', (req, res, next) => {
   req.io = socketIO;
   next();
-} , QuestionAPI)
+}, QuestionAPI)
 
 
 const http = require('http').createServer(app)
 var socketIO = require("socket.io")(http, {
   cors: {
     origin: " * ",
+    methods: ["GET", "POST"],
   },
 });
 // const server = http.createServer(app);
@@ -394,8 +398,8 @@ app.post("/api/sendOtp/admin", async (req, res) => {
 
 // Verify email and password before sending OTP
 app.post("/api/verifyCredentials", async (req, res) => {
-  const { email, password , designations } = req.body;
-console.log(email,password,designations)
+  const { email, password, designations } = req.body;
+  console.log(email, password, designations)
 
   try {
     const user = await adminModel
@@ -767,7 +771,7 @@ app.post("/api/recruiterlogin", async (req, res) => {
     email: email,
     password: password,
   });
-  
+
   //console.log(user)
   if (!user) {
     // If user is not found
@@ -1387,6 +1391,68 @@ http.listen(3001, function () {
   socketIO.on("connection", function (socket) {
     console.log("User connected: " + socket.id);
     socketIO.emit("employee-entered");
+
+    socket.on("message", async (msg) => { // To receive and display message from front end.
+      // Prepare the message data
+      const messageData = {
+        id: `${msg.text}-${new Date().toLocaleTimeString()}`,  // Use ISO timestamp for uniqueness
+        text: msg.text,
+        userName: msg.userName,
+        employeeId: msg.employeeId,
+        profilePhoto: msg.profilePhoto, // Include profilePhoto
+        designation: msg.designation,  // Include designation
+        senderId: socket.id,
+        time: new Date().toLocaleTimeString(), // Store the current time of the message
+      };
+
+      socket.broadcast.emit('send-message-to-every-user', [messageData]); // To send message to user but not show same message to that user who is sending.
+      // console.log(`Message : ${messageData.text}`);
+
+      const currentDateStart = new Date().setHours(0, 0, 0, 0); // Start of the current day
+      const currentDateEnd = new Date().setHours(23, 59, 59, 999); // End of the current day
+
+      // adding message data in chat database
+      try {
+        // Find a chat within the date range for the current day
+        const chat = await ChatModel.findOne({
+          date: {
+            $gte: new Date(currentDateStart),
+            $lte: new Date(currentDateEnd),
+          },
+        });
+
+        if (chat) {
+          // If a chat exists, push the new message into the existing messageData array
+          chat.messageData.push({
+            name: msg.userName,
+            employeeId: msg.employeeId,
+            message: msg.text,
+            time: messageData.time,
+            profilePhoto: msg.profilePhoto, // Save profilePhoto
+            designation: msg.designation,  // Save designation
+          });
+          await chat.save(); // Save the updated chat
+        } else {
+          // If no chat exists, create a new one
+          const newChat = new ChatModel({
+            messageData: [{
+              name: msg.userName,
+              employeeId: msg.employeeId,
+              message: msg.text,
+              time: messageData.time,
+              profilePhoto: msg.profilePhoto, // Save profilePhoto
+              designation: msg.designation,  // Save designation
+            }]
+          });
+          await newChat.save(); // Save the new chat
+        }
+
+        // console.log("Message saved to database:", messageData.text);
+
+      } catch (error) {
+        console.log("Error saving message:", error);
+      }
+    });
 
     socket.on("disconnect", async function () {
       const date = new Date().toString();
