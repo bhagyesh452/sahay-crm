@@ -91,7 +91,8 @@ function AdminUploadQuestions() {
     const fetchAvailableSlots = async () => {
         try {
             const response = await axios.get(`${secretKey}/question_related_api/available-slots`);
-            setAvailableSlots(response.data.availableSlots);
+            console.log("response" , response.data)
+            setAvailableSlots(response.data.slotAvailability); // Store slot availability data
         } catch (error) {
             console.error("Error fetching available slots:", error);
             Swal.fire({
@@ -102,6 +103,7 @@ function AdminUploadQuestions() {
             });
         }
     };
+    
 
     console.log("availableslots" , availableSlots)
 
@@ -150,6 +152,7 @@ function AdminUploadQuestions() {
                                     selectedSlotId={selectedSlot}
                                     availableSlots={availableSlots}
                                     setSelectedSlotId={setSelectedSlot}
+                                    fetchAvailableSlots={fetchAvailableSlots}
                                 />
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" className="btn action-btn-primary" onClick={handleDialogToggle}>

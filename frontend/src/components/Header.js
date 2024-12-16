@@ -21,6 +21,7 @@ import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import ProjectionInformationDialog from "../employeeComp/ExtraComponents/ProjectionInformationDialog";
 import { useNavigate } from 'react-router-dom';
 import WarningSnackbar from "./WarningSnackbar";
+import EmployeeQuestionModal from "../admin/ExtraComponent/EmployeeQuestionModal";
 // import "./styles/header.css"
 
 
@@ -38,6 +39,8 @@ function Header({ name, id, designation, empProfile, gender }) {
   const [lastPopupTime, setLastPopupTime] = useState(storedData.lastShown || null);
   const [noPopup, setNoPopup] = useState(false)
   const [popupMessage, setpopupMessage] = useState("")
+  const [modalId, setModalId] = useState(false);
+  const [questionData, setQuestionData] = useState([]);
   const navigate = useNavigate();
   // Fetch initial data when user logs in
   const fetchData = async () => {
@@ -281,15 +284,36 @@ function Header({ name, id, designation, empProfile, gender }) {
       }
     });
 
+    // Listen for question assignment event
+    socket.on(`question_assigned`, (res) => {
+      console.log("Received data:", res);
 
+      // Validate the event is specifically for this user
+      if (res.id === id) {
+        const audioplayer = new Audio(notification_audio); // Play sound
+        audioplayer.play();
 
+        // Set modal state and data
+        setModalId(true); // Show modal
+        setQuestionData(res.data); // Update question data
+        // Persist question in localStorage
+        localStorage.setItem("currentQuestion", JSON.stringify(res.data));
+      }
+    });
+
+    // Load persisted question
+    const savedQuestion = localStorage.getItem("currentQuestion");
+    if (savedQuestion) {
+      setQuestionData(JSON.parse(savedQuestion));
+      setModalId(true);
+    }
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
     };
   }, [name]);
 
-  
+
 
   useEffect(() => {
     const checkAndRunActiveStatus = () => {
@@ -430,39 +454,39 @@ function Header({ name, id, designation, empProfile, gender }) {
     '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
     '2024-07-07', '2024-08-19', '2024-10-12',
     '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
-];
+  ];
 
-const isHolidayOrSunday = (date) => {
+  const isHolidayOrSunday = (date) => {
     const dateString = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
     const day = date.getDay(); // 0 = Sunday, 6 = Saturday
     return officialHolidays.includes(dateString) || day === 0; // Check if it's a holiday or Sunday
-};
+  };
 
-useEffect(() => {
+  useEffect(() => {
     if (data?.number) {
-        // Calculate the previous day
-        const previousDay = new Date();
-        console.log("previousDay" , previousDay)
-        previousDay.setDate(previousDay.getDate() - 1);
+      // Calculate the previous day
+      const previousDay = new Date();
+      console.log("previousDay", previousDay)
+      previousDay.setDate(previousDay.getDate() - 1);
 
-        // Find the last working day
-        while (isHolidayOrSunday(previousDay)) {
-            previousDay.setDate(previousDay.getDate() - 1); // Move to the previous day
+      // Find the last working day
+      while (isHolidayOrSunday(previousDay)) {
+        previousDay.setDate(previousDay.getDate() - 1); // Move to the previous day
+      }
+
+      const fetchAndSaveData = async () => {
+        const dailyData = await fetchDailyData(previousDay, data.number); // Fetch for the last working day
+        if (dailyData) {
+          await saveMonthlyDataToDatabase(data.number, dailyData); // Save the data
         }
+      };
 
-        const fetchAndSaveData = async () => {
-            const dailyData = await fetchDailyData(previousDay, data.number); // Fetch for the last working day
-            if (dailyData) {
-                await saveMonthlyDataToDatabase(data.number, dailyData); // Save the data
-            }
-        };
-
-        fetchAndSaveData();
+      fetchAndSaveData();
     }
-}, [data]);
+  }, [data]);
 
 
- 
+
 
 
   return (
@@ -539,7 +563,12 @@ useEffect(() => {
       }} maxSnack={3}>
 
       </SnackbarProvider>
-
+      {modalId && <EmployeeQuestionModal
+        open={modalId}
+        onClose={() => { setModalId(false) }}
+        questionData={questionData}
+        employeeId={id}
+      />}
 
     </div>
   );

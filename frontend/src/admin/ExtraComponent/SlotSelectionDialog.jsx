@@ -1,134 +1,223 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
     Button,
-    FormControl,
-    FormControlLabel,
+    TableContainer,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    Select,
+    MenuItem,
     Typography,
-    Grid,
-    Radio,
-    RadioGroup,
+    Checkbox,
+    FormControlLabel,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-function SlotSelectionDialog({ open, onClose, completeData, onSelectSlot ,availableSlots , selectedSlotId , setSelectedSlotId}) {
-    // const [availableSlots, setAvailableSlots] = useState([]);
-    const [selectedSlot, setSelectedSlot] = useState(""); // Single slot selection
-    const [selectedQuestions, setSelectedQuestions] = useState([]);
+function SlotSelectionDialog({ open, onClose, availableSlots, fetchAvailableSlots }) {
+    const [selectedSlots, setSelectedSlots] = useState({}); // Tracks the selected slot for each employee
+    const [selectedEmployees, setSelectedEmployees] = useState([]); // Tracks selected employees
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-    // useEffect(() => {
-    //     filterAvailableSlots();
-    // }, [completeData]);
+    const handleEmployeeSelection = (employeeId) => {
+        setSelectedEmployees((prev) => {
+            if (prev.includes(employeeId)) {
+                return prev.filter((id) => id !== employeeId);
+            } else {
+                return [...prev, employeeId];
+            }
+        });
+    };
 
-    // Filter slots based on the availability logic
-    // const filterAvailableSlots = () => {
-    //     const slots = completeData.map((slot) => {
-    //         return {
-    //             label: slot.slotIndex.toUpperCase(),
-    //             value: slot._id,
-    //             questions: slot.questions || [], // Attach questions for each slot
-    //             isAvailable: slot.slotIndex.toUpperCase(), // Slot must have at least 10 questions
-    //         };
-    //     });
-    //     setAvailableSlots(slots.filter((slot) => slot.isAvailable));
-    // };
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            // Select all employees
+            setSelectedEmployees(availableSlots.map((employee) => employee.employeeId));
+        } else {
+            // Deselect all employees
+            setSelectedEmployees([]);
+        }
+    };
 
-    // Handle slot selection
-    // const handleSlotSelection = (slotId) => {
-    //     setSelectedSlot(slotId); // Update the selected slot
+    const handleSlotChange = (employeeId, slotId) => {
+        setSelectedSlots((prev) => ({
+            ...prev,
+            [employeeId]: slotId,
+        }));
+    };
 
-    //     // Update selected questions based on the selected slot
-    //     const updatedQuestions = completeData
-    //         .filter((slot) => slot._id === slotId)
-    //         .flatMap((slot) => slot.questions);
-    //     setSelectedQuestions(updatedQuestions);
-    // };
-
-    // Submit the selected slot
-    const handleSubmit = () => {
-        if (!selectedSlot) {
+    const handleSubmit = async () => {
+        if (selectedEmployees.length === 0) {
             Swal.fire({
-                title: "No Slot Selected",
-                text: "Please select a slot to proceed.",
+                title: "No Employee Selected",
+                text: "Please select at least one employee to assign slots.",
                 icon: "warning",
                 confirmButtonText: "Okay",
             });
             return;
         }
-        onSelectSlot(selectedSlot); // Pass the selected slot to the parent
-        onClose(); // Close the dialog
-        Swal.fire({
-            title: "Slot Selected",
-            text: "Slot has been successfully selected and activated.",
-            icon: "success",
-            confirmButtonText: "Okay",
-        });
+
+        const unassignedEmployees = selectedEmployees.filter(
+            (employeeId) => !selectedSlots[employeeId]
+        );
+
+        if (unassignedEmployees.length > 0) {
+            Swal.fire({
+                title: "Incomplete Slot Selection",
+                text: "Please select a slot for all selected employees.",
+                icon: "error",
+                confirmButtonText: "Retry",
+            });
+            return;
+        }
+
+        try {
+            const assignedSlots = {};
+            selectedEmployees.forEach((employeeId) => {
+                assignedSlots[employeeId] = selectedSlots[employeeId];
+            });
+
+            const response = await axios.post(
+                `${secretKey}/question_related_api/push-questions`,
+                { assignedSlots }
+            );
+
+            Swal.fire({
+                title: "Success!",
+                text: response.data.message,
+                icon: "success",
+                confirmButtonText: "Okay",
+            });
+
+            setSelectedSlots({});
+            setSelectedEmployees([]);
+            fetchAvailableSlots(); // Refresh available slots
+            onClose(); // Close the dialog
+        } catch (error) {
+            console.error("Error submitting slot assignments:", error);
+            Swal.fire({
+                title: "Error",
+                text: error.response?.data?.message || "Could not assign slots.",
+                icon: "error",
+                confirmButtonText: "Retry",
+            });
+        }
     };
-     const pushQuestions = async (slotId) => {
-            try {
-                const response = await axios.post(`${secretKey}/question_related_api/push-questions`, { slotId });
-                Swal.fire({
-                    title: "Success!",
-                    text: response.data.message,
-                    icon: "success",
-                    confirmButtonText: "Okay",
-                });
-                onClose();
-                setSelectedSlotId(null);
-            } catch (error) {
-                console.error("Error pushing questions:", error);
-                Swal.fire({
-                    title: "Error",
-                    text: error.response?.data?.message || "Could not push questions.",
-                    icon: "error",
-                    confirmButtonText: "Retry",
-                });
-            }
-        };
 
     return (
         <Dialog className="My_Mat_Dialog" open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Select Slot</DialogTitle>
+            <DialogTitle>Assign Slots to Employees</DialogTitle>
             <DialogContent>
-                <FormControl component="fieldset" fullWidth>
-                    <RadioGroup
-                        value={selectedSlotId} // Controlled value
-                        onChange={(event) => onSelectSlot(event.target.value)}
-                        row
-                    >
-                        {availableSlots.map((slot) => (
-                            <FormControlLabel
-                                key={slot.id}
-                                value={slot.id}
-                                control={<Radio color="primary" />}
-                                label={slot.label}
-                            />
-                        ))}
-                    </RadioGroup>
-                </FormControl>
-                {selectedQuestions.length > 0 && (
-                    <div style={{ marginTop: "20px" }}>
-                        {/* <Typography variant="h6">Questions in Selected Slot:</Typography> */}
-                        <Grid container spacing={2}>
-                            {selectedQuestions.map((question, index) => (
-                                <Grid item xs={12} key={index} style={{ padding: "5px", borderBottom: "1px solid #ddd" }}>
-                                    <Typography variant="subtitle2">{index + 1}. {question.question}</Typography>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </div>
+                {availableSlots.length === 0 ? (
+                    <Typography>No employees found or slots unavailable.</Typography>
+                ) : (
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={
+                                                        selectedEmployees.length ===
+                                                        availableSlots.length
+                                                    }
+                                                    indeterminate={
+                                                        selectedEmployees.length > 0 &&
+                                                        selectedEmployees.length <
+                                                            availableSlots.length
+                                                    }
+                                                    onChange={handleSelectAll}
+                                                    color="primary"
+                                                />
+                                            }
+                                            label="Select All"
+                                        />
+                                    </TableCell>
+                                    <TableCell>Sr. No.</TableCell>
+                                    <TableCell>Employee Name</TableCell>
+                                    <TableCell>Available Slots</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {availableSlots.map((employeeData, index) => (
+                                    <TableRow key={employeeData.employeeId}>
+                                        <TableCell>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedEmployees.includes(
+                                                            employeeData.employeeId
+                                                        )}
+                                                        onChange={() =>
+                                                            handleEmployeeSelection(
+                                                                employeeData.employeeId
+                                                            )
+                                                        }
+                                                        color="primary"
+                                                    />
+                                                }
+                                            />
+                                        </TableCell>
+                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell>{employeeData.employeeName}</TableCell>
+                                        <TableCell
+                                            style={{
+                                                width: "150px", // Set a fixed width
+                                                textAlign: "center", // Center align the content
+                                                padding: "8px", // Adjust padding as needed
+                                            }}
+                                        >
+                                            <Select
+                                                value={selectedSlots[employeeData.employeeId] || ""}
+                                                onChange={(e) =>
+                                                    handleSlotChange(
+                                                        employeeData.employeeId,
+                                                        e.target.value
+                                                    )
+                                                }
+                                                size="small"
+                                                fullWidth
+                                                displayEmpty
+                                                disabled={
+                                                    !selectedEmployees.includes(
+                                                        employeeData.employeeId
+                                                    )
+                                                }
+                                            >
+                                                <MenuItem value="" disabled>
+                                                    Select Slot
+                                                </MenuItem>
+                                                {employeeData.availableSlots.map((slot) => (
+                                                    <MenuItem
+                                                        key={slot.slotId}
+                                                        value={slot.slotId}
+                                                        disabled={!slot.isAvailable}
+                                                    >
+                                                        {slot.slotIndex}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="secondary" variant="outlined">
                     Cancel
                 </Button>
-                <Button onClick={()=> pushQuestions(selectedSlotId)} color="primary" variant="contained">
+                <Button onClick={handleSubmit} color="primary" variant="contained">
                     Submit
                 </Button>
             </DialogActions>

@@ -3,7 +3,7 @@ const { options } = require("../helpers/questionsAPI");
 
 const employeeQuestionSchema = new mongoose.Schema({
     name: { type: String, required: true }, // Employee Name
-    email: { type: String, unique: true, required: true }, // Employee Email (unique identifier)
+    email: { type: String, unique: true}, // Employee Email (unique identifier)
     number : { type: String, },
     empId:{type: mongoose.Schema.Types.ObjectId, ref: "newemployeeinfos"},
     assignedQuestions: [
