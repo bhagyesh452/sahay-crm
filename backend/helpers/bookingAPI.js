@@ -3784,27 +3784,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
               }
             }
           });
-        const options2 = {
-          format: "A4", // Set the page format to A4 size
-          orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
-          border: "10mm", // Set the page border size (e.g., 10mm)
-          header: {
-            height: "70px",
-            contents: ``, // Customize the header content
-          },
-          paginationOffset: 1,       // Override the initial pagination number
-          "footer": {
-            "height": "100px",
-            "contents": {
-              first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/1</p></div>`,
-            }
-          },
-          childProcessOptions: {
-            env: {
-              OPENSSL_CONF: "./dev/null",
-            },
-          },
-        };
+        
         if (newData.caCase === "Yes" && newData.services.some((service) => service.serviceName === "Seed Funding Support")) {
           const currentDate = new Date();
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
@@ -3817,7 +3797,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
 
           const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
           pdf
-            .create(caHtml, options2)
+            .create(caHtml, options)
             .toFile(caFilePath, async (err, response) => {
               if (err) {
                 console.error("Error generating PDF:", err);
@@ -6385,27 +6365,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
         }
       });
 
-    const options2 = {
-      format: "A4", // Set the page format to A4 size
-      orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
-      border: "10mm", // Set the page border size (e.g., 10mm)
-      header: {
-        height: "70px",
-        contents: ``, // Customize the header content
-      },
-      paginationOffset: 1,       // Override the initial pagination number
-      "footer": {
-        "height": "100px",
-        "contents": {
-          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/1</p></div>`,
-        }
-      },
-      childProcessOptions: {
-        env: {
-          OPENSSL_CONF: "./dev/null",
-        },
-      },
-    };
+    
     if (newData.caCase === "Yes" && newData.services.some((service) => service.serviceName === "Seed Funding Support")) {
       const currentDate = new Date();
       const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
@@ -6418,7 +6378,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
 
       const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
       pdf
-        .create(caHtml, options2)
+        .create(caHtml, options)
         .toFile(caFilePath, async (err, response) => {
           if (err) {
             console.error("Error generating PDF:", err);
