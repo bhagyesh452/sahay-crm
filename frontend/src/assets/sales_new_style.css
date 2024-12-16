@@ -621,3 +621,31 @@
     border-radius: 30px;
     box-shadow: 1px 1px 14px -10px #ccc;
 }
+
+/* -----------question dialog------------ */
+.new_question_dailog_title{
+    font-size: 13px; 
+    color: #818080;
+    font-weight: bold;
+    max-width: 400pc;
+}
+.new_question_dailog_button{
+    border:1px solid grey;
+    border-radius: 14px;
+}
+.ellipsis-cell_new {
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    overflow: hidden;
+    /* Hide overflowing content */
+    text-overflow: ellipsis;
+    /* Display ellipsis for overflowing text */
+    max-width: 500px;
+    width:400px;
+    /* Adjust the width as needed */
+    display: inline-block;
+    /* Ensure proper ellipsis rendering */
+    vertical-align: middle;
+    /* Align text vertically */
+  
+  }
