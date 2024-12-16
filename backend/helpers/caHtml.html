@@ -5,46 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Self Declaration</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
+        body
+        {
+          font-size:12px !important;
+          padding:0px;
+          margin:0px;
+          font-family: 'Calibri', 'Arial', sans-serif;
         }
-        .PDF_main {
+        .PDF_main
+        {
+          /* width: 83%;
+          margin: 0 auto;
+          position: relative;
+          padding: 40px 40px;
+          page-break-after: always; */
+          page-break-after: always;
+          /* height: 680px; */
+         
+        }
+        .mt-2
+        {
+          margin-top:20px
+        }
+        p,h4,table,th,td , li
+        {
+          font-size:9px !important;
+        }
+        .date_div
+        {
+          width: 100%;
+          font-size:10px !important;
+        }
+        .date_div p
+        {
+          margin: 0px !important;
+          text-align:right;
+        }
+        .pdf_heading
+        {
+          text-align: center;
+          width: 100%;
+          margin-top: 20px;
+        }
+        .pdf_heading h4
+        {
+          margin: 0px !important;
+        }
+        .Declaration_text
+        {
+          margin-top: 10px;
+        }
+        .Declaration_text_head
+        {
+          color: #373737;
+          font-size: 14px;
+        }
+        .Declaration_text_data
+        {
+          font-size: 14px;
+          color: #4f4f4f !important;
+          line-height: 16px;
+        }
+  
+        .Signature
+        {
+          margin-bottom: 10px;
+          margin-left: 40px;
+        }
+        .table-data
+        {
+          /* margin-top: 20px; */
+        }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        .table {
             width: 100%;
-            margin: 0 auto;
-        }
-        .date_div {
-            text-align: right;
+            max-width: 100%;
             margin-bottom: 20px;
         }
-        .pdf_heading {
-            text-align: center;
-            margin-bottom: 30px;
+        .table-bordered {
+            border: 1px solid #3d3d3d;
         }
-        .pdf_heading h3 {
-            font-size: 24px;
-            margin: 0;
+        .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+            border: 1px solid #3d3d3d;
+            font-size: 12px;
+            padding:6px;
+            color: #373737;
         }
-        .Declaration_text {
-            margin-bottom: 30px;
+        .text-left
+        {
+          text-align: left;
         }
-        .Declaration_text_head {
-            font-weight: bold;
-            margin-top: 20px;
+        .s_Provider_left
+        {
+          width: 40%;
         }
-        .Declaration_text_data {
-            margin-top: 10px;
+        .s_Provider_right
+        {
+          width: 60%;
         }
-        ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-        ul li {
-            margin-bottom: 5px;
-        }
-        .signature {
-            margin-top: 30px;
+        .bdr-right
+        {
+          border-right: 1px solid #3d3d3d !important;
         }
     </style>
 </head>
@@ -55,7 +119,7 @@
                 <p>Date: {{todaysDate}}</p>
             </div>
             <div class="pdf_heading">
-                <h3>Self Declaration</h3>
+                <h4>Self Declaration</h4>
             </div>
             <div class="Declaration_text">
                 <p class="Declaration_text_data">
