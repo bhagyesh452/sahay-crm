@@ -361,7 +361,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                 </option>
                                 {slotOptions.map((slot, index) => (
                                     <option key={index} value={slot.label} disabled={slot.disabled}>
-                                        {slot.label.toUpperCase()}
+                                        {slot.label}
                                     </option>
                                 ))}
                             </select>
