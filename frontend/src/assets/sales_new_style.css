@@ -426,21 +426,21 @@
 
 .q-modal
 {
-    background: #ffc107 !important;
-    padding: 30px 0px;
+    background: #fffcf2 !important;
+    padding: 60px 0px;
 }
 .que-main
 {
-    background-color: white;
-    width: 80%;
+    background-color: #555555;
+    width: 75%;
     max-width: 500px;
     margin: 0 auto;
     text-align: center;
-    border-radius: 10px;
+    border-radius: 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     position: relative;
-    rotate: -2deg;
+    rotate: -1deg;
     z-index: 2;
     transition: all 0.2s ease;
     cursor: pointer;
@@ -455,11 +455,10 @@
     top: 0px;
     background-color: #7258d1;
     color: white;
-    font-size: 23px;
+    font-size: 18px;
     font-weight: bold;
-    padding: 5px 16px;
-    border-radius: 4px;
-    width: 84px;
+    padding: 4px 12px;
+    border-radius: 12px;
     left: 50%;
     -webkit-transform: translate(-50%, -50%);
     rotate: 2deg;
@@ -514,11 +513,11 @@
 }
 
 .question-text {
-    font-size: 1.5em;
-    color: #7258d1; /* Dark gray text */
+    font-size: 18px;
+    color: #ffffff;
     margin: 14px 10px;
-    font-weight: bold;
-    rotate: 2deg;
+    font-weight: 500;
+    rotate: 1deg;
   }
   
 .question-text-correct {
@@ -536,11 +535,11 @@
     position: absolute;
     content: "";
     background: #30343b00;
-    border-top: 3px solid #7258d1;
+    border-top: 3px solid #FFC107;
     border-right: 3px solid #7258d1;
-    border-radius: 0 10px 0 0;
-    right: -10px;
-    top: -9px;
+    border-radius: 0 37px 0 0;
+    right: -7px;
+    top: -7px;
 }
 .que-main::after
 {
@@ -549,22 +548,27 @@
     position: absolute;
     content: "";
     background: #30343b00;
-    border-bottom: 3px solid #7258d1;
+    border-bottom: 3px solid #FFC107;
     border-left: 3px solid #7258d1;
-    border-radius: 0 0 0 10px;
-    left: -10px;
-    bottom: -12px;
+    border-radius: 0 0 0 37px;
+    left: -7px;
+    bottom: -7px;
+}
+.question-model .MuiPaper-rounded
+{
+    border-radius: 40px;
 }
 .option-main
 {
-    width: 80%;
+    width: 95%;
     background: #7258d1;
     padding: 16px 20px;
-    border-radius: 4px;
+    border-radius: 16px;
     font-weight: bold;
     color: #fff;
-    rotate: -2deg;
+    /* rotate: -2deg; */
     position: relative;
+    margin: 0 auto;
 }
 .option-text
 {
@@ -578,16 +582,16 @@
 }
 .option-main::before
 {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     position: absolute;
     content: "";
     background: #30343b00;
-    border-top: 3px solid #fff;
-    border-right: 3px solid #fff;
-    border-radius: 0 6px 0 0;
-    right: -9px;
-    top: -10px;
+    border-top: 2px solid #555555;
+    border-right: 2px solid #FFC107;
+    border-radius: 0 20px 0 0;
+    right: -5px;
+    top: -5px;
 }
 .feedback {
     text-align: center;
@@ -601,16 +605,16 @@
 
 .option-main::after
 {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     position: absolute;
     content: "";
     background: #30343b00;
-    border-left: 3px solid #fff;
-    border-bottom: 3px solid #fff;
-    border-radius: 0 0 0 6px;
-    left: -9px;
-    bottom: -10px;
+    border-left: 2px solid #FFC107;
+    border-bottom: 2px solid #555555;
+    border-radius: 0 0 0 20px;
+    left: -5px;
+    bottom: -5px;
 }
 /*---------*/
 .admin-dash-card
