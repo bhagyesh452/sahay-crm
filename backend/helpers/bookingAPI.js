@@ -1532,7 +1532,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
     const companyName = req.params.CompanyName;
     const newTempDate = new Date();
     const newData = req.body;
-    console.log("newData", newData)
+    // console.log("newData", newData)
 
     const Step = req.params.step;
     if (Step === "step2") {
@@ -3769,17 +3769,28 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
           const caHtml = fs.readFileSync("./helpers/caHtml.html", "utf-8")
             .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Services}}", serviceList)
+            .replace("{{Services}}", serviceList)
+            .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
+            .replace("{{page-display}}", newPageDisplay)
+            .replace("{{pagination}}", pagination)
+            .replace("{{Authorized-Person}}", mailName)
             .replace("{{Authorized-Number}}", AuthorizedNumber)
             .replace("{{Authorized-Email}}", AuthorizedEmail)
+            .replace("{{Main-page}}", mainPage)
             .replace("{{Total-Payment}}", totalPaymentHtml)
             .replace("{{Service-Details}}", paymentDetails)
             .replace("{{Third-Page}}", thirdPage)
             .replace("{{Company Number}}", newData["Company Number"])
             .replace("{{Conditional}}", conditional)
             .replace("{{Company Email}}", newData["Company Email"])
-            .replace("{{todaysDate}}", todaysDate)
             .replace("{{Company Name}}", newData["Company Name"])
             .replace("{{Company Name}}", newData["Company Name"])
+            console.log("cahtml" , caHtml)
           const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
           pdf
             .create(caHtml, options)
