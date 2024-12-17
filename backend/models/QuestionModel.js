@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const questionSchema = new mongoose.Schema({
-    question: { type: String, required: true },
+    question: { type: String, required: true ,unique:true},
     options: { type: [String], required: true },
-    correctOption: { type: Number, required: true }, // Index of the correct option
+    correctOption: { type: String, required: true }, // Index of the correct option
     responses: {
         right: { type: String },
         wrong: { type: String },
@@ -13,10 +13,9 @@ const questionSchema = new mongoose.Schema({
 
 const slotSchema = new mongoose.Schema({
     slotIndex: {
-        type: Number,
+        type: String,
         required: true,
-        unique:
-            true
+        unique:true
     },
     slotUploadDate: { type: Date, default: Date.now },
     questions: [questionSchema], // Embed the questions schema here

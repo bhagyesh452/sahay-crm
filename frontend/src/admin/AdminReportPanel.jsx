@@ -455,6 +455,203 @@ function AdminReportPanel() {
                   </div>
                 </div>
               </div>
+
+              
+              <div className='row mt-3 mb-3'>
+                <div className='col-5'>
+                  <div className='admin-dash-card'>
+                    <div className='admin-dash-card-head'>
+                      <div className='d-flex align-items-center justify-content-between'>
+                        <div className='adch-name'>
+                            Booking Summary
+                        </div>
+                      </div>
+                    </div>
+                    <div className='admin-dash-card-body pb-2'>
+                      <div className='admin-total-bkng-card'>
+                        <div className='d-flex align-items-center justify-content-between'>
+                          <div className='d-flex align-items-center'>
+                            <div className='admin-total-bkng-card-icon clr-009688'>
+                              <FiLayers/>
+                            </div>
+                            <div className='admin-total-bkng-card-text'>
+                              No. Of Bookings
+                            </div>
+                          </div>
+                          <div className='admin-total-bkng-card-data clr-009688'>
+                            202
+                          </div>
+                        </div>
+                      </div>
+                      <div className='admin-total-bkng-card'>
+                        <div className='d-flex align-items-center justify-content-between'>
+                          <div className='d-flex align-items-center'>
+                            <div className='admin-total-bkng-card-icon clr-a7636b'>
+                              <IoTicketOutline />
+                            </div>
+                            <div className='admin-total-bkng-card-text'>
+                              Uniq Booking
+                            </div>
+                          </div>
+                          <div className='admin-total-bkng-card-data clr-a7636b'>
+                            88
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='admin-dash-card mt-2'>
+                    <div className='admin-dash-card-head'>
+                      <div className='d-flex align-items-center justify-content-between'>
+                        <div className='adch-name'>
+                            Remaining Payment Summary
+                        </div>
+                      </div>
+                    </div>
+                    <div className='admin-dash-card-body pb-2'>
+                      <div className='admin-total-bkng-card'>
+                        <div className='d-flex align-items-center justify-content-between'>
+                          <div className='d-flex align-items-center'>
+                            <div className='admin-total-bkng-card-icon clr-009688'>
+                              <FiLayers/>
+                            </div>
+                            <div className='admin-total-bkng-card-text'>
+                              Remaining Collection
+                            </div>
+                          </div>
+                          <div className='admin-total-bkng-card-data clr-009688'>
+                              ₹0/-
+                          </div>
+                        </div>
+                      </div>
+                      <div className='admin-total-bkng-card'>
+                        <div className='d-flex align-items-center justify-content-between'>
+                          <div className='d-flex align-items-center'>
+                            <div className='admin-total-bkng-card-icon clr-a7636b'>
+                              <IoTicketOutline />
+                            </div>
+                            <div className='admin-total-bkng-card-text'>
+                              Advanced Collected
+                            </div>
+                          </div>
+                          <div className='admin-total-bkng-card-data clr-a7636b'>
+                              ₹35,000/-
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className='col-7'>
+                  <div className='admin-dash-card'>
+                    <div className='admin-dash-card-head'>
+                      <div className='d-flex align-items-center justify-content-between'>
+                        <div className='adch-name'>
+                            Payment Summary
+                        </div>
+                        <div className="dash-select-filter">
+                          <select class="form-select form-select-sm my-filter-select">
+                              <option value="This Month">This Month</option>
+                              <option value="Last Month">Last Month</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div className='admin-dash-card-body pb-2'>
+                      <div className='d-flex align-items-center justify-content-between mb-2'>
+                        <div className='admin-dashbanknameh'>
+                          <p>Bank Name</p>
+                        </div>
+                        <div className='admin-dashbankrevenueh'>
+                          <p>Revenue</p>
+                        </div>
+                      </div>
+                      <div className='Sadmin_bank_dtl_card'>
+                        <div className='d-flex align-items-center justify-content-between'>
+                          <div className='d-flex align-items-center'>
+                            <div className='bankicon'>
+                              <img src={icici}></img>
+                            </div>
+                            <div className='bankname'>
+                              ICICI Bank
+                            </div>
+                          </div>
+                          <div className='bankmoney'>
+                            ₹3,33,660/-
+                          </div>
+                        </div>
+                      </div>
+                      <div className='Sadmin_bank_dtl_card'>
+                        <div className='d-flex align-items-center justify-content-between'>
+                          <div className='d-flex align-items-center'>
+                            <div className='bankicon'>
+                              <img src={idfc}></img>
+                            </div>
+                            <div className='bankname'>
+                              Start-up Sahay Solution
+                            </div>
+                          </div>
+                          <div className='bankmoney'>
+                            ₹43,660/-
+                          </div>
+                        </div>
+                      </div>
+                      <div className='Sadmin_bank_dtl_card'>
+                        <div className='d-flex align-items-center justify-content-between'>
+                          <div className='d-flex align-items-center'>
+                            <div className='bankicon'>
+                              <img src={idfc}></img>
+                            </div>
+                            <div className='bankname'>
+                              Start-up Sahay Advisory
+                            </div>
+                          </div>
+                          <div className='bankmoney'>
+                            ₹23,660/-
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className='admin-dash-card-footer'>
+                      <div className='row'>
+                        <div className='col-4 p-0'>
+                          <div className='grand_ttl'>
+                            <div className='grand_ttl_text'>
+                              Total Non-GST
+                            </div>
+                            <div className='grand_ttl_no'>
+                              ₹22,33,660/-
+                            </div>
+                          </div>
+                        </div>
+                        <div className='col-4 p-0'>
+                          <div className='grand_ttl bdr-left-eee'>
+                            <div className='grand_ttl_text'>
+                              Total With GST
+                            </div>
+                            <div className='grand_ttl_no'>
+                              ₹11,33,660/-
+                            </div>
+                          </div>
+                        </div>
+                        <div className='col-4 p-0'>
+                          <div className='grand_ttl bdr-left-eee'>
+                            <div className='grand_ttl_text'>
+                              Grand Total
+                            </div>
+                            <div className='grand_ttl_no'>
+                              ₹33,33,660/-
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                     
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

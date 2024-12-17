@@ -425,6 +425,7 @@ router.get("/redesigned-final-leadData-tableView", async (req, res) => {
     res.status(200).json({
       totalCount: filteredData.length,
       data: paginatedData,
+      completeData: sortedServices,
     });
   } catch (error) {
     console.error("Error fetching data:", error);

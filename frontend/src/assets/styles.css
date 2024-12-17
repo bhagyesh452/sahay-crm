@@ -80,13 +80,20 @@ body {
   --tblr-btn-hover-color: #ffb900 !important;
   ;
 }
-.ellipsis-cell{
-    white-space: nowrap;      /* Prevent text from wrapping */
-    overflow: hidden;         /* Hide overflowing content */
-    text-overflow: ellipsis;  /* Display ellipsis for overflowing text */
-    max-width: 200px;         /* Adjust the width as needed */
-    display: inline-block;    /* Ensure proper ellipsis rendering */
-    vertical-align: middle;   /* Align text vertically */
+
+.ellipsis-cell {
+  white-space: nowrap;
+  /* Prevent text from wrapping */
+  overflow: hidden;
+  /* Hide overflowing content */
+  text-overflow: ellipsis;
+  /* Display ellipsis for overflowing text */
+  max-width: 200px;
+  /* Adjust the width as needed */
+  display: inline-block;
+  /* Ensure proper ellipsis rendering */
+  vertical-align: middle;
+  /* Align text vertically */
 
 }
 
@@ -915,11 +922,16 @@ th.th-sticky1::after {
 .disabled {
   opacity: 0.5;
 }
+
 .no-select {
-  user-select: none; /* Prevents text selection */
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10+ */
-  -moz-user-select: none; /* Firefox */
+  user-select: none;
+  /* Prevents text selection */
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10+ */
+  -moz-user-select: none;
+  /* Firefox */
 }
 
 .space {
@@ -2516,6 +2528,18 @@ td input {
   height: 18px;
   color: #474747;
   width: 18px;
+
+}
+
+.adq_info_icon {
+  font-size: 14px;
+  line-height: 14px;
+  height: 18px;
+  color: #474747;
+  width: 18px;
+  border: 1px solid #13b413;
+  border-radius: 21px;
+  background: #d6f8d6;
 }
 
 .ep_info_h {
@@ -4860,6 +4884,7 @@ div#table-default td {
   height: 1.5rem;
   border-width: 2px;
 }
+
 .bknglistviewtotalpayment {
   background: #d5ebff;
   margin: 0 auto;
@@ -4867,6 +4892,7 @@ div#table-default td {
   border-radius: 4px;
   width: 50%;
 }
+
 .bknglistviewreceivepayment {
   background: #d4ffa2;
   margin: 0 auto;
@@ -4874,6 +4900,7 @@ div#table-default td {
   border-radius: 4px;
   width: 70%;
 }
+
 .bknglistviewpendingpayment {
   background: #fff6aa;
   margin: 0 auto;
@@ -4881,7 +4908,218 @@ div#table-default td {
   border-radius: 4px;
   width: 70%;
 }
-#bknglisth
-{
+
+#bknglisth {
   height: calc(100vh - 220px) !important;
 }
+
+/* Chatbox Css */
+.chat-drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  /* Initially off-screen */
+  width: 30%;
+  height: 100%;
+  background-color: #333333;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  transition: right 0.5s ease;
+  /* Smooth slide-in effect */
+  z-index: 1050;
+  /* Ensure it appears above other elements */
+  display: flex;
+  flex-direction: column;
+  /* Align content vertically */
+}
+
+.chat-drawer.open {
+  right: 0;
+  /* Bring it into view */
+}
+
+.chat-header {
+  text-align: right;
+  padding: 10px;
+  background-color: #333333;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header-left .chat-link,
+.chat-header-left .notifications-link {
+    color: white;
+    padding: 0 20px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.chat-header-left .chat-link.active,
+.chat-header-left .notifications-link.active {
+    color: #ffb900;
+    font-weight: bold;
+    border-bottom: 2px solid #ffb900;
+}
+
+/* Message container to show all messages */
+.messages-container {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* Username and Avatar always on the left */
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.message-header .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.message-box {
+  background-color: #2a2a2a;
+  max-width: 70%;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 10px 15px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* For styling username */
+.message-box .username {
+  color: black;
+  font-size: 14px;
+}
+
+.online {
+  background-color: green;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: relative;
+  right: 18px;
+  top: 13px;
+}
+
+.offline {
+  background-color: red;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: relative;
+  right: 18px;
+  top: 13px;
+}
+
+/* Message Box */
+/* Message content styles */
+.message-box p {
+  margin: 5px 0;
+  color: black;
+  font-size: 14px;
+}
+
+/* Time always on the right side */
+.message-time2 {
+  font-size: 10px;
+  color: #777;
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+}
+
+/* Sender's Messages (Right-Aligned) */
+.message-box.sender {
+  margin-left: auto;
+  background-color: #dcf8c6;
+  border: 1px solid #dcf8c6;
+  color: black;
+}
+
+.sender-details {
+  margin-left: 140px;
+  color: white;
+}
+
+/* Receiver's Messages (Left-Aligned) */
+.message-box.receiver {
+  margin-right: auto;
+  background-color: #eaeaea;
+  border: 1px solid #eaeaea;
+  color: black;
+}
+
+.receiver-details {
+  margin-left: 15px;
+  color: white;
+}
+
+.designation-time {
+  display: flex;
+  color: white;
+  max-width: 60%;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+  margin-left: auto;
+  text-align: right;
+}
+
+.chat-footer {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  background-color: #333333;
+}
+
+.chat-footer textarea {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  resize: none;
+}
+
+.chat-footer button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #ffb900;
+  color: white;
+  font-weight: 700;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.chat-footer button:hover {
+  background-color: #ffb900;
+}
+
+.unseen-message-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
