@@ -114,7 +114,7 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
 
         for (const [index, row] of data.entries()) {
             console.log(`Processing row ${index + 1}:`, row);
-        
+
             // Map the Excel keys to match expected keys
             const question = row['Question'];
             const option1 = row['Option 1'];
@@ -124,21 +124,21 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
             const correctOption = row['Correct Option'];
             const rightResponse = row['Right Response'];
             const wrongResponse = row['Wrong Response'];
-        
+
             // Validate fields
             if (!question || !option1 || !option2 || !option3 || !option4 || !correctOption) {
                 console.log(`Row ${index + 1} skipped: Missing required fields.`);
                 skippedInvalid++;
                 continue;
             }
-        
+
             const options = [option1, option2, option3, option4];
             if (!options.includes(correctOption)) {
                 console.log(`Row ${index + 1} skipped: Correct option '${correctOption}' not in options.`, options);
                 skippedInvalid++;
                 continue;
             }
-        
+
             // Check for duplicate questions in the database
             const exists = await QuestionModel.findOne({
                 "questions.question": question,
@@ -148,7 +148,7 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
                 skippedDuplicates++;
                 continue;
             }
-        
+
             console.log(`Row ${index + 1} valid.`);
             validQuestions.push({
                 question,
@@ -208,6 +208,153 @@ router.get("/gets_all_questionData", async (req, res) => {
 })
 
 // Fetch available slots
+// router.get("/available-slots", async (req, res) => {
+//     try {
+//         const slots = await QuestionModel.find({});
+//         const employees = await adminModel.find({}).select("ename email newDesignation _id number").lean();
+
+//         if (employees.length === 0) {
+//             return res.status(400).json({ message: "No employees found. Add employees to proceed." });
+//         }
+
+//         // Ensure all employees are initialized in EmployeeQuestionModel without duplicates
+//         const bulkOperations = [];
+//         for (const employee of employees) {
+//             bulkOperations.push({
+//                 updateOne: {
+//                     filter: { email: employee.email }, // Match by email
+//                     update: {
+//                         $setOnInsert: {
+//                             name: employee.ename,
+//                             email: employee.email,
+//                             number:employee.number,
+//                             empId:employee._id,
+//                             assignedQuestions: [],
+//                         },
+//                     },
+//                     upsert: true, // Insert only if the document does not exist
+//                 },
+//             });
+//         }
+
+//         // Perform bulk write operation to avoid duplicate entries
+//         await EmployeeQuestionModel.bulkWrite(bulkOperations);
+
+//         // Filter slots for availability
+//         const availableSlots = await Promise.all(
+//             slots.map(async (slot) => {
+//                 const questionIds = slot.questions.map((q) => q._id.toString());
+
+//                 const isAvailable = await Promise.all(
+//                     employees.map(async (employee) => {
+//                         const employeeData = await EmployeeQuestionModel.findOne({ email: employee.email });
+
+//                         const askedQuestions = employeeData?.assignedQuestions
+//                             .filter((q) => q.slotId.toString() === slot._id.toString())
+//                             .map((q) => q.questionId.toString()) || [];
+
+//                         const unaskedQuestions = questionIds.filter(
+//                             (qId) => !askedQuestions.includes(qId)
+//                         );
+
+//                         return unaskedQuestions.length > 0;
+//                     })
+//                 );
+
+//                 return isAvailable.every((status) => status)
+//                     ? { label: slot.slotIndex.toUpperCase(), id: slot._id }
+//                     : null;
+//             })
+//         );
+
+//         // Remove null values from the final list of available slots
+//         const filteredSlots = availableSlots.filter((slot) => slot !== null);
+
+//         res.status(200).json({ availableSlots: filteredSlots });
+//     } catch (error) {
+//         console.error("Error fetching available slots:", error);
+//         res.status(500).json({ message: "Internal Server Error", error });
+//     }
+// });
+
+// router.get("/available-slots", async (req, res) => {
+//     try {
+//         const slots = await QuestionModel.find({});
+//         const employees = await adminModel.find({ ename: "Swapnil Dattaa" }).select("ename email newDesignation _id number").lean();
+
+//         if (employees.length === 0) {
+//             return res.status(400).json({ message: "No employees found. Add employees to proceed." });
+//         }
+
+//         // Ensure all employees are initialized in EmployeeQuestionModel without duplicates
+//         const bulkOperations = [];
+//         for (const employee of employees) {
+//             bulkOperations.push({
+//                 updateOne: {
+//                     filter: { email: employee.email }, // Match by email
+//                     update: {
+//                         $setOnInsert: {
+//                             name: employee.ename,
+//                             email: employee.email,
+//                             number: employee.number,
+//                             empId: employee._id,
+//                             assignedQuestions: [],
+//                         },
+//                     },
+//                     upsert: true, // Insert only if the document does not exist
+//                 },
+//             });
+//         }
+
+//         // Perform bulk write operation to avoid duplicate entries
+//         await EmployeeQuestionModel.bulkWrite(bulkOperations);
+
+//         // Fetch EmployeeQuestionModel entries for Swapnil Dattaa
+//         const employeeQuestionData = await EmployeeQuestionModel.findOne({ name: "Swapnil Dattaa" });
+//         console.log("\nEmployee Question Data for Swapnil Dattaa: ", employeeQuestionData);
+
+//         // Check slot availability for Swapnil Dattaa
+//         const employee = employees[0]; // Since we are filtering for one employee
+//         const assignedQuestions = employeeQuestionData?.assignedQuestions || [];
+
+//         console.log(`\nEmployee: ${employee.ename}`);
+//         console.log(`Assigned Questions for ${employee.ename}: `, assignedQuestions);
+
+//         const availableSlots = slots.map((slot) => {
+//             const questionIds = slot.questions.map((q) => q._id.toString()); // All question IDs in the slot
+//             console.log(`\nSlot: ${slot.slotIndex}`);
+//             console.log(`All Questions in Slot (${slot.slotIndex}): `, questionIds);
+
+//             // Questions already assigned to this employee for the slot
+//             const askedQuestions = assignedQuestions
+//                 .filter((q) => q.slotId.toString() === slot._id.toString())
+//                 .map((q) => q.questionId.toString()); // Convert to string
+//             console.log(`Asked Questions for ${employee.ename} in Slot (${slot.slotIndex}): `, askedQuestions);
+
+//             // Check if there are unasked questions for this employee
+//             const unaskedQuestions = questionIds.filter((qId) => !askedQuestions.includes(qId));
+//             console.log(`Unasked Questions for ${employee.ename} in Slot (${slot.slotIndex}): `, unaskedQuestions);
+
+//             return {
+//                 slotId: slot._id,
+//                 slotIndex: slot.slotIndex.toUpperCase(),
+//                 isAvailable: unaskedQuestions.length > 0, // Slot is available for this employee if unasked questions exist
+//             };
+//         });
+
+//         console.log(`\nAvailable Slots for ${employee.ename}: `, availableSlots);
+
+//         res.status(200).json({
+//             employeeId: employee._id,
+//             employeeName: employee.ename,
+//             availableSlots: availableSlots.filter((slot) => slot.isAvailable), // Filter available slots for this employee
+//         });
+//     } catch (error) {
+//         console.error("Error fetching available slots:", error);
+//         res.status(500).json({ message: "Internal Server Error", error });
+//     }
+// });
+
 router.get("/available-slots", async (req, res) => {
     try {
         const slots = await QuestionModel.find({});
@@ -227,8 +374,8 @@ router.get("/available-slots", async (req, res) => {
                         $setOnInsert: {
                             name: employee.ename,
                             email: employee.email,
-                            number:employee.number,
-                            empId:employee._id,
+                            number: employee.number,
+                            empId: employee._id,
                             assignedQuestions: [],
                         },
                     },
@@ -240,37 +387,38 @@ router.get("/available-slots", async (req, res) => {
         // Perform bulk write operation to avoid duplicate entries
         await EmployeeQuestionModel.bulkWrite(bulkOperations);
 
-        // Filter slots for availability
-        const availableSlots = await Promise.all(
-            slots.map(async (slot) => {
+        // Fetch all EmployeeQuestionModel entries
+        const employeeQuestionData = await EmployeeQuestionModel.find({});
+
+        // Check slot availability for every employee
+        const slotAvailability = employees.map((employee) => {
+            const employeeData = employeeQuestionData.find((e) => e.empId.toString() === employee._id.toString());
+            const assignedQuestions = employeeData?.assignedQuestions || [];
+
+            const availableSlots = slots.map((slot) => {
                 const questionIds = slot.questions.map((q) => q._id.toString());
 
-                const isAvailable = await Promise.all(
-                    employees.map(async (employee) => {
-                        const employeeData = await EmployeeQuestionModel.findOne({ email: employee.email });
+                const askedQuestions = assignedQuestions
+                    .filter((q) => q.slotId.toString() === slot._id.toString())
+                    .map((q) => q.questionId.toString());
 
-                        const askedQuestions = employeeData?.assignedQuestions
-                            .filter((q) => q.slotId.toString() === slot._id.toString())
-                            .map((q) => q.questionId.toString()) || [];
+                const unaskedQuestions = questionIds.filter((qId) => !askedQuestions.includes(qId));
 
-                        const unaskedQuestions = questionIds.filter(
-                            (qId) => !askedQuestions.includes(qId)
-                        );
+                return {
+                    slotId: slot._id,
+                    slotIndex: slot.slotIndex.toUpperCase(),
+                    isAvailable: unaskedQuestions.length > 0,
+                };
+            });
 
-                        return unaskedQuestions.length > 0;
-                    })
-                );
+            return {
+                employeeId: employee._id,
+                employeeName: employee.ename,
+                availableSlots: availableSlots.filter((slot) => slot.isAvailable), // Only send available slots
+            };
+        });
 
-                return isAvailable.every((status) => status)
-                    ? { label: slot.slotIndex.toUpperCase(), id: slot._id }
-                    : null;
-            })
-        );
-
-        // Remove null values from the final list of available slots
-        const filteredSlots = availableSlots.filter((slot) => slot !== null);
-
-        res.status(200).json({ availableSlots: filteredSlots });
+        res.status(200).json({ slotAvailability: slotAvailability }); // Send the array directly
     } catch (error) {
         console.error("Error fetching available slots:", error);
         res.status(500).json({ message: "Internal Server Error", error });
@@ -279,68 +427,263 @@ router.get("/available-slots", async (req, res) => {
 
 
 
-// Push questions to employees
+
+// Push questions to employees based on selected slots
+// router.post("/push-questions", async (req, res) => {
+//     const socketIO = req.io;
+//     console.log("Processing push-questions...");
+//     try {
+//         const { assignedSlots } = req.body; // Map of employeeId -> slotId
+//         if (!assignedSlots || Object.keys(assignedSlots).length === 0) {
+//             return res.status(400).json({ message: "No slots assigned." });
+//         }
+
+//         const employeeIds = Object.keys(assignedSlots); // Extract employee IDs
+//         const employees = await adminModel.find({ _id: { $in: employeeIds } }); // Fetch employees
+
+//         const updates = []; // Array to store save operations
+
+//         for (const employee of employees) {
+//             const slotId = assignedSlots[employee._id.toString()]; // Match slotId with employee
+//             if (!slotId) {
+//                 console.log(`No slotId assigned for employee: ${employee._id}`);
+//                 continue; // Skip this employee if no slot is assigned
+//             }
+
+//             const slot = await QuestionModel.findById(slotId); // Fetch slot data
+//             if (!slot) {
+//                 console.log(`Slot not found for slotId: ${slotId}`);
+//                 continue; // Skip if slot doesn't exist
+//             }
+
+//             const employeeData = await EmployeeQuestionModel.findOne({ empId: employee._id }); // Fetch employee data
+//             if (!employeeData) {
+//                 console.log(`No EmployeeQuestionModel found for employee: ${employee._id}`);
+//                 continue; // Skip if employee data is not found
+//             }
+
+//             // Extract asked questions for this slot
+//             const askedQuestions = employeeData.assignedQuestions
+//                 .filter((q) => q.slotId.toString() === slotId.toString())
+//                 .map((q) => q.questionId.toString());
+
+//             // Get unasked questions
+//             const unaskedQuestions = slot.questions
+//                 .map((q) => q._id.toString())
+//                 .filter((qId) => !askedQuestions.includes(qId));
+
+//             if (unaskedQuestions.length === 0) {
+//                 console.log(`No unasked questions available for employee: ${employee._id} in slot: ${slotId}`);
+//                 continue; // Skip if no new questions are available
+//             }
+
+//             // Assign the first unasked question
+//             const questionToAssign = unaskedQuestions[0];
+//             const questionDetails = slot.questions.find((q) => q._id.toString() === questionToAssign);
+
+//             // Add question to assignedQuestions
+//             employeeData.assignedQuestions.push({
+//                 slotIndex: slot.slotIndex,
+//                 slotId: slot._id,
+//                 questionId: questionToAssign,
+//                 question: questionDetails.question,
+//                 options: questionDetails.options,
+//                 correctOption: questionDetails.correctOption,
+//                 responses: questionDetails.responses,
+//                 dateAssigned: new Date(),
+//             });
+
+//             // Emit socket event for the employee
+//             socketIO.emit(`question_assigned_${employee.email}`, {
+//                 ename: employee.ename,
+//                 question: questionDetails.question,
+//                 options: questionDetails.options,
+//                 correctOption:questionDetails.correctOption,
+//                 responses:questionDetails.responses
+
+//             });
+
+//             updates.push(employeeData.save()); // Add save operation to updates
+//         }
+
+//         await Promise.all(updates); // Save all updates concurrently
+
+//         res.status(200).json({ message: "Questions successfully assigned to employees." });
+//     } catch (error) {
+//         console.error("Error assigning questions:", error);
+//         res.status(500).json({ message: "Internal Server Error", error });
+//     }
+// });
+
 router.post("/push-questions", async (req, res) => {
+    const socketIO = req.io;
+    console.log("Processing push-questions...");
     try {
-        const { slotId } = req.body;
-
-        if (!slotId) {
-            return res.status(400).json({ message: "Slot ID is required." });
+        const { assignedSlots } = req.body; // Map of employeeId -> slotId
+        if (!assignedSlots || Object.keys(assignedSlots).length === 0) {
+            return res.status(400).json({ message: "No slots assigned." });
         }
 
-        const slot = await QuestionModel.findById(slotId);
-        if (!slot) {
-            return res.status(404).json({ message: "Slot not found." });
-        }
+        const employeeIds = Object.keys(assignedSlots); // Extract employee IDs
+        const employees = await adminModel.find({ _id: { $in: employeeIds } }); // Fetch employees
 
-        const employees = await adminModel.find({});
-        const questionIds = slot.questions.map((q) => q._id.toString());
-
-        let allQuestionsAssigned = true;
+        const updates = []; // Array to store save operations
 
         for (const employee of employees) {
-            const employeeData = await EmployeeQuestionModel.findOne({ email: employee.email });
+            const slotId = assignedSlots[employee._id.toString()]; // Match slotId with employee
+            if (!slotId) {
+                console.log(`No slotId assigned for employee: ${employee._id}`);
+                continue; // Skip this employee if no slot is assigned
+            }
 
+            const slot = await QuestionModel.findById(slotId); // Fetch slot data
+            if (!slot) {
+                console.log(`Slot not found for slotId: ${slotId}`);
+                continue; // Skip if slot doesn't exist
+            }
+
+            const employeeData = await EmployeeQuestionModel.findOne({ empId: employee._id }); // Fetch employee data
+            if (!employeeData) {
+                console.log(`No EmployeeQuestionModel found for employee: ${employee._id}`);
+                continue; // Skip if employee data is not found
+            }
+
+            // Extract asked questions for this slot
             const askedQuestions = employeeData.assignedQuestions
                 .filter((q) => q.slotId.toString() === slotId.toString())
                 .map((q) => q.questionId.toString());
 
-            const unaskedQuestions = questionIds.filter(
-                (qId) => !askedQuestions.includes(qId)
-            );
+            // Get unasked questions
+            const unaskedQuestions = slot.questions
+                .map((q) => q._id.toString())
+                .filter((qId) => !askedQuestions.includes(qId));
 
             if (unaskedQuestions.length === 0) {
-                allQuestionsAssigned = false;
-                continue;
+                console.log(`No unasked questions available for employee: ${employee._id} in slot: ${slotId}`);
+                continue; // Skip if no new questions are available
             }
 
-            // Assign a new question to the employee
-            const questionToAssign = unaskedQuestions[0];
+            // Assign a random unasked question
+            const randomIndex = Math.floor(Math.random() * unaskedQuestions.length);
+            const questionToAssign = unaskedQuestions[randomIndex];
+            const questionDetails = slot.questions.find((q) => q._id.toString() === questionToAssign);
+
+            // Add question to assignedQuestions
             employeeData.assignedQuestions.push({
                 slotIndex: slot.slotIndex,
                 slotId: slot._id,
                 questionId: questionToAssign,
-                question: slot.questions.find((q) => q._id.toString() === questionToAssign).question,
-                options: slot.questions.find((q) => q._id.toString() === questionToAssign).options,
-                correctOption: slot.questions.find((q) => q._id.toString() === questionToAssign).correctOption,
-                responses: slot.questions.find((q) => q._id.toString() === questionToAssign).responses,
+                question: questionDetails.question,
+                options: questionDetails.options,
+                correctOption: questionDetails.correctOption,
+                responses: questionDetails.responses,
                 dateAssigned: new Date(),
             });
 
-            await employeeData.save();
-        }
-
-        if (!allQuestionsAssigned) {
-            return res.status(400).json({
-                message:
-                    "Some employees have exhausted all questions in this slot. Slot is no longer available.",
+            socketIO.emit(`question_assigned`, {
+                id: employee._id, // Unique employee ID
+                ename: employee.ename, // Employee name
+                data: {
+                    questionId: questionToAssign,
+                    question: questionDetails.question, // Question text
+                    options: questionDetails.options, // Question options
+                    correctOption: questionDetails.correctOption, // Correct answer
+                    responses: questionDetails.responses, // Any additional responses
+                },
             });
+
+            updates.push(employeeData.save()); // Add save operation to updates
         }
 
-        res.status(200).json({ message: "Questions successfully pushed to employees." });
+        await Promise.all(updates); // Save all updates concurrently
+
+        res.status(200).json({ message: "Questions successfully assigned to employees." });
     } catch (error) {
-        console.error("Error pushing questions:", error);
+        console.error("Error assigning questions:", error);
         res.status(500).json({ message: "Internal Server Error", error });
+    }
+});
+
+router.post("/submit-answer", async (req, res) => {
+    try {
+        const { empId, questionId, selectedAnswer } = req.body;
+        console.log(req.body)
+
+        if (!empId || !questionId || !selectedAnswer) {
+            return res.status(400).json({ message: "Invalid data provided." });
+        }
+
+        // Find the employee document
+        const employee = await EmployeeQuestionModel.findOne({ empId });
+
+        if (!employee) {
+            return res.status(404).json({ message: "Employee not found." });
+        }
+
+        // Locate the specific question within the assignedQuestions array
+        const assignedQuestion = employee.assignedQuestions.find(
+            (q) => q.questionId.toString() === questionId
+        );
+
+        if (!assignedQuestion) {
+            return res.status(404).json({ message: "Question not found for this employee." });
+        }
+
+        // Update the answer and check correctness
+        assignedQuestion.answerGiven = selectedAnswer;
+        assignedQuestion.isCorrect = assignedQuestion.correctOption === selectedAnswer;
+
+        // Save the updated employee document
+        await employee.save();
+
+        // Return feedback response
+        return res.status(200).json({
+            isCorrect: assignedQuestion.isCorrect,
+            response: assignedQuestion.isCorrect
+                ? assignedQuestion.responses.right || "Correct Answer!"
+                : assignedQuestion.responses.wrong || "Wrong Answer. Try Again!",
+        });
+    } catch (error) {
+        console.error("Error submitting answer:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+// GET: Fetch responses for a specific question
+router.get("/question-responses/:questionId", async (req, res) => {
+    const { questionId } = req.params;
+
+    try {
+        // Fetch employees who answered the specific question
+        const employeesWithAnswers = await EmployeeQuestionModel.find({
+            "assignedQuestions.questionId": questionId,
+        }).select("name assignedQuestions");
+
+        // Process data to filter relevant question responses
+        const responseList = [];
+        employeesWithAnswers.forEach((employee) => {
+            const question = employee.assignedQuestions.find(
+                (q) => q.questionId.toString() === questionId
+            );
+            if (question) {
+                responseList.push({
+                    employeeName: employee.name,
+                    answerGiven: question.answerGiven || "No Answer",
+                    dateAnswered: question.dateAssigned,
+                    isCorrect:question.isCorrect
+                });
+            }
+        });
+
+        // Send response
+        if (responseList.length > 0) {
+            res.status(200).json(responseList);
+        } else {
+            res.status(200).json([]); // No responses found
+        }
+    } catch (error) {
+        console.error("Error fetching question responses:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 

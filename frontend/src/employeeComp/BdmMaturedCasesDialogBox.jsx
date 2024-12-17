@@ -221,7 +221,6 @@ function BdmMaturedCasesDialogBox({
 
                 <DialogContent>
                     <div className='table table-responsive table-style-2 m-0'>
-
                         <table className="table">
                             {/* Render the table header regardless of loading or data state */}
                             <thead>
