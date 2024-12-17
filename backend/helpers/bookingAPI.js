@@ -1532,7 +1532,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
     const companyName = req.params.CompanyName;
     const newTempDate = new Date();
     const newData = req.body;
-
+    console.log("newData", newData)
 
     const Step = req.params.step;
     if (Step === "step2") {
@@ -3726,12 +3726,14 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
             },
           },
         };
-        const clientMail = newData.caCase == "No" ?
-          newData["Company Email"] : ""
+        const clientMail = newData.caCase == "Yes" ?
+          newData.caEmail :
+          newData["Company Email"]
+        console.log(newData.caCase, clientMail, isAdmin)
         const mainClientMail = isAdmin ?
           ["nimesh@incscale.in", "bookings@startupsahay.com"] :
           [clientMail, "admin@startupsahay.com"]
-        console.log("mainClientMail", mainClientMail)
+        console.log("mainclientmailformorebooking", mainClientMail)
         const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/customer/login" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
               <ol>
                   <li> You will be prompted to enter the registered email ID you provided to Start-Up Sahay (the same email ID on which this email was sent).
@@ -3740,84 +3742,52 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
               </ol>
           <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
 
-        pdf
-          .create(filledHtml, options)
-          .toFile(pdfFilePath, async (err, response) => {
-            if (err) {
-              console.error("Error generating PDF:", err);
-              res.status(500).send("Error generating PDF");
-            } else {
-              try {
-                setTimeout(() => {
-                  const mainBuffer = fs.readFileSync(pdfFilePath);
-                  sendMail2(
-                    mainClientMail,
-                    `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
-                    ``,
-                    `
-                        <div class="container">
-      
-                          <p>Dear ${newData["Company Name"]},</p>
-                          <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
-                          <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
-                          <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement. Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                          <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
-                          <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
-                         ${draftHtml}
-                          <p>If you face any problem in opening the form link or filling out the form, please get in touch with Nishtha Sharma - Relationship Manager at +919998992601.</p>
-                          
-                          
-                          <div class="signature">
-                              <div>Best regards,</div>
-                              <div>${mailName} – Relationship Manager</div>
-                              <div> ${mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601"}</div>
-                              <div>Start-Up Sahay Private Limited</div>
-                          </div>
-                      </div>
-                    `,
-                    mainBuffer
-                  );
-                }, 4000);
-              } catch (emailError) {
-                console.error("Error sending email:", emailError);
-                res.status(500).send("Error sending email with PDF attachment");
-              }
-            }
-          });
-        const options2 = {
-          format: "A4", // Set the page format to A4 size
-          orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
-          border: "10mm", // Set the page border size (e.g., 10mm)
-          header: {
-            height: "70px",
-            contents: ``, // Customize the header content
-          },
-          paginationOffset: 1,       // Override the initial pagination number
-          "footer": {
-            "height": "100px",
-            "contents": {
-              first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/1</p></div>`,
-            }
-          },
-          childProcessOptions: {
-            env: {
-              OPENSSL_CONF: "./dev/null",
-            },
-          },
-        };
+
+        // const options2 = {
+        //   format: "A4", // Set the page format to A4 size
+        //   orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
+        //   border: "10mm", // Set the page border size (e.g., 10mm)
+        //   header: {
+        //     height: "70px",
+        //     contents: ``, // Customize the header content
+        //   },
+        //   paginationOffset: 1,       // Override the initial pagination number
+        //   "footer": {
+        //     "height": "100px",
+        //     "contents": {
+        //       first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/1</p></div>`,
+        //     }
+        //   },
+        //   childProcessOptions: {
+        //     env: {
+        //       OPENSSL_CONF: "./dev/null",
+        //     },
+        //   },
+        // };
         if (newData.caCase === "Yes" && newData.services.some((service) => service.serviceName === "Seed Funding Support")) {
           const currentDate = new Date();
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
           const caHtml = fs.readFileSync("./helpers/caHtml.html", "utf-8")
             .replace("{{Company Name}}", newData["Company Name"])
-            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Services}}", serviceList)
+            .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
+            .replace("{{page-display}}", newPageDisplay)
+            .replace("{{pagination}}", pagination)
+            .replace("{{Authorized-Person}}", mailName)
+            .replace("{{Authorized-Number}}", AuthorizedNumber)
+            .replace("{{Authorized-Email}}", AuthorizedEmail)
+            .replace("{{Main-page}}", mainPage)
+            .replace("{{Total-Payment}}", totalPaymentHtml)
+            .replace("{{Service-Details}}", paymentDetails)
+            .replace("{{Third-Page}}", thirdPage)
+            .replace("{{Company Number}}", newData["Company Number"])
+            .replace("{{Conditional}}", conditional)
+            .replace("{{Company Email}}", newData["Company Email"])
             .replace("{{todaysDate}}", todaysDate)
-          // console.log("caHtml", caHtml)
-          // Adjust other replacements as needed
-
+            .replace("{{Company Name}}", newData["Company Name"])
           const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
           pdf
-            .create(caHtml, options2)
+            .create(caHtml, options)
             .toFile(caFilePath, async (err, response) => {
               if (err) {
                 console.error("Error generating PDF:", err);
@@ -3827,7 +3797,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                   setTimeout(() => {
                     const caBuffer = fs.readFileSync(caFilePath);
                     sendMail2(
-                      [newData.caEmail],
+                      mainClientMail,
                       `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                       ``,
                       `
@@ -3864,6 +3834,51 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                   </div>
                 `,
                       caBuffer
+                    );
+                  }, 4000);
+                } catch (emailError) {
+                  console.error("Error sending email:", emailError);
+                  res.status(500).send("Error sending email with PDF attachment");
+                }
+              }
+            });
+        } else {
+          pdf
+            .create(filledHtml, options)
+            .toFile(pdfFilePath, async (err, response) => {
+              if (err) {
+                console.error("Error generating PDF:", err);
+                res.status(500).send("Error generating PDF");
+              } else {
+                try {
+                  setTimeout(() => {
+                    const mainBuffer = fs.readFileSync(pdfFilePath);
+                    sendMail2(
+                      mainClientMail,
+                      `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+                      ``,
+                      `
+                        <div class="container">
+      
+                          <p>Dear ${newData["Company Name"]},</p>
+                          <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
+                          <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
+                          <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement. Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                          <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
+                          <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
+                         ${draftHtml}
+                          <p>If you face any problem in opening the form link or filling out the form, please get in touch with Nishtha Sharma - Relationship Manager at +919998992601.</p>
+                          
+                          
+                          <div class="signature">
+                              <div>Best regards,</div>
+                              <div>${mailName} – Relationship Manager</div>
+                              <div> ${mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601"}</div>
+                              <div>Start-Up Sahay Private Limited</div>
+                          </div>
+                      </div>
+                    `,
+                      mainBuffer
                     );
                   }, 4000);
                 } catch (emailError) {
@@ -5868,12 +5883,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             </div>
             <div class="Declaration_text">
               ${serviceKawali}
-               
               ${additionalParagraph}
-             
             </div>
-         
-            
           </section>
         
         </div>
@@ -6341,84 +6352,30 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
     const mainClientMail = isAdmin ? ["nimesh@incscale.in", "bookings@startupsahay.com"] :
       [clientMail, "admin@startupsahay.com"]
     console.log("mainClientMail", mainClientMail)
-    pdf
-      .create(filledHtml, options)
-      .toFile(pdfFilePath, async (err, response) => {
-        if (err) {
-          console.error("Error generating PDF:", err);
-          res.status(500).send("Error generating PDF");
-        } else {
-          try {
-            setTimeout(() => {
-              const mainBuffer = fs.readFileSync(pdfFilePath);
-              sendMail2(
-                mainClientMail,
-                `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
-                ``,
-                `
-                  <div class="container">
-
-                    <p>Dear ${newData["Company Name"]},</p>
-                    <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
-                    <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
-                    <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement. Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                    <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
-                    <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
-                    ${draftHtml}
-                    <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
-                    
-                    <div class="signature">
-                        <div>Best regards,</div>
-                        <div>${mailName} - Relationship Manager</div>
-                        <div> ${mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601"}</div>
-                        <div>Start-Up Sahay Private Limited</div>
-                    </div>
-                </div>
-              `,
-                mainBuffer
-              );
-            }, 4000);
-          } catch (emailError) {
-            console.error("Error sending email:", emailError);
-            res.status(500).send("Error sending email with PDF attachment");
-          }
-        }
-      });
-
-    const options2 = {
-      format: "A4", // Set the page format to A4 size
-      orientation: "portrait", // Set the page orientation to portrait (or landscape if needed)
-      border: "10mm", // Set the page border size (e.g., 10mm)
-      header: {
-        height: "70px",
-        contents: ``, // Customize the header content
-      },
-      paginationOffset: 1,       // Override the initial pagination number
-      "footer": {
-        "height": "100px",
-        "contents": {
-          first: `<div><p> Signature:__________________________________</p><p style="text-align: center;">Page 1/1</p></div>`,
-        }
-      },
-      childProcessOptions: {
-        env: {
-          OPENSSL_CONF: "./dev/null",
-        },
-      },
-    };
     if (newData.caCase === "Yes" && newData.services.some((service) => service.serviceName === "Seed Funding Support")) {
       const currentDate = new Date();
       const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
       const caHtml = fs.readFileSync("./helpers/caHtml.html", "utf-8")
         .replace("{{Company Name}}", newData["Company Name"])
-        .replace("{{Company Name}}", newData["Company Name"])
+        .replace("{{Services}}", serviceList)
+        .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
+        .replace("{{page-display}}", newPageDisplay)
+        .replace("{{pagination}}", pagination)
+        .replace("{{Authorized-Person}}", mailName)
+        .replace("{{Authorized-Number}}", AuthorizedNumber)
+        .replace("{{Authorized-Email}}", AuthorizedEmail)
+        .replace("{{Main-page}}", mainPage)
+        .replace("{{Total-Payment}}", totalPaymentHtml)
+        .replace("{{Service-Details}}", paymentDetails)
+        .replace("{{Third-Page}}", thirdPage)
+        .replace("{{Company Number}}", newData["Company Number"])
+        .replace("{{Conditional}}", conditional)
+        .replace("{{Company Email}}", newData["Company Email"])
         .replace("{{todaysDate}}", todaysDate)
-      // console.log("caHtml", caHtml)
-      // Adjust other replacements as needed
-
+        .replace("{{Company Name}}", newData["Company Name"])
       const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
       pdf
-        .create(caHtml, options2)
+        .create(caHtml, options)
         .toFile(caFilePath, async (err, response) => {
           if (err) {
             console.error("Error generating PDF:", err);
@@ -6428,7 +6385,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
               setTimeout(() => {
                 const caBuffer = fs.readFileSync(caFilePath);
                 sendMail2(
-                  [newData.caEmail],
+                  mainClientMail,
                   `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                   ``,
                   `
@@ -6465,6 +6422,51 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
               </div>
             `,
                   caBuffer
+                );
+              }, 4000);
+            } catch (emailError) {
+              console.error("Error sending email:", emailError);
+              res.status(500).send("Error sending email with PDF attachment");
+            }
+          }
+        });
+    } else {
+      pdf
+        .create(filledHtml, options)
+        .toFile(pdfFilePath, async (err, response) => {
+          if (err) {
+            console.error("Error generating PDF:", err);
+            res.status(500).send("Error generating PDF");
+          } else {
+            try {
+              setTimeout(() => {
+                const mainBuffer = fs.readFileSync(pdfFilePath);
+                sendMail2(
+                  mainClientMail,
+                  `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+                  ``,
+                  `
+                    <div class="container">
+  
+                      <p>Dear ${newData["Company Name"]},</p>
+                      <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
+                      <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
+                      <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement. Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                      <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
+                      <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
+                     ${draftHtml}
+                      <p>If you face any problem in opening the form link or filling out the form, please get in touch with Nishtha Sharma - Relationship Manager at +919998992601.</p>
+                      
+                      
+                      <div class="signature">
+                          <div>Best regards,</div>
+                          <div>${mailName} – Relationship Manager</div>
+                          <div> ${mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601"}</div>
+                          <div>Start-Up Sahay Private Limited</div>
+                      </div>
+                  </div>
+                `,
+                  mainBuffer
                 );
               }, 4000);
             } catch (emailError) {
