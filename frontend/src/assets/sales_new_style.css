@@ -616,13 +616,345 @@
 .admin-dash-card
 {
     width: 100%;
-    height: 350px;
     background: #fff;
     border-radius: 30px;
     box-shadow: 1px 1px 14px -10px #ccc;
+    overflow: hidden;
+}
+.admin-dash-card-head
+{
+    padding: 12px 20px;
+}
+.adch-name
+{
+    font-size: 16px;
+    font-weight: 500;
+    color: #373147;
+
+}
+.S-admin-dashboard .dash-select-filter .my-filter-select {
+    font-size: 12px;
+    padding: 3px 3px 3px 10px;
+    border-radius: 22px !important;
+    width: 104px;
+    margin-top: 4px;
+    background-position: right 7px center;
+    background-size: 8px 11px;
+    background-color: #FFF7E5;
+    border: none !important;
+    color: #ffb900;
+}
+.admin-dash-card-body
+{
+    padding: 0px 20px;
+}
+.sadmin-inner-card
+{
+  border: 1px solid #eee;
+  border-radius: 15px;
+  background: #f9f9f9;
+}
+.sadmin-innercard-head
+{
+  padding: 10px 10px 10px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.sadmin-innercard-head p
+{
+    color: #898e94;
+}
+.sadmin-innercard-body
+{
+  padding: 0px 10px 10px 10px;
+  font-size: 18px;
+  font-weight: 500;
+} 
+.sa_inCard_icon
+{
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 100px;
+    font-size: 20px;
+    border: 1px solid #eee;
+}
+.admin-total-bkng-card
+{
+    width: 100%;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 1px 1px 14px -10px #ccc;
+    padding: 6px 0px;
+    border-bottom: 1px solid #eee;
+}
+.admin-total-bkng-card-icon
+{
+    font-size: 16px;
+    line-height: 15px;
+}
+.admin-total-bkng-card-text
+{
+    color: #898e94;
+    font-weight: 500;
+    font-size: 12px;
+    margin-left: 5px;
+}
+.admin-total-bkng-card-data
+{
+    font-size: 18px;
+    font-weight: 500;
+}
+.admin-total-bkng-card:last-child
+{
+    border-bottom: none;
+}
+.admin-dashbanknameh p
+{
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color:#ccc
+}
+.admin-dashbankrevenueh p
+{
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color:#ccc
+}
+.Sadmin_bank_dtl_card
+{
+    margin: 2px 0;
+    padding: 10px 15px;
+    background: #f6f6f6;
+    border-radius: 50px;
+}
+.bankicon
+{
+    width: 16px;
+    line-height: 10px;
+}
+.bankname
+{
+    font-size: 12px;
+    font-weight: 500;
+    color: #43474c; 
+    margin-left: 10px;
+}
+.bankmoney
+{
+    font-weight: 500;
+    color: #5a5a5a;
+}
+.admin-dash-card-footer
+{
+    padding: 10px 20px;
+    border-top: 1px solid #f6ecd6;
+    background: #fff;
+}
+.grand_ttl
+{
+    width: 100%;
+    padding: 0 10px;
+}
+.grand_ttl_text
+{
+    font-size: 13px;
+    font-weight: 500;
+}
+.grand_ttl_no
+{
+    font-size: 16px;
+    font-weight: bold;
+    color: #FF9800;
+}
+/**************************************************************/
+
+
+.Chat_sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 99999;
+    top: 0;
+    right: 0;
+    transition: 0.5s;
+}
+.Chat-sideinner
+{
+    height: calc(100vh - 130px);
+    margin-top: 130px;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid #dadfe5;
+    border-top: 1px solid #dadfe5;
+    box-shadow: -5px -2px 16px -7px #ccc;
+    background: rgb(255 255 255 / 50%);
+    border-radius: 18px 0 0 0;
+}  
+.Chatbutton
+{
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100px;
+    background-color: #FF9800;
+    color: #fff;
+    font-size: 20px;
+    position: absolute;
+    left: -60px;
+    bottom: 20px;
+    box-shadow: 1px 1px 6px 1px #ccc;
+}
+.Chat-sideinner-head
+{
+    padding: 10px 15px 10px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+}
+.Chat-sideinner-footer
+{
+    border-top: 1px solid #eee;
+}
+.notfctn_no
+{   
+    background: #F44336;
+    color: #fff;
+    font-size: 8px;
+    margin-left: 5px;
+    padding: 1px 4px;
+    border-radius: 10px;
+}
+.side-chat-screen
+{
+    height: calc((100vh - 112px) - 149px);
+    overflow: auto;
+    padding: 15px;
+}
+.chat-profile-icon
+{
+    height: 30px;
+    margin-right: 12px;
+    width: 30px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(204, 204, 204);
+    border-image: initial;
+    border-radius: 100px;
+    position: relative;
+}
+.chat-profile-icon img
+{
+    color: rgba(0, 0, 0, 0);
+    height: 100%;
+    object-fit: contain;
+    object-position: center top;
+    text-indent: 10000px;
+    transform: scale(1.2);
+    transform-origin: center center;
+    width: 100%;
+    background: rgb(189, 189, 189);
+    border-radius: 20px;
+    transition: 0.5s;
+}
+.chat-profile-icon .on
+{
+    position: absolute;
+    bottom: -1px;
+    background-color: #00c600;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    right: -5px;
+}
+.chat-details
+{
+    width: calc(100% - 42px);
+}
+.chat-details-head-name
+{
+    line-height: 14px;
+}
+.chat-details-head-name p
+{
+    font-size: 12px;
+}
+.chat-details-head-name label
+{
+    font-size: 10px;
+    font-weight: 500;
+    color: #5a5a5a;
+}
+.chat-details-head-time
+{
+    font-size: 10px;
+    font-weight: 500;
+    color: #959595;
+}
+.chat-details-body
+{
+    font-size: 12px;
+    border-radius: 0px 15px 15px 15px;
+    padding: 10px 15px;
+    margin: 10px 0;
+    color: #767481;
+    box-shadow: 2px 2px 16px -4px #ccc;
+    backdrop-filter: blur(20px);
+    background: rgb(255 255 255 / 79%);
+}
+.chat-details-body p
+{
+    margin: 0px;
+}
+.chat-item
+{
+    border-bottom: 1px solid #eee;
+    padding: 8px 0 6px 0;
+}
+.chat-item:first-child
+{
+    padding: 0 0 6px 0;
+}
+.chat-item:last-child
+{
+    border-bottom:none
+}
+.chattextbox
+{
+    width: calc(100% - 50px);
+}
+.chattextbox input
+{
+    border: none;
+    height: 100%;
+    width: 100%;
+    padding: 4px 15px;
+}
+.chatsendbtn button
+{
+    border: none;
+    width: 50px;
+    height: 50px;
+    background: #FFC107;
+    color: #fff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* -----------question dialog------------ */
+
+
+
+
+
+
 .new_question_dailog_title{
     font-size: 13px; 
     color: #818080;
