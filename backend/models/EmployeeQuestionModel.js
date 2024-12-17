@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { options } = require("../helpers/questionsAPI");
 
 const employeeQuestionSchema = new mongoose.Schema({
     name: { type: String, required: true }, // Employee Name
