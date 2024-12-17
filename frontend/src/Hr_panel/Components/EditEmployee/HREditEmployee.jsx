@@ -178,6 +178,7 @@ export default function HREditEmployee() {
       // "Sales Manager",
       "Team Leader",
       "Floor Manager",
+      "Vice President"
     ],
     Others: ["Receptionist"],
   };
@@ -220,12 +221,33 @@ export default function HREditEmployee() {
 
   const renderManagerOptions = () => {
     const managers = departmentManagers[employeementInfo.department] || [];
+
+    // Special case for "Sales" department with "Vice President" designation
+    if (employeementInfo.department === "Sales" && employeementInfo.designation === "Vice President") {
+        return ["Mr. Ronak Kumar", "Mr. Krunal Pithadia", "Mr. Saurav Mevada"].map((manager, index) => (
+            <option key={index} value={manager}>
+                {manager}
+            </option>
+        ));
+    }
+
+    // Default case for other designations or departments
     return managers.map((manager, index) => (
-      <option key={index} value={manager}>
-        {manager}
-      </option>
+        <option key={index} value={manager}>
+            {manager}
+        </option>
     ));
-  };
+};
+
+
+  // const renderManagerOptions = () => {
+  //   const managers = departmentManagers[employeementInfo.department] || [];
+  //   return managers.map((manager, index) => (
+  //     <option key={index} value={manager}>
+  //       {manager}
+  //     </option>
+  //   ));
+  // };
 
   const [employeementInfo, setEmployeementInfo] = useState({
     employeeID: "",
