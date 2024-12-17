@@ -250,7 +250,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
 
     const renderManagerOptions = () => {
         const managers = departmentManagers[department] || [];
-    
+
         // Special case for "Sales" department with "Vice President" designation
         if (department === "Sales" && newDesignation === "Vice President") {
             return ["Mr. Ronak Kumar", "Mr. Krunal Pithadia", "Mr. Saurav Mevada"].map((manager, index) => (
@@ -259,7 +259,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                 </option>
             ));
         }
-    
+
         // Default case for other designations or departments
         return managers.map((manager, index) => (
             <option key={index} value={manager}>
@@ -513,14 +513,14 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
             });
             return;
         }
-    
+
         const reader = new FileReader();
         reader.onload = async (e) => {
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
             const sheetName = workbook.SheetNames[0];
             const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-    
+
             const employeesData = sheetData.map((row) => {
                 const generatedPassword = generateRandomPassword(row["First Name"]);
                 let designation;
@@ -559,20 +559,20 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager" || row["Designation"] === "Business Development Executive" ? true : false,
                 };
             });
-    
+
             const validEmployees = [];
             const invalidRows = [];
             let errorMessages = "";
-    
+
             employeesData.forEach((employee, index) => {
                 const department = employee.department;
                 const newDesignation = employee.newDesignation;
                 const manager = employee.reportingManager;
-    
+
                 if (departmentValidation[department]) {
                     const validDesignations = departmentValidation[department].designations;
                     const validManagers = departmentValidation[department].managers;
-    
+
                     if (department === "Sales" && newDesignation === "Vice President") {
                         if (!["Mr. Ronak Kumar", "Mr. Krunal Pithadia", "Mr. Saurav Mevada"].includes(manager)) {
                             invalidRows.push(index + 2);
@@ -585,7 +585,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                             errorMessages += `Row ${index + 2}: Invalid Designation "${newDesignation}" for Department "${department}".<br>`;
                             return;
                         }
-    
+
                         if (!validManagers.includes(manager)) {
                             invalidRows.push(index + 2);
                             errorMessages += `Row ${index + 2}: Invalid Manager "${manager}" for Department "${department}".<br>`;
@@ -599,7 +599,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     errorMessages += `Row ${index + 2}: Unknown Department "${department}".<br>`;
                 }
             });
-    
+
             if (invalidRows.length > 0) {
                 Swal.fire({
                     icon: 'warning',
@@ -607,13 +607,13 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     html: errorMessages,
                 });
             }
-    
+
             // Process only valid rows
             if (validEmployees.length > 0) {
                 try {
                     setOpenBacdrop(true);
                     const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData: validEmployees });
-    
+
                     if (response.status === 200) {
                         Swal.fire({
                             title: 'Employees Added!',
@@ -634,10 +634,10 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                 }
             }
         };
-    
+
         reader.readAsArrayBuffer(uploadedFile);
     };
-    
+
 
 
 
@@ -701,10 +701,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                                 </div>
                             </div>
                         </div>
-
                         {/* Modal Body */}
-
-
                         <div className="modal-body">
                             {isAddSingleEmployee ? (
                                 <>
@@ -785,7 +782,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                                                 <option value="Select Department" selected> Select Gender</option>
                                                 <option value="Male">Male</option>
                                                 <option value="Female">Female</option>
-                                               
+
                                             </select>
                                             {errors.gender && <p style={{ color: 'red' }}>{errors.gender}</p>}
                                         </div>

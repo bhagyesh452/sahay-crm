@@ -173,18 +173,6 @@ function AdminUploadQuestions() {
                                         Push Question
                                     </button>
                                 </div>
-                                <SlotSelectionDialog
-                                    open={slotDialogOpen}
-                                    onClose={() => setSlotDialogOpen(false)}
-                                    completeData={availableSlots}
-                                    onSelectSlot={(slotId) => {
-                                        setSelectedSlot(slotId);
-                                    }}
-                                    selectedSlotId={selectedSlot}
-                                    availableSlots={availableSlots}
-                                    setSelectedSlotId={setSelectedSlot}
-                                    fetchAvailableSlots={fetchAvailableSlots}
-                                />
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" className="btn action-btn-primary" onClick={handleDialogToggle}>
                                         Add Question
@@ -323,6 +311,20 @@ function AdminUploadQuestions() {
                     </div>
                 </div>
             </div>
+
+            {/* ===============dialog to select slot====================== */}
+            <SlotSelectionDialog
+                open={slotDialogOpen}
+                onClose={() => setSlotDialogOpen(false)}
+                completeData={availableSlots}
+                onSelectSlot={(slotId) => {
+                    setSelectedSlot(slotId);
+                }}
+                selectedSlotId={selectedSlot}
+                availableSlots={availableSlots}
+                setSelectedSlotId={setSelectedSlot}
+                fetchAvailableSlots={fetchAvailableSlots}
+            />
             {
                 dialogOpen && (
                     <QuestionUploadDialog
@@ -332,10 +334,10 @@ function AdminUploadQuestions() {
                     />
                 )
             }
+            {/* =============dialog which is shown to employee================= */}
             <EmployeeQuestionModal
                 modalId={modalId}
             />
-
             {/* Popup to Show Question Details */}
             <Dialog open={employeeAnsDialog} onClose={() => setEmployeeAnsDialog(false)} maxWidth="sm" fullWidth className="MY_MAT_DIALOG">
                 <DialogTitle>
