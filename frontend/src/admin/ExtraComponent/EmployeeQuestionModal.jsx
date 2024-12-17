@@ -111,7 +111,11 @@ useEffect(() => {
     return (
         <AnimatePresence>
             {open && !showFeedbackDialog && (
-                <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+                <Dialog open={open} maxWidth="sm" fullWidth className="question-model" onClose={(event, reason) => {
+                                        if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+                                            onClose(); // Only allow manual calls to close the dialog
+                                        }
+                                        }}>
                     <DialogContent style={{ padding: 0 }}>
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
@@ -122,10 +126,10 @@ useEffect(() => {
                         >
                             <div className="modal-body">
                                 <div className="que-main">
-                                    <div className="question-number">Q</div>
+                                    <div className="question-number">Question</div>
                                     <div className="question-text">{questionData?.question}</div>
                                 </div>
-                                <div className="row opt-row" style={{ marginTop: "60px" }}>
+                                <div className="row opt-row" style={{ marginTop: "16px" }}>
                                     {questionData?.options?.map((option, index) => (
                                         <div className="col-6 mt-5" key={index}>
                                             <motion.div
