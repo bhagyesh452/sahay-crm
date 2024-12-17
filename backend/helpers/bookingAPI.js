@@ -1532,7 +1532,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
     const companyName = req.params.CompanyName;
     const newTempDate = new Date();
     const newData = req.body;
-    console.log("newData", newData)
+    // console.log("newData", newData)
 
     const Step = req.params.step;
     if (Step === "step2") {
@@ -3769,6 +3769,11 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
           const caHtml = fs.readFileSync("./helpers/caHtml.html", "utf-8")
             .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Services}}", serviceList)
             .replace("{{Services}}", serviceList)
             .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
             .replace("{{page-display}}", newPageDisplay)
@@ -3783,8 +3788,9 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
             .replace("{{Company Number}}", newData["Company Number"])
             .replace("{{Conditional}}", conditional)
             .replace("{{Company Email}}", newData["Company Email"])
-            .replace("{{todaysDate}}", todaysDate)
             .replace("{{Company Name}}", newData["Company Name"])
+            .replace("{{Company Name}}", newData["Company Name"])
+            console.log("cahtml" , caHtml)
           const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
           pdf
             .create(caHtml, options)
@@ -6270,8 +6276,6 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
       .replace("{{Company Number}}", newData["Company Number"])
       .replace("{{Conditional}}", conditional)
       .replace("{{Company Email}}", newData["Company Email"]);
-
-
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
     const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
@@ -6347,32 +6351,41 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
     </ol>
     <p>If you face any problem in opening the form link or filling out the form, please get in touch with Nishtha Sharma - Relationship Manager at +919998992601.</p>` : ``;
 
-    const clientMail = newData.caCase === "No" ? newData["Company Email"] : ""
-    //console.log(clientMail)
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in", "bookings@startupsahay.com"] :
+    const clientMail = newData.caCase == "Yes" ?
+      newData.caEmail :
+      newData["Company Email"]
+    console.log(newData.caCase, clientMail, isAdmin)
+    const mainClientMail = isAdmin ?
+      ["nimesh@incscale.in", "bookings@startupsahay.com"] :
       [clientMail, "admin@startupsahay.com"]
-    console.log("mainClientMail", mainClientMail)
+    console.log("mainclientmailformainbooking", mainClientMail)
     if (newData.caCase === "Yes" && newData.services.some((service) => service.serviceName === "Seed Funding Support")) {
       const currentDate = new Date();
       const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
       const caHtml = fs.readFileSync("./helpers/caHtml.html", "utf-8")
-        .replace("{{Company Name}}", newData["Company Name"])
-        .replace("{{Services}}", serviceList)
-        .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
-        .replace("{{page-display}}", newPageDisplay)
-        .replace("{{pagination}}", pagination)
-        .replace("{{Authorized-Person}}", mailName)
-        .replace("{{Authorized-Number}}", AuthorizedNumber)
-        .replace("{{Authorized-Email}}", AuthorizedEmail)
-        .replace("{{Main-page}}", mainPage)
-        .replace("{{Total-Payment}}", totalPaymentHtml)
-        .replace("{{Service-Details}}", paymentDetails)
-        .replace("{{Third-Page}}", thirdPage)
-        .replace("{{Company Number}}", newData["Company Number"])
-        .replace("{{Conditional}}", conditional)
-        .replace("{{Company Email}}", newData["Company Email"])
-        .replace("{{todaysDate}}", todaysDate)
-        .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Services}}", serviceList)
+      .replace("{{Services}}", serviceList)
+      .replace("{{Seed-Conditional-Page}}", seedConditionalPage)
+      .replace("{{page-display}}", newPageDisplay)
+      .replace("{{pagination}}", pagination)
+      .replace("{{Authorized-Person}}", mailName)
+      .replace("{{Authorized-Number}}", AuthorizedNumber)
+      .replace("{{Authorized-Email}}", AuthorizedEmail)
+      .replace("{{Main-page}}", mainPage)
+      .replace("{{Total-Payment}}", totalPaymentHtml)
+      .replace("{{Service-Details}}", paymentDetails)
+      .replace("{{Third-Page}}", thirdPage)
+      .replace("{{Company Number}}", newData["Company Number"])
+      .replace("{{Conditional}}", conditional)
+      .replace("{{Company Email}}", newData["Company Email"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+        console.log("cahtml" , caHtml)
       const caFilePath = `./GeneratedDocs/CA/${newData["Company Name"]}.pdf`;
       pdf
         .create(caHtml, options)

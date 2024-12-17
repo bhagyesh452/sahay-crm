@@ -138,7 +138,7 @@ function SlotSelectionDialog({ open, onClose, availableSlots, fetchAvailableSlot
                                                     color="primary"
                                                 />
                                             }
-                                            label="Select All"
+                                            // label="Select All"
                                         />
                                     </TableCell>
                                     <TableCell>Sr. No.</TableCell>
