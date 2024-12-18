@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent , Button } from "@mui/material";
+import { Dialog, DialogContent, Button } from "@mui/material";
 import axios from "axios";
 import success from "../../assets/media/success.mp3";
 import failure from "../../assets/media/failure.mp3";
@@ -174,12 +174,16 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                                     {feedbackType === "correct" ? "🎉 Correct!" : "❌ Wrong!"}
                                 </div>
                                 <div className="question-text-correct">{feedback}</div>
-                                <Button color="primary" variant="contained"
+                                <button className="btn"
+                                    style={{
+                                        backgroundColor:"#7258d1",
+                                        color:"white"
+                                    }}
                                     onClick={() => {
                                         setShowFeedbackDialog(false);
                                         onClose();
                                         localStorage.removeItem("currentQuestion");
-                                    }}>Close</Button>
+                                    }}>Close</button>
                             </div>
                         </motion.div>
                     </DialogContent>
