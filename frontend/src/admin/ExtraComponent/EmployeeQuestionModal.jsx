@@ -149,7 +149,7 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
             )}
 
             {showFeedbackDialog && (
-                <Dialog open={showFeedbackDialog} onClose={onClose} maxWidth="sm" fullWidth>
+                <Dialog open={showFeedbackDialog} onClose={onClose} maxWidth="sm" fullWidth className="queResposepopup">
                     <DialogContent style={{ padding: 0 }}>
                         <motion.div
                             initial={{ scale: 0.5, opacity: 0 }}
@@ -170,14 +170,16 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                             }}
                         >
                             <div className="que-main">
-                                <div className="question-number-correct">
+                                <div className="question-number">
                                     {feedbackType === "correct" ? "🎉 Correct!" : "❌ Wrong!"}
                                 </div>
-                                <div className="question-text-correct">{feedback}</div>
+                                <div className="question-text">{feedback}</div>
                                 <button className="btn"
                                     style={{
                                         backgroundColor:"#7258d1",
-                                        color:"white"
+                                        color:"white",
+                                        border:"none",
+                                        rotate:"-1deg"
                                     }}
                                     onClick={() => {
                                         setShowFeedbackDialog(false);

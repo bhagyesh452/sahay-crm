@@ -463,20 +463,6 @@
     -webkit-transform: translate(-50%, -50%);
     rotate: 2deg;
   }
-  .question-number-correct {
-    position: absolute;
-    top: 0px;
-    background-color: #7258d1;
-    color: white;
-    font-size: 11px;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 4px;
-    width: 84px;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    rotate: 2deg;
-  }
 
   .feedback-dialog {
     padding: 20px;
@@ -484,7 +470,20 @@
     text-align: center;
     color: white;
 }
-
+.queResposepopup .MuiPaper-root 
+{
+    background-color: #ffffff00 ! IMPORTANT;
+    box-shadow: none;
+}
+.queResposepopup .q-modal
+{
+    background: transparent !important;
+}
+.queResposepopup .que-main
+{
+    background-color: #2c2c2c;
+    box-shadow: 0px 17px 8px -7px rgb(82 82 82 / 41%), 0px 24px 14px -16px rgb(255 255 255 / 14%), 0px 9px 15px 8px rgb(202 202 202 / 12%);
+}
 .feedback-dialog.correct {
     background-color: #4caf50;
 }
@@ -520,14 +519,6 @@
     rotate: 1deg;
   }
   
-.question-text-correct {
-    font-size: 1em;
-    color: #7258d1; /* Dark gray text */
-    margin: 14px 10px;
-    font-weight: bold;
-    rotate: 2deg;
-  }
-
 .que-main::before
 {
     width: 50px;
