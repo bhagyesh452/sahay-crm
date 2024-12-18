@@ -167,7 +167,7 @@ function App() {
   const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
   const [hrToken, setHrToken] = useState(localStorage.getItem("hrToken") || null)
   const [recruiterToken, setRecruiterToken] = useState(localStorage.getItem("recruiterToken") || null)
- 
+  
   return (
     <div className="App">
       <BrowserRouter>
@@ -206,14 +206,25 @@ function App() {
           <Route path='/customer/dashboard/:email' element={<CustomerDashboard />} />
 
           {/* --------------------------------------------------floor-manager components---------------------------------------------------------- */}
-          <Route path="/floormanager/login" element={<BDMLogin setBdmToken={setBdmToken} />} />
+          <Route path="/floormanager/login" element={<BDMLogin setBdmToken={setBdmToken} isVicePresident={false} />} />
+          <Route path="/vicePresident/login" element={<BDMLogin setBdmToken={setBdmToken} isVicePresident={true} />} />
           {/* <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />}></Route>
           <Route path="/floormanager/leads/:userId" element={<BdmLeads />}></Route>
           <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />}></Route>
           <Route path="/floormanager/bookings/:userId" element={<BdmBookings />}></Route>
           <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} /> */}
-          <Route element={bdmToken ? <FloorManagerLayout /> : <Navigate to="/floormanager/login" />}>
-            <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} />
+          <Route element={bdmToken ? <FloorManagerLayout isVicePresident={false} /> : <Navigate to="/floormanager/login" />}>
+            <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} isVicePresident={false} />
+            {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
+            <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
+            {/* <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} /> */}
+            <Route path="/floormanager/teamleads/:userId" element={<EmployeeTeamLeadsCopy />} />
+            <Route path="/floormanager/bookings/:userId" element={<BdmBookings />} />
+            <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} />
+          </Route>
+
+          <Route element={bdmToken ? <FloorManagerLayout isVicePresident={true} /> : <Navigate to="/floormanager/login" />}>
+            <Route path="/vicePresident/dashboard/:userId" element={<BdmDashboard />} isVicePresident={true} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
             <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
             {/* <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} /> */}

@@ -7,7 +7,7 @@ import Navbar from '../Components/Navbar/Navbar.jsx';
 import Chat from "../../components/Chat.jsx";
 import { IoChatboxEllipsesSharp } from "react-icons/io5";
 
-function FloorManagerLayout() {
+function FloorManagerLayout({isVicePresident}) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
@@ -214,8 +214,9 @@ function FloorManagerLayout() {
                 gender={data.gender}
                 designation={data.newDesignation}
                 data={data}
+                isVicePresident={isVicePresident}
             />
-            <Navbar userId={userId} bdmWork={data.bdmWork} />
+            <Navbar userId={userId} bdmWork={data.bdmWork} isVicePresident={isVicePresident} />
             {/* This will render the specific page content */}
             <Outlet />
             {/* <Chat

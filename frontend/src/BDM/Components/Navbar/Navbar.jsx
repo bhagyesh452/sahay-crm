@@ -14,25 +14,9 @@ import { AiOutlineTeam } from "react-icons/ai";
 
 
 
-function Navbar({userId}) {
-
+function Navbar({userId , isVicePresident}) {
+    console.log("isVicePresident" , isVicePresident)
     const location = useLocation();
-
-    // const bdmName = localStorage.getItem("bdmName")
-
-    // console.log(bdmName)
-
-    // const handleDashboardClick = ()=>{
-    //     window.location.replace(`/bdmdashboard/${bdmName}`)
-    //   }
-
-    //   const handleConvertedLeadsClicksame = () => {
-    //     // Navigate to the /employee-data/:userId/converted-leads route
-    //     window.location.replace(`/bdm/bdmleads/${bdmName}/`);
-    //   };
-
-
-
 
     return (
         <div>
