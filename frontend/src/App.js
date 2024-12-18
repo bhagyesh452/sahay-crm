@@ -154,6 +154,7 @@ import "../src/assets/sales_new_style.css"
 import BookingsTableView from "./admin/BookingsTableView.jsx";
 import AdminUploadQuestions from "./admin/AdminUploadQuestions.jsx";
 import AdminReportPanel from "./admin/AdminReportPanel.jsx";
+import VicePresidentLayout from "./BDM/Dashboard/VicePresidentLayout.jsx";
 
 function App() {
 
@@ -216,21 +217,21 @@ function App() {
           <Route element={bdmToken ? <FloorManagerLayout isVicePresident={false} /> : <Navigate to="/floormanager/login" />}>
             <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} isVicePresident={false} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
-            <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
+            <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" isVicePresident={false} />} />
             {/* <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} /> */}
-            <Route path="/floormanager/teamleads/:userId" element={<EmployeeTeamLeadsCopy />} />
-            <Route path="/floormanager/bookings/:userId" element={<BdmBookings />} />
-            <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} />
+            <Route path="/floormanager/teamleads/:userId" element={<EmployeeTeamLeadsCopy isVicePresident={false} />} />
+            <Route path="/floormanager/bookings/:userId" element={<BdmBookings isVicePresident={false} />} />
+            <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile isVicePresident={false} />} />
           </Route>
 
-          <Route element={bdmToken ? <FloorManagerLayout isVicePresident={true} /> : <Navigate to="/floormanager/login" />}>
+          <Route element={bdmToken ? <VicePresidentLayout isVicePresident={true} /> : <Navigate to="/floormanager/login" />}>
             <Route path="/vicePresident/dashboard/:userId" element={<BdmDashboard />} isVicePresident={true} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
-            <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
+            <Route path="/vicePresident/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" isVicePresident={true} />} />
             {/* <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} /> */}
-            <Route path="/floormanager/teamleads/:userId" element={<EmployeeTeamLeadsCopy />} />
-            <Route path="/floormanager/bookings/:userId" element={<BdmBookings />} />
-            <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} />
+            <Route path="/vicePresident/teamleads/:userId" element={<EmployeeTeamLeadsCopy isVicePresident={true} />} />
+            <Route path="/vicePresident/bookings/:userId" element={<BdmBookings isVicePresident={true} />} />
+            <Route path="/vicePresident/:userId" element={<FloorManagerProfile isVicePresident={true} />} />
           </Route>
 
           {/* --------------------------------------------------Admin Head/rm-certification components---------------------------------------------------------- */}

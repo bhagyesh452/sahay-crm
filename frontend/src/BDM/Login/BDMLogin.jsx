@@ -443,9 +443,6 @@ export default function BDMLogin({ setBdmToken , isVicePresident }) {
     const [captchaToken, setCaptchaToken] = useState(null); // To store Google ReCAPTCHA token
     const captchaKey = process.env.REACT_APP_CAPTCHA_KEY;
 
-    console.log("isVicePresident" , isVicePresident)
-
-
 
     useEffect(() => {
         if(isVicePresident){
