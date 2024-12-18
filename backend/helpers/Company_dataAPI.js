@@ -178,7 +178,7 @@ router.post("/update-status/:id", async (req, res) => {
       updates.bdmStatus = newStatus;
       updates.lastActionDate = new Date();
       updates.previousStatusToUndo = company.Status;
-      console.log("workinghereelse", updates)
+      // console.log("workinghereelse", updates)
       promises.push(
         CompanyModel.findByIdAndUpdate(id, {
           $set: updates,
@@ -238,7 +238,7 @@ router.post("/update-status/:id", async (req, res) => {
 
     // Fetch the updated company document
     const updatedCompany = await CompanyModel.findById(id).lean();
-    console.log("Updated Company:", updatedCompany);
+    // console.log("Updated Company:", updatedCompany);
     // Emit the socket message only if the flag is set
     if (shouldEmitSocket) {
       socketIO.emit("bdm-moved-to-notinterested", {

@@ -173,21 +173,9 @@ function AdminUploadQuestions() {
                                         Push Question
                                     </button>
                                 </div>
-                                <SlotSelectionDialog
-                                    open={slotDialogOpen}
-                                    onClose={() => setSlotDialogOpen(false)}
-                                    completeData={availableSlots}
-                                    onSelectSlot={(slotId) => {
-                                        setSelectedSlot(slotId);
-                                    }}
-                                    selectedSlotId={selectedSlot}
-                                    availableSlots={availableSlots}
-                                    setSelectedSlotId={setSelectedSlot}
-                                    fetchAvailableSlots={fetchAvailableSlots}
-                                />
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" className="btn action-btn-primary" onClick={handleDialogToggle}>
-                                        Upload Question
+                                        Add Question
                                     </button>
                                 </div>
                             </div>
@@ -262,9 +250,9 @@ function AdminUploadQuestions() {
                                             return (
                                                 <tr key={index}>
                                                     <td className="rm-sticky-left-1">{index + 1}</td>
-                                                    <td className="rm-sticky-left-2 ellipsis-cell_new" 
-                                                    title={obj.question}
-                                                     onClick={() => handleQuestionClick(obj._id, obj.question)}>{obj.question}</td>
+                                                    <td className="rm-sticky-left-2 ellipsis-cell_new"
+                                                        title={obj.question}
+                                                        onClick={() => handleQuestionClick(obj._id, obj.question)}>{obj.question}</td>
                                                     <td>
                                                         <div className="ellipsis-cell" title={obj.options[0]}>
                                                             {obj.options[0]}
@@ -323,6 +311,20 @@ function AdminUploadQuestions() {
                     </div>
                 </div>
             </div>
+
+            {/* ===============dialog to select slot====================== */}
+            <SlotSelectionDialog
+                open={slotDialogOpen}
+                onClose={() => setSlotDialogOpen(false)}
+                completeData={availableSlots}
+                onSelectSlot={(slotId) => {
+                    setSelectedSlot(slotId);
+                }}
+                selectedSlotId={selectedSlot}
+                availableSlots={availableSlots}
+                setSelectedSlotId={setSelectedSlot}
+                fetchAvailableSlots={fetchAvailableSlots}
+            />
             {
                 dialogOpen && (
                     <QuestionUploadDialog
@@ -332,10 +334,10 @@ function AdminUploadQuestions() {
                     />
                 )
             }
+            {/* =============dialog which is shown to employee================= */}
             <EmployeeQuestionModal
                 modalId={modalId}
             />
-
             {/* Popup to Show Question Details */}
             <Dialog open={employeeAnsDialog} onClose={() => setEmployeeAnsDialog(false)} maxWidth="sm" fullWidth className="MY_MAT_DIALOG">
                 <DialogTitle>
@@ -353,10 +355,8 @@ function AdminUploadQuestions() {
                             </button>
                         </div>
                     </div>
-
-
                 </DialogTitle>
-                <hr style={{ border: "1px solid #ddd" , margin:"0" }} />
+                <hr style={{ border: "1px solid #ddd", margin: "0" }} />
                 <DialogContent>
                     {employeesAnswered.length > 0 ? (
                         <div className='table table-responsive table-style-2 m-0'>

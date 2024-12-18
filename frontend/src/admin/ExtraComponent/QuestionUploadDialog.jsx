@@ -42,7 +42,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [slotOptions, setSlotOptions] = useState(["slot 1", "slot 2"]);
-    
+
     useEffect(() => {
         if (completeData && completeData.length > 0) {
             // Extract numeric parts from slotIndex and ensure valid numbers
@@ -96,10 +96,6 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
             ]);
         }
     }, [completeData]);
-
-
-
-
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;
@@ -226,12 +222,12 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
             });
             return;
         }
-    
+
         try {
             const formDataExcel = new FormData();
             formDataExcel.append("file", file);
             formDataExcel.append("slot", formData.slot);
-    
+
             const response = await axios.post(
                 `${secretKey}/question_related_api/upload-questions_excel`,
                 formDataExcel,
@@ -241,14 +237,14 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                     },
                 }
             );
-    
+
             Swal.fire({
                 title: "Success!",
                 text: `${response.data.totalUploaded} questions uploaded successfully. Skipped ${response.data.skippedInvalid} invalid and ${response.data.skippedDuplicates} duplicate entries.`,
                 icon: "success",
                 confirmButtonText: "Great!",
             });
-    
+
             handleDialogToggle();
             setFile(null); // Clear the file
             setFormData((prev) => ({ ...prev, slot: "" })); // Reset the slot
@@ -262,7 +258,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
             });
         }
     };
-    
+
 
 
     return (
@@ -280,7 +276,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                 },
             }}
         >
-            <DialogTitle>
+            {/* <DialogTitle>
                 <div className="d-flex justify-content-between align-items-center">
                     <div>Upload Questions</div>
                     <div>
@@ -293,10 +289,89 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                         </button>
                     </div>
                 </div>
+            </DialogTitle> */}
+            <DialogTitle>
+                <div className="d-flex align-items-center justify-content-between">
+                    <div>Upload Questions</div>
+                    <div>
+                        <button type="button"
+                            className="btn-close new_question_dailog_button"
+                            aria-label="Close"
+                            onClick={handleDialogToggle}
+                        >
+
+                        </button>
+                    </div>
+                </div>
             </DialogTitle>
+            <hr style={{ border: "1px solid #ddd", margin: "0" }} />
             <DialogContent>
                 <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                    <div
+                        className="modal-header"
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between", // Space between left and right components
+                            alignItems: "center",
+                            width: "100%", // Ensure full width
+                            padding: "0 0.2rem 0 1rem"
+                        }}
+                    >
+                        {/* Left Side: Form and Excel */}
+                        <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+                            <div className="form-check form-check-inline">
+                                <input
+                                    className="form-check-input rounded-circle"
+                                    type="radio"
+                                    name="employeeOption"
+                                    id="addSingleEmployee"
+                                    value="form"
+                                    onChange={(e) => setUploadMethod(e.target.value)}
+                                />
+                                <label className="form-check-label" htmlFor="addSingleEmployee">
+                                    Form
+                                </label>
+                            </div>
+                            <div className="form-check form-check-inline">
+                                <input
+                                    className="form-check-input rounded-circle"
+                                    type="radio"
+                                    name="employeeOption"
+                                    id="bulkUpload"
+                                    value="excel"
+                                    onChange={(e) => setUploadMethod(e.target.value)}
+                                />
+                                <label className="form-check-label" htmlFor="bulkUpload">
+                                    Excel
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Right Side: Slot Selection */}
+                        <div style={{ width: "200px" }}>
+                            <select
+                                className="form-select"
+                                name="slot"
+                                value={formData.slot}
+                                required
+                                onChange={handleFormChange}
+                            >
+                                <option value="" disabled>
+                                    Select Slot
+                                </option>
+                                {slotOptions.map((slot, index) => (
+                                    <option key={index} value={slot.label} disabled={slot.disabled}>
+                                        {slot.label}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.slot && <Typography color="error">{errors.slot}</Typography>}
+                        </div>
+                    </div>
+
+
+
+                    {/* <Grid item xs={6}>
                         <RadioGroup
                             row
                             value={uploadMethod}
@@ -321,12 +396,12 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                             </Select>
                             {errors.slot && <Typography color="error">{errors.slot}</Typography>}
                         </FormControl>
-                    </Grid>
+                    </Grid> */}
                     {uploadMethod === "form" && (
                         <>
                             <Grid item xs={12}>
                                 <TextField
-                                    label="Question"
+                                    label="Add Question"
                                     name="question"
                                     value={formData.question}
                                     onChange={handleFormChange}
@@ -351,8 +426,9 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                 </Grid>
                             ))}
                             <Grid item xs={12}>
-                                <Typography>Mark Correct Option</Typography>
+                                <Typography color="#6c6a6a">Mark Correct Option :-</Typography>
                                 <RadioGroup
+                                    sx={{ color: "#6c6a6a" }} // Color for the entire group
                                     row
                                     value={formData.correctOption}
                                     onChange={(e) =>
@@ -361,6 +437,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                 >
                                     {[0, 1, 2, 3].map((index) => (
                                         <FormControlLabel
+                                           
                                             key={index}
                                             value={`${index}`}
                                             control={<Radio />}
@@ -382,6 +459,9 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                     size="small"
                                     error={!!errors.rightResponse}
                                     helperText={errors.rightResponse}
+                                    multiline // Enable textarea
+                                    rows={3} // Number of rows for the textarea
+                                    variant="outlined"
                                 />
                             </Grid>
                             <Grid item xs={6}>
@@ -394,6 +474,9 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                     size="small"
                                     error={!!errors.wrongResponse}
                                     helperText={errors.wrongResponse}
+                                    multiline // Enable textarea
+                                    rows={3} // Number of rows for the textarea
+                                    variant="outlined"
                                 />
                             </Grid>
                         </>

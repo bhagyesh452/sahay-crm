@@ -1,159 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Self Declaration</title>
-    <style>
-        body
-        {
-          font-size:12px !important;
-          padding:0px;
-          margin:0px;
-          font-family: 'Calibri', 'Arial', sans-serif;
-        }
-        .PDF_main
-        {
-          /* width: 83%;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self Declaration</title>
+  <style>
+    body {
+      font-size: 11px !important;
+      padding: 0px;
+      margin: 0px;
+      font-family: 'Calibri', 'Arial', sans-serif;
+    }
+
+    .PDF_main {
+      /* width: 83%;
           margin: 0 auto;
           position: relative;
           padding: 40px 40px;
           page-break-after: always; */
-          page-break-after: always;
-          /* height: 680px; */
-         
-        }
-        .mt-2
-        {
-          margin-top:20px
-        }
-        p,h4,table,th,td , li
-        {
-          font-size:9px !important;
-        }
-        .date_div
-        {
-          width: 100%;
-          font-size:10px !important;
-        }
-        .date_div p
-        {
-          margin: 0px !important;
-          text-align:right;
-        }
-        .pdf_heading
-        {
-          text-align: center;
-          width: 100%;
-          margin-top: 20px;
-        }
-        .pdf_heading h4
-        {
-          margin: 0px !important;
-        }
-        .Declaration_text
-        {
-          margin-top: 10px;
-        }
-        .Declaration_text_head
-        {
-          color: #373737;
-          font-size: 14px;
-        }
-        .Declaration_text_data
-        {
-          font-size: 14px;
-          color: #4f4f4f !important;
-          line-height: 16px;
-        }
-  
-        .Signature
-        {
-          margin-bottom: 10px;
-          margin-left: 40px;
-        }
-        .table-data
-        {
-          /* margin-top: 20px; */
-        }
-        table {
-            border-collapse: collapse;
-            border-spacing: 0;
-        }
-        .table {
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 20px;
-        }
-        .table-bordered {
-            border: 1px solid #3d3d3d;
-        }
-        .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
-            border: 1px solid #3d3d3d;
-            font-size: 12px;
-            padding:6px;
-            color: #373737;
-        }
-        .text-left
-        {
-          text-align: left;
-        }
-        .s_Provider_left
-        {
-          width: 40%;
-        }
-        .s_Provider_right
-        {
-          width: 60%;
-        }
-        .bdr-right
-        {
-          border-right: 1px solid #3d3d3d !important;
-        }
-    </style>
+      page-break-after: always;
+      /* height: 680px; */
+
+    }
+
+    .mt-2 {
+      margin-top: 20px
+    }
+
+    p,
+    h4,
+    table,
+    th,
+    td,
+    li {
+      font-size: 9px !important;
+    }
+
+    .date_div {
+      width: 100%;
+      font-size: 10px !important;
+    }
+
+    .date_div p {
+      margin: 0px !important;
+      text-align: right;
+    }
+
+    .pdf_heading {
+      text-align: center;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .pdf_heading h4 {
+      margin: 0px !important;
+    }
+
+    .Declaration_text {
+      margin-top: 10px;
+    }
+
+    .Declaration_text_head {
+      color: #373737;
+      font-size: 14px;
+    }
+
+    .Declaration_text_data {
+      font-size: 14px;
+      color: #4f4f4f !important;
+      line-height: 16px;
+    }
+
+    .Signature {
+      margin-bottom: 10px;
+      margin-left: 40px;
+    }
+
+    .table-data {
+      /* margin-top: 20px; */
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    .table {
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .table-bordered {
+      border: 1px solid #3d3d3d;
+    }
+
+    .table-bordered>tbody>tr>td,
+    .table-bordered>tbody>tr>th,
+    .table-bordered>tfoot>tr>td,
+    .table-bordered>tfoot>tr>th,
+    .table-bordered>thead>tr>td,
+    .table-bordered>thead>tr>th {
+      border: 1px solid #3d3d3d;
+      font-size: 12px;
+      padding: 6px;
+      color: #373737;
+    }
+
+    .text-left {
+      text-align: left;
+    }
+
+    .s_Provider_left {
+      width: 40%;
+    }
+
+    .s_Provider_right {
+      width: 60%;
+    }
+
+    .bdr-right {
+      border-right: 1px solid #3d3d3d !important;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="PDF_main">
+  <div class="PDF_main">
+    <section>
+      <div class="date_div">
+        <p>Date: {{todaysDate}}</p>
+      </div>
+      <div class="pdf_heading">
+        <h4>Self Declaration</h4>
+      </div>
+      <div class="Declaration_text">
+        <p class="Declaration_text_data">
+          I, <b>______________________________</b>, representing <b>_______________________________</b>, engage Start-Up
+          Sahay Private Limited for Seed Funding Document Support. <b>Start-Up Sahay Private Limited</b> will provide
+          document creation and application support services for my client <b>{{Company Name}}</b>, utilizing their
+          resources and expertise.
+        </p>
+        <p class="Declaration_text_head">
+          <b>Seed Funding Document Support, Acknowledgement:</b>
+        </p>
+        <p class="Declaration_text_data">I hereby acknowledge and agree to the following terms:</p>
+        <p class="Declaration_text_data">I understand that there is a fee for these services, which are not government
+          fees. Approval of the application is solely up to the concerned department/authorities. Start-Up Sahay Private
+          Limited has not assured or guaranteed application approval.</p>
+        <p class="Declaration_text_data">I understand that due to government regulations and portals, I have no
+          objections if the process takes longer than initially committed, as it reflects the standard functioning of
+          government schemes.</p>
+        <p class="Declaration_text_data">I acknowledge that Start-Up Sahay Private Limited is a private entity and will
+          communicate directly with the client under its own identity. Start-Up Sahay will not operate anonymously or
+          hide its identity during communications. I am aware that any disputes related to direct communication will not
+          result in refunds. If direct communication is to be avoided, I will inform Start-Up Sahay Private Limited in
+          advance and take responsibility for relaying information to the client.</p>
+        <p class="Declaration_text_data">As me and my client are unfamiliar with the process, I authorize Start-Up Sahay
+          Private Limited to submit the online or offline application in the concerned department on my client's behalf,
+          if required.</p>
+
+      </div>
+       <!-- Add page break here -->
+    <div style="page-break-before: always;"></div>
+      <div class="PDF_main">
         <section>
-            <div class="date_div">
-                <p>Date: {{todaysDate}}</p>
-            </div>
-            <div class="pdf_heading">
-                <h4>Self Declaration</h4>
-            </div>
-            <div class="Declaration_text">
-                <p class="Declaration_text_data">
-                    I, <b>______________________________</b>, representing <b>_______________________________</b>, engage Start-Up Sahay Private Limited for Seed Funding Document Support. <b>Start-Up Sahay Private Limited</b> will provide document creation and application support services for my client <b>{{Company Name}}</b>, utilizing their resources and expertise.
-                </p>
-                <p class="Declaration_text_head">
-                    <b>Seed Funding Document Support, Acknowledgement:</b>
-                </p>
-                
-                    <p class="Declaration_text_data">I hereby acknowledge and agree to the following terms:</p>
-                    <p class="Declaration_text_data">Start-Up Sahay Private Limited will provide document creation and application support.</p>
-                    <p class="Declaration_text_data">I understand that there is a fee for these services, which are not government fees. Approval of the application is solely up to the concerned department/authorities. Start-Up Sahay Private Limited has not assured or guaranteed application approval.</p>
-                    <p class="Declaration_text_data">I understand that due to government regulations and portals, I have no objections if the process takes longer than initially committed, as it reflects the standard functioning of government schemes.</p>
-                    <p class="Declaration_text_data">I acknowledge that Start-Up Sahay Private Limited is a private entity and will communicate directly with the client under its own identity. Start-Up Sahay will not operate anonymously or hide its identity during communications. I am aware that any disputes related to direct communication will not result in refunds. If direct communication is to be avoided, I will inform Start-Up Sahay Private Limited in advance and take responsibility for relaying information to the client.</p>
-                    <p class="Declaration_text_data">As me and my client are unfamiliar with the process, I authorize Start-Up Sahay Private Limited to submit the online or offline application in the concerned department on my client's behalf, if required.</p>
-               
-            </div>
-
-            <div class="Declaration_text">
-                <p class="Declaration_text_data"><b>Acknowledgement:</b></p>
-                <p class="Declaration_text_data">
-                    I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between myself and <b>Start-Up Sahay Private Limited</b>. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection. Re-application support will be provided by Start-Up Sahay for 2 times without any extra charges. After that, additional charges will be taken as per mutual agreement.
-                </p>
-                <p class="Declaration_text_data">
-                    This agreement does not create any direct obligations between Start-Up Sahay and My client (<b>{{Company Name}}</b>).
-                </p>
-            </div>
-
-            <!-- <div class="signature">
-                <p>Signature: _____________________________</p>
-                <p>Name: ________________________________</p>
-                <p>Designation: ___________________________</p>
-            </div> -->
+          <p class="Declaration_text_head">
+            <b>
+              Service And Payment Terms Acknowledgment
+            </b>
+          </p>
+          <!-- service provider -->
+          <div class="table-data">
+            <table class="table table-bordered">
+              <thead>
+                <td>Services Provider</td>
+                <td>START-UP SAHAY PRIVATE LIMITED</td>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-left s_Provider_left">Contact Details:</td>
+                  <td class="text-left s_Provider_right">
+                    Mo: {{Authorized-Number}} | Email: {{Authorized-Email}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- service provider -->
+          <div class="table-data">
+            <table class="table table-bordered">
+              <thead>
+                <td>Services Receiver</td>
+                <td class="text-left s_Provider_right">{{Company Name}}</td>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-left s_Provider_left">Contact Details:</td>
+                  <td class="text-left s_Provider_right">Mo: +91 {{Company Number}} | Email : {{Company Email}}</td>
+                </tr>
+                <tr>
+                  <td class="text-left s_Provider_left">Authorized Person Name:</td>
+                  <td class="text-left s_Provider_right"></td>
+                </tr>
+                <tr>
+                  <td class="text-left s_Provider_left">Authorized Person's Designation:</td>
+                  <td class="text-left s_Provider_right"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-data">
+            {{Service-Details}}
+          </div>
+          {{Total-Payment}}
+          <div class="Declaration_text">
+            <p class="Declaration_text_data"><b>Acknowledgement:</b></p>
+            <p class="Declaration_text_data">
+              I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements
+              between myself and <b>Start-Up Sahay Private Limited</b>. The charges are solely for specified services,
+              and no additional services will be provided without separate payment, even in the case of rejection.
+              Re-application support will be provided by Start-Up Sahay for 2 times without any extra charges. After
+              that,additional charges will be taken as per mutual agreement.
+            </p>
+            <p class="Declaration_text_data">
+              This agreement does not create any direct obligations between Start-Up Sahay and My client(<b>{{Company Name}}</b>).
+            </p>
+          </div>
         </section>
-    </div>
+      </div>
+    </section>
+  </div>
 </body>
 </html>

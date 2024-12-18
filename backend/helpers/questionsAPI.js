@@ -42,6 +42,24 @@ router.post("/post_form_data", async (req, res) => {
         }
 
         console.log("Question is unique. Preparing question data...");
+        // Trim correctOption for clean formatting
+        const trimmedCorrectOption = correctOption.trim();
+        // Ensure wrongResponse starts correctly and append correctOption
+        let updatedWrongResponse = wrongResponse.trim();
+
+        // Remove ❌ or similar symbols if present
+        if (updatedWrongResponse.startsWith("❌")) {
+            updatedWrongResponse = updatedWrongResponse.substring(1).trim(); // Remove the cross symbol
+        }
+
+        // Check and update the message
+        if (updatedWrongResponse.startsWith("Your answer is incorrect.")) {
+            updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+        } else {
+            updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+        }
+        console.log("wrongResponse", wrongResponse)
+        console.log("updatedWrong", updatedWrongResponse)
 
         // Prepare question data
         const questionData = {
@@ -50,7 +68,7 @@ router.post("/post_form_data", async (req, res) => {
             correctOption,
             responses: {
                 right: rightResponse,
-                wrong: wrongResponse,
+                wrong: updatedWrongResponse,
             },
         };
 
@@ -137,6 +155,12 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
                 console.log(`Row ${index + 1} skipped: Correct option '${correctOption}' not in options.`, options);
                 skippedInvalid++;
                 continue;
+            }
+
+            // Auto-complete the wrongResponse if it starts with "Your answer is incorrect."
+            if (wrongResponse && wrongResponse.trim().startsWith("Your answer is incorrect.")) {
+                wrongResponse = `${wrongResponse.trim()} The correct answer is **"${correctOption}"**.`;
+                console.log(`Row ${index + 1}: Auto-completed wrong response: ${wrongResponse}`);
             }
 
             // Check for duplicate questions in the database
@@ -426,95 +450,6 @@ router.get("/available-slots", async (req, res) => {
 });
 
 
-
-
-// Push questions to employees based on selected slots
-// router.post("/push-questions", async (req, res) => {
-//     const socketIO = req.io;
-//     console.log("Processing push-questions...");
-//     try {
-//         const { assignedSlots } = req.body; // Map of employeeId -> slotId
-//         if (!assignedSlots || Object.keys(assignedSlots).length === 0) {
-//             return res.status(400).json({ message: "No slots assigned." });
-//         }
-
-//         const employeeIds = Object.keys(assignedSlots); // Extract employee IDs
-//         const employees = await adminModel.find({ _id: { $in: employeeIds } }); // Fetch employees
-
-//         const updates = []; // Array to store save operations
-
-//         for (const employee of employees) {
-//             const slotId = assignedSlots[employee._id.toString()]; // Match slotId with employee
-//             if (!slotId) {
-//                 console.log(`No slotId assigned for employee: ${employee._id}`);
-//                 continue; // Skip this employee if no slot is assigned
-//             }
-
-//             const slot = await QuestionModel.findById(slotId); // Fetch slot data
-//             if (!slot) {
-//                 console.log(`Slot not found for slotId: ${slotId}`);
-//                 continue; // Skip if slot doesn't exist
-//             }
-
-//             const employeeData = await EmployeeQuestionModel.findOne({ empId: employee._id }); // Fetch employee data
-//             if (!employeeData) {
-//                 console.log(`No EmployeeQuestionModel found for employee: ${employee._id}`);
-//                 continue; // Skip if employee data is not found
-//             }
-
-//             // Extract asked questions for this slot
-//             const askedQuestions = employeeData.assignedQuestions
-//                 .filter((q) => q.slotId.toString() === slotId.toString())
-//                 .map((q) => q.questionId.toString());
-
-//             // Get unasked questions
-//             const unaskedQuestions = slot.questions
-//                 .map((q) => q._id.toString())
-//                 .filter((qId) => !askedQuestions.includes(qId));
-
-//             if (unaskedQuestions.length === 0) {
-//                 console.log(`No unasked questions available for employee: ${employee._id} in slot: ${slotId}`);
-//                 continue; // Skip if no new questions are available
-//             }
-
-//             // Assign the first unasked question
-//             const questionToAssign = unaskedQuestions[0];
-//             const questionDetails = slot.questions.find((q) => q._id.toString() === questionToAssign);
-
-//             // Add question to assignedQuestions
-//             employeeData.assignedQuestions.push({
-//                 slotIndex: slot.slotIndex,
-//                 slotId: slot._id,
-//                 questionId: questionToAssign,
-//                 question: questionDetails.question,
-//                 options: questionDetails.options,
-//                 correctOption: questionDetails.correctOption,
-//                 responses: questionDetails.responses,
-//                 dateAssigned: new Date(),
-//             });
-
-//             // Emit socket event for the employee
-//             socketIO.emit(`question_assigned_${employee.email}`, {
-//                 ename: employee.ename,
-//                 question: questionDetails.question,
-//                 options: questionDetails.options,
-//                 correctOption:questionDetails.correctOption,
-//                 responses:questionDetails.responses
-
-//             });
-
-//             updates.push(employeeData.save()); // Add save operation to updates
-//         }
-
-//         await Promise.all(updates); // Save all updates concurrently
-
-//         res.status(200).json({ message: "Questions successfully assigned to employees." });
-//     } catch (error) {
-//         console.error("Error assigning questions:", error);
-//         res.status(500).json({ message: "Internal Server Error", error });
-//     }
-// });
-
 router.post("/push-questions", async (req, res) => {
     const socketIO = req.io;
     console.log("Processing push-questions...");
@@ -629,9 +564,13 @@ router.post("/submit-answer", async (req, res) => {
             return res.status(404).json({ message: "Question not found for this employee." });
         }
 
+        // Trim both correctOption and selectedAnswer to handle spaces
+        const trimmedCorrectOption = assignedQuestion.correctOption.trim();
+        const trimmedSelectedAnswer = selectedAnswer.trim();
+
         // Update the answer and check correctness
-        assignedQuestion.answerGiven = selectedAnswer;
-        assignedQuestion.isCorrect = assignedQuestion.correctOption === selectedAnswer;
+        assignedQuestion.answerGiven = trimmedSelectedAnswer;
+        assignedQuestion.isCorrect = trimmedCorrectOption === trimmedSelectedAnswer;
 
         // Save the updated employee document
         await employee.save();
@@ -670,7 +609,7 @@ router.get("/question-responses/:questionId", async (req, res) => {
                     employeeName: employee.name,
                     answerGiven: question.answerGiven || "No Answer",
                     dateAnswered: question.dateAssigned,
-                    isCorrect:question.isCorrect
+                    isCorrect: question.isCorrect
                 });
             }
         });
