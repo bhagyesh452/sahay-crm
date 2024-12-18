@@ -24,6 +24,8 @@ function SlotSelectionDialog({ open, onClose, availableSlots, fetchAvailableSlot
     const [selectedSlots, setSelectedSlots] = useState({}); // Tracks the selected slot for each employee
     const [selectedEmployees, setSelectedEmployees] = useState([]); // Tracks selected employees
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [isSelectAllEnabled, setIsSelectAllEnabled] = useState(false); // Tracks the status of "Select All" checkbox
+
 
     const handleEmployeeSelection = (employeeId) => {
         setSelectedEmployees((prev) => {
@@ -35,15 +37,15 @@ function SlotSelectionDialog({ open, onClose, availableSlots, fetchAvailableSlot
         });
     };
 
-    const handleSelectAll = (e) => {
-        if (e.target.checked) {
-            // Select all employees
-            setSelectedEmployees(availableSlots.map((employee) => employee.employeeId));
-        } else {
-            // Deselect all employees
-            setSelectedEmployees([]);
-        }
-    };
+    // const handleSelectAll = (e) => {
+    //     if (e.target.checked) {
+    //         // Select all employees
+    //         setSelectedEmployees(availableSlots.map((employee) => employee.employeeId));
+    //     } else {
+    //         // Deselect all employees
+    //         setSelectedEmployees([]);
+    //     }
+    // };
 
     const handleSlotChange = (employeeId, slotId) => {
         setSelectedSlots((prev) => ({
@@ -94,7 +96,7 @@ function SlotSelectionDialog({ open, onClose, availableSlots, fetchAvailableSlot
                 icon: "success",
                 confirmButtonText: "Okay",
             });
-
+            setIsSelectAllEnabled(false)
             setSelectedSlots({});
             setSelectedEmployees([]);
             fetchAvailableSlots(); // Refresh available slots
@@ -110,44 +112,151 @@ function SlotSelectionDialog({ open, onClose, availableSlots, fetchAvailableSlot
         }
     };
 
+    // ===================select All===========================
+    const handleSelectAllNew = (e) => {
+        const isChecked = e.target.checked;
+
+        if (isChecked) {
+            setIsSelectAllEnabled(true); // Enable Select All on click
+            setSelectedEmployees(
+                availableSlots
+                    .filter((employee) => employee.availableSlots.some((slot) => slot.isAvailable))
+                    .map((employee) => employee.employeeId)
+            );
+
+            // Pre-fill slots based on the first available slot for each employee
+            setSelectedSlots((prev) => {
+                const newSlots = {};
+                availableSlots.forEach((employee) => {
+                    const availableSlot = employee.availableSlots.find((slot) => slot.isAvailable);
+                    if (availableSlot) {
+                        newSlots[employee.employeeId] = availableSlot.slotId;
+                    }
+                });
+                return newSlots;
+            });
+        } else {
+            // Deselect all employees and clear slots
+            setSelectedEmployees([]);
+            setSelectedSlots({});
+        }
+    };
+
+    const handleCommonSlotChange = (e) => {
+        const selectedSlotId = e.target.value;
+
+        setSelectedEmployees(
+            availableSlots
+                .filter((employee) =>
+                    employee.availableSlots.some(
+                        (slot) => slot.slotId === selectedSlotId && slot.isAvailable
+                    )
+                )
+                .map((employee) => employee.employeeId)
+        );
+        // Update selected slots only for employees where the selected slot is available
+        setSelectedSlots((prev) => {
+            const newSlots = { ...prev };
+            availableSlots.forEach((employee) => {
+                const isSlotAvailable = employee.availableSlots.some(
+                    (slot) => slot.slotId === selectedSlotId && slot.isAvailable
+                );
+
+                if (isSlotAvailable) {
+                    newSlots[employee.employeeId] = selectedSlotId;
+                }
+            });
+            return newSlots;
+        });
+    };
+
+
+
     return (
-        <Dialog className="My_Mat_Dialog" open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog className="My_Mat_Dialog" open={open}
+            onClose={() => {
+                onClose()
+                setSelectedSlots({});
+                setSelectedEmployees([]);
+                fetchAvailableSlots(); // Refresh available slots
+                setIsSelectAllEnabled(false)
+            }}
+            maxWidth="sm"
+            fullWidth>
             {/* <DialogTitle>Assign Slots to Employees</DialogTitle> */}
             <DialogTitle>
                 <div className="d-flex align-items-center justify-content-between">
-                    <div className="new_question_dailog_title" style={{fontSize : "17px"}}>
+                    <div className="new_question_dailog_title" style={{ fontSize: "17px" }}>
                         Assign Slots to Employees
                     </div>
                     <div>
                         <button type="button"
                             className="btn-close new_question_dailog_button"
                             aria-label="Close"
-                            onClick={onClose}
+                            onClick={() => {
+                                onClose()
+                                setSelectedSlots({});
+                                setSelectedEmployees([]);
+                                fetchAvailableSlots(); // Refresh available slots
+                                setIsSelectAllEnabled(false)
+                            }}
                         >
-
                         </button>
                     </div>
                 </div>
             </DialogTitle>
             <hr style={{ border: "1px solid #ddd", margin: "0" }} />
+            <div className="d-flex align-items-center justify-content-end mt-1"
+                style={{
+                    width: "100%",
+                    padding: "10px 35px 0px 0px",
+                }}>
+                <select
+                    onChange={handleCommonSlotChange}
+                    disabled={!isSelectAllEnabled} // Disable by default
+                    style={{
+                        width: "25%",
+                        padding: "6px",
+                        fontSize: "12px",
+                        cursor: isSelectAllEnabled ? "pointer" : "not-allowed"
+                    }}
+                >
+                    <option value="">Select Common Slot</option>
+                    {availableSlots.length > 0 &&
+                        availableSlots[0].availableSlots.map((slot) => (
+                            <option key={slot.slotId} value={slot.slotId}>
+                                {slot.slotIndex}
+                            </option>
+                        ))}
+                </select>
 
+            </div>
             <DialogContent>
                 {availableSlots.length === 0 ? (
                     <Typography>No employees found or slots unavailable.</Typography>
                 ) : (
-                    <div className='table table-responsive table-style-2 m-0'>
+                    <div className='table table-responsive table-style-2'>
                         <table className="table">
                             <thead>
                                 <tr className='tr-sticky'>
                                     <th>
                                         <input
                                             type="checkbox"
-                                            checked={selectedEmployees.length === availableSlots.length}
+                                            checked={
+                                                selectedEmployees.length > 0 &&
+                                                selectedEmployees.length ===
+                                                availableSlots.filter((employee) =>
+                                                    employee.availableSlots.some((slot) => slot.isAvailable)
+                                                ).length
+                                            }
                                             indeterminate={
                                                 selectedEmployees.length > 0 &&
-                                                selectedEmployees.length < availableSlots.length
+                                                selectedEmployees.length <
+                                                availableSlots.filter((employee) =>
+                                                    employee.availableSlots.some((slot) => slot.isAvailable)
+                                                ).length
                                             }
-                                            onChange={handleSelectAll}
+                                            onChange={handleSelectAllNew}
                                             style={{ cursor: "pointer" }}
                                         />
                                     </th>
@@ -158,7 +267,7 @@ function SlotSelectionDialog({ open, onClose, availableSlots, fetchAvailableSlot
                             </thead>
                             <tbody>
                                 {availableSlots.map((employee, index) => {
-                                    console.log("employee", employee)
+                                    //console.log("employee", employee)
                                     return (
                                         <tr key={employee.employeeId}>
                                             <td>
@@ -216,109 +325,22 @@ function SlotSelectionDialog({ open, onClose, availableSlots, fetchAvailableSlot
                                                 </select>
                                             </td>
                                         </tr>
-                                    )}
+                                    )
+                                }
                                 )}
                             </tbody>
                         </table>
                     </div>
-                    // <TableContainer>
-                    //     <Table>
-                    //         <TableHead>
-                    //             <TableRow>
-                    //                 <TableCell>
-                    //                     <FormControlLabel
-                    //                         control={
-                    //                             <Checkbox
-                    //                                 checked={
-                    //                                     selectedEmployees.length ===
-                    //                                     availableSlots.length
-                    //                                 }
-                    //                                 indeterminate={
-                    //                                     selectedEmployees.length > 0 &&
-                    //                                     selectedEmployees.length <
-                    //                                         availableSlots.length
-                    //                                 }
-                    //                                 onChange={handleSelectAll}
-                    //                                 color="primary"
-                    //                             />
-                    //                         }
-                    //                         // label="Select All"
-                    //                     />
-                    //                 </TableCell>
-                    //                 <TableCell>Sr. No.</TableCell>
-                    //                 <TableCell>Employee Name</TableCell>
-                    //                 <TableCell>Available Slots</TableCell>
-                    //             </TableRow>
-                    //         </TableHead>
-                    //         <TableBody>
-                    //             {availableSlots.map((employeeData, index) => (
-                    //                 <TableRow key={employeeData.employeeId}>
-                    //                     <TableCell>
-                    //                         <FormControlLabel
-                    //                             control={
-                    //                                 <Checkbox
-                    //                                     checked={selectedEmployees.includes(
-                    //                                         employeeData.employeeId
-                    //                                     )}
-                    //                                     onChange={() =>
-                    //                                         handleEmployeeSelection(
-                    //                                             employeeData.employeeId
-                    //                                         )
-                    //                                     }
-                    //                                     color="primary"
-                    //                                 />
-                    //                             }
-                    //                         />
-                    //                     </TableCell>
-                    //                     <TableCell>{index + 1}</TableCell>
-                    //                     <TableCell>{employeeData.employeeName}</TableCell>
-                    //                     <TableCell
-                    //                         style={{
-                    //                             width: "150px", // Set a fixed width
-                    //                             textAlign: "center", // Center align the content
-                    //                             padding: "8px", // Adjust padding as needed
-                    //                         }}
-                    //                     >
-                    //                         <Select
-                    //                             value={selectedSlots[employeeData.employeeId] || ""}
-                    //                             onChange={(e) =>
-                    //                                 handleSlotChange(
-                    //                                     employeeData.employeeId,
-                    //                                     e.target.value
-                    //                                 )
-                    //                             }
-                    //                             size="small"
-                    //                             fullWidth
-                    //                             displayEmpty
-                    //                             disabled={
-                    //                                 !selectedEmployees.includes(
-                    //                                     employeeData.employeeId
-                    //                                 )
-                    //                             }
-                    //                         >
-                    //                             <MenuItem value="" disabled>
-                    //                                 Select Slot
-                    //                             </MenuItem>
-                    //                             {employeeData.availableSlots.map((slot) => (
-                    //                                 <MenuItem
-                    //                                     key={slot.slotId}
-                    //                                     value={slot.slotId}
-                    //                                     disabled={!slot.isAvailable}
-                    //                                 >
-                    //                                     {slot.slotIndex}
-                    //                                 </MenuItem>
-                    //                             ))}
-                    //                         </Select>
-                    //                     </TableCell>
-                    //                 </TableRow>
-                    //             ))}
-                    //         </TableBody>
-                    //     </Table>
-                    // </TableContainer>
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="secondary" variant="outlined">
+                <Button onClick={() => {
+                    onClose()
+                    setSelectedSlots({});
+                    setSelectedEmployees([]);
+                    fetchAvailableSlots(); // Refresh available slots
+                    setIsSelectAllEnabled(false)
+                }} color="secondary" variant="outlined">
                     Cancel
                 </Button>
                 <Button onClick={handleSubmit} color="primary" variant="contained">
