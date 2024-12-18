@@ -12,6 +12,7 @@ const RequestDeleteByBDE = require("../models/Deleterequestbybde");
 const RedesignedLeadformModel = require("../models/RedesignedLeadform");
 const EditableDraftModel = require("../models/EditableDraftModel");
 const RedesignedDraftModel = require("../models/RedesignedDraftModel");
+const ChatModel = require("../models/ChatModel.js");
 const { sendMail2 } = require("./sendMail2");
 const TeamLeadsModel = require("../models/TeamLeads.js");
 const InformBDEModel = require("../models/InformBDE.js");
@@ -1532,6 +1533,7 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
     const companyName = req.params.CompanyName;
     const newTempDate = new Date();
     const newData = req.body;
+    const socketIO = req.io;
 
 
     const Step = req.params.step;
@@ -3875,6 +3877,59 @@ router.post("/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
         }
         // Send success response
         res.status(201).send("Data sent");
+
+        // const bookingDate = new Date(newData.bookingDate);
+        // const bookingStartDate = bookingDate.setHours(0, 0, 0, 0);
+        // const bookingEndDate = bookingDate.setHours(23, 59, 59, 999);
+        // let servicesName = newData.services.map((service) => service.serviceName);
+
+        // const messageData = {
+        //   bdeName: newData.bdeName,
+        //   closeBy: newData.bdmName,
+        //   bookingDate: newData.bookingDate,
+        //   services: servicesName,
+        //   time: new Date().toLocaleString()
+        // };
+
+        // socketIO.emit("more-bookings-received", [messageData]);
+
+        // try {
+        //   // Find a chat within the date range for the current day
+        //   const chat = await ChatModel.findOne({
+        //     date: {
+        //       $gte: new Date(bookingStartDate),
+        //       $lte: new Date(bookingEndDate),
+        //     },
+        //   });
+
+        //   if (chat) {
+        //     // If a chat exists, push the new message into the existing messageData array
+        //     chat.messageData.push({
+        //       bookingBdeName: messageData.bdeName,
+        //       closeBy: messageData.closeBy,
+        //       bookingDate: messageData.bookingDate,
+        //       services: messageData.services,
+        //       time: messageData.time,
+        //     });
+        //     await chat.save(); // Save the updated chat
+        //   } else {
+        //     // If no chat exists, create a new one
+        //     const newChat = new ChatModel({
+        //       messageData: [{
+        //         bookingBdeName: messageData.bdeName,
+        //         closeBy: messageData.closeBy,
+        //         bookingDate: messageData.bookingDate,
+        //         services: messageData.services,
+        //         time: messageData.time,
+        //       }]
+        //     });
+        //     await newChat.save(); // Save the new chat
+        //   }
+
+        // } catch (error) {
+        //   console.log("Error saving bookings data in chats model :", error);
+        // }
+
       } else {
         res.status(404).json("Company Not found");
         return true;
@@ -6476,6 +6531,59 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
     }
     // Send success response
     res.status(201).send("Data sent");
+
+    // const bookingDate = new Date(newData.bookingDate);
+    // const bookingStartDate = bookingDate.setHours(0, 0, 0, 0);
+    // const bookingEndDate = bookingDate.setHours(23, 59, 59, 999);
+    // let servicesName = newData.services.map((service) => service.serviceName);
+
+    // const messageData = {
+    //   bdeName: newData.bdeName,
+    //   closeBy: newData.bdmName,
+    //   bookingDate: newData.bookingDate,
+    //   services: servicesName,
+    //   time: new Date().toLocaleTimeString()
+    // };
+
+    // io.emit("booking-received", [messageData]);
+
+    // try {
+    //   // Find a chat within the date range for the current day
+    //   const chat = await ChatModel.findOne({
+    //     date: {
+    //       $gte: new Date(bookingStartDate),
+    //       $lte: new Date(bookingEndDate),
+    //     },
+    //   });
+
+    //   if (chat) {
+    //     // If a chat exists, push the new message into the existing messageData array
+    //     chat.messageData.push({
+    //       bookingBdeName: messageData.bdeName,
+    //       closeBy: messageData.closeBy,
+    //       bookingDate: messageData.bookingDate,
+    //       services: messageData.services,
+    //       time: messageData.time,
+    //     });
+    //     await chat.save(); // Save the updated chat
+    //   } else {
+    //     // If no chat exists, create a new one
+    //     const newChat = new ChatModel({
+    //       messageData: [{
+    //         bookingBdeName: messageData.bdeName,
+    //         closeBy: messageData.closeBy,
+    //         bookingDate: messageData.bookingDate,
+    //         services: messageData.services,
+    //         time: messageData.time,
+    //       }]
+    //     });
+    //     await newChat.save(); // Save the new chat
+    //   }
+
+    // } catch (error) {
+    //   console.log("Error saving bookings data in chats model :", error);
+    // }
+
   } catch (error) {
     console.error("Error creating/updating data:", error);
     res.status(500).send("Error creating/updating data"); // Send an error response

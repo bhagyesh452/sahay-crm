@@ -12,6 +12,7 @@ const { Parser } = require('json2csv');
 const { State } = require('country-state-city');
 const FollowUpModel = require('../models/FollowUp.js');
 const adminModel = require("../models/Admin");
+const ChatModel = require("../models/ChatModel.js");
 const jwt = require('jsonwebtoken');
 const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
@@ -439,7 +440,7 @@ router.post("/update-undo-status/:id", async (req, res) => {
       "Company Name": company["Company Name"],
       ename,
       newStatus: previousStatus,
-      oldStatus:newStatus || company.Status,
+      oldStatus: newStatus || company.Status,
       properDate: new Date(),
       date: date || new Date().toISOString().substr(0, 10),
       time: time || new Date().toLocaleTimeString(),
@@ -3972,6 +3973,7 @@ router.get('/companies/searchforTeamLeads/:employeeName', async (req, res) => {
 router.post('/addProjection/:companyName', async (req, res) => {
   const { companyName } = req.params;
   const payload = req.body;
+  const socketIO = req.io;
 
   try {
     // Check if a projection entry exists for the company
@@ -4053,6 +4055,52 @@ router.post('/addProjection/:companyName', async (req, res) => {
       });
 
       await newCompany.save();
+
+      // const projectionDate = new Date(payload.date);
+      // const projectionStartDate = projectionDate.setHours(0, 0, 0, 0);
+      // const projectionEndDate = projectionDate.setHours(23, 59, 59, 999);
+
+      // const messageData = {
+      //   bdeName: payload.bdeName,
+      //   projectionAmount: payload.offeredPriceWithGst ? payload.offeredPriceWithGst : payload.offeredPrice,
+      //   time: new Date().toLocaleTimeString()
+      // };
+
+      // socketIO.emit("add-projection", [messageData]);
+
+      // try {
+      //   // Find a chat within the date range for the current day
+      //   const chat = await ChatModel.findOne({
+      //     date: {
+      //       $gte: new Date(projectionStartDate),
+      //       $lte: new Date(projectionEndDate),
+      //     },
+      //   });
+
+      //   if (chat) {
+      //     // If a chat exists, push the new message into the existing messageData array
+      //     chat.messageData.push({
+      //       projectionBdeName: messageData.bdeName,
+      //       projectionAmount: messageData.projectionAmount,
+      //       time: messageData.time,
+      //     });
+      //     await chat.save(); // Save the updated chat
+      //   } else {
+      //     // If no chat exists, create a new one
+      //     const newChat = new ChatModel({
+      //       messageData: [{
+      //         projectionBdeName: messageData.bdeName,
+      //         projectionAmount: messageData.projectionAmount,
+      //         time: messageData.time,
+      //       }]
+      //     });
+      //     await newChat.save(); // Save the new chat
+      //   }
+
+      // } catch (error) {
+      //   console.log("Error saving projection data in chats model :", error);
+      // }
+
       res.json({ result: true, message: "New company projection added", data: newCompany });
     }
 
@@ -4811,7 +4859,7 @@ const fetchLeads = async () => {
 
 
 // cron.schedule('0 10 * * *', async () => {
-cron.schedule('45 23 * * *', async () => { 
+cron.schedule('45 23 * * *', async () => {
   console.log('Running scheduled task at 11:45 PM');
   const currentDate = new Date();
 
@@ -4834,7 +4882,7 @@ cron.schedule('45 23 * * *', async () => {
             bdmAcceptStatus: 'NotForwarded',
             lastAssignedEmployee: lead.ename,
             extractedDate: currentDate,
-            bdmName:"",
+            bdmName: "",
           },
         },
         // { upsert: true }
