@@ -179,7 +179,7 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                                         backgroundColor:"#7258d1",
                                         color:"white",
                                         border:"none",
-                                        rotate:"-1deg"
+                                        rotate:"1deg"
                                     }}
                                     onClick={() => {
                                         setShowFeedbackDialog(false);
