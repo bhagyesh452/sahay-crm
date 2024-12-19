@@ -154,7 +154,7 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId, fetchU
                                                 className="option-main"
                                                 style={{ height: `${maxHeight}px` }} 
                                                 whileHover={{ scale: 1.1 }}
-                                                //onClick={() => handleAnswerSubmit(option)}
+                                                onClick={() => handleAnswerSubmit(option)}
                                             >
                                                 <div className="d-flex align-items-center justify-content-start">
                                                     <div className="opt-name">
