@@ -224,7 +224,7 @@ function App() {
             <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile isVicePresident={false} />} />
           </Route>
 
-          <Route element={bdmToken ? <VicePresidentLayout isVicePresident={true} /> : <Navigate to="/floormanager/login" />}>
+          <Route element={bdmToken ? <VicePresidentLayout isVicePresident={true} /> : <Navigate to="/vicePresident/login" />}>
             <Route path="/vicePresident/dashboard/:userId" element={<BdmDashboard />} isVicePresident={true} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
             <Route path="/vicePresident/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" isVicePresident={true} />} />
