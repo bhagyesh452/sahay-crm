@@ -127,6 +127,7 @@ function RelationshipManagerBookingBox() {
         return strTime;
     }
 
+    // =================socket io================================
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
             secure: true, // Use HTTPS
@@ -181,12 +182,6 @@ function RelationshipManagerBookingBox() {
             console.error("Error fetching data:", error.message);
         }
     };
-
-
-    useEffect(() => {
-        fetchData();
-
-    }, []);
 
     useEffect(() => {
         setLeadFormData(
@@ -354,28 +349,86 @@ function RelationshipManagerBookingBox() {
     };
 
     useEffect(() => {
+        fetchData();
         fetchRedesignedFormData();
     }, []);
 
     //-----------------services array-----------------------------
 
     const certificationLabels = [
-        "Start-Up India Certificate",
-        "Organization DSC",
-        "Director DSC",
+        "Pitch Deck Development ",
+        "Financial Modeling",
+        "DPR Development",
+        "CMA Report Development",
+        "Company Profile Write-Up",
+        "Business Profile",
+        "Seed Funding Support",
+        "Seed Fund Application",
+        "Angel Funding Support",
+        "VC Funding Support",
+        "I-Create",
+        "I-Create Application",
+        "MSME Hackathon 4.0",
+        "MSME Hackathon 4.0 Application",
+        "Chunauti",
+        "Nidhi Seed Support Scheme",
+        "Nidhi Prayash Yojna",
+        "NAIF",
+        "Raftaar",
+        "CSR Funding",
+        "Stand-Up India",
+        'USAID',
+        'UP Grant',
+        'DBS Grant',
+        'DBS Grant Application',
+        'MSME Innovation',
+        "MSME Hackathon",
+        'Gujarat Grant',
+        'CGTMSC',
+        "Income Tax Exemption",
+        "Income Tax Exemption Application",
+        'Mudra Loan',
+        'SIDBI Loan',
+        "Incubation Support"
     ];
 
     // 3. Merge with existing certifications
     const certificationLabelsNew = [
-        "Start-Up India Certificate",
-        "Organization DSC",
-        "Director DSC",
+        "Pitch Deck Development ",
+        "Financial Modeling",
+        "DPR Development",
+        "CMA Report Development",
+        "Company Profile Write-Up",
+        "Business Profile",
+        "Seed Funding Support",
+        "Seed Fund Application",
+        "Angel Funding Support",
+        "VC Funding Support",
+        "I-Create",
+        "I-Create Application",
+        "MSME Hackathon 4.0",
+        "MSME Hackathon 4.0 Application",
+        "Chunauti",
+        "Nidhi Seed Support Scheme",
+        "Nidhi Prayash Yojna",
+        "NAIF",
+        "Raftaar",
+        "CSR Funding",
+        "Stand-Up India",
+        'USAID',
+        'UP Grant',
+        'DBS Grant',
+        'DBS Grant Application',
+        'MSME Innovation',
+        "MSME Hackathon",
+        'Gujarat Grant',
+        'CGTMSC',
+        "Income Tax Exemption",
+        "Income Tax Exemption Application",
+        'Mudra Loan',
+        'SIDBI Loan',
+        "Incubation Support"
     ];
-
-    // Filter certification options
-    const certificationOptions = options.filter(option =>
-        certificationLabels.includes(option.label)
-    );
 
     useEffect(() => {
         if (currentCompanyName === "") {
