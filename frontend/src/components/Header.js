@@ -42,6 +42,7 @@ function Header({ name, id, designation, empProfile, gender }) {
   const [modalId, setModalId] = useState(false);
   const [questionData, setQuestionData] = useState([]);
   const navigate = useNavigate();
+  const [unansweredQuestions, setUnansweredQuestions] = useState([]);
   // Fetch initial data when user logs in
   const fetchData = async () => {
     try {
@@ -55,6 +56,48 @@ function Header({ name, id, designation, empProfile, gender }) {
       console.error("Error fetching data:", error.message);
     }
   };
+
+  const fetchUnansweredQuestions = async () => {
+    try {
+        const response = await axios.get(
+            `${secretKey}/question_related_api/questions/unanswered/${userId}`
+        );
+        console.log("Unanswered questions:", response.data);
+
+        if (response.data && response.data.data) {
+            const questionDetails = response.data.data; // Extract the data object from the response
+
+            // Set the question data in state
+            setQuestionData({
+                questionId: questionDetails.questionId,
+                question: questionDetails.question,
+                options: questionDetails.options,
+                correctOption: questionDetails.correctOption,
+                responses: questionDetails.responses,
+            });
+
+            // Save to localStorage
+            localStorage.setItem("currentQuestion", JSON.stringify({
+                questionId: questionDetails.questionId,
+                question: questionDetails.question,
+                options: questionDetails.options,
+                correctOption: questionDetails.correctOption,
+                responses: questionDetails.responses,
+            }));
+
+            // Show the modal
+            setModalId(true);
+        } else {
+            console.error("Invalid response format:", response.data);
+        }
+    } catch (error) {
+        console.error("Error fetching unanswered questions:", error.message);
+    }
+};
+
+  useEffect(() => {
+    fetchUnansweredQuestions();
+  }, [userId])
 
 
   useEffect(() => {
@@ -563,11 +606,14 @@ function Header({ name, id, designation, empProfile, gender }) {
       }} maxSnack={3}>
 
       </SnackbarProvider>
+
+      
       {modalId && <EmployeeQuestionModal
         open={modalId}
         onClose={() => { setModalId(false) }}
         questionData={questionData}
         employeeId={id}
+        fetchUnansweredQuestions={fetchUnansweredQuestions}
       />}
 
     </div>

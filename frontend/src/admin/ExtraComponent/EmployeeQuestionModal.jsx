@@ -5,7 +5,7 @@ import success from "../../assets/media/success.mp3";
 import failure from "../../assets/media/failure.mp3";
 import { motion, AnimatePresence } from "framer-motion";
 
-function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
+function EmployeeQuestionModal({ open, onClose, questionData, employeeId}) {
     const [feedback, setFeedback] = useState(""); // Response feedback
     const [isSubmitting, setIsSubmitting] = useState(false); // Prevent multiple clicks
     const [showFeedbackDialog, setShowFeedbackDialog] = useState(false); // Control feedback dialog

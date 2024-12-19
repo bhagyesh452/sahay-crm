@@ -457,6 +457,7 @@ router.post("/submit-answer", async (req, res) => {
         // Update the answer and check correctness
         assignedQuestion.answerGiven = trimmedSelectedAnswer;
         assignedQuestion.questionAnswered = true;
+        assignedQuestion.dateAnswered = new Date();
         assignedQuestion.isCorrect = trimmedCorrectOption === trimmedSelectedAnswer;
 
         // Save the updated employee document
@@ -688,6 +689,52 @@ router.put("/update-question", async (req, res) => {
     }
 });
 
+router.get("/questions/unanswered/:empId", async (req, res) => {
+    console.log("Received request to fetch the latest unanswered question for employee:", req.params.empId);
+    try {
+        const { empId } = req.params;
+
+        // Find the employee data and filter for unanswered questions
+        const employeeData = await EmployeeQuestionModel.findOne({
+            empId: empId,
+            "assignedQuestions.questionAnswered": false,
+        });
+
+        if (!employeeData) {
+            console.log("No unanswered questions found for the employee.");
+            return res.status(404).json({ message: "No unanswered questions found." });
+        }
+
+        // Extract the first unanswered question
+        const latestUnansweredQuestion = employeeData.assignedQuestions
+            .filter((q) => !q.questionAnswered && !q.isDeletedQuestion) // Filter unanswered and non-deleted questions
+            .sort((a, b) => new Date(b.dateAssigned) - new Date(a.dateAssigned))[0]; // Get the latest by dateAssigned
+
+        if (!latestUnansweredQuestion) {
+            console.log("No unanswered questions available.");
+            return res.status(404).json({ message: "No unanswered questions available." });
+        }
+
+        // Prepare the response structure
+        const response = {
+            id: employeeData._id, // Employee record ID
+            ename: employeeData.name, // Employee name
+            data: {
+                questionId: latestUnansweredQuestion.questionId,
+                question: latestUnansweredQuestion.question, // Question text
+                options: latestUnansweredQuestion.options, // Question options
+                correctOption: latestUnansweredQuestion.correctOption, // Correct answer
+                responses: latestUnansweredQuestion.responses, // Right and Wrong responses
+            },
+        };
+
+        console.log("Latest unanswered question:", response);
+        res.status(200).json(response);
+    } catch (error) {
+        console.error("Error fetching unanswered questions:", error);
+        res.status(500).json({ message: "Error fetching unanswered questions", error });
+    }
+});
 
 
 

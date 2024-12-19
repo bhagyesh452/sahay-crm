@@ -17,7 +17,8 @@ const employeeQuestionSchema = new mongoose.Schema({
                 right: { type: String },
                 wrong: { type: String },
             },
-            dateAssigned: { type: Date, required: true }, // Date the question was assigned
+            dateAssigned: { type: Date  }, // Date the question was assigned
+            dateAnswered: { type: Date  }, // Date the question was assigned
             answerGiven: { type: String }, // Employee's answer
             questionAnswered: { type: Boolean, default: false }, // Whether the employee has answered the question
             isCorrect: { type: Boolean }, // Whether the answer was correct
