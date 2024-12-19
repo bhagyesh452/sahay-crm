@@ -51,14 +51,23 @@ router.post("/post_form_data", async (req, res) => {
         // Define the standardized correct answer message
         const correctAnswerMessage = `❌ Your answer is incorrect. The correct answer is "${trimmedCorrectOption}".`;
 
-        // Remove ❌ or similar symbols and duplicate instances of the correctAnswerMessage
-        updatedWrongResponse = updatedWrongResponse.replace(/❌.*Your answer is incorrect\..*?<\/strong><\/p>/g, "").trim();
+        // // Remove ❌ or similar symbols and duplicate instances of the correctAnswerMessage
+        //updatedWrongResponse = updatedWrongResponse.replace(/❌.*Your answer is incorrect\..*?<\/strong><\/p>/g, "").trim();
 
-        // Check if the wrongResponse already includes the correctAnswerMessage
-        if (!updatedWrongResponse.includes(correctAnswerMessage)) {
-            // Construct a clean response
+        // Define the regex to match only the "Your answer is incorrect" part
+        const incorrectAnswerRegex = /❌.*Your answer is incorrect\..*?<\/p>/i;
+
+        if (incorrectAnswerRegex.test(wrongResponse)) {
+            // Remove only the incorrect answer part without touching other content
+            updatedWrongResponse = wrongResponse.replace(incorrectAnswerRegex, "").trim();
+
+            // Append the updated correctAnswerMessage
             updatedWrongResponse = `${correctAnswerMessage} ${updatedWrongResponse}`;
+        } else {
+            // If no "Your answer is incorrect" part exists, leave it unchanged
+            updatedWrongResponse = wrongResponse;
         }
+
 
         console.log("wrongResponse", wrongResponse)
         console.log("updatedWrong", updatedWrongResponse)
