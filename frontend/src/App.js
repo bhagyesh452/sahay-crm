@@ -114,16 +114,22 @@ import DataAnalystProfile from "./DataManager/Components/ExtraComponents/DataAna
 import RelationshipManagerLayout from "./RelationshipManager/Components/RelationshipManagerLayout.jsx";
 import RelationshipManagerLogin from "./RelationshipManager/Login/RelationshipManagerLogin.jsx";
 import RelationshipManagerDashboard from "./RelationshipManager/Dashboard/RelationshipManagerDashboard.jsx";
+import RelationshipManagerBookings from "./RelationshipManager/Bookings/RelationshipManagerBookings.jsx";
+import RelationshipManagerMyBookings from "./RelationshipManager/Bookings/RelationshipManagerMyBookings.jsx";
 
 // Graphic Designer Imports
 import GraphicDesignerLayout from "./GraphicDesigner/Components/GraphicDesignerLayout.jsx";
 import GraphicDesignerLogin from "./GraphicDesigner/Login/GraphicDesignerLogin.jsx";
 import GraphicDesignerDashboard from "./GraphicDesigner/Dashboard/GraphicDesignerDashboard.jsx";
+import GraphicDesignerBookings from "./GraphicDesigner/Bookings/GraphicDesignerBookings.jsx";
+import GraphicDesignerMyBookings from "./GraphicDesigner/Bookings/GraphicDesignerMyBookings.jsx";
 
 // Content Writer Imports
 import ContentWriterLayout from "./ContentWriter/Components/ContentWriterLayout.jsx";
 import ContentWriterLogin from "./ContentWriter/Login/ContentWriterLogin.jsx";
 import ContentWriterDashboard from "./ContentWriter/Dashboard/ContentWriterDashboard.jsx";
+import ContentWriterBookings from "./ContentWriter/Bookings/ContentWriterBookings.jsx";
+import ContentWriterMyBookings from "./ContentWriter/Bookings/ContentWriterMyBookings.jsx";
 
 // Finance Analyst Imports
 import FinanceAnalystLayout from "./FinanceAnalyst/Components/FinanceAnalystLayout.jsx";
@@ -154,6 +160,7 @@ import "../src/assets/sales_new_style.css"
 import BookingsTableView from "./admin/BookingsTableView.jsx";
 import AdminUploadQuestions from "./admin/AdminUploadQuestions.jsx";
 import AdminReportPanel from "./admin/AdminReportPanel.jsx";
+import VicePresidentLayout from "./BDM/Dashboard/VicePresidentLayout.jsx";
 
 function App() {
 
@@ -162,12 +169,16 @@ function App() {
   const [newtoken, setnewToken] = useState(localStorage.getItem("newtoken") || null);
   const [managerToken, setManagerToken] = useState(localStorage.getItem("managerToken") || null)
   const [bdmToken, setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
+  const [relationshipManagerToken, setRelationshipManagerToken] = useState(localStorage.getItem("relationshipManagerToken") || null)
+  const [graphicDesignerToken, setGraphicDesignerToken] = useState(localStorage.getItem("graphicDesignerToken") || null)
+  const [contentWriterToken, setContentWriterToken] = useState(localStorage.getItem("contentWriterToken") || null)
+  const [financeAnalystToken, setFinanceAnalystToken] = useState(localStorage.getItem("financeAnalystToken") || null)
   const [rmofcertificationToken, setrmofcertificationToken] = useState(localStorage.getItem("rmofcertificationToken" || null))
   const [adminExecutiveToken, setAdminExecutiveToken] = useState(localStorage.getItem("adminExecutiveToken" || null))
   const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
   const [hrToken, setHrToken] = useState(localStorage.getItem("hrToken") || null)
   const [recruiterToken, setRecruiterToken] = useState(localStorage.getItem("recruiterToken") || null)
- 
+  
   return (
     <div className="App">
       <BrowserRouter>
@@ -206,20 +217,31 @@ function App() {
           <Route path='/customer/dashboard/:email' element={<CustomerDashboard />} />
 
           {/* --------------------------------------------------floor-manager components---------------------------------------------------------- */}
-          <Route path="/floormanager/login" element={<BDMLogin setBdmToken={setBdmToken} />} />
+          <Route path="/floormanager/login" element={<BDMLogin setBdmToken={setBdmToken} isVicePresident={false} />} />
+          <Route path="/vicePresident/login" element={<BDMLogin setBdmToken={setBdmToken} isVicePresident={true} />} />
           {/* <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />}></Route>
           <Route path="/floormanager/leads/:userId" element={<BdmLeads />}></Route>
           <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />}></Route>
           <Route path="/floormanager/bookings/:userId" element={<BdmBookings />}></Route>
           <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} /> */}
-          <Route element={bdmToken ? <FloorManagerLayout /> : <Navigate to="/floormanager/login" />}>
-            <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} />
+          <Route element={bdmToken ? <FloorManagerLayout isVicePresident={false} /> : <Navigate to="/floormanager/login" />}>
+            <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} isVicePresident={false} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
-            <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" />} />
+            <Route path="/floormanager/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" isVicePresident={false} />} />
             {/* <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} /> */}
-            <Route path="/floormanager/teamleads/:userId" element={<EmployeeTeamLeadsCopy />} />
-            <Route path="/floormanager/bookings/:userId" element={<BdmBookings />} />
-            <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} />
+            <Route path="/floormanager/teamleads/:userId" element={<EmployeeTeamLeadsCopy isVicePresident={false} />} />
+            <Route path="/floormanager/bookings/:userId" element={<BdmBookings isVicePresident={false} />} />
+            <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile isVicePresident={false} />} />
+          </Route>
+
+          <Route element={bdmToken ? <VicePresidentLayout isVicePresident={true} /> : <Navigate to="/vicePresident/login" />}>
+            <Route path="/vicePresident/dashboard/:userId" element={<BdmDashboard />} isVicePresident={true} />
+            {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
+            <Route path="/vicePresident/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" isVicePresident={true} />} />
+            {/* <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} /> */}
+            <Route path="/vicePresident/teamleads/:userId" element={<EmployeeTeamLeadsCopy isVicePresident={true} />} />
+            <Route path="/vicePresident/bookings/:userId" element={<BdmBookings isVicePresident={true} />} />
+            <Route path="/vicePresident/:userId" element={<FloorManagerProfile isVicePresident={true} />} />
           </Route>
 
           {/* --------------------------------------------------Admin Head/rm-certification components---------------------------------------------------------- */}
@@ -345,29 +367,35 @@ function App() {
 
 
           {/**********************************************  relationship manager panel  ********************************************/}
-          <Route path="/relationship-manager/login" element={<RelationshipManagerLogin />} />
-          <Route element={<RelationshipManagerLayout />}>
+          <Route path="/relationship-manager/login" element={<RelationshipManagerLogin setRelationshipManagerToken={setRelationshipManagerToken} />} />
+          <Route element={relationshipManagerToken ? <RelationshipManagerLayout /> : <Navigate to="/relationship-manager/login" />}>
             <Route path="/relationship-manager/dashboard/:userId" element={<RelationshipManagerDashboard />} />
+            <Route path="/relationship-manager/received-booking-box/:userId" element={<RelationshipManagerBookings />} />
+            <Route path="/relationship-manager/mybookings/:userId" element={<RelationshipManagerMyBookings />} />
             <Route path="/relationship-manager-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
           {/**********************************************  graphic designer panel  ********************************************/}
-          <Route path="/graphic-designer/login" element={<GraphicDesignerLogin />} />
-          <Route element={<GraphicDesignerLayout />}>
+          <Route path="/graphic-designer/login" element={<GraphicDesignerLogin setGraphicDesignerToken={setGraphicDesignerToken} />} />
+          <Route element={graphicDesignerToken ? <GraphicDesignerLayout /> : <Navigate to="/graphic-designer/login" />}>
             <Route path="/graphic-designer/dashboard/:userId" element={<GraphicDesignerDashboard />} />
+            <Route path="/graphic-designer/received-booking-box/:userId" element={<GraphicDesignerBookings />} />
+            <Route path="/graphic-designer/mybookings/:userId" element={<GraphicDesignerMyBookings />} />
             <Route path="/graphic-designer-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
           {/**********************************************  content writer panel  ********************************************/}
-          <Route path="/content-writer/login" element={<ContentWriterLogin />} />
-          <Route element={<ContentWriterLayout />}>
+          <Route path="/content-writer/login" element={<ContentWriterLogin setContentWriterToken={setContentWriterToken} />} />
+          <Route element={contentWriterToken ? <ContentWriterLayout /> : <Navigate to="/content-writer/login" />}>
             <Route path="/content-writer/dashboard/:userId" element={<ContentWriterDashboard />} />
+            <Route path="/content-writer/received-booking-box/:userId" element={<ContentWriterBookings />} />
+            <Route path="/content-writer/mybookings/:userId" element={<ContentWriterMyBookings />} />
             <Route path="/content-writer-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
           {/**********************************************  finance analyst panel  ********************************************/}
-          <Route path="/finance-analyst/login" element={<FinanceAnalystLogin />} />
-          <Route element={<FinanceAnalystLayout />}>
+          <Route path="/finance-analyst/login" element={<FinanceAnalystLogin setFinanceAnalystToken={setFinanceAnalystToken} />} />
+          <Route element={financeAnalystToken ? <FinanceAnalystLayout /> : <Navigate to="/finance-analyst/login" />}>
             <Route path="/finance-analyst/dashboard/:userId" element={<FinanceAnalystDashboard />} />
             <Route path="/finance-analyst-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>

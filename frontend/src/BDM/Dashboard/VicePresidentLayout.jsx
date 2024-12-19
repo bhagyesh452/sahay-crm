@@ -7,7 +7,7 @@ import Navbar from '../Components/Navbar/Navbar.jsx';
 import Chat from "../../components/Chat.jsx";
 import { IoChatboxEllipsesSharp } from "react-icons/io5";
 
-function FloorManagerLayout({isVicePresident}) {
+function VicePresidentLayout({isVicePresident}) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
@@ -264,4 +264,4 @@ function FloorManagerLayout({isVicePresident}) {
     );
 }
 
-export default FloorManagerLayout;
+export default VicePresidentLayout;

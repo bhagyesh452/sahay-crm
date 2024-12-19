@@ -10,7 +10,7 @@ const employeeQuestionSchema = new mongoose.Schema({
             slotIndex: { type: String, required: true }, // The slot from which the question was assigned
             slotId: { type: mongoose.Schema.Types.ObjectId, ref: "AdminExcerciseQuestion" }, // Reference to the question
             questionId: { type: mongoose.Schema.Types.ObjectId, ref: "AdminExcerciseQuestion.questions" }, // Reference to the question
-            question: { type: String, required: true }, // Question
+            question: { type: String, required: true, unique:true }, // Question
             options: { type: [String], required: true }, // Options
             correctOption: { type: String, required: true }, // Index of the correct option
             responses: {

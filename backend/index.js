@@ -306,7 +306,7 @@ app.post("/api/employeelogin", async (req, res) => {
   try {
     // Use .select() to limit fields retrieved from the database
     const user = await adminModel.findOne({ email, password }).select('email password designation _id').lean();
-
+    
     if (!user) {
       // If user is not found
       return res.status(401).json({ message: "Invalid email or password" });
@@ -642,11 +642,12 @@ app.post("/api/bdmlogin", async (req, res) => {
     email: email,
     password: password,
   });
+  // console.log("user" , user)
   //console.log(user)M
   if (!user) {
     // If user is not found
     return res.status(401).json({ message: "Invalid email or password" });
-  } else if (user.designation !== "Sales Manager") {
+  } else if (user.designation !== "Sales Manager" && user.designation !== "Vice President") {
     // If designation is incorrect
     return res.status(401).json({ message: "Designation is incorrect" });
   } else {
@@ -659,6 +660,82 @@ app.post("/api/bdmlogin", async (req, res) => {
     //socketIO.emit("Employee-login");
   }
 });
+
+app.post("/api/relationshipmanagerlogin", async (req, res) => {
+  const { email, password } = req.body;
+  //console.log(email,password)
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+  //console.log(user)M
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "Relationship Manager") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const relationshipManagerToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ relationshipManagerToken: relationshipManagerToken, userId: user._id });
+    //socketIO.emit("Employee-login");
+  }
+});
+
+app.post("/api/graphicdesignerlogin", async (req, res) => {
+  const { email, password } = req.body;
+  //console.log(email,password)
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+  //console.log(user)M
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "Graphic Designer") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const graphicDesignerToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ graphicDesignerToken: graphicDesignerToken, userId: user._id });
+    //socketIO.emit("Employee-login");
+  }
+});
+
+app.post("/api/contentwriterlogin", async (req, res) => {
+  const { email, password } = req.body;
+  //console.log(email,password)
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+  //console.log(user)M
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "Content Writer") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const contentwriterToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ contentwriterToken: contentwriterToken, userId: user._id });
+    //socketIO.emit("Employee-login");
+  }
+});
+
 app.post("/api/processingLogin", async (req, res) => {
   const { username, password } = req.body;
 
