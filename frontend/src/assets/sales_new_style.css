@@ -588,12 +588,15 @@
     color: #5c5c5c;
     border: 2px solid #aaaaaa;
     box-shadow: 6px 6px 10px 1px #585858;
+    display: flex;
+    align-items: center;
 }
 .option-text
 {
     margin-left: 10px;
     font-size: 14px;
     font-weight: 500;
+    width: calc(100% - 40px);
 }
 .opt-row
 {
