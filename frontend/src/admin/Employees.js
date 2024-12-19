@@ -1022,7 +1022,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                 (adminName === "Nimesh" ||
                   adminName === "Ronak Kumar" ||
                   adminName === "shivangi" ||
-                  adminName === "Karan") && (
+                  adminName === "Karan" || 
+                  adminName === "Pratik") && (
                   <>
                     <th>
                       <div className='d-flex align-items-center justify-content-center position-relative'>
@@ -1144,7 +1145,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         {calculateProbationStatus(item.jdate)}
                       </span>
                     </td> */}
-                    {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && (
+                    {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan"|| adminName === "Pratik") && (
                       <>
                         <td>
                           {formattedDate(item.AddedOn) === "Invalid Date"
@@ -1301,7 +1302,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         Branch Office
                       </button>
                     </th>
-                    {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <> <th>
+                    {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan"|| adminName === "Pratik") && <> <th>
                       <button
                         onClick={sortDateByAddedOn}
                         className="table-sort"
@@ -1365,9 +1366,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         <td>{formattedDate(item.jdate)}</td>
                         <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
                         <td>{item.branchOffice}</td>
-                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan")
-                          &&
-
+                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan" || 
+                  adminName === "Pratik") &&
                           <>
                             <td>
                               {formattedDate(item.AddedOn) === "Invalid Date"

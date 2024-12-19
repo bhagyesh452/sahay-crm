@@ -511,8 +511,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, setDeletedEmployee
                 </div>
               </th>
 
-              {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
-                &&
+              {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan"||  adminName === "Pratik") &&
                 <>
                   {/* <th>Probation Status</th> */}
                   <th>
@@ -665,8 +664,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, setDeletedEmployee
                             {calculateProbationStatus(item.jdate)}
                           </span>
                         </td> */}
-                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
-                          &&
+                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan"|| adminName === "Pratik") &&
                           <>
                             <td>
                               {formattedDate(item.AddedOn) === "Invalid Date"
@@ -848,7 +846,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, setDeletedEmployee
                           Branch Office
                         </button>
                       </th>
-                      {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <> <th>
+                      {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan"|| adminName === "Pratik") && <> <th>
                         <button
                           //onClick={sortDateByAddedOn}
                           className="table-sort"
@@ -895,8 +893,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, setDeletedEmployee
                           <td>{formatDateFinal(item.jdate)}</td>
                           <td>{item.designation}</td>
                           <td>{item.branchOffice}</td>
-                          {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
-                            &&
+                          {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan"||  adminName === "Pratik") &&
                             <>
                               <td>
                                 {formatDate(item.AddedOn) === "Invalid Date"
