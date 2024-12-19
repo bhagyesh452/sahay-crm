@@ -161,6 +161,7 @@ import BookingsTableView from "./admin/BookingsTableView.jsx";
 import AdminUploadQuestions from "./admin/AdminUploadQuestions.jsx";
 import AdminReportPanel from "./admin/AdminReportPanel.jsx";
 import VicePresidentLayout from "./BDM/Dashboard/VicePresidentLayout.jsx";
+import Service from "./admin/Service/Service.jsx";
 
 function App() {
 
@@ -332,6 +333,7 @@ function App() {
             <Route path="/md/bookings/Addbookings" element={<RedesignedForm />} />
             <Route path="/md/reportPanel" element={<AdminReportPanel />} />
             {/* <Route path="/md/servicesandschemes" element={<Services />} /> */}
+            <Route path="/md/servicesandschemes" element={<Service />} />
             <Route path="/md/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
             <Route path="/md/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />
           </Route>

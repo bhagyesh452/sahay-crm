@@ -76,7 +76,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                {(adminName === "Krunal Pithadia" || adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") &&
+                {(adminName === "Krunal Pithadia" || adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan" || adminName === "Pratik") &&
                   <li
                     className={
                       location.pathname === "/md/leads"
@@ -115,7 +115,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && <li
+                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan"|| adminName === "Pratik") && <li
                   className={
                     location.pathname === "/md/uploadQuestions"
                       ? "nav-item active"
@@ -134,7 +134,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>}
-                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && <li
+                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan" || adminName === "Pratik") && <li
                   className={
                     location.pathname === "/md/reportPanel"
                       ? "nav-item active"
@@ -153,14 +153,25 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>}
-                <li
+                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan" || adminName === "Pratik") && <li
                   className={
                     location.pathname === "/md/servicesandschemes"
                       ? "nav-item active"
                       : "nav-item"
                   }
                 >
-                </li>
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    to="/md/servicesandschemes"
+                  >
+                    <a className="nav-link" href="./">
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                        <GrDocumentStore style={{ height: "22px", width: "15px" }} />
+                      </span>
+                      <span className="nav-link-title">Schemes and Services</span>
+                    </a>
+                  </Link>
+                </li>}
               </ul>
 
             </div>
