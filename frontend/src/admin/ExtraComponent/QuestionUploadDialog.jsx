@@ -22,18 +22,20 @@ import { MdDelete } from "react-icons/md";
 import { AiOutlineDownload } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
-import Swal from "sweetalert2"
+import Swal from "sweetalert2";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
-function QuestionUploadDialog({ 
-    dialogOpen, 
-    handleDialogToggle, 
+function QuestionUploadDialog({
+    dialogOpen,
+    handleDialogToggle,
     completeData,
     editMode,
     selectedQuestionData,
     onSubmit,
     setEditMode,
     fetchingData
- }) {
+}) {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [uploadMethod, setUploadMethod] = useState("form");
     const [errors, setErrors] = useState({});
@@ -85,7 +87,13 @@ function QuestionUploadDialog({
                 }
             });
 
-            //console.log("Valid Slots Before Adding New Slots:", validSlots);
+            // Ensure at least 2 slots are available
+            const enabledSlots = validSlots.filter((slot) => !slot.disabled);
+            if (enabledSlots.length === 1) {
+                validSlots.push(
+                    { label: `slot ${maxSlotIndex + 1}`, disabled: false }
+                );
+            }
 
             // Add next two slots only if all current slots are full (at 45 questions)
             if (!validSlots.some((slot) => !slot.disabled)) {
@@ -268,58 +276,58 @@ function QuestionUploadDialog({
         }
     };
 
-// Handle Submit for QuestionUploadDialog
-const handleUpdateQuestion = async () => {
-    const payload = {
-        questionId:selectedQuestionData._id,
-        question: formData.question,
-        options: [formData.option1, formData.option2, formData.option3, formData.option4],
-        correctOption: [formData.option1, formData.option2, formData.option3, formData.option4][parseInt(formData.correctOption, 10)],
-        rightResponse: formData.rightResponse,
-        wrongResponse: formData.wrongResponse,
-        slot: formData.slot,
+    // Handle Submit for QuestionUploadDialog
+    const handleUpdateQuestion = async () => {
+        const payload = {
+            questionId: selectedQuestionData._id,
+            question: formData.question,
+            options: [formData.option1, formData.option2, formData.option3, formData.option4],
+            correctOption: [formData.option1, formData.option2, formData.option3, formData.option4][parseInt(formData.correctOption, 10)],
+            rightResponse: formData.rightResponse,
+            wrongResponse: formData.wrongResponse,
+            slot: formData.slot,
+        };
+        console.log("payload", payload)
+        try {
+            const response = await axios.put(`${secretKey}/question_related_api/update-question`, payload);
+            Swal.fire("Updated!", "The question has been updated successfully.", "success");
+            handleDialogToggle();
+            fetchingData();
+        } catch (error) {
+            console.error("Error updating question", error);
+            Swal.fire("Error!", "Failed to update the question.", "error");
+        }
     };
-    console.log("payload" , payload)
-    try {
-        const response = await axios.put(`${secretKey}/question_related_api/update-question`, payload);
-        Swal.fire("Updated!", "The question has been updated successfully.", "success");
-        handleDialogToggle();
-        fetchingData();
-    } catch (error) {
-        console.error("Error updating question", error);
-        Swal.fire("Error!", "Failed to update the question.", "error");
-    }
-};
 
-// Populate form data in edit mode
-useEffect(() => {
-    if (editMode && selectedQuestionData) {
-        const { question, options, correctOption, responses, slotIndex } = selectedQuestionData;
-        setFormData({
-            question,
-            option1: options[0],
-            option2: options[1],
-            option3: options[2],
-            option4: options[3],
-            correctOption: options.indexOf(correctOption).toString(),
-            rightResponse: responses?.right || "",
-            wrongResponse: responses?.wrong || "",
-            slot: slotIndex || "",
-        });
-    } else {
-        setFormData({
-            question: "",
-            option1: "",
-            option2: "",
-            option3: "",
-            option4: "",
-            correctOption: "",
-            rightResponse: "",
-            wrongResponse: "",
-            slot: "",
-        });
-    }
-}, [editMode, selectedQuestionData]);
+    // Populate form data in edit mode
+    useEffect(() => {
+        if (editMode && selectedQuestionData) {
+            const { question, options, correctOption, responses, slotIndex } = selectedQuestionData;
+            setFormData({
+                question,
+                option1: options[0],
+                option2: options[1],
+                option3: options[2],
+                option4: options[3],
+                correctOption: options.indexOf(correctOption).toString(),
+                rightResponse: responses?.right || "",
+                wrongResponse: responses?.wrong || "",
+                slot: slotIndex || "",
+            });
+        } else {
+            setFormData({
+                question: "",
+                option1: "",
+                option2: "",
+                option3: "",
+                option4: "",
+                correctOption: "",
+                rightResponse: "",
+                wrongResponse: "",
+                slot: "",
+            });
+        }
+    }, [editMode, selectedQuestionData]);
 
     return (
         <Dialog
@@ -338,7 +346,7 @@ useEffect(() => {
         >
             <DialogTitle>
                 <div className="d-flex align-items-center justify-content-between">
-                    <div>{editMode ? "Edit Question" :  "Upload Questions"}</div>
+                    <div>{editMode ? "Edit Question" : "Upload Questions"}</div>
                     <div>
                         <button type="button"
                             className="btn-close new_question_dailog_button"
@@ -456,7 +464,7 @@ useEffect(() => {
                                 >
                                     {[0, 1, 2, 3].map((index) => (
                                         <FormControlLabel
-                                           
+
                                             key={index}
                                             value={`${index}`}
                                             control={<Radio />}
@@ -469,33 +477,27 @@ useEffect(() => {
                                 )}
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField
-                                    label="Right Response"
-                                    name="rightResponse"
+                                <label>Right Response</label>
+                                <ReactQuill
+                                    theme="snow"
+                                    //name="rightResponse"
                                     value={formData.rightResponse}
-                                    onChange={handleFormChange}
-                                    fullWidth
-                                    size="small"
-                                    error={!!errors.rightResponse}
-                                    helperText={errors.rightResponse}
-                                    multiline // Enable textarea
-                                    rows={3} // Number of rows for the textarea
-                                    variant="outlined"
+                                    onChange={(value) =>
+                                        setFormData((prev) => ({ ...prev, rightResponse: value }))
+                                    }
+                                    placeholder="Enter the response for correct answers..."
                                 />
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField
-                                    label="Wrong Response"
-                                    name="wrongResponse"
+                                <label>Wrong Response</label>
+                                <ReactQuill
+                                    theme="snow"
+                                    //name='wrongResponse'
                                     value={formData.wrongResponse}
-                                    onChange={handleFormChange}
-                                    fullWidth
-                                    size="small"
-                                    error={!!errors.wrongResponse}
-                                    helperText={errors.wrongResponse}
-                                    multiline // Enable textarea
-                                    rows={3} // Number of rows for the textarea
-                                    variant="outlined"
+                                    onChange={(value) =>
+                                        setFormData((prev) => ({ ...prev, wrongResponse: value }))
+                                    }
+                                    placeholder="Enter the response for incorrect answers..."
                                 />
                             </Grid>
                         </>

@@ -394,26 +394,6 @@ function Received_booking_box() {
 
   //-----------------services array-----------------------------
 
-  // const certificationLabels = [
-  //     "Start-Up India Certificate",
-  //     "MSME/UDYAM Certificate",
-  //     "ISO Certificate",
-  //     "IEC CODE Certificate",
-  //     "BIS Certificate",
-  //     "NSIC Certificate",
-  //     "FSSAI Certificate",
-  //     "APEDA Certificate",
-  //     "GST Certificate",
-  //     "Company Incorporation",
-  //     "Trademark Registration",
-  //     "Copyright Registration",
-  //     "Patent Registration",
-  //     "Organization DSC",
-  //     "Director DSC",
-  //     "Self Certification",
-  //     "GeM"
-  // ];
-
   const certificationLabels = [
     "Start-Up India Certificate",
     "Company Incorporation",

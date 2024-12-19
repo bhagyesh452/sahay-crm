@@ -161,6 +161,7 @@ import BookingsTableView from "./admin/BookingsTableView.jsx";
 import AdminUploadQuestions from "./admin/AdminUploadQuestions.jsx";
 import AdminReportPanel from "./admin/AdminReportPanel.jsx";
 import VicePresidentLayout from "./BDM/Dashboard/VicePresidentLayout.jsx";
+import Service from "./admin/Service/Service.jsx";
 
 function App() {
 
@@ -234,7 +235,7 @@ function App() {
             <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile isVicePresident={false} />} />
           </Route>
 
-          <Route element={bdmToken ? <VicePresidentLayout isVicePresident={true} /> : <Navigate to="/floormanager/login" />}>
+          <Route element={bdmToken ? <VicePresidentLayout isVicePresident={true} /> : <Navigate to="/vicePresident/login" />}>
             <Route path="/vicePresident/dashboard/:userId" element={<BdmDashboard />} isVicePresident={true} />
             {/* <Route path="/floormanager/leads/:userId" element={<BdmLeads />} /> */}
             <Route path="/vicePresident/leads/:userId" element={<EmployeePanelCopy fordesignation="floormanager" isVicePresident={true} />} />
@@ -332,6 +333,7 @@ function App() {
             <Route path="/md/bookings/Addbookings" element={<RedesignedForm />} />
             <Route path="/md/reportPanel" element={<AdminReportPanel />} />
             {/* <Route path="/md/servicesandschemes" element={<Services />} /> */}
+            <Route path="/md/servicesandschemes" element={<Service />} />
             <Route path="/md/employeeProfileView/:userId" element={<AdminEmployeeProfile />} />
             <Route path="/md/deletedEmployeeProfileView/:userId" element={<AdminEmployeeProfile />} />
           </Route>

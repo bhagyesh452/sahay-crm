@@ -259,6 +259,10 @@ const TempSchema = new mongoose.Schema({
     type:Array,
     default:[]
   },
+  servicesTakenByRmOfFunding:{
+    type:Array,
+    default:[]
+  },
 });
 
 const RedesignedLeadformSchema = new mongoose.Schema({
@@ -415,7 +419,23 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   permanentlDeleteDateFromAdminExecutive:{
     type:Date
   },
-
+  servicesTakenByRmOfFunding:{
+    type:Array,
+    default:[]
+  },
+  isVisibleToRmOfFunding:{
+    type:Boolean,
+    default:true
+  },
+  displayOfDateForRmOfFunding:{
+    type:Date,
+  },
+  permanentlDeleteFromRmOfFunding:{
+    type:Boolean
+  },
+  permanentlDeleteDateFromRmOfFunding:{
+    type:Date
+  },
 
 });
 

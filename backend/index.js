@@ -69,8 +69,10 @@ const EmployeeDraftAPI = require("./helpers/EmployeeDraftApi.js");
 const AttendanceAPI = require("./helpers/AttendanceApi.js");
 const LastEmployeeIdAPI = require("./helpers/LastEmployeeIdChanger.js");
 const DepartmentAPI = require("./helpers/DepartmentApi.js");
+const DepartmentsAPI = require("./helpers/DepartmentsApi.js");
 const ServicesDraftAPI = require("./helpers/ServicesDraftApi.js");
 const ServicesAPI = require("./helpers/ServicesApi.js");
+const ServiceAPI = require("./helpers/ServiceApi.js");
 const ExpenseReportAPI = require("./helpers/ExpenseReportApi.js");
 const RalationshipManagerAPI = require("./helpers/RelationshipManagerApi.js");
 const GraphicDesignerAPI = require("./helpers/GraphicDesignerApi.js");
@@ -155,13 +157,27 @@ app.use('/api/employeeDraft', EmployeeDraftAPI);
 app.use('/api/attendance', AttendanceAPI);
 app.use('/api/lastEmployeeId', LastEmployeeIdAPI);
 app.use('/api/department', DepartmentAPI);
+app.use('/api/departments', DepartmentsAPI);
 app.use('/api/serviceDraft', ServicesDraftAPI);
+app.use('/api/service', ServiceAPI);
 app.use('/api/services', ServicesAPI);
 app.use('/api/expense', ExpenseReportAPI);
-app.use('/api/relationshipManager', RalationshipManagerAPI);
-app.use('/api/graphicDesigner', GraphicDesignerAPI);
-app.use('/api/financeAnalyst', FinanceAnalystAPI);
-app.use('/api/contentWriter', ContentWriterAPI);
+app.use('/api/relationshipManager', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, RalationshipManagerAPI);
+app.use('/api/graphicDesigner', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, GraphicDesignerAPI);
+app.use('/api/financeAnalyst', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, FinanceAnalystAPI);
+app.use('/api/contentWriter', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, ContentWriterAPI);
 app.use('/api/chats', ChatAPI);
 app.use('/api/projection', (req, res, next) => {
   req.io = socketIO;
@@ -306,7 +322,7 @@ app.post("/api/employeelogin", async (req, res) => {
   try {
     // Use .select() to limit fields retrieved from the database
     const user = await adminModel.findOne({ email, password }).select('email password designation _id').lean();
-    
+
     if (!user) {
       // If user is not found
       return res.status(401).json({ message: "Invalid email or password" });

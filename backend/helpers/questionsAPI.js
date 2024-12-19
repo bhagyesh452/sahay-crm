@@ -48,17 +48,18 @@ router.post("/post_form_data", async (req, res) => {
         // Ensure wrongResponse starts correctly and append correctOption
         let updatedWrongResponse = wrongResponse.trim();
 
-        // Remove ❌ or similar symbols if present
-        if (updatedWrongResponse.startsWith("❌")) {
-            updatedWrongResponse = updatedWrongResponse.substring(1).trim(); // Remove the cross symbol
+        // Define the standardized correct answer message
+        const correctAnswerMessage = `❌ Your answer is incorrect. The correct answer is "${trimmedCorrectOption}".`;
+
+        // Remove ❌ or similar symbols and duplicate instances of the correctAnswerMessage
+        updatedWrongResponse = updatedWrongResponse.replace(/❌.*Your answer is incorrect\..*?<\/strong><\/p>/g, "").trim();
+
+        // Check if the wrongResponse already includes the correctAnswerMessage
+        if (!updatedWrongResponse.includes(correctAnswerMessage)) {
+            // Construct a clean response
+            updatedWrongResponse = `${correctAnswerMessage} ${updatedWrongResponse}`;
         }
 
-        // Check and update the message
-        if (updatedWrongResponse.startsWith("Your answer is incorrect.")) {
-            updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
-        } else {
-            updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
-        }
         console.log("wrongResponse", wrongResponse)
         console.log("updatedWrong", updatedWrongResponse)
 
@@ -137,14 +138,28 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
 
             // Map the Excel keys to match expected keys
             const question = row['Question'];
-            const option1 = row['Option 1'];
-            const option2 = row['Option 2'];
-            const option3 = row['Option 3'];
-            const option4 = row['Option 4'];
-            const correctOption = row['Correct Option'];
+            let option1 = row['Option 1'];
+            let option2 = row['Option 2'];
+            let option3 = row['Option 3'];
+            let option4 = row['Option 4'];
+            let correctOption = row['Correct Option'];
             const rightResponse = row['Right Response'];
             const wrongResponse = row['Wrong Response'];
 
+            // Convert numeric options back to string if they represent percentages
+            const formatOption = (option) => {
+                if (typeof option === 'number' && option >= 0 && option <= 1) {
+                    // Convert fractions back to percentage format
+                    return `${option * 100}%`;
+                }
+                return String(option).trim(); // Otherwise, return as string
+            };
+
+            option1 = formatOption(option1);
+            option2 = formatOption(option2);
+            option3 = formatOption(option3);
+            option4 = formatOption(option4);
+            correctOption = formatOption(correctOption); // Format correctOption consistently
             // Validate fields
             if (!question || !option1 || !option2 || !option3 || !option4 || !correctOption) {
                 console.log(`Row ${index + 1} skipped: Missing required fields.`);
@@ -169,11 +184,15 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
                 updatedWrongResponse = updatedWrongResponse.substring(1).trim(); // Remove the cross symbol
             }
 
-            // Check and update the message
+            // Check if the response already includes "Your answer is incorrect."
             if (updatedWrongResponse.startsWith("Your answer is incorrect.")) {
-                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+                // Check if it already includes the correct option
+                if (!updatedWrongResponse.includes(trimmedCorrectOption)) {
+                    updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is "${trimmedCorrectOption}".` + updatedWrongResponse.substring("Your answer is incorrect.".length).trim();
+                }
             } else {
-                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+                // Append the correct answer to the message
+                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is "${trimmedCorrectOption}".` + (updatedWrongResponse ? ` ${updatedWrongResponse}` : "");
             }
 
             console.log("Original Wrong Response:", row['Wrong Response']);
@@ -316,7 +335,6 @@ router.get("/available-slots", async (req, res) => {
     }
 });
 
-
 router.post("/push-questions", async (req, res) => {
     const socketIO = req.io;
     console.log("Processing push-questions...");
@@ -380,6 +398,7 @@ router.post("/push-questions", async (req, res) => {
                 correctOption: questionDetails.correctOption,
                 responses: questionDetails.responses,
                 dateAssigned: new Date(),
+                questionAnswered: false,
             });
 
             socketIO.emit(`question_assigned`, {
@@ -438,6 +457,8 @@ router.post("/submit-answer", async (req, res) => {
 
         // Update the answer and check correctness
         assignedQuestion.answerGiven = trimmedSelectedAnswer;
+        assignedQuestion.questionAnswered = true;
+        assignedQuestion.dateAnswered = new Date();
         assignedQuestion.isCorrect = trimmedCorrectOption === trimmedSelectedAnswer;
 
         // Save the updated employee document
@@ -669,6 +690,52 @@ router.put("/update-question", async (req, res) => {
     }
 });
 
+router.get("/questions/unanswered/:empId", async (req, res) => {
+    console.log("Received request to fetch the latest unanswered question for employee:", req.params.empId);
+    try {
+        const { empId } = req.params;
+
+        // Find the employee data and filter for unanswered questions
+        const employeeData = await EmployeeQuestionModel.findOne({
+            empId: empId,
+            "assignedQuestions.questionAnswered": false,
+        });
+
+        if (!employeeData) {
+            console.log("No unanswered questions found for the employee.");
+            return res.status(404).json({ message: "No unanswered questions found." });
+        }
+
+        // Extract the first unanswered question
+        const latestUnansweredQuestion = employeeData.assignedQuestions
+            .filter((q) => !q.questionAnswered && !q.isDeletedQuestion) // Filter unanswered and non-deleted questions
+            .sort((a, b) => new Date(b.dateAssigned) - new Date(a.dateAssigned))[0]; // Get the latest by dateAssigned
+
+        if (!latestUnansweredQuestion) {
+            console.log("No unanswered questions available.");
+            return res.status(404).json({ message: "No unanswered questions available." });
+        }
+
+        // Prepare the response structure
+        const response = {
+            id: employeeData._id, // Employee record ID
+            ename: employeeData.name, // Employee name
+            data: {
+                questionId: latestUnansweredQuestion.questionId,
+                question: latestUnansweredQuestion.question, // Question text
+                options: latestUnansweredQuestion.options, // Question options
+                correctOption: latestUnansweredQuestion.correctOption, // Correct answer
+                responses: latestUnansweredQuestion.responses, // Right and Wrong responses
+            },
+        };
+
+        console.log("Latest unanswered question:", response);
+        res.status(200).json(response);
+    } catch (error) {
+        console.error("Error fetching unanswered questions:", error);
+        res.status(500).json({ message: "Error fetching unanswered questions", error });
+    }
+});
 
 
 

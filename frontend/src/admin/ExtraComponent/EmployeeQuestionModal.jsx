@@ -5,12 +5,26 @@ import success from "../../assets/media/success.mp3";
 import failure from "../../assets/media/failure.mp3";
 import { motion, AnimatePresence } from "framer-motion";
 
-function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
+function EmployeeQuestionModal({ open, onClose, questionData, employeeId, fetchUnansweredQuestions }) {
     const [feedback, setFeedback] = useState(""); // Response feedback
     const [isSubmitting, setIsSubmitting] = useState(false); // Prevent multiple clicks
     const [showFeedbackDialog, setShowFeedbackDialog] = useState(false); // Control feedback dialog
     const [feedbackType, setFeedbackType] = useState(""); // "correct" or "wrong"
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [maxHeight, setMaxHeight] = useState(0);
+
+    useEffect(() => {
+        // Calculate the maximum height of all options
+        const optionElements = document.querySelectorAll(".option-main");
+        let max = 0;
+        optionElements.forEach((option) => {
+          const height = option.scrollHeight;
+          if (height > max) {
+            max = height;
+          }
+        });
+        setMaxHeight(max);
+      }, [questionData]);
 
     const handleAnswerSubmit = async (selectedAnswer) => {
         if (isSubmitting) return; // Prevent duplicate submissions
@@ -22,8 +36,11 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                 questionId: questionData?.questionId,
                 selectedAnswer,
             });
+            console.log("response", response.data)
+
 
             const { isCorrect, response: feedbackResponse } = response.data;
+            console.log("feedbackresponse", feedbackResponse)
             setFeedback(feedbackResponse);
 
             if (isCorrect) {
@@ -111,11 +128,12 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
     return (
         <AnimatePresence>
             {open && !showFeedbackDialog && (
-                <Dialog open={open} maxWidth="sm" fullWidth className="question-model" onClose={(event, reason) => {
-                    if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
-                        onClose(); // Only allow manual calls to close the dialog
-                    }
-                }}>
+                <Dialog open={open} maxWidth="sm" fullWidth className="question-model"
+                    onClose={(event, reason) => {
+                        if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+                            onClose(); // Only allow manual calls to close the dialog
+                        }
+                    }}>
                     <DialogContent style={{ padding: 0 }}>
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
@@ -134,10 +152,17 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                                         <div className="col-6 mt-5" key={index}>
                                             <motion.div
                                                 className="option-main"
+                                                style={{ height: `${maxHeight}px` }} 
                                                 whileHover={{ scale: 1.1 }}
                                                 onClick={() => handleAnswerSubmit(option)}
                                             >
-                                                <div className="option-text">{option}</div>
+                                                <div className="d-flex align-items-center justify-content-start">
+                                                    <div className="opt-name">
+                                                        {String.fromCharCode(65 + index)} {/* Convert index to letter */}
+                                                    </div>
+                                                    <div className="option-text">{option}</div>
+                                                </div>
+
                                             </motion.div>
                                         </div>
                                     ))}
@@ -149,7 +174,12 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
             )}
 
             {showFeedbackDialog && (
-                <Dialog open={showFeedbackDialog} onClose={onClose} maxWidth="sm" fullWidth className="queResposepopup">
+                <Dialog open={showFeedbackDialog}
+                    onClose={(event, reason) => {
+                        if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+                            onClose(); // Only allow manual calls to close the dialog
+                        }
+                    }} maxWidth="sm" fullWidth className="queResposepopup">
                     <DialogContent style={{ padding: 0 }}>
                         <motion.div
                             initial={{ scale: 0.5, opacity: 0 }}
@@ -167,23 +197,27 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                                 backgroundColor: feedbackType === "correct" ? "#4caf50" : "#f44336",
                                 color: "#fff",
                                 borderRadius: "10px",
+                                whiteSpace: "pre-wrap", // Preserve spaces and line breaks
                             }}
                         >
                             <div className="que-main">
                                 <div className="question-number">
                                     {feedbackType === "correct" ? "🎉 Correct!" : "❌ Wrong!"}
                                 </div>
-                                <div className="question-text">{feedback}</div>
+                                <div className="question-text" dangerouslySetInnerHTML={{ __html: feedback }}></div>
+                                {/* <div className="question-text">{feedback}</div> */}
                                 <button className="btn"
                                     style={{
-                                        backgroundColor:"#7258d1",
-                                        color:"white",
-                                        border:"none",
-                                        rotate:"-1deg"
+                                        backgroundColor: "#7258d1",
+                                        color: "white",
+                                        border: "none",
+                                        rotate: "1deg"
                                     }}
+
                                     onClick={() => {
                                         setShowFeedbackDialog(false);
                                         onClose();
+                                        fetchUnansweredQuestions();
                                         localStorage.removeItem("currentQuestion");
                                     }}>Close</button>
                             </div>

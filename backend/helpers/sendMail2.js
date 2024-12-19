@@ -15,18 +15,6 @@ oAuth2Client.setCredentials({
   refresh_token: process.env.GOOGLE_REFRESH_TOKEN // Replace with your OAuth2 refresh token
 });
 
-
-// Get OAuth2 access token
-// async function getAccessToken() {
-//   try {
-//     const tokenResponse = await oAuth2Client.getRequestHeaders();
-//     return tokenResponse.Authorization;
-//   } catch (error) {
-//     console.error('Error fetching access token:', error.message);
-//     throw error;
-//   }
-// }
-
 // Create Nodemailer transporter with OAuth2
 async function createTransporter() {
   // const accessToken = await getAccessToken();
