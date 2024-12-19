@@ -55,9 +55,9 @@ router.post("/post_form_data", async (req, res) => {
 
         // Check and update the message
         if (updatedWrongResponse.startsWith("Your answer is incorrect.")) {
-            updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+            updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is "${trimmedCorrectOption}".`;
         } else {
-            updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+            updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is "${trimmedCorrectOption}".`;
         }
         console.log("wrongResponse", wrongResponse)
         console.log("updatedWrong", updatedWrongResponse)
@@ -137,14 +137,28 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
 
             // Map the Excel keys to match expected keys
             const question = row['Question'];
-            const option1 = row['Option 1'];
-            const option2 = row['Option 2'];
-            const option3 = row['Option 3'];
-            const option4 = row['Option 4'];
-            const correctOption = row['Correct Option'];
+            let option1 = row['Option 1'];
+            let option2 = row['Option 2'];
+            let option3 = row['Option 3'];
+            let option4 = row['Option 4'];
+            let correctOption = row['Correct Option'];
             const rightResponse = row['Right Response'];
             const wrongResponse = row['Wrong Response'];
 
+            // Convert numeric options back to string if they represent percentages
+            const formatOption = (option) => {
+                if (typeof option === 'number' && option >= 0 && option <= 1) {
+                    // Convert fractions back to percentage format
+                    return `${option * 100}%`;
+                }
+                return String(option).trim(); // Otherwise, return as string
+            };
+
+            option1 = formatOption(option1);
+            option2 = formatOption(option2);
+            option3 = formatOption(option3);
+            option4 = formatOption(option4);
+            correctOption = formatOption(correctOption); // Format correctOption consistently
             // Validate fields
             if (!question || !option1 || !option2 || !option3 || !option4 || !correctOption) {
                 console.log(`Row ${index + 1} skipped: Missing required fields.`);
@@ -169,11 +183,15 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
                 updatedWrongResponse = updatedWrongResponse.substring(1).trim(); // Remove the cross symbol
             }
 
-            // Check and update the message
+            // Check if the response already includes "Your answer is incorrect."
             if (updatedWrongResponse.startsWith("Your answer is incorrect.")) {
-                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+                // Check if it already includes the correct option
+                if (!updatedWrongResponse.includes(trimmedCorrectOption)) {
+                    updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is "${trimmedCorrectOption}".` + updatedWrongResponse.substring("Your answer is incorrect.".length).trim();
+                }
             } else {
-                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+                // Append the correct answer to the message
+                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is "${trimmedCorrectOption}".` + (updatedWrongResponse ? ` ${updatedWrongResponse}` : "");
             }
 
             console.log("Original Wrong Response:", row['Wrong Response']);
@@ -316,7 +334,6 @@ router.get("/available-slots", async (req, res) => {
     }
 });
 
-
 router.post("/push-questions", async (req, res) => {
     const socketIO = req.io;
     console.log("Processing push-questions...");
@@ -380,6 +397,7 @@ router.post("/push-questions", async (req, res) => {
                 correctOption: questionDetails.correctOption,
                 responses: questionDetails.responses,
                 dateAssigned: new Date(),
+                questionAnswered: false,
             });
 
             socketIO.emit(`question_assigned`, {
@@ -438,6 +456,7 @@ router.post("/submit-answer", async (req, res) => {
 
         // Update the answer and check correctness
         assignedQuestion.answerGiven = trimmedSelectedAnswer;
+        assignedQuestion.questionAnswered = true;
         assignedQuestion.isCorrect = trimmedCorrectOption === trimmedSelectedAnswer;
 
         // Save the updated employee document
