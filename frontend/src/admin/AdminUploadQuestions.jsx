@@ -328,12 +328,14 @@ function AdminUploadQuestions() {
                                                     </td>
                                                     <td>
                                                         <div className="ellipsis-cell" title={obj.responses?.right}>
-                                                            {obj.responses?.right}
+                                                        <div dangerouslySetInnerHTML={{ __html: obj.responses?.right }}></div>
+                                                            {/* {obj.responses?.right} */}
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div className="ellipsis-cell" title={obj.responses?.wrong}>
-                                                            {obj.responses?.wrong}
+                                                        <div dangerouslySetInnerHTML={{ __html: obj.responses?.wrong }}></div>
+                                                            {/* {obj.responses?.wrong} */}
                                                         </div>
                                                     </td>
                                                     <td>

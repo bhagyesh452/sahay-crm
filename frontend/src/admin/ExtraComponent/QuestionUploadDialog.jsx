@@ -22,7 +22,9 @@ import { MdDelete } from "react-icons/md";
 import { AiOutlineDownload } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
-import Swal from "sweetalert2"
+import Swal from "sweetalert2";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 function QuestionUploadDialog({
     dialogOpen,
@@ -475,33 +477,27 @@ function QuestionUploadDialog({
                                 )}
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField
-                                    label="Right Response"
-                                    name="rightResponse"
+                                <label>Right Response</label>
+                                <ReactQuill
+                                    theme="snow"
+                                    //name="rightResponse"
                                     value={formData.rightResponse}
-                                    onChange={handleFormChange}
-                                    fullWidth
-                                    size="small"
-                                    error={!!errors.rightResponse}
-                                    helperText={errors.rightResponse}
-                                    multiline // Enable textarea
-                                    rows={3} // Number of rows for the textarea
-                                    variant="outlined"
+                                    onChange={(value) =>
+                                        setFormData((prev) => ({ ...prev, rightResponse: value }))
+                                    }
+                                    placeholder="Enter the response for correct answers..."
                                 />
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField
-                                    label="Wrong Response"
-                                    name="wrongResponse"
+                                <label>Wrong Response</label>
+                                <ReactQuill
+                                    theme="snow"
+                                    //name='wrongResponse'
                                     value={formData.wrongResponse}
-                                    onChange={handleFormChange}
-                                    fullWidth
-                                    size="small"
-                                    error={!!errors.wrongResponse}
-                                    helperText={errors.wrongResponse}
-                                    multiline // Enable textarea
-                                    rows={3} // Number of rows for the textarea
-                                    variant="outlined"
+                                    onChange={(value) =>
+                                        setFormData((prev) => ({ ...prev, wrongResponse: value }))
+                                    }
+                                    placeholder="Enter the response for incorrect answers..."
                                 />
                             </Grid>
                         </>
