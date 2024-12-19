@@ -137,7 +137,13 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                                                 whileHover={{ scale: 1.1 }}
                                                 onClick={() => handleAnswerSubmit(option)}
                                             >
-                                                <div className="option-text">{option}</div>
+                                                <div className="d-flex align-items-center justify-content-start">
+                                                    <div className="opt-name">
+                                                        A
+                                                    </div>
+                                                    <div className="option-text">{option}</div>
+                                                </div>
+                                               
                                             </motion.div>
                                         </div>
                                     ))}
