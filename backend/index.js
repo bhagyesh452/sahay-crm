@@ -306,7 +306,7 @@ app.post("/api/employeelogin", async (req, res) => {
   try {
     // Use .select() to limit fields retrieved from the database
     const user = await adminModel.findOne({ email, password }).select('email password designation _id').lean();
-
+    
     if (!user) {
       // If user is not found
       return res.status(401).json({ message: "Invalid email or password" });
@@ -642,6 +642,7 @@ app.post("/api/bdmlogin", async (req, res) => {
     email: email,
     password: password,
   });
+  // console.log("user" , user)
   //console.log(user)M
   if (!user) {
     // If user is not found

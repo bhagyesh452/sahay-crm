@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@mui/material";
+import { Dialog, DialogContent, Button } from "@mui/material";
 import axios from "axios";
 import success from "../../assets/media/success.mp3";
 import failure from "../../assets/media/failure.mp3";
@@ -42,11 +42,11 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
             setShowFeedbackDialog(true);
 
             // Close feedback after 2 seconds
-            setTimeout(() => {
-                setShowFeedbackDialog(false);
-                onClose();
-                localStorage.removeItem("currentQuestion");
-            }, 3000);
+            // setTimeout(() => {
+            //     setShowFeedbackDialog(false);
+            //     onClose();
+            //     localStorage.removeItem("currentQuestion");
+            // }, 3000);
         } catch (error) {
             console.error("Error submitting answer:", error);
             setFeedback("Error submitting your answer. Please try again.");
@@ -61,34 +61,34 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
         sound.play();
     };
 
-   // Function to create falling emojis
-   const startFallingEmojis = (emoji) => {
-    for (let i = 0; i < 30; i++) {
-        createFallingEmoji(emoji);
-    }
-};
+    // Function to create falling emojis
+    const startFallingEmojis = (emoji) => {
+        for (let i = 0; i < 30; i++) {
+            createFallingEmoji(emoji);
+        }
+    };
 
-const createFallingEmoji = (emoji) => {
-    const emojiElement = document.createElement("div");
-    emojiElement.classList.add("falling-emoji");
-    emojiElement.textContent = emoji;
+    const createFallingEmoji = (emoji) => {
+        const emojiElement = document.createElement("div");
+        emojiElement.classList.add("falling-emoji");
+        emojiElement.textContent = emoji;
 
-    // Randomize emoji position and duration
-    emojiElement.style.left = `${Math.random() * 100}vw`;
-    emojiElement.style.animationDuration = `${Math.random() * 4 + 3}s`;
+        // Randomize emoji position and duration
+        emojiElement.style.left = `${Math.random() * 100}vw`;
+        emojiElement.style.animationDuration = `${Math.random() * 4 + 3}s`;
 
-    document.body.appendChild(emojiElement);
+        document.body.appendChild(emojiElement);
 
-    // Remove emoji after animation
-    setTimeout(() => {
-        emojiElement.remove();
-    }, 5000);
-};
+        // Remove emoji after animation
+        setTimeout(() => {
+            emojiElement.remove();
+        }, 5000);
+    };
 
-useEffect(() => {
-    // Inject CSS for falling emoji animation
-    const style = document.createElement("style");
-    style.innerHTML = `
+    useEffect(() => {
+        // Inject CSS for falling emoji animation
+        const style = document.createElement("style");
+        style.innerHTML = `
         @keyframes fall {
             0% { transform: translateY(-100%); opacity: 1; }
             100% { transform: translateY(100vh); opacity: 0; }
@@ -103,19 +103,19 @@ useEffect(() => {
             z-index: 9999;
         }
     `;
-    document.head.appendChild(style);
+        document.head.appendChild(style);
 
-    return () => style.remove();
-}, []);
+        return () => style.remove();
+    }, []);
 
     return (
         <AnimatePresence>
             {open && !showFeedbackDialog && (
                 <Dialog open={open} maxWidth="sm" fullWidth className="question-model" onClose={(event, reason) => {
-                                        if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
-                                            onClose(); // Only allow manual calls to close the dialog
-                                        }
-                                        }}>
+                    if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+                        onClose(); // Only allow manual calls to close the dialog
+                    }
+                }}>
                     <DialogContent style={{ padding: 0 }}>
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
@@ -149,7 +149,7 @@ useEffect(() => {
             )}
 
             {showFeedbackDialog && (
-                <Dialog open={showFeedbackDialog} onClose={onClose} maxWidth="sm" fullWidth>
+                <Dialog open={showFeedbackDialog} onClose={onClose} maxWidth="sm" fullWidth className="queResposepopup">
                     <DialogContent style={{ padding: 0 }}>
                         <motion.div
                             initial={{ scale: 0.5, opacity: 0 }}
@@ -170,10 +170,22 @@ useEffect(() => {
                             }}
                         >
                             <div className="que-main">
-                                <div className="question-number-correct">
+                                <div className="question-number">
                                     {feedbackType === "correct" ? "🎉 Correct!" : "❌ Wrong!"}
                                 </div>
-                                <div className="question-text-correct">{feedback}</div>
+                                <div className="question-text">{feedback}</div>
+                                <button className="btn"
+                                    style={{
+                                        backgroundColor:"#7258d1",
+                                        color:"white",
+                                        border:"none",
+                                        rotate:"-1deg"
+                                    }}
+                                    onClick={() => {
+                                        setShowFeedbackDialog(false);
+                                        onClose();
+                                        localStorage.removeItem("currentQuestion");
+                                    }}>Close</button>
                             </div>
                         </motion.div>
                     </DialogContent>

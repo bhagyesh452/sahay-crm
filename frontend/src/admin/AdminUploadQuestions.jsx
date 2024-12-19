@@ -18,24 +18,10 @@ import { MdOutlineEdit } from "react-icons/md";
 import EmployeeQuestionModal from "./ExtraComponent/EmployeeQuestionModal.jsx";
 import SlotSelectionDialog from "./ExtraComponent/SlotSelectionDialog.jsx";
 import Swal from "sweetalert2";
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    Select,
-    MenuItem,
-    Typography,
-    Checkbox,
-    FormControlLabel,
-} from "@mui/material";
+import { MdDeleteOutline } from "react-icons/md";
+import io from 'socket.io-client';
+import EmployeeAnsweredQuestionDetailsDialog from "./ExtraComponent/EmployeeAnsweredQuestionDetailsDialog.jsx";
+
 
 
 function AdminUploadQuestions() {
@@ -51,19 +37,43 @@ function AdminUploadQuestions() {
     const [questionDetails, setQuestionDetails] = useState([]);
     const [employeesAnswered, setEmployeesAnswered] = useState([]);
     const [employeeAnsDialog, setEmployeeAnsDialog] = useState(false);
+    const [editMode, setEditMode] = useState(false); // New state for edit mode
+    const [selectedQuestionData, setSelectedQuestionData] = useState(null); // Selected question for editing
+
+    useEffect(() => {
+        document.title = `Admin-Sahay-CRM`;
+        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
+        });
+        socket.on("employee_answer_submitted", (res) => {
+            fetchingData()
+            fetchAvailableSlots()
+        });
+        socket.on("excel_submitted", (res) => {
+            fetchingData()
+            fetchAvailableSlots()
+        })
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            socket.disconnect();
+        };
+        
+    }, []);
+
 
     const handleDialogToggle = () => {
-        setDialogOpen(!dialogOpen);
-    };
+        setDialogOpen(false);
+        setEditMode(false);
+        setSelectedQuestionData(null);
+    }
+
 
     const handleSlotDialogToggle = () => {
         setSlotDialogOpen(!slotDialogOpen);
-    };
-
-    const handleSelectSlot = async (slotId) => {
-        // Logic when a slot is selected
-        console.log("Selected Slot ID:", slotId);
-        // Call an API to activate the selected slot if needed
+        
     };
 
     const fetchingData = async () => {
@@ -90,7 +100,6 @@ function AdminUploadQuestions() {
 
         return `${day} ${month}, ${year}`;
     }
-    const modalId = `modal-employeeQuestion`; // Generate a sanitized modal ID
 
     // =================available slots======================
     // Fetch available slots
@@ -109,9 +118,6 @@ function AdminUploadQuestions() {
             });
         }
     };
-
-
-    console.log("availableslots", availableSlots)
 
     useEffect(() => {
         fetchAvailableSlots();
@@ -141,6 +147,44 @@ function AdminUploadQuestions() {
             });
         }
     };
+
+    // ==================deleting quetion function=====================
+    // Handle Delete Button Click
+    const handleDeleteQuestion = async (questionId, slotIndex) => {
+        console.log(questionId, slotIndex)
+        try {
+            const response = await Swal.fire({
+                title: "Are you sure?",
+                text: "This will delete the question permanently!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, keep it",
+            });
+
+            if (response.isConfirmed) {
+                await axios.post(`${secretKey}/question_related_api/delete-question`, {
+                    questionId: questionId,
+                    slotIndex: slotIndex
+                });
+                Swal.fire("Deleted!", "The question has been deleted.", "success");
+                fetchingData();
+            }
+        } catch (error) {
+            console.error("Error deleting question", error);
+            Swal.fire("Error!", "Failed to delete the question.", "error");
+        }
+    };
+
+    // ==================edit question==========================
+    // Handle Edit Button Click
+    const handleEditQuestion = (question, slotIndex) => {
+        console.log("question", question)
+        setEditMode(true);
+        setSelectedQuestionData({ ...question, slotIndex });
+        setDialogOpen(true);
+    };
+    console.log("selectedQuestionData", selectedQuestionData)
 
     return (
         <div>
@@ -174,7 +218,11 @@ function AdminUploadQuestions() {
                                     </button>
                                 </div>
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn action-btn-primary" onClick={handleDialogToggle}>
+                                    <button type="button" className="btn action-btn-primary" onClick={() => {
+                                        setDialogOpen(true);
+                                        setEditMode(false);
+                                        setSelectedQuestionData(null);
+                                    }}>
                                         Add Question
                                     </button>
                                 </div>
@@ -250,7 +298,7 @@ function AdminUploadQuestions() {
                                             return (
                                                 <tr key={index}>
                                                     <td className="rm-sticky-left-1">{index + 1}</td>
-                                                    <td className="rm-sticky-left-2 ellipsis-cell_new"
+                                                    <td className="rm-sticky-left-2"
                                                         title={obj.question}
                                                         onClick={() => handleQuestionClick(obj._id, obj.question)}>{obj.question}</td>
                                                     <td>
@@ -295,9 +343,30 @@ function AdminUploadQuestions() {
                                                         {data.slotIndex.toUpperCase()}
                                                     </td>
                                                     <td>
-                                                        <div className="adq_info_icon">
-                                                            <MdOutlineEdit />
-                                                        </div>
+                                                        <button
+                                                            className='tbl-action-btn'
+                                                            onClick={() => handleDeleteQuestion(obj._id, data.slotIndex)}
+                                                        >
+                                                            <MdDeleteOutline
+                                                                style={{
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                    color: "#bf0b0b",
+                                                                    cursor: "pointer",
+                                                                }}
+                                                            />
+                                                        </button>
+                                                        <button className='tbl-action-btn'>
+                                                            < MdOutlineEdit
+                                                                onClick={() => handleEditQuestion(obj, data.slotIndex)}
+                                                                style={{
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                    color: "grey",
+                                                                    cursor: "pointer",
+                                                                }}
+                                                            />
+                                                        </button>
                                                     </td>
                                                 </tr>)
                                         }
@@ -325,73 +394,30 @@ function AdminUploadQuestions() {
                 setSelectedSlotId={setSelectedSlot}
                 fetchAvailableSlots={fetchAvailableSlots}
             />
-            {
-                dialogOpen && (
+            {dialogOpen && (
                     <QuestionUploadDialog
                         dialogOpen={dialogOpen}
                         handleDialogToggle={handleDialogToggle}
                         completeData={completeData}
+                        editMode={editMode} // Pass editMode
+                        setEditMode={setEditMode}
+                        selectedQuestionData={selectedQuestionData} // Pass selected question for editing
+                        fetchingData={fetchingData}
                     />
-                )
-            }
+                )}
             {/* =============dialog which is shown to employee================= */}
             <EmployeeQuestionModal
-                modalId={modalId}
             />
-            {/* Popup to Show Question Details */}
-            <Dialog open={employeeAnsDialog} onClose={() => setEmployeeAnsDialog(false)} maxWidth="sm" fullWidth className="MY_MAT_DIALOG">
-                <DialogTitle>
-                    <div className="d-flex align-items-center justify-content-between">
-                        <div className="new_question_dailog_title">
-                            {selectedQuestionFull}
-                        </div>
-                        <div>
-                            <button type="button"
-                                className="btn-close new_question_dailog_button"
-                                aria-label="Close"
-                                onClick={() => setEmployeeAnsDialog(false)}
-                            >
-
-                            </button>
-                        </div>
-                    </div>
-                </DialogTitle>
-                <hr style={{ border: "1px solid #ddd", margin: "0" }} />
-                <DialogContent>
-                    {employeesAnswered.length > 0 ? (
-                        <div className='table table-responsive table-style-2 m-0'>
-                            <table className="table">
-                                <thead>
-                                    <tr className='tr-sticky'>
-                                        <th>Employee Name</th>
-                                        <th>Answer Given</th>
-                                        <th>Is Correct</th>
-                                        <th>Date Answered</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {employeesAnswered.map((employee, index) => {
-                                        console.log("employee", employee)
-                                        return (
-                                            <tr key={index}>
-                                                <td>{employee.employeeName}</td>
-                                                <td>{employee.answerGiven}</td>
-                                                <td>{employee.isCorrect === true ? "Correct" : "Incorrect"}</td>
-                                                <td>{formatDatePro(employee.dateAnswered)}</td>
-                                            </tr>
-                                        )
-
-                                    }
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-
-                    ) : (
-                        <Typography>No responses available for this question.</Typography>
-                    )}
-                </DialogContent>
-            </Dialog>
+            {/* =========================dialog to show employee answered question details===================== */}
+            {employeeAnsDialog && (
+                <EmployeeAnsweredQuestionDetailsDialog
+                employeeAnsDialog={employeeAnsDialog}
+                setEmployeeAnsDialog={setEmployeeAnsDialog}
+                selectedQuestionFull={selectedQuestionFull}
+                employeesAnswered={employeesAnswered || []}
+                formatDatePro={formatDatePro}
+                 />
+            )}
         </div>
     )
 }

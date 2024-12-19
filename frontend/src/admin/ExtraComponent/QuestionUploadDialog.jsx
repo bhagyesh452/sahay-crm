@@ -24,7 +24,16 @@ import { IoClose } from "react-icons/io5";
 import axios from "axios";
 import Swal from "sweetalert2"
 
-function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) {
+function QuestionUploadDialog({ 
+    dialogOpen, 
+    handleDialogToggle, 
+    completeData,
+    editMode,
+    selectedQuestionData,
+    onSubmit,
+    setEditMode,
+    fetchingData
+ }) {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [uploadMethod, setUploadMethod] = useState("form");
     const [errors, setErrors] = useState({});
@@ -259,7 +268,58 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
         }
     };
 
+// Handle Submit for QuestionUploadDialog
+const handleUpdateQuestion = async () => {
+    const payload = {
+        questionId:selectedQuestionData._id,
+        question: formData.question,
+        options: [formData.option1, formData.option2, formData.option3, formData.option4],
+        correctOption: [formData.option1, formData.option2, formData.option3, formData.option4][parseInt(formData.correctOption, 10)],
+        rightResponse: formData.rightResponse,
+        wrongResponse: formData.wrongResponse,
+        slot: formData.slot,
+    };
+    console.log("payload" , payload)
+    try {
+        const response = await axios.put(`${secretKey}/question_related_api/update-question`, payload);
+        Swal.fire("Updated!", "The question has been updated successfully.", "success");
+        handleDialogToggle();
+        fetchingData();
+    } catch (error) {
+        console.error("Error updating question", error);
+        Swal.fire("Error!", "Failed to update the question.", "error");
+    }
+};
 
+// Populate form data in edit mode
+useEffect(() => {
+    if (editMode && selectedQuestionData) {
+        const { question, options, correctOption, responses, slotIndex } = selectedQuestionData;
+        setFormData({
+            question,
+            option1: options[0],
+            option2: options[1],
+            option3: options[2],
+            option4: options[3],
+            correctOption: options.indexOf(correctOption).toString(),
+            rightResponse: responses?.right || "",
+            wrongResponse: responses?.wrong || "",
+            slot: slotIndex || "",
+        });
+    } else {
+        setFormData({
+            question: "",
+            option1: "",
+            option2: "",
+            option3: "",
+            option4: "",
+            correctOption: "",
+            rightResponse: "",
+            wrongResponse: "",
+            slot: "",
+        });
+    }
+}, [editMode, selectedQuestionData]);
 
     return (
         <Dialog
@@ -276,30 +336,15 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                 },
             }}
         >
-            {/* <DialogTitle>
-                <div className="d-flex justify-content-between align-items-center">
-                    <div>Upload Questions</div>
-                    <div>
-                        <button
-                            onClick={handleDialogToggle}
-                            className="btn btn-link"
-                            style={{ fontSize: "20px", padding: "0" }}
-                        >
-                            <IoClose />
-                        </button>
-                    </div>
-                </div>
-            </DialogTitle> */}
             <DialogTitle>
                 <div className="d-flex align-items-center justify-content-between">
-                    <div>Upload Questions</div>
+                    <div>{editMode ? "Edit Question" :  "Upload Questions"}</div>
                     <div>
                         <button type="button"
                             className="btn-close new_question_dailog_button"
                             aria-label="Close"
                             onClick={handleDialogToggle}
                         >
-
                         </button>
                     </div>
                 </div>
@@ -318,7 +363,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                         }}
                     >
                         {/* Left Side: Form and Excel */}
-                        <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+                        {!editMode && <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
                             <div className="form-check form-check-inline">
                                 <input
                                     className="form-check-input rounded-circle"
@@ -326,6 +371,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                     name="employeeOption"
                                     id="addSingleEmployee"
                                     value="form"
+                                    checked={uploadMethod === "form"} // Bind checked property
                                     onChange={(e) => setUploadMethod(e.target.value)}
                                 />
                                 <label className="form-check-label" htmlFor="addSingleEmployee">
@@ -339,13 +385,14 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                     name="employeeOption"
                                     id="bulkUpload"
                                     value="excel"
+                                    checked={uploadMethod === "excel"} // Bind checked property
                                     onChange={(e) => setUploadMethod(e.target.value)}
                                 />
                                 <label className="form-check-label" htmlFor="bulkUpload">
                                     Excel
                                 </label>
                             </div>
-                        </div>
+                        </div>}
 
                         {/* Right Side: Slot Selection */}
                         <div style={{ width: "200px" }}>
@@ -355,6 +402,7 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                                 value={formData.slot}
                                 required
                                 onChange={handleFormChange}
+                                disabled={editMode}
                             >
                                 <option value="" disabled>
                                     Select Slot
@@ -368,35 +416,6 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                             {errors.slot && <Typography color="error">{errors.slot}</Typography>}
                         </div>
                     </div>
-
-
-
-                    {/* <Grid item xs={6}>
-                        <RadioGroup
-                            row
-                            value={uploadMethod}
-                            onChange={(e) => setUploadMethod(e.target.value)}
-                        >
-                            <FormControlLabel value="form" control={<Radio />} label="Form" />
-                            <FormControlLabel value="excel" control={<Radio />} label="Excel" />
-                        </RadioGroup>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <FormControl fullWidth size="small">
-                            <Select
-                                name="slot"
-                                value={formData.slot}
-                                onChange={handleFormChange}
-                            >
-                                {slotOptions.map((slot, index) => (
-                                    <MenuItem key={index} value={slot.label} disabled={slot.disabled}>
-                                        {slot.label}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                            {errors.slot && <Typography color="error">{errors.slot}</Typography>}
-                        </FormControl>
-                    </Grid> */}
                     {uploadMethod === "form" && (
                         <>
                             <Grid item xs={12}>
@@ -552,9 +571,9 @@ function QuestionUploadDialog({ dialogOpen, handleDialogToggle, completeData }) 
                             className="btn btn-primary w-50 m-0"
                             color="primary"
                             variant="contained"
-                            onClick={handleSubmit}
+                            onClick={editMode ? handleUpdateQuestion : handleSubmit}
                         >
-                            Submit
+                            {editMode ? "Update" : "Submit"}
                         </Button>
                     ) :
                     (

@@ -20,6 +20,7 @@ const employeeQuestionSchema = new mongoose.Schema({
             dateAssigned: { type: Date, required: true }, // Date the question was assigned
             answerGiven: { type: String }, // Employee's answer
             isCorrect: { type: Boolean }, // Whether the answer was correct
+            isDeletedQuestion: { type: Boolean, default: false }, // New field to indicate deleted questions
         },
     ],
     createdAt: { type: Date, default: Date.now }, // Record creation timestamp

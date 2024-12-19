@@ -416,7 +416,7 @@ import { useNavigate } from "react-router-dom";
 
 
 
-export default function BDMLogin({ setBdmToken }) {
+export default function BDMLogin({ setBdmToken , isVicePresident }) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -444,11 +444,13 @@ export default function BDMLogin({ setBdmToken }) {
     const captchaKey = process.env.REACT_APP_CAPTCHA_KEY;
 
 
-
-
     useEffect(() => {
-        document.title = `Floor-Manager-Sahay-CRM`;
-    }, []);
+        if(isVicePresident){
+            document.title = `Vice-President-Sahay-CRM`;
+        }else{
+            document.title = `Floor-Manager-Sahay-CRM`; 
+        }
+    }, [isVicePresident]);
 
 
     // Start the OTP expiry timer
@@ -490,14 +492,13 @@ export default function BDMLogin({ setBdmToken }) {
             setErrorMessage("Please enter email and password.");
             return;
         }
-
         setIsLoading(true);
         try {
             // Verify email and password first
             const response = await axios.post(`${secretKey}/verifyCredentials`, {
                 email,
                 password,
-                designations: ["Sales Manager"]
+                designations: ["Sales Manager" , "Vice President"]
             });
 
             // If credentials are valid, send OTP
@@ -517,32 +518,6 @@ export default function BDMLogin({ setBdmToken }) {
             setIsLoading(false);
         }
     };
-
-    // // Handle OTP verification
-    // const handleVerifyOtp = async (e) => {
-    //     e.preventDefault();
-    //     setErrorMessage("");
-    //     if (!otp) {
-    //         setErrorMessage("Please enter the OTP.");
-    //         return;
-    //     }
-
-    //     setIsLoading(true);
-    //     try {
-    //         const response = await axios.post(`${secretKey}/verifyOtp`, {
-    //             email,
-    //             otp,
-    //         });
-    //         setIsOtpVerified(true);
-    //         //console.log("Calling stopTimer after OTP verification.");
-    //         stopTimer(); // Stop the timer upon successful OTP verification
-    //     } catch (error) {
-    //         setErrorMessage(error.response.data.message || "Invalid OTP.");
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -588,19 +563,18 @@ export default function BDMLogin({ setBdmToken }) {
                 password,
                 designation,
             });
-
-
-            console.log("respojse", response)
-
             const { bdmToken, userId } = response.data;
             console.log(bdmToken, userId);
             setBdmToken(bdmToken)
             localStorage.setItem("bdmName", ename)
             localStorage.setItem("bdmToken", bdmToken)
             localStorage.setItem("bdmUserId", userId)
-            navigate(`/floormanager/dashboard/${userId}`)
+            if(isVicePresident){
+                navigate(`/vicePresident/dashboard/${userId}`)
+            }else{
+                navigate(`/floormanager/dashboard/${userId}`)
 
-
+            }
         } catch (error) {
             setErrorMessage(error.response.data.message || "Login failed.");
         } finally {
@@ -631,7 +605,7 @@ export default function BDMLogin({ setBdmToken }) {
                             <div className="col-sm-6 p-0">
                                 <div className="card card-md login-box">
                                     <div className="card-body">
-                                        <h2 className="h2 text-center mb-4">FLOOR MANAGER LOGIN</h2>
+                                        <h2 className="h2 text-center mb-4">{isVicePresident ? "Vice President Login" : "FLOOR MANAGER LOGIN"}</h2>
                                         {!isOtpSent && !isOtpVerified && (
                                             // Step 1: Enter Email and Password
                                             <form action="#" method="get" autoComplete="off" noValidate>
