@@ -22,8 +22,11 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                 questionId: questionData?.questionId,
                 selectedAnswer,
             });
+            console.log("response", response.data)
+
 
             const { isCorrect, response: feedbackResponse } = response.data;
+            console.log("feedbackresponse" , feedbackResponse)
             setFeedback(feedbackResponse);
 
             if (isCorrect) {
@@ -167,6 +170,7 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId }) {
                                 backgroundColor: feedbackType === "correct" ? "#4caf50" : "#f44336",
                                 color: "#fff",
                                 borderRadius: "10px",
+                                whiteSpace: "pre-wrap", // Preserve spaces and line breaks
                             }}
                         >
                             <div className="que-main">

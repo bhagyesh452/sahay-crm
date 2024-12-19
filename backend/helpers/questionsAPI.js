@@ -169,11 +169,15 @@ router.post("/upload-questions_excel", upload.single("file"), async (req, res) =
                 updatedWrongResponse = updatedWrongResponse.substring(1).trim(); // Remove the cross symbol
             }
 
-            // Check and update the message
+            // Check if the response already includes "Your answer is incorrect."
             if (updatedWrongResponse.startsWith("Your answer is incorrect.")) {
-                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+                // Check if it already includes the correct option
+                if (!updatedWrongResponse.includes(trimmedCorrectOption)) {
+                    updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.` + updatedWrongResponse.substring("Your answer is incorrect.".length).trim();
+                }
             } else {
-                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.`;
+                // Append the correct answer to the message
+                updatedWrongResponse = `❌ Your answer is incorrect. The correct answer is **"${trimmedCorrectOption}"**.` + (updatedWrongResponse ? ` ${updatedWrongResponse}` : "");
             }
 
             console.log("Original Wrong Response:", row['Wrong Response']);
@@ -316,7 +320,6 @@ router.get("/available-slots", async (req, res) => {
     }
 });
 
-
 router.post("/push-questions", async (req, res) => {
     const socketIO = req.io;
     console.log("Processing push-questions...");
@@ -380,6 +383,7 @@ router.post("/push-questions", async (req, res) => {
                 correctOption: questionDetails.correctOption,
                 responses: questionDetails.responses,
                 dateAssigned: new Date(),
+                questionAnswered: false,
             });
 
             socketIO.emit(`question_assigned`, {
@@ -438,6 +442,7 @@ router.post("/submit-answer", async (req, res) => {
 
         // Update the answer and check correctness
         assignedQuestion.answerGiven = trimmedSelectedAnswer;
+        assignedQuestion.questionAnswered = true;
         assignedQuestion.isCorrect = trimmedCorrectOption === trimmedSelectedAnswer;
 
         // Save the updated employee document

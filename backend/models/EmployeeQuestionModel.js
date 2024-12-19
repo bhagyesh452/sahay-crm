@@ -19,6 +19,7 @@ const employeeQuestionSchema = new mongoose.Schema({
             },
             dateAssigned: { type: Date, required: true }, // Date the question was assigned
             answerGiven: { type: String }, // Employee's answer
+            questionAnswered: { type: Boolean, default: false }, // Whether the employee has answered the question
             isCorrect: { type: Boolean }, // Whether the answer was correct
             isDeletedQuestion: { type: Boolean, default: false }, // New field to indicate deleted questions
         },
