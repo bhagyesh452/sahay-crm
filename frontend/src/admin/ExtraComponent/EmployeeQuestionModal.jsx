@@ -11,6 +11,20 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId, fetchU
     const [showFeedbackDialog, setShowFeedbackDialog] = useState(false); // Control feedback dialog
     const [feedbackType, setFeedbackType] = useState(""); // "correct" or "wrong"
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [maxHeight, setMaxHeight] = useState(0);
+
+    useEffect(() => {
+        // Calculate the maximum height of all options
+        const optionElements = document.querySelectorAll(".option-main");
+        let max = 0;
+        optionElements.forEach((option) => {
+          const height = option.scrollHeight;
+          if (height > max) {
+            max = height;
+          }
+        });
+        setMaxHeight(max);
+      }, [questionData]);
 
     const handleAnswerSubmit = async (selectedAnswer) => {
         if (isSubmitting) return; // Prevent duplicate submissions
@@ -138,8 +152,9 @@ function EmployeeQuestionModal({ open, onClose, questionData, employeeId, fetchU
                                         <div className="col-6 mt-5" key={index}>
                                             <motion.div
                                                 className="option-main"
+                                                style={{ height: `${maxHeight}px` }} 
                                                 whileHover={{ scale: 1.1 }}
-                                                onClick={() => handleAnswerSubmit(option)}
+                                                //onClick={() => handleAnswerSubmit(option)}
                                             >
                                                 <div className="d-flex align-items-center justify-content-start">
                                                     <div className="opt-name">
