@@ -423,15 +423,19 @@
 {
     padding: 12px;
 }
-
+.question-model .MuiPaper-root
+{
+    background-color:#ffffff00 !important; 
+    box-shadow:none !important;
+}
 .q-modal
 {
-    background: #fffcf2 !important;
+    background: #fffcf200 !important;
     padding: 60px 0px;
 }
 .que-main
 {
-    background-color: #555555;
+    background-color: #ffffff;
     width: 75%;
     max-width: 500px;
     margin: 0 auto;
@@ -444,16 +448,37 @@
     z-index: 2;
     transition: all 0.2s ease;
     cursor: pointer;
+    color: #000;
+    border: 2px solid #ccc;
+    box-shadow: 6px 6px 10px 1px #585858;
 }
 .option-main:hover {
-    background-color: #e0e0e0;
+    background-color: #ffbb01;
     transform: scale(1.05);
     cursor: pointer;
+}
+.opt-name
+{
+    background-color: #fff1cc;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border-radius: 10px;
+    color: #565656;
+    font-weight: 500;
+}
+.option-main:hover .opt-name
+{
+    background-color: #fff;
+    color: #000;
 }
 .question-number {
     position: absolute;
     top: 0px;
-    background-color: #7258d1;
+    background-color: #ffbb01;
     color: white;
     font-size: 18px;
     font-weight: bold;
@@ -513,7 +538,7 @@
 
 .question-text {
     font-size: 18px;
-    color: #ffffff;
+    color: #444444;
     margin: 14px 10px;
     font-weight: 500;
     rotate: 1deg;
@@ -552,19 +577,23 @@
 .option-main
 {
     width: 95%;
-    background: #7258d1;
-    padding: 16px 20px;
+    background: #fff;
+    padding: 6px 6px;
     border-radius: 16px;
     font-weight: bold;
     color: #fff;
     /* rotate: -2deg; */
     position: relative;
     margin: 0 auto;
+    color: #5c5c5c;
+    border: 2px solid #aaaaaa;
+    box-shadow: 6px 6px 10px 1px #585858;
 }
 .option-text
 {
-    letter-spacing: 1px;
-    rotate: 2deg;
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: 500;
 }
 .opt-row
 {
